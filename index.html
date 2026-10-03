@@ -36,7 +36,9 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;}
-  .wrap{max-width:1180px;margin:0 auto;padding:24px 22px 60px;}
+  /* niente bande grigie ai lati: le tabelle larghe ci stanno tutte in una schermata */
+  .wrap{max-width:none;margin:0;padding:24px 28px 60px;}
+  @media(min-width:2100px){ .wrap{max-width:2000px;margin:0 auto;} }
 
   header{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;
     border-bottom:2px solid var(--ink);padding-bottom:14px;}
@@ -414,6 +416,23 @@
     text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
   .tutab tr.somma td{background:#F6F4EF;font-weight:600;border-top:1px solid var(--line);}
   .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
+  .srvtab{width:100%;border-collapse:collapse;font-size:13px;}
+  .srvtab th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);font-weight:600;
+    padding:7px 10px;border-bottom:2px solid var(--ink);text-align:right;}
+  .srvtab th.vc{text-align:left;width:160px;}
+  .srvtab th.off{color:#C3BFB6;}
+  .srvtab th.sett{color:var(--brand);border-left:1px solid var(--line);}
+  .srvtab td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--num);white-space:nowrap;}
+  .srvtab td.vc{text-align:left;font-family:var(--font);font-size:13px;color:var(--ink);}
+  .srvtab td.chiuso{color:#C9C4B8;}
+  .srvtab td.sett{border-left:1px solid var(--line);background:#FAF9F6;font-weight:600;}
+  .srvtab .e{display:block;font-weight:600;}
+  .srvtab .i{display:block;font-size:11px;color:var(--ink2);margin-top:1px;}
+  .srvtab td.big .e{font-size:15px;}
+  .srvtab tr.ric td{background:#FAFAF8;}
+  .srvtab tr.tcosti td{border-top:1px solid var(--line);}
+  .srvtab tr.marg td{border-top:1.5px solid var(--brand);background:#F6F4EF;}
+  .srvtab tr.marg td.vc{font-weight:600;}
   .tusrv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:4px;}
   .tusrv .c{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:13px 15px;}
   .tusrv .c h4{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);margin-bottom:8px;}
@@ -658,7 +677,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v67</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v68</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2347,21 +2366,41 @@ function renderTU(){
 
   /* ---- il conto di ogni servizio ---- */
   if(!noTurni){
-    const fila=(j)=>{
-      const nomi=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
-      return GIORNI.map((_,g)=>{
+    /* Si legge meglio girata: i giorni in alto come in un calendario, le voci di
+       costo in colonna come in un conto economico. Ogni cella ha l'importo e,
+       sotto, l'incidenza sui ricavi di quel servizio. */
+    const tabellaServizio=(j,tot)=>{
+      const aperti=GIORNI.map((_,g)=>d.celle[g][j].aperto);
+      const cella=(g,dentro)=>{
         const c=d.celle[g][j];
-        if(!c.aperto) return `<tr><td>${nomi[g]}</td><td class="tot" style="color:var(--ink2)" colspan="11">chiuso</td></tr>`;
-        const q=(v,i)=>`<td class="tot">${v==null?'—':fmtE(v)}</td><td class="tot" style="color:var(--ink2)">${isFinite(i)&&c.ric?fmtP(i):'—'}</td>`;
-        const cl = c.marg==null ? '' : (c.marg>=0?'v-ok':'v-bad');
-        return `<tr><td>${nomi[g]}</td>
-          <td class="tot">${fmtNum(c.ore)}</td>
-          <td class="tot">${c.ric==null?'—':fmtE(c.ric)}</td>
-          ${q(c.ru,c.incRu)}${q(c.mp,c.incMp)}${q(c.sg,c.incSg)}
-          <td class="tot">${fmtE(c.costi)}</td>
-          <td class="tot"><span class="pil ${cl}">${c.marg==null?'—':fmtE(c.marg)}</span></td>
-          <td class="tot" style="font-weight:600;color:${c.marg==null?'inherit':(c.marg>=0?'var(--ok)':'var(--bad)')}">${isFinite(c.incMarg)&&c.ric?fmtP(c.incMarg):'—'}</td></tr>`;
-      }).join('');
+        if(!c.aperto) return `<td class="chiuso">—</td>`;
+        return dentro(c);
+      };
+      const eur=(v)=>v==null?'—':fmtE(v);
+      const riga=(et,dentro,finale,cl)=>`<tr class="${cl||''}"><td class="vc">${et}</td>`+
+        GIORNI.map((_,g)=>cella(g,dentro)).join('')+`<td class="tot sett">${finale}</td></tr>`;
+      const conInc=(v,i,colore)=>`<td class="tot"><span class="e">${eur(v)}</span><span class="i"${colore?` style="color:${colore(v,i)}"`:''}>${isFinite(i)?fmtP(i):'—'}</span></td>`;
+      const haCoperti=d.inc.coperti.some((x,g)=>aperti[g]&&x[j]);
+      const copSett=d.inc.coperti.reduce((a,x,g)=>a+(aperti[g]?num(x[j]):0),0);
+      return `<div class="tblwrap"><table class="srvtab">
+        <tr><th class="vc"></th>${GIORNI.map((g,i)=>`<th class="${aperti[i]?'':'off'}">${g}</th>`).join('')}<th class="sett">Settimana</th></tr>
+        ${riga('Ore in turno', c=>`<td class="tot"><span class="e">${fmtNum(c.ore)}</span></td>`, fmtNum(tot.ore))}
+        ${riga('Incasso medio', c=>`<td class="tot big"><span class="e">${eur(c.ric)}</span></td>`, `<span class="e">${eur(tot.ric)}</span>`, 'ric')}
+        ${haCoperti?`<tr><td class="vc">Coperti · battuta</td>${GIORNI.map((_,g)=>{
+            if(!aperti[g]) return '<td class="chiuso">—</td>';
+            const cp=d.inc.coperti[g][j], ri=d.celle[g][j].ric;
+            return `<td class="tot"><span class="e">${cp?fmtNum(cp):'—'}</span><span class="i">${cp&&ri!=null?fmtE(ri/cp):'—'}</span></td>`;
+          }).join('')}<td class="tot sett"><span class="e">${copSett?fmtNum(copSett):'—'}</span><span class="i">${copSett&&tot.ric?fmtE(tot.ric/copSett):'—'}</span></td></tr>`:''}
+        ${riga('Risorse umane', c=>conInc(c.ru,c.incRu), `<span class="e">${eur(tot.ru)}</span><span class="i">${tot.ric?fmtP(tot.ru/tot.ric):'—'}</span>`)}
+        ${riga('Materia prima', c=>conInc(c.mp,c.incMp), `<span class="e">${eur(tot.mp)}</span><span class="i">${tot.ric?fmtP(tot.mp/tot.ric):'—'}</span>`)}
+        ${riga('Spese generali', c=>conInc(c.sg,c.incSg), `<span class="e">${eur(tot.sg)}</span><span class="i">${tot.ric?fmtP(tot.sg/tot.ric):'—'}</span>`)}
+        ${riga('Totale costi', c=>`<td class="tot"><span class="e">${eur(c.costi)}</span><span class="i">${c.ric?fmtP(c.costi/c.ric):'—'}</span></td>`,
+               `<span class="e">${eur(tot.costi)}</span><span class="i">${tot.ric?fmtP(tot.costi/tot.ric):'—'}</span>`, 'tcosti')}
+        ${riga('Margine', c=>{
+            const col=c.marg==null?'inherit':(c.marg>=0?'var(--ok)':'var(--bad)');
+            return `<td class="tot big" style="color:${col}"><span class="e">${eur(c.marg)}</span><span class="i" style="color:${col}">${isFinite(c.incMarg)&&c.ric?fmtP(c.incMarg):'—'}</span></td>`;
+          }, `<span class="e" style="color:${tot.marg==null?'inherit':(tot.marg>=0?'var(--ok)':'var(--bad)')}">${eur(tot.marg)}</span><span class="i" style="color:${tot.marg==null?'inherit':(tot.marg>=0?'var(--ok)':'var(--bad)')}">${tot.ric?fmtP(tot.marg/tot.ric):'—'}</span>`, 'marg')}
+      </table></div>`;
     };
     const totali=(j)=>{
       const cc=d.celle.map(x=>x[j]).filter(c=>c.aperto);
@@ -2375,19 +2414,8 @@ function renderTU(){
       const t=totali(sv.k);
       if(!d.celle.some(x=>x[sv.k].aperto)) return '';
       return `<section><h2>${sv.et}</h2>
-        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana: ore in turno, incasso medio, i tre centri di costo in euro e in incidenza, e quello che resta.</div>
-        <div style="overflow-x:auto"><table class="obtable quadro">
-          <tr><th>Giorno</th><th>Ore</th><th>Incasso medio</th><th>Risorse umane</th><th>inc.</th><th>Materia prima</th><th>inc.</th><th>Spese generali</th><th>inc.</th><th>Totale costi</th><th>Margine</th><th>inc.</th></tr>
-          ${fila(sv.k)}
-          <tr class="sumrow strong"><td><b>Settimana</b></td><td class="tot">${fmtNum(t.ore)}</td>
-            <td class="tot">${t.ric==null?'—':fmtE(t.ric)}</td>
-            <td class="tot">${fmtE(t.ru)}</td><td class="tot">${t.ric?fmtP(t.ru/t.ric):'—'}</td>
-            <td class="tot">${fmtE(t.mp)}</td><td class="tot">${t.ric?fmtP(t.mp/t.ric):'—'}</td>
-            <td class="tot">${fmtE(t.sg)}</td><td class="tot">${t.ric?fmtP(t.sg/t.ric):'—'}</td>
-            <td class="tot">${fmtE(t.costi)}</td>
-            <td class="tot"><span class="pil ${t.marg==null?'':(t.marg>=0?'v-ok':'v-bad')}">${t.marg==null?'—':fmtE(t.marg)}</span></td>
-            <td class="tot">${t.ric?fmtP(t.marg/t.ric):'—'}</td></tr>
-        </table></div></section>`;
+        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana. In ogni casella l'importo e, sotto in piccolo, l'incidenza sull'incasso di quel servizio.</div>
+        ${tabellaServizio(sv.k,t)}</section>`;
     }).join('');
 
     /* ---- il confronto fra i due servizi ---- */
