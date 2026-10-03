@@ -392,8 +392,18 @@
     width:26px;padding:0 2px;}
   .tutab tr.pranzo td.gg, .tutab tr.pranzo td.srv{border-bottom:none;}
   .tutab td.gg{white-space:nowrap;}
-  .tutab input{width:36px;border:1px solid transparent;border-radius:5px;background:#F7F6F3;font:inherit;
-    font-family:var(--num);font-size:12px;text-align:center;padding:3px 1px;color:var(--ink);}
+  .tutab input.nome{width:150px;text-align:left;font-family:var(--font);font-size:12.5px;}
+  .tutab select{border:1px solid transparent;border-radius:5px;background:#F7F6F3;font:inherit;font-size:11px;
+    color:var(--ink2);padding:2px 3px;margin-left:4px;cursor:pointer;}
+  .tutab select:hover{border-color:var(--line);}
+  .tutab tr.somma.sub td{background:#EFEDE9;}
+  .minibtn{border:1px solid var(--line);background:#fff;border-radius:6px;width:22px;height:22px;line-height:1;
+    font-size:13px;color:var(--ink2);cursor:pointer;padding:0;}
+  .minibtn:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .minibtn.del:hover{background:var(--bad);border-color:var(--bad);}
+  .improw{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .tutab input{width:43px;border:1px solid transparent;border-radius:5px;background:#F7F6F3;font:inherit;
+    font-family:var(--num);font-size:11.5px;text-align:center;padding:3px 0;color:var(--ink);letter-spacing:-.2px;}
   .tutab input:hover{border-color:var(--line);}
   .tutab input:focus{outline:none;border-color:var(--brass);background:#fff;}
   .tutab input.on{background:#E7F2E9;font-weight:600;}
@@ -648,7 +658,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v66</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v67</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -993,7 +1003,7 @@ function freshState(){
     ce: MESI.map(()=>({rf:0, rb:0, ra:0, mf:0, mb:0, rfm:0, rbm:0, mfm:0, mbm:0})),
     ru: [],
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
-    turni:{},            // id persona → {c:ore a contratto, o:costo orario forzato, g:[[pIn,pFin,cIn,cFin] ×7]}
+    turni:{base:0, righe:[]},   // elenco a sé: {id,nome,reparto,c:ore a contratto,o:costo orario,g:[[pIn,pFin,cIn,cFin] ×7]}
     incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
     ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
@@ -1036,7 +1046,24 @@ let sOwner=null;
 function migrateS(){
   if(!S.merch||!S.merch.mode) S.merch={mode:'incl'};
   if(!S.storico||typeof S.storico!=='object') S.storico={};
-  if(!S.turni||typeof S.turni!=='object') S.turni={};
+  if(!S.turni||typeof S.turni!=='object') S.turni={base:0, righe:[]};
+  if(!Array.isArray(S.turni.righe)){
+    /* le prime versioni tenevano i turni appesi all'organico: si portano qui dentro */
+    const vecchio=S.turni, righe=[];
+    Object.keys(vecchio||{}).forEach(k=>{
+      const t=vecchio[k]; if(!t||!Array.isArray(t.g)) return;
+      const pers=(S.ru||[]).find(x=>x.id===k);
+      righe.push({id:newId(), nome:(pers&&pers.nome)||'Senza nome', reparto:(pers&&pers.reparto)||'Sala',
+                  c:num(t.c), o:t.o!=null?t.o:null, g:t.g});
+    });
+    S.turni={base:num(vecchio&&vecchio.base)||0, righe};
+  }
+  if(S.turni.base===undefined) S.turni.base=0;
+  S.turni.righe.forEach(r=>{
+    if(!r.id) r.id=newId();
+    if(!Array.isArray(r.g)||r.g.length!==7) r.g=Array.from({length:7},()=>['','','','']);
+    r.g=r.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
+  });
   if(!S.incassi||typeof S.incassi!=='object') S.incassi={};
   if(S.ivaInc===undefined||S.ivaInc===null||S.ivaInc==='') S.ivaInc=10;
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
@@ -2054,7 +2081,11 @@ function oraMin(v){
   else if(/^\d{3}$/.test(t)){ h=+t.slice(0,1); m=+t.slice(1); }
   else if(/^\d{1,2}$/.test(t)){ h=+t; m=0; }
   else return null;
-  if(h>23||m>59) return null;
+  if(m>59) return null;
+  /* abitudine presa da Excel: per dire "le due di notte" si scrive 26.
+     Si accetta, e si riporta all'orologio vero. */
+  if(h>=24 && h<=47) h-=24;
+  if(h>23) return null;
   return h*60+m;
 }
 function oraTesto(v){ const m=oraMin(v); if(m==null) return ''; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
@@ -2065,36 +2096,30 @@ function durata(a,b){
   let d=y-x; if(d<=0) d+=1440;
   return d/60;
 }
+const TU_REP=['Cucina','Sala','Bar','Management'];
 function turnoDi(id){
-  S.turni=S.turni||{};
-  let t=S.turni[id];
-  if(!t||!Array.isArray(t.g)||t.g.length!==7){
-    t={c:(t&&t.c)||0, o:(t&&t.o)!=null?t.o:null, g:Array.from({length:7},()=>['','','',''])};
-    S.turni[id]=t;
-  }
-  t.g=t.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
-  return t;
+  migrateS();
+  return S.turni.righe.find(r=>r.id===id) || null;
 }
-/* ore di una persona in un giorno, divise per servizio */
-function oreGiorno(id,g){
-  const t=turnoDi(id).g[g];
-  return [durata(t[0],t[1]), durata(t[2],t[3])];
+/* ore di una riga in un giorno, divise per servizio */
+function oreGiorno(r,g){
+  const t=(typeof r==='string'?turnoDi(r):r);
+  if(!t) return [0,0];
+  const x=t.g[g];
+  return [durata(x[0],x[1]), durata(x[2],x[3])];
 }
-function oreSettimana(id){
+function oreSettimana(r){
+  const t=(typeof r==='string'?turnoDi(r):r);
   let p=0,c=0;
-  for(let g=0;g<7;g++){ const o=oreGiorno(id,g); p+=o[0]; c+=o[1]; }
+  if(t) for(let g=0;g<7;g++){ const o=oreGiorno(t,g); p+=o[0]; c+=o[1]; }
   return {p,c,tot:p+c};
 }
-/* costo orario: dalle paghe del periodo diviso le ore del turno, salvo forzatura */
-function costoOrario(pers, mesi){
-  const t=turnoDi(pers.id);
-  if(t.o!=null && num(t.o)>0) return {v:num(t.o), fonte:'mano'};
-  const ore=oreSettimana(pers.id).tot;
-  if(!ore) return {v:0, fonte:'—'};
-  const nm=mesi.length||1;
-  const costo=mesi.reduce((a,i)=>a+num(pers.m[i])+num((pers.mk||[])[i]),0)/nm;
-  if(!costo) return {v:0, fonte:'—'};
-  return {v: costo/(ore*SETT), fonte:'paghe'};
+/* costo orario: quello della persona, oppure quello di base del locale */
+function costoOrario(r){
+  const t=(typeof r==='string'?turnoDi(r):r);
+  if(t && t.o!=null && num(t.o)>0) return {v:num(t.o), fonte:'persona'};
+  const b=num(S.turni&&S.turni.base);
+  return b>0 ? {v:b, fonte:'base'} : {v:0, fonte:'—'};
 }
 /* le medie degli incassi per giorno della settimana e servizio */
 let incZeri=true;      // true = media su tutte le giornate, false = solo su quelle con incasso
@@ -2134,15 +2159,16 @@ function tuData(){
   const incMp  = m.ricavi>0 ? m.mp/m.ricavi : NaN;
   const inc=incassiMedi();
   /* ore e costo per giorno e servizio */
+  migrateS();
   const ore=Array.from({length:7},()=>[0,0]), ruE=Array.from({length:7},()=>[0,0]);
-  const persone=S.ru.map(pp=>{
-    const o=oreSettimana(pp.id), co=costoOrario(pp,mesi);
+  const persone=S.turni.righe.map(r=>{
+    const o=oreSettimana(r), co=costoOrario(r);
     for(let g=0;g<7;g++){
-      const og=oreGiorno(pp.id,g);
+      const og=oreGiorno(r,g);
       ore[g][0]+=og[0]; ore[g][1]+=og[1];
       ruE[g][0]+=og[0]*co.v; ruE[g][1]+=og[1]*co.v;
     }
-    return {p:pp, ore:o, co};
+    return {r, ore:o, co};
   });
   /* giorni e servizi di apertura: li dice la griglia stessa */
   const serviziDi=g=>[0,1].filter(j=>ore[g][j]>0).length;
@@ -2167,49 +2193,71 @@ function tuData(){
   const ricSett=celle.reduce((a,x)=>a+num(x[0].ric)+num(x[1].ric),0);
   const ricMeseCassa=ricSett*SETT;
   const ricMeseCE=mesi.reduce((a,i)=>a+num(m.months[i].ricavi),0)/nm;
+  /* quadratura del personale: la settimana dei turni portata al mese contro il bilancio */
+  const ruSett=celle.reduce((a,x)=>a+x[0].ru+x[1].ru,0);
+  const ruMeseTurni=ruSett*SETT;
+  const ruMeseCE=mesi.reduce((a,i)=>a+num(m.months[i].ru),0)/nm;
   return {m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi,
-          ricSett, ricMeseCassa, ricMeseCE, scarto: ricMeseCE>0 ? ricMeseCassa/ricMeseCE-1 : NaN};
+          ricSett, ricMeseCassa, ricMeseCE, scarto: ricMeseCE>0 ? ricMeseCassa/ricMeseCE-1 : NaN,
+          ruSett, ruMeseTurni, ruMeseCE, scartoRu: ruMeseCE>0 ? ruMeseTurni/ruMeseCE-1 : NaN};
 }
 
 function renderTU(){
   const body=document.getElementById('tuBody');
   const d=tuData();
-  const REP=['Management','Cucina','Sala','Bar'];
-  const altri=S.ru.filter(p=>!REP.includes(p.reparto));
-  const gruppi=REP.concat(altri.length?['Altro']:[]);
-  const inGruppo=r=> r==='Altro' ? altri : S.ru.filter(p=>p.reparto===r);
-  const cellaOra=(id,g,i,cl)=>{
-    const v=turnoDi(id).g[g][i];
-    return `<input data-tu="${id}.${g}.${i}" value="${v||''}" placeholder="—" class="${v?'on':''}" inputmode="numeric">`;
+  const usati=[...new Set(S.turni.righe.map(r=>r.reparto))].filter(Boolean);
+  const gruppi=TU_REP.filter(r=>usati.includes(r)).concat(usati.filter(r=>!TU_REP.includes(r)));
+  if(!gruppi.length) gruppi.push('Sala');
+  const cellaOra=(r,g,i)=>{
+    const v=r.g[g][i];
+    return `<input data-tu="${r.id}.${g}.${i}" value="${v||''}" placeholder="—" class="${v?'on':''}" inputmode="numeric">`;
   };
+  /* le ore e il costo di un gruppo di righe, giorno per giorno */
+  const sommaDi=(righe)=>{
+    const ore=Array.from({length:7},()=>[0,0]), eur=Array.from({length:7},()=>[0,0]);
+    righe.forEach(r=>{ const co=costoOrario(r);
+      for(let g=0;g<7;g++){ const o=oreGiorno(r,g);
+        ore[g][0]+=o[0]; ore[g][1]+=o[1]; eur[g][0]+=o[0]*co.v; eur[g][1]+=o[1]*co.v; } });
+    return {ore,eur};
+  };
+  const rigaSomma=(et,sm,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl" colspan="2">${et}</td>`+
+    GIORNI.map((_,g)=>`<td class="num">${fmtNum(j==null? sm.ore[g][0]+sm.ore[g][1] : sm.ore[g][j])||'—'}</td>`).join('')+
+    `<td class="num">${fmtNum(sm.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))||'—'}</td><td colspan="3"></td>
+     <td class="num">${fmtE(sm.eur.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td></td></tr>`;
+
   let righe='';
   gruppi.forEach(rep=>{
-    const pp=inGruppo(rep); if(!pp.length) return;
-    righe+=`<tr class="rep"><td colspan="14">${rep}</td></tr>`;
-    pp.forEach(pers=>{
-      const t=turnoDi(pers.id), o=oreSettimana(pers.id), co=costoOrario(pers,d.mesi);
-      const contr=num(t.c), diff=o.tot-contr;
+    const pp=S.turni.righe.filter(r=>r.reparto===rep);
+    righe+=`<tr class="rep"><td colspan="14">${rep}</td>
+      <td style="background:#EDEBE7;text-align:center"><button class="minibtn" data-tuadd="${rep}" title="aggiungi una persona in ${rep}">+</button></td></tr>`;
+    pp.forEach(r=>{
+      const o=oreSettimana(r), co=costoOrario(r);
+      const contr=num(r.c), diff=o.tot-contr;
       const clDiff = !contr ? '' : (diff>0.01?'piu':(diff<-0.01?'meno':''));
       righe+=`<tr class="pranzo">
-        <td class="lbl" rowspan="2">${pers.nome}${pers.ruolo?` <span class="role">· ${pers.ruolo}</span>`:''}</td>
+        <td class="lbl" rowspan="2">
+          <input data-tun="${r.id}" class="nome" value="${(r.nome||'').replace(/"/g,'&quot;')}" placeholder="nome e cognome">
+          <select data-tur="${r.id}" title="reparto">${TU_REP.concat(TU_REP.includes(r.reparto)?[]:[r.reparto]).map(x=>`<option ${x===r.reparto?'selected':''}>${x}</option>`).join('')}</select>
+        </td>
         <td class="srv">P</td>
-        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(pers.id,g,0)}${cellaOra(pers.id,g,1)}</td>`).join('')}
+        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,0)}${cellaOra(r,g,1)}</td>`).join('')}
         <td class="num" rowspan="2" title="ore della settimana tipo">${o.tot?fmtNum(o.tot):'—'}</td>
-        <td rowspan="2"><input data-tuc="${pers.id}" class="wide" value="${contr||''}" placeholder="—" inputmode="numeric" title="ore a contratto"></td>
+        <td rowspan="2"><input data-tuc="${r.id}" class="wide" value="${contr||''}" placeholder="—" inputmode="numeric" title="ore a contratto"></td>
         <td class="num ${clDiff}" rowspan="2">${contr?(diff>=0?'+':'−')+fmtNum(Math.abs(diff)):'—'}</td>
-        <td rowspan="2"><input data-tuo="${pers.id}" class="wide" value="${t.o!=null&&t.o!==''?t.o:''}" placeholder="${co.v?fmtNum(co.v):'—'}" inputmode="decimal" title="costo orario: vuoto = calcolato dalle paghe"></td>
-        <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td></tr>
+        <td rowspan="2"><input data-tuo="${r.id}" class="wide" value="${r.o!=null&&r.o!==''?r.o:''}" placeholder="${num(S.turni.base)?fmtNum(num(S.turni.base)):'—'}" inputmode="decimal" title="costo orario di questa persona; vuoto = quello di base"></td>
+        <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td>
+        <td rowspan="2"><button class="minibtn del" data-tudel="${r.id}" title="togli questa persona">✕</button></td></tr>
       <tr class="cena">
         <td class="srv">C</td>
-        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(pers.id,g,2)}${cellaOra(pers.id,g,3)}</td>`).join('')}</tr>`;
+        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,2)}${cellaOra(r,g,3)}</td>`).join('')}</tr>`;
     });
+    if(pp.length>1){
+      const sm=sommaDi(pp);
+      righe+=rigaSomma('Ore totali '+rep.toLowerCase(), sm, null, 'sub');
+    }
   });
-  const rigaSomma=(et,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl" colspan="2">${et}</td>`+
-    GIORNI.map((_,g)=>`<td class="num">${(j==null? d.ore[g][0]+d.ore[g][1] : d.ore[g][j])||'—'}</td>`).join('')+
-    `<td class="num">${fmtNum(d.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td colspan="3"></td>
-     <td class="num">${fmtE(d.celle.reduce((a,x,g)=>a+(j==null?x[0].ru+x[1].ru:x[j].ru),0))}</td></tr>`;
-
-  const noPers = !S.ru.length;
+  const tutte=sommaDi(S.turni.righe);
+  const noPers = !S.turni.righe.length;
   const noTurni = d.ore.every(x=>x[0]+x[1]===0);
   const noInc = d.inc.giornate===0;
 
@@ -2221,22 +2269,34 @@ function renderTU(){
 
   h+=`<section>
     <div class="sechead"><div><h2>Settimana tipo</h2>
-      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno che finisce dopo la mezzanotte si conta da solo.</div></div></div>`;
+      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.</div></div></div>`;
   if(noPers){
-    h+=`<div class="tuvuoto">Non c'è ancora nessuno in organico: carica il file delle risorse umane e le persone compaiono qui.</div>`;
+    h+=`<div class="tuvuoto">La griglia è vuota. Aggiungi le persone con i pulsanti <b>+</b> qui sotto, reparto per reparto — oppure prendi i nomi dall'organico e poi correggi quello che serve.</div>
+      <div class="improw">${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" type="button">+ ${r}</button>`).join(' ')}
+      ${S.ru.length?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}</div>`;
   } else {
     h+=`<div style="overflow-x:auto"><table class="tutab">
       <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th>${g}</th>`).join('')}
         <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
-        <th title="costo orario: lascialo vuoto e lo calcolo dalle paghe">€/h</th><th>Costo sett.</th></tr>
+        <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
       ${righe}
-      ${rigaSomma('Ore totali pranzo',0)}
-      ${rigaSomma('Ore totali cena',1)}
-      ${rigaSomma('Ore totali',null,'gran')}
+      ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran')}
+      ${rigaSomma('Ore totali cena', tutte, 1)}
+      ${rigaSomma('Ore totali', tutte, null)}
     </table></div>
-    <div class="cfleg">Il <b>costo orario</b> lo ricavo dalle paghe del periodo diviso le ore della settimana tipo, così la somma dei servizi torna al costo del personale del bilancio. Scrivendo un valore nella colonna €/h lo forzi, per chi non è ancora a libro paga o per fare un previsionale.</div>`;
+    <div class="improw" style="margin-top:12px">
+      ${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" type="button">+ ${r}</button>`).join(' ')}
+      ${S.ru.length?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}
+    </div>`;
   }
-  h+=`</section>`;
+  h+=`<div class="improw" style="margin-top:12px;align-items:center">
+      <span class="cl" style="font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2)">Costo orario di base</span>
+      <input id="tuBase" value="${num(S.turni.base)||''}" placeholder="es. 14,41" inputmode="decimal"
+        style="width:90px;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;font-family:var(--num);text-align:right;background:#fff"> €/h
+    </div>
+    <div class="cfleg">Il <b>costo orario di base</b> vale per tutti; nella colonna €/h si scrive solo l'eccezione. Il costo del personale di questa pagina nasce da qui, non dalle paghe${
+      isFinite(d.scartoRu)&&d.ruMeseTurni>0 ? `: la settimana dei turni vale <b>${fmtE(d.ruMeseTurni)}</b> al mese contro i <b>${fmtE(d.ruMeseCE)}</b> del bilancio, <b style="color:${Math.abs(d.scartoRu)<=0.05?'var(--ok)':(Math.abs(d.scartoRu)<=0.12?'#8a6a0c':'var(--bad)')}">${d.scartoRu>=0?'+':'−'}${fmtNum(Math.abs(d.scartoRu)*100)}%</b>. Se lo scarto è grosso, ritocca il costo orario di base finché i due numeri si avvicinano.` : '.'}</div>
+  </section>`;
 
   /* ---- incassi ---- */
   h+=`<section>
@@ -3225,13 +3285,13 @@ const GIORNI=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
 function ensureOre(){
   S.ru.forEach(p=>{ if(!Array.isArray(p.ore)||p.ore.length!==7) p.ore=Array(7).fill(0);
                     if(!Array.isArray(p.mk)||p.mk.length!==12) p.mk=Array(12).fill(0); });
-  /* chi ha compilato la settimana tipo nell'Analisi dei turni non la riscrive qui:
-     le ore scendono da sola, una sola fonte e nessun doppio inserimento */
-  if(S.turni) S.ru.forEach(p=>{
-    const t=S.turni[p.id];
-    if(!t||!Array.isArray(t.g)) return;
+  /* chi è anche nella griglia dei turni non riscrive le ore qui: si riconosce dal
+     nome, e se c'è si prende la settimana tipo da lì */
+  if(S.turni&&Array.isArray(S.turni.righe)&&S.turni.righe.length) S.ru.forEach(p=>{
+    const t=S.turni.righe.find(r=>r.nome&&norm(r.nome)===norm(p.nome));
+    if(!t) return;
     for(let g=0;g<7;g++){
-      const o=oreGiorno(p.id,g), somma=o[0]+o[1];
+      const o=oreGiorno(t,g), somma=o[0]+o[1];
       if(somma>0) p.ore[g]=Math.round(somma*100)/100;
     }
   });
@@ -3376,18 +3436,20 @@ document.addEventListener('input',e=>{
   if(el.dataset.wk!==undefined){ ensureOre(); S.weekSales[+el.dataset.wk]=num(el.value); saveState(); prPartial(); return; }
   if(el.dataset.tu!==undefined){
     const [id,g,i]=el.dataset.tu.split('.');
-    const t=turnoDi(id);
+    const t=turnoDi(id); if(!t) return;
     const pulita=oraTesto(el.value);
     t.g[+g][+i] = el.value.trim()==='' ? '' : (pulita||el.value.trim());
     el.classList.toggle('on', !!t.g[+g][+i]);
     saveState(); tuPartial(); return;
   }
-  if(el.dataset.tuc!==undefined){ turnoDi(el.dataset.tuc).c=num(el.value); saveState(); tuPartial(); return; }
+  if(el.dataset.tun!==undefined){ const t=turnoDi(el.dataset.tun); if(t){ t.nome=el.value; saveState(); } return; }
+  if(el.dataset.tuc!==undefined){ const t=turnoDi(el.dataset.tuc); if(t){ t.c=num(el.value); saveState(); tuPartial(); } return; }
   if(el.dataset.tuo!==undefined){
-    const t=turnoDi(el.dataset.tuo);
+    const t=turnoDi(el.dataset.tuo); if(!t) return;
     t.o = el.value.trim()==='' ? null : parseIt(el.value);
     saveState(); tuPartial(); return;
   }
+  if(el.id==='tuBase'){ S.turni.base=parseIt(el.value); saveState(); tuPartial(); return; }
   if(el.dataset.cesplit!==undefined){
     const i=+el.dataset.cesplit;
     S.salesSplit[i]=el.value===''?null:num(el.value);
@@ -3500,7 +3562,7 @@ function refreshSums(tableId){
 }
 
 /* click delegato: aggiungi/elimina/copia */
-document.addEventListener('click',e=>{
+document.addEventListener('click',async e=>{
   const hn=e.target.closest('#homeNew');
   if(hn){ newClientFlow(); return; }
   const rb=e.target.closest('[data-rename]');
@@ -3510,6 +3572,32 @@ document.addEventListener('click',e=>{
   const cb=e.target.closest('[data-cfbu]'); if(cb){ cfBU=cb.dataset.cfbu; renderCF(); return; }
   const cp=e.target.closest('[data-cfper]'); if(cp){ e.preventDefault(); cfPer=cp.dataset.cfper; renderCF(); return; }
   const iz=e.target.closest('[data-incz]'); if(iz){ incZeri=iz.dataset.incz==='1'; renderTU(); return; }
+  const ta=e.target.closest('[data-tuadd]');
+  if(ta){ migrateS();
+    S.turni.righe.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
+    saveState(); renderTU();
+    const ult=document.querySelector('[data-tun="'+S.turni.righe[S.turni.righe.length-1].id+'"]');
+    if(ult) ult.focus();
+    return;
+  }
+  const td=e.target.closest('[data-tudel]');
+  if(td){ const r=turnoDi(td.dataset.tudel); if(!r) return;
+    if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia dei turni?\n\nL\'organico e le paghe non si toccano.')){
+      S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id); await saveState(); renderTU();
+    }
+    return;
+  }
+  if(e.target.id==='tuDaRu'){ migrateS();
+    const gia=new Set(S.turni.righe.map(r=>norm(r.nome)));
+    let n=0;
+    S.ru.forEach(p=>{ if(!p.nome||gia.has(norm(p.nome))) return;
+      S.turni.righe.push({id:newId(), nome:p.nome, reparto:TU_REP.includes(p.reparto)?p.reparto:'Sala',
+                          c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
+      n++; });
+    await saveState(); renderTU();
+    toast(n?('✓ '+n+' persone aggiunte dall\'organico: controlla reparto e orari.'):'Nell\'organico non c\'è nessuno che non sia già in griglia.');
+    return;
+  }
   const qp=e.target.closest('[data-qmper]'); if(qp){ qmPer=qp.dataset.qmper; renderDash(); return; }
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
@@ -5074,9 +5162,13 @@ document.addEventListener('change', e=>{
   const el=e.target;
   if(el && el.dataset && el.dataset.tu!==undefined){
     const [id,g,i]=el.dataset.tu.split('.');
+    const t=turnoDi(id); if(!t) return;
     const v=oraTesto(el.value);
-    if(v){ turnoDi(id).g[+g][+i]=v; el.value=v; saveState(); }
+    if(v){ t.g[+g][+i]=v; el.value=v; saveState(); }
     if(current==='tu') renderTU();
+  }
+  if(el && el.dataset && el.dataset.tur!==undefined){
+    const t=turnoDi(el.dataset.tur); if(t){ t.reparto=el.value; saveState(); if(current==='tu') renderTU(); }
   }
 });
 document.getElementById('clientSelect').addEventListener('change',e=>switchClient(e.target.value));
