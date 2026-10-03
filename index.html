@@ -380,6 +380,37 @@
   .merchsw button:hover{background:var(--porpora-bg);color:var(--porpora);}
   .merchsw button.on{background:var(--porpora);color:#fff;font-weight:600;}
   .merchsw.off{opacity:.55;}
+  /* analisi dei turni */
+  .tutab{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .tutab th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:600;
+    padding:6px 5px;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;}
+  .tutab th.lbl{text-align:left}
+  .tutab td{border-bottom:1px solid var(--line);padding:2px 4px;text-align:center;font-family:var(--num);}
+  .tutab td.lbl{text-align:left;font-family:var(--font);font-size:12.5px;padding-left:8px;}
+  .tutab td.lbl .role{color:var(--ink2);font-size:11px;}
+  .tutab td.srv{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:700;
+    width:26px;padding:0 2px;}
+  .tutab tr.pranzo td.gg, .tutab tr.pranzo td.srv{border-bottom:none;}
+  .tutab td.gg{white-space:nowrap;}
+  .tutab input{width:36px;border:1px solid transparent;border-radius:5px;background:#F7F6F3;font:inherit;
+    font-family:var(--num);font-size:12px;text-align:center;padding:3px 1px;color:var(--ink);}
+  .tutab input:hover{border-color:var(--line);}
+  .tutab input:focus{outline:none;border-color:var(--brass);background:#fff;}
+  .tutab input.on{background:#E7F2E9;font-weight:600;}
+  .tutab input.wide{width:56px;}
+  .tutab td.num{font-weight:600;white-space:nowrap;}
+  .tutab td.piu{color:var(--bad);} .tutab td.meno{color:var(--ink2);}
+  .tutab tr.rep td{background:#EDEBE7;color:var(--brand);font-weight:600;font-size:10.5px;
+    text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
+  .tutab tr.somma td{background:#F6F4EF;font-weight:600;border-top:1px solid var(--line);}
+  .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
+  .tusrv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:4px;}
+  .tusrv .c{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:13px 15px;}
+  .tusrv .c h4{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);margin-bottom:8px;}
+  .tusrv .c .r{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:2px 0;}
+  .tusrv .c .r b{font-family:var(--num);font-weight:600;}
+  .tusrv .c .r.tot{border-top:1px solid var(--line);margin-top:6px;padding-top:6px;font-weight:600;}
+  .tuvuoto{font-size:13px;color:var(--ink2);background:#FBF6EC;border:1px solid #EADFC6;border-radius:9px;padding:11px 14px;margin:4px 0 14px;}
   /* versioni precedenti */
   .vertab td.az{text-align:left;white-space:normal;}
   .vertab tr.sel td{background:#FBF6EC;}
@@ -609,6 +640,7 @@
     <button data-page="pr">Produttività HR</button>
     <button data-page="ceagg">CE aggregato</button>
     <button data-page="cf">Confronto tra periodi</button>
+    <button data-page="tu">Analisi dei turni</button>
     <button data-page="ob">Obiettivi</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
@@ -616,7 +648,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v64</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v65</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -811,6 +843,7 @@
 
   <!-- ============ OBIETTIVI ============ -->
   <div class="page" id="page-cf"><div id="cfBody"></div></div>
+  <div class="page" id="page-tu"><div id="tuBody"></div></div>
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
 
@@ -960,6 +993,8 @@ function freshState(){
     ce: MESI.map(()=>({rf:0, rb:0, ra:0, mf:0, mb:0, rfm:0, rbm:0, mfm:0, mbm:0})),
     ru: [],
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
+    turni:{},            // id persona → {c:ore a contratto, o:costo orario forzato, g:[[pIn,pFin,cIn,cFin] ×7]}
+    incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena]
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
       {id:'cn1', nome:'Autoconsumi (pasti e bevande staff)', m:zeros()},
@@ -1000,6 +1035,8 @@ let sOwner=null;
 function migrateS(){
   if(!S.merch||!S.merch.mode) S.merch={mode:'incl'};
   if(!S.storico||typeof S.storico!=='object') S.storico={};
+  if(!S.turni||typeof S.turni!=='object') S.turni={};
+  if(!S.incassi||typeof S.incassi!=='object') S.incassi={};
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
@@ -1160,7 +1197,7 @@ async function saveState(){
    Un cliente tiene più anni dentro lo stesso record: quello aperto sta nei campi
    normali (S.ce, S.ru, …), gli altri in S.storico. Un solo record per cliente,
    come prima: niente chiavi in più da tenere allineate. */
-const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales'];
+const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales','turni','incassi'];
 function anniCliente(){
   return [...new Set([num(S.anno), ...Object.keys(S.storico||{}).map(Number)])]
     .filter(a=>a>2000).sort((a,b)=>b-a);
@@ -1993,6 +2030,317 @@ function sgChart(){
         tooltip:{callbacks:{label:c=>` ${c.label}: ${fmtE(c.raw)}${ric>0?' · '+quotaTxt(c.raw/ric):''}`}}}}
   });
 }
+
+/* ================================================================
+   ANALISI DEI TURNI
+   La settimana tipo: per ogni persona e per ogni giorno due fasce, quella in
+   alto è il pranzo e quella in basso la cena. Dalle ore escono i costi del
+   personale di ogni servizio; la materia prima arriva dall'incidenza del conto
+   economico, le spese generali si dividono per giorni di apertura e servizi.
+================================================================ */
+const SERVIZI=[{k:0,et:'Pranzo',ab:'P'},{k:1,et:'Cena',ab:'C'}];
+const SETT=4.33;                                   // settimane in un mese
+/* orari scritti come capita: 18, 18:30, 18.30, 1830 */
+function oraMin(v){
+  if(v==null) return null;
+  const t=String(v).trim().replace(',','.');
+  if(!t) return null;
+  let h,m;
+  let x=t.match(/^(\d{1,2})[:.h](\d{1,2})$/);
+  if(x){ h=+x[1]; m=+x[2]; }
+  else if(/^\d{4}$/.test(t)){ h=+t.slice(0,2); m=+t.slice(2); }
+  else if(/^\d{3}$/.test(t)){ h=+t.slice(0,1); m=+t.slice(1); }
+  else if(/^\d{1,2}$/.test(t)){ h=+t; m=0; }
+  else return null;
+  if(h>23||m>59) return null;
+  return h*60+m;
+}
+function oraTesto(v){ const m=oraMin(v); if(m==null) return ''; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+/* durata di un turno; se la fine è prima dell'inizio il turno passa la mezzanotte */
+function durata(a,b){
+  const x=oraMin(a), y=oraMin(b);
+  if(x==null||y==null) return 0;
+  let d=y-x; if(d<=0) d+=1440;
+  return d/60;
+}
+function turnoDi(id){
+  S.turni=S.turni||{};
+  let t=S.turni[id];
+  if(!t||!Array.isArray(t.g)||t.g.length!==7){
+    t={c:(t&&t.c)||0, o:(t&&t.o)!=null?t.o:null, g:Array.from({length:7},()=>['','','',''])};
+    S.turni[id]=t;
+  }
+  t.g=t.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
+  return t;
+}
+/* ore di una persona in un giorno, divise per servizio */
+function oreGiorno(id,g){
+  const t=turnoDi(id).g[g];
+  return [durata(t[0],t[1]), durata(t[2],t[3])];
+}
+function oreSettimana(id){
+  let p=0,c=0;
+  for(let g=0;g<7;g++){ const o=oreGiorno(id,g); p+=o[0]; c+=o[1]; }
+  return {p,c,tot:p+c};
+}
+/* costo orario: dalle paghe del periodo diviso le ore del turno, salvo forzatura */
+function costoOrario(pers, mesi){
+  const t=turnoDi(pers.id);
+  if(t.o!=null && num(t.o)>0) return {v:num(t.o), fonte:'mano'};
+  const ore=oreSettimana(pers.id).tot;
+  if(!ore) return {v:0, fonte:'—'};
+  const nm=mesi.length||1;
+  const costo=mesi.reduce((a,i)=>a+num(pers.m[i])+num((pers.mk||[])[i]),0)/nm;
+  if(!costo) return {v:0, fonte:'—'};
+  return {v: costo/(ore*SETT), fonte:'paghe'};
+}
+/* le medie degli incassi per giorno della settimana e servizio */
+let incZeri=true;      // true = media su tutte le giornate, false = solo su quelle con incasso
+function incassiMedi(){
+  const somma=Array.from({length:7},()=>[0,0]), quante=Array.from({length:7},()=>[0,0]);
+  const cop=Array.from({length:7},()=>[0,0]), qCop=Array.from({length:7},()=>[0,0]);
+  let giornate=0, da=null, a=null, totale=0;
+  Object.keys(S.incassi||{}).forEach(k=>{
+    const d=new Date(k+'T12:00:00'); if(isNaN(d)) return;
+    const g=(d.getDay()+6)%7;                         // lunedì = 0
+    const v=S.incassi[k]||[];
+    let usata=false;
+    [0,1].forEach(j=>{
+      if(v[j]==null||v[j]==='') return;
+      totale+=num(v[j]); usata=true;
+      if(!incZeri && num(v[j])===0) return;
+      somma[g][j]+=num(v[j]); quante[g][j]++;
+      if(v[2+j]!=null&&v[2+j]!==''){ cop[g][j]+=num(v[2+j]); qCop[g][j]++; }
+    });
+    if(usata){ giornate++; if(!da||k<da) da=k; if(!a||k>a) a=k; }
+  });
+  const media=Array.from({length:7},(_,g)=>[0,1].map(j=>quante[g][j]?somma[g][j]/quante[g][j]:null));
+  const coperti=Array.from({length:7},(_,g)=>[0,1].map(j=>qCop[g][j]?cop[g][j]/qCop[g][j]:null));
+  return {media, quante, coperti, giornate, da, a, totale};
+}
+/* tutto quello che serve alla pagina, in un colpo solo */
+function tuData(){
+  const m=compute();
+  const isM = scope!=='ytd';
+  const mesi = isM ? [scope].filter(i=>m.months[i] && (m.months[i].ricavi>0||m.months[i].totCosti>0))
+                   : m.complete.map(x=>x.i);
+  const nm=mesi.length||1;
+  const sgMese = mesi.reduce((a,i)=>a+num(m.months[i].sg),0)/nm;
+  const incMp  = m.ricavi>0 ? m.mp/m.ricavi : NaN;
+  const inc=incassiMedi();
+  /* ore e costo per giorno e servizio */
+  const ore=Array.from({length:7},()=>[0,0]), ruE=Array.from({length:7},()=>[0,0]);
+  const persone=S.ru.map(pp=>{
+    const o=oreSettimana(pp.id), co=costoOrario(pp,mesi);
+    for(let g=0;g<7;g++){
+      const og=oreGiorno(pp.id,g);
+      ore[g][0]+=og[0]; ore[g][1]+=og[1];
+      ruE[g][0]+=og[0]*co.v; ruE[g][1]+=og[1]*co.v;
+    }
+    return {p:pp, ore:o, co};
+  });
+  /* giorni e servizi di apertura: li dice la griglia stessa */
+  const serviziDi=g=>[0,1].filter(j=>ore[g][j]>0).length;
+  const giorniAperti=[0,1,2,3,4,5,6].filter(g=>serviziDi(g)>0).length;
+  const giornateMese=giorniAperti*SETT;
+  const sgGiorno = giornateMese>0 ? sgMese/giornateMese : 0;
+  /* il conto di ogni giorno e di ogni servizio */
+  const celle=Array.from({length:7},(_,g)=>[0,1].map(j=>{
+    const ns=serviziDi(g);
+    const aperto = ore[g][j]>0;
+    const ric = inc.media[g][j];
+    const ru  = ruE[g][j];
+    const mp  = (ric!=null && isFinite(incMp)) ? ric*incMp : null;
+    const sg  = (aperto && ns) ? sgGiorno/ns : 0;
+    const costi = ru + (mp||0) + sg;
+    const marg = ric!=null ? ric-costi : null;
+    return {aperto, ore:ore[g][j], ric, ru, mp, sg, costi, marg,
+            incRu: ric? ru/ric : NaN, incMp: ric? (mp||0)/ric : NaN,
+            incSg: ric? sg/ric : NaN, incMarg: ric? marg/ric : NaN};
+  }));
+  return {m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi};
+}
+
+function renderTU(){
+  const body=document.getElementById('tuBody');
+  const d=tuData();
+  const REP=['Management','Cucina','Sala','Bar'];
+  const altri=S.ru.filter(p=>!REP.includes(p.reparto));
+  const gruppi=REP.concat(altri.length?['Altro']:[]);
+  const inGruppo=r=> r==='Altro' ? altri : S.ru.filter(p=>p.reparto===r);
+  const cellaOra=(id,g,i,cl)=>{
+    const v=turnoDi(id).g[g][i];
+    return `<input data-tu="${id}.${g}.${i}" value="${v||''}" placeholder="—" class="${v?'on':''}" inputmode="numeric">`;
+  };
+  let righe='';
+  gruppi.forEach(rep=>{
+    const pp=inGruppo(rep); if(!pp.length) return;
+    righe+=`<tr class="rep"><td colspan="14">${rep}</td></tr>`;
+    pp.forEach(pers=>{
+      const t=turnoDi(pers.id), o=oreSettimana(pers.id), co=costoOrario(pers,d.mesi);
+      const contr=num(t.c), diff=o.tot-contr;
+      const clDiff = !contr ? '' : (diff>0.01?'piu':(diff<-0.01?'meno':''));
+      righe+=`<tr class="pranzo">
+        <td class="lbl" rowspan="2">${pers.nome}${pers.ruolo?` <span class="role">· ${pers.ruolo}</span>`:''}</td>
+        <td class="srv">P</td>
+        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(pers.id,g,0)}${cellaOra(pers.id,g,1)}</td>`).join('')}
+        <td class="num" rowspan="2" title="ore della settimana tipo">${o.tot?fmtNum(o.tot):'—'}</td>
+        <td rowspan="2"><input data-tuc="${pers.id}" class="wide" value="${contr||''}" placeholder="—" inputmode="numeric" title="ore a contratto"></td>
+        <td class="num ${clDiff}" rowspan="2">${contr?(diff>=0?'+':'−')+fmtNum(Math.abs(diff)):'—'}</td>
+        <td rowspan="2"><input data-tuo="${pers.id}" class="wide" value="${t.o!=null&&t.o!==''?t.o:''}" placeholder="${co.v?fmtNum(co.v):'—'}" inputmode="decimal" title="costo orario: vuoto = calcolato dalle paghe"></td>
+        <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td></tr>
+      <tr class="cena">
+        <td class="srv">C</td>
+        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(pers.id,g,2)}${cellaOra(pers.id,g,3)}</td>`).join('')}</tr>`;
+    });
+  });
+  const rigaSomma=(et,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl" colspan="2">${et}</td>`+
+    GIORNI.map((_,g)=>`<td class="num">${(j==null? d.ore[g][0]+d.ore[g][1] : d.ore[g][j])||'—'}</td>`).join('')+
+    `<td class="num">${fmtNum(d.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td colspan="3"></td>
+     <td class="num">${fmtE(d.celle.reduce((a,x,g)=>a+(j==null?x[0].ru+x[1].ru:x[j].ru),0))}</td></tr>`;
+
+  const noPers = !S.ru.length;
+  const noTurni = d.ore.every(x=>x[0]+x[1]===0);
+  const noInc = d.inc.giornate===0;
+
+  let h=`<section>
+    <h2>Analisi dei turni · ${S.cliente}</h2>
+    <div class="sub">La settimana tipo, servizio per servizio. Dalle ore escono i costi del personale di ogni pranzo e di ogni cena; incrociati con gli incassi medi dicono quali giornate reggono e quali no.</div>
+    <div class="chips" id="tuChips"></div>
+  </section>`;
+
+  h+=`<section>
+    <div class="sechead"><div><h2>Settimana tipo</h2>
+      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno che finisce dopo la mezzanotte si conta da solo.</div></div></div>`;
+  if(noPers){
+    h+=`<div class="tuvuoto">Non c'è ancora nessuno in organico: carica il file delle risorse umane e le persone compaiono qui.</div>`;
+  } else {
+    h+=`<div style="overflow-x:auto"><table class="tutab">
+      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th>${g}</th>`).join('')}
+        <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
+        <th title="costo orario: lascialo vuoto e lo calcolo dalle paghe">€/h</th><th>Costo sett.</th></tr>
+      ${righe}
+      ${rigaSomma('Ore totali pranzo',0)}
+      ${rigaSomma('Ore totali cena',1)}
+      ${rigaSomma('Ore totali',null,'gran')}
+    </table></div>
+    <div class="cfleg">Il <b>costo orario</b> lo ricavo dalle paghe del periodo diviso le ore della settimana tipo, così la somma dei servizi torna al costo del personale del bilancio. Scrivendo un valore nella colonna €/h lo forzi, per chi non è ancora a libro paga o per fare un previsionale.</div>`;
+  }
+  h+=`</section>`;
+
+  /* ---- incassi ---- */
+  h+=`<section>
+    <div class="sechead"><div><h2>Incassi giornalieri</h2>
+      <div class="sub">Servono per sapere quanto rende ogni servizio. Carica l'export della cassa: riconosco da solo la colonna delle date e quelle degli importi, e se l'export è per scontrino con l'ora divido pranzo e cena guardando l'orario.</div></div>
+      ${d.inc.giornate?`<span class="ordsw"><span class="ol">Media</span>
+        <button type="button" data-incz="1" class="${incZeri?'on':''}">Tutte le giornate</button>
+        <button type="button" data-incz="0" class="${incZeri?'':'on'}">Solo con incasso</button></span>`:''}</div>
+    <div class="importbox">
+      <div><b>Export della cassa:</b> un foglio con una colonna di date e gli importi. Se le colonne sono già divise pranzo e cena le riconosco; se c'è un importo solo dimmi di che servizio è; se c'è anche l'ora divido da solo.</div>
+      <label class="btn small" for="incFileInput">Carica incassi (.xlsx, .csv)</label>
+      <input type="file" id="incFileInput" accept=".xlsx,.xlsm,.csv">
+      <select id="incServizio" class="btn small tpl" title="serve solo quando il file ha una colonna sola di importi">
+        <option value="auto">riconosci da solo</option>
+        <option value="0">è tutto pranzo</option>
+        <option value="1">è tutto cena</option>
+      </select>
+      <button class="btn small tpl" id="incTpl" type="button" title="scarica il foglio da compilare">⤓ Template Excel</button>
+      ${d.inc.giornate?`<button class="btn small tpl" id="incSvuota" type="button">Svuota</button>`:''}
+      <div class="msg" id="incImportMsg">${d.inc.giornate
+      ? `In archivio ${d.inc.giornate} giornate, dal ${d.inc.da.split('-').reverse().join('/')} al ${d.inc.a.split('-').reverse().join('/')}.`
+      : 'Nessun incasso caricato: sotto trovi comunque il costo di ogni servizio, ma non il margine.'}</div>
+    </div>`;
+  if(d.inc.giornate){
+    h+=`<div style="overflow-x:auto"><table class="obtable quadro" style="margin-top:12px">
+      <tr><th>Giorno</th>${SERVIZI.map(s=>`<th>${s.et} medio</th><th>coperti</th><th>battuta</th><th>giornate</th>`).join('')}<th>Totale giornata</th></tr>
+      ${GIORNI.map((g,i)=>{
+        const r=d.inc.media[i], q=d.inc.quante[i], cp=d.inc.coperti[i];
+        const tot=(r[0]||0)+(r[1]||0);
+        return `<tr><td>${['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'][i]}</td>
+          ${[0,1].map(j=>`<td class="tot">${r[j]==null?'—':fmtE(r[j])}</td>
+            <td class="tot" style="color:var(--ink2)">${cp[j]?fmtNum(cp[j]):'—'}</td>
+            <td class="tot">${cp[j]&&r[j]!=null?fmtE(r[j]/cp[j]):'—'}</td>
+            <td class="tot" style="color:var(--ink2)">${q[j]||'—'}</td>`).join('')}
+          <td class="tot"><b>${tot?fmtE(tot):'—'}</b></td></tr>`;
+      }).join('')}
+    </table></div>`;
+  }
+  h+=`</section>`;
+
+  /* ---- il conto di ogni servizio ---- */
+  if(!noTurni){
+    const fila=(j)=>{
+      const nomi=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+      return GIORNI.map((_,g)=>{
+        const c=d.celle[g][j];
+        if(!c.aperto) return `<tr><td>${nomi[g]}</td><td class="tot" style="color:var(--ink2)" colspan="11">chiuso</td></tr>`;
+        const q=(v,i)=>`<td class="tot">${v==null?'—':fmtE(v)}</td><td class="tot" style="color:var(--ink2)">${isFinite(i)&&c.ric?fmtP(i):'—'}</td>`;
+        const cl = c.marg==null ? '' : (c.marg>=0?'v-ok':'v-bad');
+        return `<tr><td>${nomi[g]}</td>
+          <td class="tot">${fmtNum(c.ore)}</td>
+          <td class="tot">${c.ric==null?'—':fmtE(c.ric)}</td>
+          ${q(c.ru,c.incRu)}${q(c.mp,c.incMp)}${q(c.sg,c.incSg)}
+          <td class="tot">${fmtE(c.costi)}</td>
+          <td class="tot"><span class="pil ${cl}">${c.marg==null?'—':fmtE(c.marg)}</span></td>
+          <td class="tot" style="font-weight:600;color:${c.marg==null?'inherit':(c.marg>=0?'var(--ok)':'var(--bad)')}">${isFinite(c.incMarg)&&c.ric?fmtP(c.incMarg):'—'}</td></tr>`;
+      }).join('');
+    };
+    const totali=(j)=>{
+      const cc=d.celle.map(x=>x[j]).filter(c=>c.aperto);
+      const S1=k=>cc.reduce((a,c)=>a+num(c[k]),0);
+      const ric=cc.some(c=>c.ric!=null)?S1('ric'):null;
+      const ru=S1('ru'), mp=S1('mp'), sg=S1('sg'), ore=S1('ore');
+      const costi=ru+mp+sg, marg= ric==null?null:ric-costi;
+      return {ric,ru,mp,sg,ore,costi,marg};
+    };
+    h+=SERVIZI.map(sv=>{
+      const t=totali(sv.k);
+      if(!d.celle.some(x=>x[sv.k].aperto)) return '';
+      return `<section><h2>${sv.et}</h2>
+        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana: ore in turno, incasso medio, i tre centri di costo in euro e in incidenza, e quello che resta.</div>
+        <div style="overflow-x:auto"><table class="obtable quadro">
+          <tr><th>Giorno</th><th>Ore</th><th>Incasso medio</th><th>Risorse umane</th><th>inc.</th><th>Materia prima</th><th>inc.</th><th>Spese generali</th><th>inc.</th><th>Totale costi</th><th>Margine</th><th>inc.</th></tr>
+          ${fila(sv.k)}
+          <tr class="sumrow strong"><td><b>Settimana</b></td><td class="tot">${fmtNum(t.ore)}</td>
+            <td class="tot">${t.ric==null?'—':fmtE(t.ric)}</td>
+            <td class="tot">${fmtE(t.ru)}</td><td class="tot">${t.ric?fmtP(t.ru/t.ric):'—'}</td>
+            <td class="tot">${fmtE(t.mp)}</td><td class="tot">${t.ric?fmtP(t.mp/t.ric):'—'}</td>
+            <td class="tot">${fmtE(t.sg)}</td><td class="tot">${t.ric?fmtP(t.sg/t.ric):'—'}</td>
+            <td class="tot">${fmtE(t.costi)}</td>
+            <td class="tot"><span class="pil ${t.marg==null?'':(t.marg>=0?'v-ok':'v-bad')}">${t.marg==null?'—':fmtE(t.marg)}</span></td>
+            <td class="tot">${t.ric?fmtP(t.marg/t.ric):'—'}</td></tr>
+        </table></div></section>`;
+    }).join('');
+
+    /* ---- il confronto fra i due servizi ---- */
+    const tp=totali(0), tc=totali(1);
+    const scheda=(et,t)=>`<div class="c"><h4>${et}</h4>
+      <div class="r"><span>Incasso medio settimana</span><b>${t.ric==null?'—':fmtE(t.ric)}</b></div>
+      <div class="r"><span>Ore in turno</span><b>${fmtNum(t.ore)}</b></div>
+      <div class="r"><span>Risorse umane</span><b>${fmtE(t.ru)}${t.ric?' · '+fmtP(t.ru/t.ric):''}</b></div>
+      <div class="r"><span>Materia prima</span><b>${fmtE(t.mp)}${t.ric?' · '+fmtP(t.mp/t.ric):''}</b></div>
+      <div class="r"><span>Spese generali</span><b>${fmtE(t.sg)}${t.ric?' · '+fmtP(t.sg/t.ric):''}</b></div>
+      <div class="r tot"><span>Margine</span><b style="color:${t.marg==null?'inherit':(t.marg>=0?'var(--ok)':'var(--bad)')}">${t.marg==null?'—':fmtE(t.marg)}${t.ric?' · '+fmtP(t.marg/t.ric):''}</b></div></div>`;
+    h+=`<section><h2>Pranzo contro cena</h2>
+      <div class="sub">La somma della settimana per servizio. Le spese generali sono divise in parti uguali fra i servizi aperti di ogni giornata: ${fmtE(d.sgGiorno)} al giorno su ${d.giorniAperti} ${d.giorniAperti===1?'giorno':'giorni'} di apertura.</div>
+      <div class="tusrv">${scheda('Pranzo',tp)}${scheda('Cena',tc)}</div></section>`;
+  }
+  body.innerHTML=h;
+  renderChips(d.m,'tuChips');
+  const fi=document.getElementById('incFileInput');
+  if(fi) fi.addEventListener('change', e=>{ if(e.target.files[0]) importIncassi(e.target.files[0]); e.target.value=''; });
+  const tp=document.getElementById('incTpl');
+  if(tp) tp.addEventListener('click', templateIncassi);
+  const sv=document.getElementById('incSvuota');
+  if(sv) sv.addEventListener('click', async ()=>{
+    if(await uiConfirm('Cancellare tutti gli incassi giornalieri di questo cliente per il '+S.anno+'?\n\nI turni e tutto il resto non si toccano.')){
+      S.incassi={}; await saveState(); renderTU(); toast('Incassi azzerati.');
+    }
+  });
+}
+/* ridisegna senza perdere il fuoco mentre si digita negli orari */
+let tuTimer=null;
+function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current==='tu') renderTU(); }, 700); }
 
 /* ================================================================
    RENDER · VERSIONI PRECEDENTI
@@ -2857,6 +3205,16 @@ const GIORNI=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
 function ensureOre(){
   S.ru.forEach(p=>{ if(!Array.isArray(p.ore)||p.ore.length!==7) p.ore=Array(7).fill(0);
                     if(!Array.isArray(p.mk)||p.mk.length!==12) p.mk=Array(12).fill(0); });
+  /* chi ha compilato la settimana tipo nell'Analisi dei turni non la riscrive qui:
+     le ore scendono da sola, una sola fonte e nessun doppio inserimento */
+  if(S.turni) S.ru.forEach(p=>{
+    const t=S.turni[p.id];
+    if(!t||!Array.isArray(t.g)) return;
+    for(let g=0;g<7;g++){
+      const o=oreGiorno(p.id,g), somma=o[0]+o[1];
+      if(somma>0) p.ore[g]=Math.round(somma*100)/100;
+    }
+  });
   if(!Array.isArray(S.weekSales)||S.weekSales.length!==7) S.weekSales=[13,13,13,14,16,18,13];
 }
 function prData(){
@@ -2970,7 +3328,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, ver:renderVER, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, tu:renderTU, ver:renderVER, ob:renderOB, an:renderAN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -2996,6 +3354,20 @@ document.addEventListener('input',e=>{
     return;
   }
   if(el.dataset.wk!==undefined){ ensureOre(); S.weekSales[+el.dataset.wk]=num(el.value); saveState(); prPartial(); return; }
+  if(el.dataset.tu!==undefined){
+    const [id,g,i]=el.dataset.tu.split('.');
+    const t=turnoDi(id);
+    const pulita=oraTesto(el.value);
+    t.g[+g][+i] = el.value.trim()==='' ? '' : (pulita||el.value.trim());
+    el.classList.toggle('on', !!t.g[+g][+i]);
+    saveState(); tuPartial(); return;
+  }
+  if(el.dataset.tuc!==undefined){ turnoDi(el.dataset.tuc).c=num(el.value); saveState(); tuPartial(); return; }
+  if(el.dataset.tuo!==undefined){
+    const t=turnoDi(el.dataset.tuo);
+    t.o = el.value.trim()==='' ? null : parseIt(el.value);
+    saveState(); tuPartial(); return;
+  }
   if(el.dataset.cesplit!==undefined){
     const i=+el.dataset.cesplit;
     S.salesSplit[i]=el.value===''?null:num(el.value);
@@ -3117,6 +3489,7 @@ document.addEventListener('click',e=>{
   if(dc){ delClientFlow(dc.dataset.delclient); return; }
   const cb=e.target.closest('[data-cfbu]'); if(cb){ cfBU=cb.dataset.cfbu; renderCF(); return; }
   const cp=e.target.closest('[data-cfper]'); if(cp){ e.preventDefault(); cfPer=cp.dataset.cfper; renderCF(); return; }
+  const iz=e.target.closest('[data-incz]'); if(iz){ incZeri=iz.dataset.incz==='1'; renderTU(); return; }
   const qp=e.target.closest('[data-qmper]'); if(qp){ qmPer=qp.dataset.qmper; renderDash(); return; }
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
@@ -3312,6 +3685,195 @@ function monthIdx(v){
   if(s.length>=3) return MESI.findIndex(M=>norm(M).slice(0,3)===s.slice(0,3) && ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'].includes(s.slice(0,3)));
   return -1;
 }
+/* ================================================================
+   INCASSI GIORNALIERI
+   Ogni cassa esporta a modo suo, quindi non si pretende un formato: si cerca
+   la riga di intestazione, la colonna delle date e quelle degli importi, e ci
+   si adatta. Tre casi: colonne già divise pranzo/cena, un importo solo (e
+   allora il servizio lo dice il nome del file o l'utente), oppure una riga per
+   scontrino con l'ora, e lì la divisione la fa l'orario.
+================================================================ */
+const INC_CONFINE=17*60;                 // prima delle 17 è pranzo, dopo è cena
+function dataISO(v){
+  if(v==null) return null;
+  if(v instanceof Date && !isNaN(v)) return v.toISOString().slice(0,10);
+  if(typeof v==='number' && v>20000 && v<80000){        // numero seriale di Excel
+    const d=new Date(Date.UTC(1899,11,30)+v*86400000);
+    return isNaN(d)?null:d.toISOString().slice(0,10);
+  }
+  const t=String(v).trim(); if(!t) return null;
+  let x=t.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+  if(x){
+    let [,g,m,a]=x; a=+a; if(a<100) a+=2000;
+    if(+m<1||+m>12||+g<1||+g>31) return null;
+    return a+'-'+String(+m).padStart(2,'0')+'-'+String(+g).padStart(2,'0');
+  }
+  x=t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(x) return x[1]+'-'+String(+x[2]).padStart(2,'0')+'-'+String(+x[3]).padStart(2,'0');
+  return null;
+}
+function soloOra(v){
+  if(v==null) return null;
+  if(typeof v==='number' && v>0 && v<1) return Math.round(v*1440);
+  const t=String(v).trim();
+  const x=t.match(/(\d{1,2})[:.](\d{2})/);
+  if(!x) return null;
+  const h=+x[1], m=+x[2];
+  return (h<24&&m<60) ? h*60+m : null;
+}
+/* un foglio qualunque → righe di celle */
+async function foglioRighe(file){
+  const nome=file.name.toLowerCase();
+  if(/\.csv$/.test(nome)){
+    let txt=await file.text();
+    if(txt.charCodeAt(0)===0xFEFF) txt=txt.slice(1);
+    const prima=txt.split(/\r?\n/)[0]||'';
+    const sep=[';','\t',','].map(c=>[c,(prima.split(c).length)]).sort((a,b)=>b[1]-a[1])[0][0];
+    return txt.split(/\r?\n/).filter(r=>r.trim()!=='').map(r=>r.split(sep).map(c=>c.replace(/^"|"$/g,'').trim()));
+  }
+  const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  return XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+}
+/* importi all'italiana con il simbolo attaccato: "1.234,56 €" */
+function euro(v){
+  if(v==null||v==='') return null;
+  if(typeof v==='number') return isFinite(v)?v:null;
+  const t=String(v).replace(/[€\s]/g,'');
+  if(!t||!/\d/.test(t)) return null;
+  return parseIt(t);
+}
+function leggiIncassi(righe, forza){
+  /* la riga di intestazione: la prima che nomina una data */
+  let ih=-1;
+  for(let r=0;r<Math.min(righe.length,25);r++){
+    const c=(righe[r]||[]).map(x=>norm(x));
+    if(c.some(x=>/^data$|^date$|^giornata$|^data e ora$|^giorno\/data$/.test(x))){ ih=r; break; }
+  }
+  if(ih<0){
+    /* nessuna intestazione riconoscibile: si cerca la colonna con più date */
+    const quante={};
+    righe.slice(0,200).forEach(r=>(r||[]).forEach((v,i)=>{ if(dataISO(v)) quante[i]=(quante[i]||0)+1; }));
+    const best=Object.keys(quante).sort((a,b)=>quante[b]-quante[a])[0];
+    if(best==null) throw new Error('non trovo nessuna colonna di date');
+    return estrai(righe, 0, {data:+best, imp:ultimaNumerica(righe,+best)}, forza);
+  }
+  const head=(righe[ih]||[]).map(x=>norm(x));
+  const trova=(re,dalla)=>{ for(let i=(dalla||0);i<head.length;i++) if(re.test(head[i])) return i; return -1; };
+  const trovaUltima=re=>{ let k=-1; head.forEach((h,i)=>{ if(re.test(h)) k=i; }); return k; };
+  const col={
+    data: trova(/^data$|^date$|^giornata$|data e ora|giorno\/data/),
+    ora:  trova(/^ora$|^orario$|^time$|^ora scontrino$/),
+    pranzo: trovaUltima(/pranzo|lunch|mezzogiorno/),
+    cena:   trovaUltima(/cena|dinner|sera(le)?$/),
+    imp:  trovaUltima(/^totali$|^totale$|^incasso|^importo|^imponibile|^netto$|^vendite|^venduto/),
+    cop:  trova(/^coperti$|^pax$|^clienti$|^n\. coperti$/)
+  };
+  if(col.data<0) throw new Error('non trovo la colonna delle date');
+  if(col.pranzo<0 && col.cena<0 && col.imp<0) col.imp=ultimaNumerica(righe, col.data, ih+1);
+  if(col.pranzo<0 && col.cena<0 && col.imp<0) throw new Error('non trovo nessuna colonna di importi');
+  return estrai(righe, ih+1, col, forza);
+}
+function ultimaNumerica(righe, escludi, da){
+  const quante={};
+  righe.slice(da||0, (da||0)+200).forEach(r=>(r||[]).forEach((v,i)=>{ if(i!==escludi && euro(v)!=null) quante[i]=(quante[i]||0)+1; }));
+  const ks=Object.keys(quante).map(Number).sort((a,b)=>a-b);
+  return ks.length?ks[ks.length-1]:-1;
+}
+function estrai(righe, da, col, forza){
+  const out={}, viste={};
+  let righeLette=0, saltate=0;
+  for(let r=da;r<righe.length;r++){
+    const g=righe[r]||[];
+    const iso=dataISO(g[col.data]);
+    if(!iso){ if((g[col.data]!=null&&String(g[col.data]).trim())||euro(g[col.imp])!=null) saltate++; continue; }
+    const metti=(j,v,cp)=>{
+      if(v==null) return;
+      if(!out[iso]) out[iso]=[null,null,null,null];
+      if(!viste[iso]) viste[iso]=[false,false];
+      if(viste[iso][j]) out[iso][j]=num(out[iso][j])+v;      // più righe per la stessa giornata: si sommano
+      else { out[iso][j]=v; viste[iso][j]=true; }
+      if(cp!=null){ out[iso][2+j] = viste[iso][j] ? num(out[iso][2+j])+cp : cp; }
+    };
+    const cop = col.cop>=0 ? (euro(g[col.cop])||null) : null;
+    if(col.pranzo>=0 || col.cena>=0){
+      if(col.pranzo>=0) metti(0, euro(g[col.pranzo]), null);
+      if(col.cena>=0)   metti(1, euro(g[col.cena]), null);
+    } else {
+      const v=euro(g[col.imp]);
+      let j = forza;
+      if(j==null && col.ora>=0){ const o=soloOra(g[col.ora]); if(o!=null) j = o<INC_CONFINE?0:1; }
+      if(j==null && col.data>=0){ const o=soloOra(g[col.data]); if(o!=null) j = o<INC_CONFINE?0:1; }
+      if(j==null) throw new Error('servizio');
+      metti(j, v, cop);
+    }
+    righeLette++;
+  }
+  return {dati:out, righeLette, saltate, conCoperti: col.cop>=0};
+}
+/* il servizio dedotto dal nome del file, quando le colonne non lo dicono */
+function servizioDalNome(nome){
+  const n=norm(nome);
+  if(/pranzo|lunch|mezzogiorno/.test(n)) return 0;
+  if(/cena|dinner|sera/.test(n)) return 1;
+  return null;
+}
+async function importIncassi(file){
+  snapPrima();
+  const msg=document.getElementById('incImportMsg');
+  const say=(t,err)=>{ toast(String(t).replace(/<[^>]+>/g,''),err); if(msg) msg.innerHTML=(err?'⚠️ ':'')+t; };
+  try{
+    say('Leggo '+file.name+'…');
+    const scelta=document.getElementById('incServizio');
+    let forza = scelta && scelta.value!=='auto' ? +scelta.value : servizioDalNome(file.name);
+    const righe=await foglioRighe(file);
+    let r;
+    try{ r=leggiIncassi(righe, forza); }
+    catch(e){
+      if(e.message==='servizio'){
+        say('Il file ha una colonna sola di importi e non capisco se è pranzo o cena: scegli il servizio nel menu qui accanto e ricaricalo.', true);
+        return;
+      }
+      throw e;
+    }
+    const chiavi=Object.keys(r.dati);
+    if(!chiavi.length){ say('Nessuna giornata riconosciuta in questo file.', true); return; }
+    S.incassi=S.incassi||{};
+    let nuove=0, agg=0;
+    chiavi.sort().forEach(k=>{
+      const pre=S.incassi[k];
+      if(!pre){ S.incassi[k]=r.dati[k]; nuove++; }
+      else{ [0,1,2,3].forEach(j=>{ if(r.dati[k][j]!=null) pre[j]=r.dati[k][j]; }); agg++; }
+    });
+    await saveState();
+    const anni=[...new Set(chiavi.map(k=>k.slice(0,4)))];
+    const fuori=anni.filter(a=>+a!==num(S.anno));
+    const somma=chiavi.reduce((a,k)=>a+num(r.dati[k][0])+num(r.dati[k][1]),0);
+    let t=`✓ ${chiavi.length} giornate lette da <b>${file.name}</b> — ${nuove} nuove, ${agg} aggiornate, dal ${chiavi[0].split('-').reverse().join('/')} al ${chiavi[chiavi.length-1].split('-').reverse().join('/')}, ${fmtE(somma)} in tutto`
+      + (r.conCoperti?' · coperti compresi':'')
+      + (r.saltate?` · ${r.saltate} righe senza data ignorate (totali e medie in fondo al file)`:'')+'.';
+    if(fuori.length) t+=` <b>Attenzione:</b> ci sono giornate del ${fuori.join(', ')} ma stai lavorando sul ${S.anno}: cambia anno in testata e ricarica il file se non è quello che volevi.`;
+    say(t);
+    renderTU();
+  }catch(e){
+    say('Lettura non riuscita: '+(e.message||'errore')+'. Mandami il file e te lo rigiro nel formato giusto.', true);
+  }
+}
+function templateIncassi(){
+  const oggi=new Date(), rows=[
+    ['TEMPLATE PLANET ONE · INCASSI GIORNALIERI — '+(S.cliente||'cliente')+' '+S.anno],
+    ['Una riga per giornata. Lascia vuota la casella di un servizio se quel giorno è chiuso.'],
+    ['I coperti non sono obbligatori, ma se ci sono calcolo anche la battuta media per servizio.'],
+    [],
+    ['Data','Pranzo','Cena','Coperti pranzo','Coperti cena']
+  ];
+  for(let i=0;i<7;i++){
+    const d=new Date(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()-6+i);
+    rows.push([String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(),null,null,null,null]);
+  }
+  tplSave(rows,'Incassi','template-incassi-giornalieri.xlsx',[14,14,14,16,16]);
+}
+
 /* ================================================================
    TEMPLATE EXCEL · un file da compilare per ogni sezione
    Sono costruiti con le stesse etichette che l'app sa rileggere:
@@ -4488,6 +5050,15 @@ function setMerchMode(m){
       : m==='escl'?'Merchandising escluso: resti sui numeri della gestione corrente.'
       : 'Merchandising isolato: vedi solo ricavi e spese del merchandising.');
 }
+document.addEventListener('change', e=>{
+  const el=e.target;
+  if(el && el.dataset && el.dataset.tu!==undefined){
+    const [id,g,i]=el.dataset.tu.split('.');
+    const v=oraTesto(el.value);
+    if(v){ turnoDi(id).g[+g][+i]=v; el.value=v; saveState(); }
+    if(current==='tu') renderTU();
+  }
+});
 document.getElementById('clientSelect').addEventListener('change',e=>switchClient(e.target.value));
 document.getElementById('annoSel').addEventListener('change',e=>cambiaAnno(e.target.value));
 document.getElementById('btnNuovoAnno').addEventListener('click',nuovoAnno);
