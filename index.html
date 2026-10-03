@@ -360,7 +360,10 @@
   @media print{ .savefab,.savemini{display:none!important;} }
   @media(max-width:760px){ .savefab{padding:12px 18px;} }
   .ordsw{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;flex:0 0 auto;align-self:flex-start;}
-  .ordsw .ol{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);padding:0 9px;}
+  /* l'etichetta non è un pulsante: fondo grigio e un filo di separazione, così si vede che descrive
+     i tasti alla sua destra invece di invitare a essere premuta */
+  .ordsw .ol{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);
+    padding:0 10px;background:#F2F0EB;border-right:1px solid var(--line);align-self:stretch;display:flex;align-items:center;}
   .ordsw button{border:none;border-left:1px solid var(--line);background:#fff;padding:7px 11px;font:inherit;font-size:12.5px;color:var(--ink2);cursor:pointer;}
   .ordsw button:hover{background:#F5F3EF;color:var(--ink);}
   .ordsw button.on{background:var(--brand);color:#fff;font-weight:600;}
@@ -553,7 +556,7 @@
     <button data-page="an">Analisi &amp; presentazione</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v58</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v59</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
