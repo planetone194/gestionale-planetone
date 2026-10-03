@@ -418,16 +418,19 @@
   .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
   .srvtab{width:100%;border-collapse:collapse;font-size:13px;}
   .srvtab th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);font-weight:600;
-    padding:7px 10px;border-bottom:2px solid var(--ink);text-align:right;}
-  .srvtab th.vc{text-align:left;width:160px;}
+    padding:7px 12px;border-bottom:2px solid var(--ink);text-align:center;border-left:1px solid #EFEDE9;}
+  .srvtab th.vc{text-align:left;width:150px;border-left:none;}
   .srvtab th.off{color:#C3BFB6;}
-  .srvtab th.sett{color:var(--brand);border-left:1px solid var(--line);}
-  .srvtab td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--num);white-space:nowrap;}
-  .srvtab td.vc{text-align:left;font-family:var(--font);font-size:13px;color:var(--ink);}
+  .srvtab th.sett{color:var(--brand);border-left:1.5px solid var(--line);}
+  .srvtab td{padding:7px 12px;border-bottom:1px solid var(--line);border-left:1px solid #EFEDE9;
+    text-align:right;font-family:var(--num);white-space:nowrap;}
+  .srvtab td.vc{text-align:left;font-family:var(--font);font-size:13px;color:var(--ink);border-left:none;}
   .srvtab td.chiuso{color:#C9C4B8;}
-  .srvtab td.sett{border-left:1px solid var(--line);background:#FAF9F6;font-weight:600;}
-  .srvtab .e{display:block;font-weight:600;}
-  .srvtab .i{display:block;font-size:11px;color:var(--ink2);margin-top:1px;}
+  .srvtab td.sett{border-left:1.5px solid var(--line);background:#FAF9F6;font-weight:600;}
+  /* l'importo e, al suo fianco, l'incidenza in una colonnina di larghezza fissa:
+     così i numeri restano incolonnati riga per riga */
+  .srvtab .e{display:inline-block;font-weight:600;}
+  .srvtab .i{display:inline-block;width:52px;text-align:right;font-size:11px;color:var(--ink2);margin-left:10px;}
   .srvtab td.big .e{font-size:15px;}
   .srvtab tr.ric td{background:#FAFAF8;}
   .srvtab tr.tcosti td{border-top:1px solid var(--line);}
@@ -677,7 +680,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v68</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v69</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2379,18 +2382,12 @@ function renderTU(){
       const eur=(v)=>v==null?'—':fmtE(v);
       const riga=(et,dentro,finale,cl)=>`<tr class="${cl||''}"><td class="vc">${et}</td>`+
         GIORNI.map((_,g)=>cella(g,dentro)).join('')+`<td class="tot sett">${finale}</td></tr>`;
+      const vuota='<span class="i"></span>';
       const conInc=(v,i,colore)=>`<td class="tot"><span class="e">${eur(v)}</span><span class="i"${colore?` style="color:${colore(v,i)}"`:''}>${isFinite(i)?fmtP(i):'—'}</span></td>`;
-      const haCoperti=d.inc.coperti.some((x,g)=>aperti[g]&&x[j]);
-      const copSett=d.inc.coperti.reduce((a,x,g)=>a+(aperti[g]?num(x[j]):0),0);
       return `<div class="tblwrap"><table class="srvtab">
         <tr><th class="vc"></th>${GIORNI.map((g,i)=>`<th class="${aperti[i]?'':'off'}">${g}</th>`).join('')}<th class="sett">Settimana</th></tr>
-        ${riga('Ore in turno', c=>`<td class="tot"><span class="e">${fmtNum(c.ore)}</span></td>`, fmtNum(tot.ore))}
-        ${riga('Incasso medio', c=>`<td class="tot big"><span class="e">${eur(c.ric)}</span></td>`, `<span class="e">${eur(tot.ric)}</span>`, 'ric')}
-        ${haCoperti?`<tr><td class="vc">Coperti · battuta</td>${GIORNI.map((_,g)=>{
-            if(!aperti[g]) return '<td class="chiuso">—</td>';
-            const cp=d.inc.coperti[g][j], ri=d.celle[g][j].ric;
-            return `<td class="tot"><span class="e">${cp?fmtNum(cp):'—'}</span><span class="i">${cp&&ri!=null?fmtE(ri/cp):'—'}</span></td>`;
-          }).join('')}<td class="tot sett"><span class="e">${copSett?fmtNum(copSett):'—'}</span><span class="i">${copSett&&tot.ric?fmtE(tot.ric/copSett):'—'}</span></td></tr>`:''}
+        ${riga('Ore in turno', c=>`<td class="tot"><span class="e">${fmtNum(c.ore)}</span>${vuota}</td>`, `<span class="e">${fmtNum(tot.ore)}</span>${vuota}`)}
+        ${riga('Incasso medio', c=>`<td class="tot big"><span class="e">${eur(c.ric)}</span>${vuota}</td>`, `<span class="e">${eur(tot.ric)}</span>${vuota}`, 'ric')}
         ${riga('Risorse umane', c=>conInc(c.ru,c.incRu), `<span class="e">${eur(tot.ru)}</span><span class="i">${tot.ric?fmtP(tot.ru/tot.ric):'—'}</span>`)}
         ${riga('Materia prima', c=>conInc(c.mp,c.incMp), `<span class="e">${eur(tot.mp)}</span><span class="i">${tot.ric?fmtP(tot.mp/tot.ric):'—'}</span>`)}
         ${riga('Spese generali', c=>conInc(c.sg,c.incSg), `<span class="e">${eur(tot.sg)}</span><span class="i">${tot.ric?fmtP(tot.sg/tot.ric):'—'}</span>`)}
@@ -2414,7 +2411,7 @@ function renderTU(){
       const t=totali(sv.k);
       if(!d.celle.some(x=>x[sv.k].aperto)) return '';
       return `<section><h2>${sv.et}</h2>
-        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana. In ogni casella l'importo e, sotto in piccolo, l'incidenza sull'incasso di quel servizio.</div>
+        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana. In ogni casella l'importo e, a fianco in piccolo, l'incidenza sull'incasso di quel servizio.</div>
         ${tabellaServizio(sv.k,t)}</section>`;
     }).join('');
 
