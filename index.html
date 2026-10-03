@@ -395,6 +395,16 @@
   .cfbar select{border:1.5px solid var(--line);border-radius:9px;background:#fff;font:inherit;font-size:13px;padding:7px 9px;color:var(--ink);cursor:pointer;}
   .cfbar select:focus{outline:2px solid var(--brass);outline-offset:-2px;}
   .cfbar .cl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);}
+  .cascata{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:10px 8px 4px;}
+  .cascata svg{display:block;width:100%;height:auto;}
+  .cascata text{font-family:var(--num);text-anchor:middle;}
+  .cascata .vv{font-size:15px;font-weight:600;fill:var(--ink);}
+  .cascata .vt{font-size:16px;font-weight:700;fill:var(--brand);}
+  .cascata .et{font-size:14px;fill:var(--ink2);}
+  .cascata .et.forte{font-weight:700;fill:var(--ink);}
+  .cascata .filo{stroke:#B9B5AC;stroke-width:1.4;stroke-dasharray:4 3;}
+  .cascata .base{stroke:var(--line);stroke-width:1.4;}
+  .cascata .zero{stroke:#B9B5AC;stroke-width:1.2;}
   .cftab{margin-top:10px;}
   .cftab tr.g th{border-bottom:1px solid var(--line);padding-bottom:4px;text-align:center;color:var(--ink);}
   .cftab tr.g th[rowspan]{text-align:left;vertical-align:bottom;border-bottom:2px solid var(--ink);}
@@ -606,7 +616,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v63</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v64</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2154,6 +2164,64 @@ function cfVociSG(anno, mesi){
   });
   return out;
 }
+/* ---------------- la cascata del margine ----------------
+   Si parte dalla colonna di sinistra, ogni gradino aggiunge o toglie, l'ultima
+   colonna è il punto d'arrivo. Disegnata a mano in SVG: niente libreria da
+   caricare e il grafico resta leggibile anche stampato. */
+function cascata(etInizio, inizio, pezzi, etFine, fine){
+  const W=1000, H=300, SU=30, GIU=62;            // spazio per le etichette sopra e sotto
+  const tappe=[inizio]; let c=inizio;
+  pezzi.forEach(p=>{ c+=num(p[1]); tappe.push(c); });
+  const valori=[0, inizio, fine, ...tappe];
+  let alto=Math.max(...valori), basso=Math.min(...valori);
+  const campo=(alto-basso)||Math.max(1,Math.abs(alto))||1;
+  alto+=campo*0.16; basso-=campo*0.16;
+  const y=v=>SU+(alto-v)/(alto-basso)*(H-SU-GIU);
+  const n=pezzi.length+2, passo=W/n, bw=Math.min(104, passo*0.52);
+  const cx=i=>passo*i+passo/2;
+  const colonne=[];
+  const barra=(i,da,a,col)=>{
+    const y1=y(Math.max(da,a)), y2=y(Math.min(da,a)), hh=Math.max(3, y2-y1);
+    return `<rect x="${(cx(i)-bw/2).toFixed(1)}" y="${y1.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" rx="3" fill="${col}"/>`;
+  };
+  const scritta=(i,v,testo,sopra,cls)=>
+    `<text class="${cls||'vv'}" x="${cx(i).toFixed(1)}" y="${(sopra? y(v)-9 : y(v)+17).toFixed(1)}">${testo}</text>`;
+  /* colonna di partenza */
+  colonne.push(barra(0,0,inizio,'var(--brand)'));
+  colonne.push(scritta(0, Math.max(inizio,0), fmtE(inizio), inizio>=0, 'vt'));
+  /* i gradini */
+  pezzi.forEach((p,k)=>{
+    const v=num(p[1]), da=tappe[k], a=tappe[k+1], i=k+1;
+    const col = v>=0 ? 'var(--ok)' : 'var(--bad)';
+    colonne.push(barra(i, da, a, col));
+    const cima=Math.max(da,a), fondo=Math.min(da,a);
+    colonne.push(`<text class="vv" fill="${col}" x="${cx(i).toFixed(1)}" y="${(v>=0? y(cima)-9 : y(fondo)+17).toFixed(1)}">${v>=0?'+':'−'}${fmtE(Math.abs(v))}</text>`);
+    /* il filo che lega un gradino al successivo */
+    colonne.push(`<line class="filo" x1="${(cx(i-1)+bw/2).toFixed(1)}" y1="${y(da).toFixed(1)}" x2="${(cx(i)-bw/2).toFixed(1)}" y2="${y(da).toFixed(1)}"/>`);
+  });
+  colonne.push(`<line class="filo" x1="${(cx(n-2)+bw/2).toFixed(1)}" y1="${y(fine).toFixed(1)}" x2="${(cx(n-1)-bw/2).toFixed(1)}" y2="${y(fine).toFixed(1)}"/>`);
+  /* colonna di arrivo */
+  colonne.push(barra(n-1,0,fine,'var(--brand)'));
+  colonne.push(scritta(n-1, Math.max(fine,0), fmtE(fine), fine>=0, 'vt'));
+  /* linea dello zero, se lo zero sta dentro al grafico */
+  const zero = (basso<0 && alto>0) ? `<line class="zero" x1="0" y1="${y(0).toFixed(1)}" x2="${W}" y2="${y(0).toFixed(1)}"/>` : '';
+  /* etichette in basso, spezzate in due righe quando servono */
+  const nomi=[etInizio, ...pezzi.map(p=>p[0]), etFine];
+  const sotto=nomi.map((t,i)=>{
+    const pr=String(t).split(' '), righe=[];
+    let r='';
+    pr.forEach(w=>{ if((r+' '+w).trim().length>16){ righe.push(r.trim()); r=w; } else r=(r+' '+w).trim(); });
+    if(r) righe.push(r);
+    const grosso = (i===0||i===n-1) ? ' forte' : '';
+    return righe.slice(0,2).map((rr,k)=>
+      `<text class="et${grosso}" x="${cx(i).toFixed(1)}" y="${(H-GIU+22+k*15).toFixed(1)}">${rr}</text>`).join('');
+  }).join('');
+  return `<div class="cascata"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img"
+     aria-label="Cascata del margine da ${etInizio} a ${etFine}">
+    ${zero}<line class="base" x1="0" y1="${(H-GIU+4).toFixed(1)}" x2="${W}" y2="${(H-GIU+4).toFixed(1)}"/>
+    ${colonne.join('')}${sotto}</svg></div>`;
+}
+
 function renderCF(){
   const el=document.getElementById('cfBody');
   const anni=anniCliente();
@@ -2248,17 +2316,16 @@ function renderCF(){
     ['Risorse umane',     eff({a:A.ru,b:B.ru})],
     ['Spese generali',    eff({a:A.sg,b:B.sg})],
   ];
-  const maxAss=Math.max(1,...pezzi.map(x=>Math.abs(x[1])));
+  const vinci=pezzi.filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+  const perdi=pezzi.filter(x=>x[1]<0).sort((a,b)=>a[1]-b[1]);
+  const voce=(x,segno)=>`<b>${x[0]}</b> (${segno}${fmtE(Math.abs(x[1]))})`;
+  const frase = (vinci.length?`Il gradino più alto in su è ${voce(vinci[0],'+')}`:'Nessun gradino spinge in su')
+    + (perdi.length?`; quello più pesante in giù è ${voce(perdi[0],'−')}.`:'.');
   h+=`<section><h2>Da cosa nasce la differenza</h2>
-    <div class="sub">Il margine passa da ${fmtE(A.ro)} a ${fmtE(B.ro)}. Ecco quanto ha pesato ciascuna causa: il volume dei ricavi valutato al margine del ${cfA}, e per ogni centro di costo il guadagno o la perdita di efficienza misurata in incidenza.</div>
-    <div class="ponte">
-      <div class="riga"><div>Margine ${cfA}</div><div></div><div class="num">${fmtE(A.ro)}</div></div>
-      ${pezzi.map(([n,v])=>`<div class="riga">
-        <div>${n}</div>
-        <div class="barra"><i style="background:${v>=0?'var(--ok)':'var(--bad)'};${v>=0?'left:50%':'right:50%'};width:${(Math.abs(v)/maxAss*50).toFixed(1)}%"></i></div>
-        <div class="num" style="color:${v>=0?'var(--ok)':'var(--bad)'}">${v>=0?'+':'−'}${fmtE(Math.abs(v))}</div></div>`).join('')}
-      <div class="riga cap"><div>Margine ${cfB}</div><div></div><div class="num">${fmtE(B.ro)}</div></div>
-    </div></section>`;
+    <div class="sub">Il margine parte da ${fmtE(A.ro)} nel ${cfA} e arriva a ${fmtE(B.ro)} nel ${cfB}. Ogni colonna è un pezzo di quel salto: si parte dalla colonna di sinistra e ogni gradino aggiunge o toglie, fino ad arrivare a destra. ${frase}</div>
+    ${cascata('Margine '+cfA, A.ro, pezzi, 'Margine '+cfB, B.ro)}
+    <div class="cfleg">Il <b>volume dei ricavi</b> è quanto margine in più o in meno porta l'aver fatturato diversamente, valutato alla marginalità del ${cfA}. Ogni centro di costo pesa invece per quanta efficienza ha guadagnato o perso, cioè per la variazione della sua incidenza sui ricavi applicata al fatturato del ${cfB}. I pezzi sommano esattamente la differenza, senza residui.</div>
+    </section>`;
 
   /* --- il dettaglio dei mesi del periodo --- */
   if(mesi.length>1){
