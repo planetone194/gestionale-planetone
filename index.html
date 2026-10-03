@@ -553,7 +553,7 @@
     <button data-page="an">Analisi &amp; presentazione</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v56</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v57</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2948,6 +2948,24 @@ function applyCE(acc,seen,sheetName){
   if(!hasSplitM) notes.push(`materia prima senza distinzione: divisa ${fmtP(mRatio)} / ${fmtP(1-mRatio)}`);
   return {ok:true, msg:`Letto il foglio "${sheetName}": ${applied} mesi compilati.${notes.length?' Nota: '+notes.join('; ')+'.':''}`};
 }
+/* Riconosce se un file Excel è il template di un'altra sezione: guarda il titolo
+   in alto e, se non basta, le intestazioni di colonna. */
+function sezioneDelFile(wb){
+  for(const n of wb.SheetNames.slice(0,3)){
+    const g=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:true,defval:null});
+    /* il titolo in alto, non le note sotto: lì "costo del personale" può comparire
+       anche in un foglio di spese generali e trarre in inganno */
+    const titolo=norm(((g[0]||[]).find(v=>typeof v==='string'&&v.trim())||'')+' '+norm(n));
+    if(/spese generali/.test(titolo)) return 'sg';
+    if(/risorse umane/.test(titolo)) return 'ru';
+    for(let r=0;r<Math.min(g.length,10);r++){
+      const riga=(g[r]||[]).filter(v=>typeof v==='string').map(norm);
+      if(riga.includes('gruppo') && riga.includes('voce')) return 'sg';
+      if(riga.includes('persona')) return 'ru';
+    }
+  }
+  return null;
+}
 /* ---------- analisi AI (PDF e formati non standard) ---------- */
 const AI_PROMPT=`Analizza questo conto economico di un'attività food & beverage italiana. Estrai i valori MENSILI e rispondi SOLO con JSON valido, senza alcun testo prima o dopo e senza backtick, con questo schema:
 {"anno":2026,"mesi":[{"mese":"Gennaio","ricavi_food":0,"ricavi_beverage":0,"altri_ricavi":0,"mp_food":0,"mp_beverage":0,"personale":0,"spese_generali":0}],"note":"eventuali avvertenze brevi"}
@@ -3753,6 +3771,11 @@ async function smartImport(file){
     }
     say('Lettura di '+file.name+'…');
     const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:false});
+    /* Se è un template di un'altra sezione, non si litiga: lo si manda dove deve andare.
+       Capita di sbagliare riquadro, e il file è lo stesso. */
+    const dove=sezioneDelFile(wb);
+    if(dove==='ru'){ say('Questo è il foglio delle risorse umane: lo carico nella sezione giusta…'); await importRUFile(file); return; }
+    if(dove==='sg'){ say('Questo è il foglio delle spese generali: lo carico nella sezione giusta…'); await importSGFile(file); return; }
     const isP1=wb.SheetNames.some(n=>norm(n).includes('sintesi bilanci')&&!norm(n).includes('full'));
     if(isP1){
       await importPlanetOne(wb, file.name);
