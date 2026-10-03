@@ -648,7 +648,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v65</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v66</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -994,7 +994,8 @@ function freshState(){
     ru: [],
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
     turni:{},            // id persona → {c:ore a contratto, o:costo orario forzato, g:[[pIn,pFin,cIn,cFin] ×7]}
-    incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena]
+    incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
+    ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
       {id:'cn1', nome:'Autoconsumi (pasti e bevande staff)', m:zeros()},
@@ -1037,6 +1038,7 @@ function migrateS(){
   if(!S.storico||typeof S.storico!=='object') S.storico={};
   if(!S.turni||typeof S.turni!=='object') S.turni={};
   if(!S.incassi||typeof S.incassi!=='object') S.incassi={};
+  if(S.ivaInc===undefined||S.ivaInc===null||S.ivaInc==='') S.ivaInc=10;
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
@@ -2096,6 +2098,9 @@ function costoOrario(pers, mesi){
 }
 /* le medie degli incassi per giorno della settimana e servizio */
 let incZeri=true;      // true = media su tutte le giornate, false = solo su quelle con incasso
+/* La cassa batte lordo, il conto economico è al netto: tutto quello che si
+   vede in questa pagina è scorporato, così i due mondi si confrontano. */
+const ivaFatt=()=>1+num(S.ivaInc===undefined?10:S.ivaInc)/100;
 function incassiMedi(){
   const somma=Array.from({length:7},()=>[0,0]), quante=Array.from({length:7},()=>[0,0]);
   const cop=Array.from({length:7},()=>[0,0]), qCop=Array.from({length:7},()=>[0,0]);
@@ -2109,14 +2114,14 @@ function incassiMedi(){
       if(v[j]==null||v[j]==='') return;
       totale+=num(v[j]); usata=true;
       if(!incZeri && num(v[j])===0) return;
-      somma[g][j]+=num(v[j]); quante[g][j]++;
+      somma[g][j]+=num(v[j])/ivaFatt(); quante[g][j]++;
       if(v[2+j]!=null&&v[2+j]!==''){ cop[g][j]+=num(v[2+j]); qCop[g][j]++; }
     });
     if(usata){ giornate++; if(!da||k<da) da=k; if(!a||k>a) a=k; }
   });
   const media=Array.from({length:7},(_,g)=>[0,1].map(j=>quante[g][j]?somma[g][j]/quante[g][j]:null));
   const coperti=Array.from({length:7},(_,g)=>[0,1].map(j=>qCop[g][j]?cop[g][j]/qCop[g][j]:null));
-  return {media, quante, coperti, giornate, da, a, totale};
+  return {media, quante, coperti, giornate, da, a, totale, totaleNetto: totale/ivaFatt()};
 }
 /* tutto quello che serve alla pagina, in un colpo solo */
 function tuData(){
@@ -2158,7 +2163,12 @@ function tuData(){
             incRu: ric? ru/ric : NaN, incMp: ric? (mp||0)/ric : NaN,
             incSg: ric? sg/ric : NaN, incMarg: ric? marg/ric : NaN};
   }));
-  return {m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi};
+  /* quadratura: la settimana ricostruita, portata al mese, contro il fatturato del bilancio */
+  const ricSett=celle.reduce((a,x)=>a+num(x[0].ric)+num(x[1].ric),0);
+  const ricMeseCassa=ricSett*SETT;
+  const ricMeseCE=mesi.reduce((a,i)=>a+num(m.months[i].ricavi),0)/nm;
+  return {m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi,
+          ricSett, ricMeseCassa, ricMeseCE, scarto: ricMeseCE>0 ? ricMeseCassa/ricMeseCE-1 : NaN};
 }
 
 function renderTU(){
@@ -2244,10 +2254,13 @@ function renderTU(){
         <option value="0">è tutto pranzo</option>
         <option value="1">è tutto cena</option>
       </select>
+      <span class="btn small tpl" style="display:inline-flex;align-items:center;gap:6px;cursor:default">IVA
+        <input id="incIva" value="${num(S.ivaInc)}" inputmode="decimal"
+          style="width:38px;border:none;background:transparent;font:inherit;color:inherit;text-align:right" title="aliquota degli importi importati">%</span>
       <button class="btn small tpl" id="incTpl" type="button" title="scarica il foglio da compilare">⤓ Template Excel</button>
       ${d.inc.giornate?`<button class="btn small tpl" id="incSvuota" type="button">Svuota</button>`:''}
       <div class="msg" id="incImportMsg">${d.inc.giornate
-      ? `In archivio ${d.inc.giornate} giornate, dal ${d.inc.da.split('-').reverse().join('/')} al ${d.inc.a.split('-').reverse().join('/')}.`
+      ? `In archivio ${d.inc.giornate} giornate, dal ${d.inc.da.split('-').reverse().join('/')} al ${d.inc.a.split('-').reverse().join('/')} — ${fmtE(d.inc.totale)} lordi battuti in cassa, ${fmtE(d.inc.totaleNetto)} al netto dell'IVA. <b>Tutti i numeri di questa pagina sono al netto.</b>`
       : 'Nessun incasso caricato: sotto trovi comunque il costo di ogni servizio, ma non il margine.'}</div>
     </div>`;
   if(d.inc.giornate){
@@ -2263,7 +2276,12 @@ function renderTU(){
             <td class="tot" style="color:var(--ink2)">${q[j]||'—'}</td>`).join('')}
           <td class="tot"><b>${tot?fmtE(tot):'—'}</b></td></tr>`;
       }).join('')}
-    </table></div>`;
+    </table></div>
+    <div class="cfleg">La settimana ricostruita dalle medie vale <b>${fmtE(d.ricSett)}</b> netti, cioè ${fmtE(d.ricMeseCassa)} al mese contro i <b>${fmtE(d.ricMeseCE)}</b> del conto economico${
+      isFinite(d.scarto) ? `: <b style="color:${Math.abs(d.scarto)<=0.03?'var(--ok)':(Math.abs(d.scarto)<=0.08?'#8a6a0c':'var(--bad)')}">${d.scarto>=0?'+':'−'}${fmtNum(Math.abs(d.scarto)*100)}%</b>. ${
+        Math.abs(d.scarto)<=0.03 ? 'Le due fonti si parlano: i margini per servizio qui sotto sono attendibili.'
+        : 'Lo scarto è grosso: controlla l\'aliquota, il periodo coperto dal file degli incassi e se la cassa comprende tutto quello che finisce nel conto economico.'}`
+      : '.'}</div>`;
   }
   h+=`</section>`;
 
@@ -2329,6 +2347,8 @@ function renderTU(){
   renderChips(d.m,'tuChips');
   const fi=document.getElementById('incFileInput');
   if(fi) fi.addEventListener('change', e=>{ if(e.target.files[0]) importIncassi(e.target.files[0]); e.target.value=''; });
+  const iv=document.getElementById('incIva');
+  if(iv) iv.addEventListener('change', e=>{ S.ivaInc=parseIt(e.target.value); saveState(); renderTU(); });
   const tp=document.getElementById('incTpl');
   if(tp) tp.addEventListener('click', templateIncassi);
   const sv=document.getElementById('incSvuota');
