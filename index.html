@@ -301,7 +301,7 @@
   #modal{position:fixed;inset:0;background:rgba(27,42,58,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
   #modal[hidden]{display:none;}
   .mbox{background:#fff;border-radius:14px;padding:22px 24px;max-width:560px;width:100%;box-shadow:0 18px 50px rgba(27,42,58,.35);}
-  #mMsg{font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.45;}
+  #mMsg{font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.45;white-space:pre-line;}
   #mInput{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font:inherit;margin-bottom:14px;}
   #mInput:focus{outline:none;border-color:var(--brand);}
   #mArea{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-family:var(--num);font-size:12px;margin-bottom:14px;resize:vertical;}
@@ -380,6 +380,16 @@
   .merchsw button:hover{background:var(--porpora-bg);color:var(--porpora);}
   .merchsw button.on{background:var(--porpora);color:#fff;font-weight:600;}
   .merchsw.off{opacity:.55;}
+  /* versioni precedenti */
+  .vertab td.az{text-align:left;white-space:normal;}
+  .vertab tr.sel td{background:#FBF6EC;}
+  .vercmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:4px 0 14px;}
+  .vercmp .col{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:13px 15px;}
+  .vercmp .col.now{background:#FAFAF8;}
+  .vercmp .col h4{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);margin-bottom:9px;}
+  .vercmp .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 0;}
+  .vercmp .r b{font-family:var(--num);font-weight:600;}
+  .vercmp .r.diff b{color:var(--brass);}
   /* confronto tra periodi */
   .cfbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
   .cfbar select{border:1.5px solid var(--line);border-radius:9px;background:#fff;font:inherit;font-size:13px;padding:7px 9px;color:var(--ink);cursor:pointer;}
@@ -581,9 +591,11 @@
     <button data-page="ob">Obiettivi</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
+    <div class="grp">Archivio</div>
+    <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v60</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v61</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -778,6 +790,7 @@
 
   <!-- ============ OBIETTIVI ============ -->
   <div class="page" id="page-cf"><div id="cfBody"></div></div>
+  <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
@@ -1036,7 +1049,32 @@ async function switchClient(id){
   else{ S=freshState(); S.cliente=(CLIENTS.list.find(c=>c.id===id)||{}).nome||'Nuovo cliente'; }
   renderClientSelect(); renderMerchSw(); renderAnni(); renderAll(); renderDash();
   document.getElementById('savestate').textContent='cliente: '+S.cliente;
+  snapGiornaliero(id);                                // fotografia del giorno, in sottofondo
 }
+/* ---------------- controllo di sicurezza sul nome ----------------
+   Il 3 ottobre 2026 i dati di un cliente sono finiti nella scheda di un altro.
+   La causa è stata tolta, ma questo è il secondo lucchetto: prima di scrivere
+   si confronta il nome del locale nei dati con quello della scheda di
+   destinazione. Se non coincidono non si scrive finché una persona non dice
+   che va bene (succede legittimamente quando si rinomina un locale). */
+let nomeConf={}, nomeInCorso=false;
+async function scritturaLecita(cid){
+  const c=CLIENTS.list.find(x=>x.id===cid);
+  const atteso = c&&c.nome ? norm(c.nome) : '';
+  const adesso = norm(S.cliente||'');
+  if(!atteso || !adesso || atteso===adesso) return true;
+  if(nomeConf[cid]===adesso) return true;
+  if(nomeInCorso) return false;                       // una domanda alla volta
+  nomeInCorso=true;
+  const ok=await uiConfirm('Controllo di sicurezza.\n\nStai per scrivere i dati di "'+S.cliente+'" dentro la scheda di "'+c.nome+'".\n\n'
+    +'Se hai rinominato il locale è tutto regolare: conferma e la scheda prende il nome nuovo.\n'
+    +'Se invece sono due locali diversi, annulla: non viene scritto niente e nessun dato va perso.');
+  nomeInCorso=false;
+  if(ok) nomeConf[cid]=adesso;
+  else { segnaStato('ko','salvataggio fermato: il nome non corrisponde'); toast('Salvataggio fermato: nei dati c\'è "'+S.cliente+'" ma la scheda è di "'+c.nome+'". Non è stato scritto niente.', true); }
+  return ok;
+}
+
 /* Salva ora: scrive subito, senza aspettare il salvataggio automatico, e lo dice */
 let saveBusy=false;
 async function saveNow(){
@@ -1046,6 +1084,7 @@ async function saveNow(){
   const btns=[...document.querySelectorAll('[data-save]')];
   btns.forEach(b=>b.classList.add('saving'));
   document.getElementById('savestate').textContent='salvataggio…';
+  if(!await scritturaLecita(sOwner)){ btns.forEach(b=>b.classList.remove('saving')); saveBusy=false; return; }
   try{
     const ok=await stSet('planetone-fb:'+sOwner, JSON.stringify(S));
     storageOk=ok;
@@ -1085,6 +1124,7 @@ async function saveState(){
   clearTimeout(saveTimer);
   const cid=sOwner;              // il cliente a cui appartengono i dati in memoria ADESSO
   saveTimer=setTimeout(async ()=>{
+    if(!await scritturaLecita(cid)) return;
     const ok=await stSet('planetone-fb:'+cid, JSON.stringify(S));
     storageOk=ok;
     const c=CLIENTS.list.find(x=>x.id===cid);
@@ -1934,6 +1974,116 @@ function sgChart(){
 }
 
 /* ================================================================
+   RENDER · VERSIONI PRECEDENTI
+   L'elenco delle fotografie giornaliere conservate nell'archivio condiviso,
+   con il confronto fra la versione scelta e quella attuale prima di toccare
+   qualsiasi cosa. Nessun ripristino avviene senza che si veda cosa cambia.
+================================================================ */
+let verCid=null, verSel=null, verDati=null;
+const verRiga=(et,a,b)=>`<div class="r${String(a)!==String(b)?' diff':''}"><span>${et}</span><b>${a}</b></div>`;
+function verColonna(titolo, r, altro, classe){
+  if(!r) return `<div class="col ${classe||''}"><h4>${titolo}</h4><div class="r"><span>non leggibile</span></div></div>`;
+  const o=altro||{};
+  return `<div class="col ${classe||''}"><h4>${titolo}</h4>
+    ${verRiga('Nome del locale', r.n||'—', o.n||'—')}
+    ${verRiga('Anno aperto', r.anno||'—', o.anno||'—')}
+    ${verRiga('Ricavi dell\'anno', fmtE(r.ric), fmtE(o.ric))}
+    ${verRiga('Mesi con ricavi', r.mesi, o.mesi)}
+    ${verRiga('Persone in organico', r.pers, o.pers)}
+    ${verRiga('Voci di spese generali', r.voci, o.voci)}
+    ${verRiga('Anni nella scheda', (r.anni||[]).join(', ')||'—', (o.anni||[]).join(', ')||'—')}
+  </div>`;
+}
+async function renderVER(){
+  const el=document.getElementById('verBody');
+  if(!verCid || !CLIENTS.list.some(c=>c.id===verCid)) verCid=CLIENTS.activeId;
+  const nomeCli=(CLIENTS.list.find(c=>c.id===verCid)||{}).nome||'';
+  const testa=`<section><div class="sechead">
+      <div><h2>Versioni precedenti</h2>
+      <div class="sub">L'app mette da parte nell'archivio condiviso una copia della scheda la prima volta che in giornata si apre il cliente, e di nuovo prima di ogni caricamento di dati. Si conservano le ultime ${SNAP_GIORNI} copie. Da qui si rivedono e, se serve, si torna indietro.</div></div>
+      <span class="cfbar" style="margin:0"><span class="cl">Cliente</span>
+        <select id="verCli">${CLIENTS.list.map(c=>`<option value="${c.id}" ${c.id===verCid?'selected':''}>${c.nome}</option>`).join('')}</select>
+      </span></div>`;
+  const chiudi=`</section>`;
+  if(!SB.token){ el.innerHTML=testa+`<div class="cfnota">Lo storico vive nell'archivio condiviso: senza accesso non è consultabile.</div>`+chiudi; return; }
+  el.innerHTML=testa+`<div class="cfnota">Leggo l'archivio…</div>`+chiudi;
+  verLega();
+  let elenco=[];
+  try{ elenco=await snapElenco(verCid); }
+  catch(e){ el.innerHTML=testa+`<div class="cfnota">Archivio non raggiungibile: ${e.message||'errore'}.</div>`+chiudi; verLega(); return; }
+  if(!elenco.length){
+    el.innerHTML=testa+`<div class="cfnota">Per <b>${nomeCli}</b> non ci sono ancora copie: la prima si crea da sola la prossima volta che apri questo cliente.</div>`+chiudi;
+    verLega(); return;
+  }
+  const oggi=snapOggi();
+  let h=testa+`<div style="overflow-x:auto"><table class="obtable quadro vertab">
+    <tr><th>Giornata</th><th>Nome nella copia</th><th>Ricavi</th><th>Mesi</th><th>Persone</th><th>Voci SG</th><th></th></tr>`;
+  elenco.forEach(x=>{
+    const i=x.info||{};
+    h+=`<tr class="${x.et===verSel?'sel':''}"><td class="az">${snapEtichetta(x.et)}${x.et===oggi?' <span class="pil v-ok">oggi</span>':''}</td>
+      <td class="az">${i.n||'—'}</td><td class="tot">${fmtE(i.ric)}</td><td class="tot">${i.mesi==null?'—':i.mesi}</td>
+      <td class="tot">${i.pers==null?'—':i.pers}</td><td class="tot">${i.voci==null?'—':i.voci}</td>
+      <td class="tot"><button class="btn ghost small" data-ver="${x.et}">Confronta</button></td></tr>`;
+  });
+  h+=`</table></div>`+chiudi;
+  if(verSel && verDati){
+    const ades = verCid===sOwner ? snapRiassunto(JSON.stringify(S)) : verDati.attuale;
+    h+=`<section><h2>Copia del ${snapEtichetta(verSel)}</h2>
+      <div class="sub">A sinistra com'è la scheda adesso, a destra com'era in quella giornata. In arancione le righe che cambierebbero.</div>
+      <div class="vercmp">${verColonna('Adesso', ades, verDati.r, 'now')}${verColonna('Copia del '+snapEtichetta(verSel), verDati.r, ades)}</div>
+      <div class="cfnota">Ripristinando, la scheda di <b>${nomeCli}</b> torna com'era in quella giornata, per tutti. Prima di sostituirla l'app mette da parte anche la versione attuale, così si può tornare indietro di nuovo.</div>
+      <button class="btn" id="verRip">Ripristina questa versione</button> <button class="btn ghost" id="verAnn">Lascia stare</button>
+      </section>`;
+  }
+  el.innerHTML=h;
+  verLega();
+}
+function verLega(){
+  const sel=document.getElementById('verCli');
+  if(sel) sel.addEventListener('change', e=>{ verCid=e.target.value; verSel=null; verDati=null; renderVER(); });
+  const ann=document.getElementById('verAnn');
+  if(ann) ann.addEventListener('click', ()=>{ verSel=null; verDati=null; renderVER(); });
+  const rip=document.getElementById('verRip');
+  if(rip) rip.addEventListener('click', verRipristina);
+}
+document.addEventListener('click', async e=>{
+  const b=e.target.closest('[data-ver]'); if(!b) return;
+  verSel=b.dataset.ver; verDati=null;
+  b.textContent='…';
+  try{
+    const raw=await snapLeggi(verCid, verSel);
+    if(!raw){ toast('Copia non trovata nell\'archivio.', true); verSel=null; return renderVER(); }
+    const attRaw = verCid===sOwner ? JSON.stringify(S) : (await stGet('planetone-fb:'+verCid));
+    verDati={raw, r:snapRiassunto(raw), attuale:snapRiassunto(attRaw||'{}')};
+  }catch(ex){ toast('Lettura non riuscita: '+(ex.message||'errore'), true); verSel=null; }
+  renderVER();
+});
+async function verRipristina(){
+  if(!verSel||!verDati) return;
+  const nomeCli=(CLIENTS.list.find(c=>c.id===verCid)||{}).nome||'';
+  const ok=await uiConfirm('Ripristinare la copia del '+snapEtichetta(verSel)+' per "'+nomeCli+'"?\n\n'
+    +'La scheda attuale viene messa da parte prima di essere sostituita, quindi si può tornare indietro.');
+  if(!ok) return;
+  const cid=verCid, raw=verDati.raw, quale=snapEtichetta(verSel);
+  try{
+    const attRaw = cid===sOwner ? JSON.stringify(S) : (await stGet('planetone-fb:'+cid));
+    if(attRaw) await snapScrivi(cid, attRaw, snapOra('r'));
+    nomeConf[cid]=norm(verDati.r&&verDati.r.n||'');          // il nome della copia è quello buono
+    await stSet('planetone-fb:'+cid, raw);
+    const c=CLIENTS.list.find(x=>x.id===cid);
+    if(c && verDati.r && verDati.r.n){ c.nome=verDati.r.n; await stSet('planetone-clients', JSON.stringify(CLIENTS)); }
+    if(cid===sOwner){
+      clearTimeout(saveTimer);
+      S=JSON.parse(raw); migrateS(); scope='ytd'; anTexts=null;
+      renderClientSelect(); renderMerchSw(); renderAnni(); renderAll(); renderDash();
+      const ci=document.getElementById('clientName'); if(ci) ci.value=S.cliente||'';
+    } else renderClientSelect();
+    verSel=null; verDati=null; renderVER();
+    toast('✓ Scheda di "'+nomeCli+'" riportata alla copia del '+quale+'.');
+  }catch(ex){ toast('Ripristino non riuscito: '+(ex.message||'errore'), true); }
+}
+
+/* ================================================================
    RENDER · CONFRONTO TRA PERIODI
    Confronta lo stesso periodo in due anni diversi dello stesso cliente:
    l'anno intero, un trimestre o un mese. I costi si leggono sempre in due
@@ -2703,7 +2853,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, ver:renderVER, ob:renderOB, an:renderAN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -3119,6 +3269,7 @@ function tplSG(){
 
 /* ---- caricamento del file spese generali (template o foglio con i mesi in colonna) ---- */
 async function importSGFile(file){
+  snapPrima();
   const msg=document.getElementById('sgImportMsg');
   const say=(t,err)=>{ toast(t,err); if(msg) msg.textContent=(err?'⚠️ ':'')+t; };
   try{
@@ -3601,6 +3752,7 @@ async function exportBackup(){
   toast('✓ Backup scaricato: contiene tutti i clienti. Conservalo o invialo insieme all\'app.');
 }
 async function importBackup(file){
+  snapPrima();
   try{
     const out=JSON.parse(await file.text());
     if(!out||!out.clients||!out.data) throw new Error('non è un backup Planet One');
@@ -3860,6 +4012,7 @@ async function tryRUMulti(g, srcName){
   return `${items.length} persone caricate (${matched} aggiornate, ${created} nuove) su ${mesi.length} mesi (${range}) · ${fmtE(tot)} di costo personale${totMk?' + '+fmtE(totMk)+' di merchandising':''}, reparti assegnati dalle sezioni del file.`;
 }
 async function importRUFile(file){
+  snapPrima();
   const msg=document.getElementById('ruImportMsg'); if(msg) msg.textContent='Lettura del file paghe…';
   try{
     if(!(/\.pdf$/i.test(file.name)||file.type==='application/pdf')){
@@ -4037,6 +4190,7 @@ function toast(txt, isErr){
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'), isErr?8000:6000);
 }
 async function smartImport(file){
+  snapPrima();
   const msg=document.getElementById('ceImportMsg');
   const say=(t,err)=>{ toast(t,err); if(msg) msg.textContent=(err?'⚠️ ':'')+t; };
   const isPdf=/\.pdf$/i.test(file.name)||file.type==='application/pdf';
@@ -4280,7 +4434,8 @@ async function sbTeste(extra){
   return Object.assign({'apikey':SB_KEY,'Authorization':'Bearer '+SB.token,'Content-Type':'application/json'}, extra||{});
 }
 async function sbTutto(){
-  const r=await fetch(SB_URL+'/rest/v1/'+SB_TAB+'?select=chiave,valore',{headers:await sbTeste()});
+  /* solo le chiavi di lavoro: le copie dello storico restano nell'archivio */
+  const r=await fetch(SB_URL+'/rest/v1/'+SB_TAB+'?select=chiave,valore&chiave=like.planetone*',{headers:await sbTeste()});
   if(r.status===401||r.status===403){ sbEsci(); throw new Error('sessione scaduta'); }
   if(!r.ok) throw new Error('lettura non riuscita ('+r.status+')');
   return await r.json();
@@ -4363,6 +4518,108 @@ async function sbCarica(){                 // il contrario: manda su quello che 
   return righe.length;
 }
 
+/* ================================================================
+   STORICO GIORNALIERO
+   Una copia al giorno di ogni cliente, dentro la stessa tabella ma con
+   chiavi che l'app non legge mai durante il lavoro normale:
+     snap:<cliente>:<giornata>   la scheda intera
+     snapx:<cliente>:<giornata>  quattro numeri per riconoscerla dall'elenco
+   Si conservano le ultime SNAP_GIORNI giornate; le più vecchie si cancellano.
+================================================================ */
+const SNAP_GIORNI=30;
+function snapOggi(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function snapEtichetta(et){
+  const m=String(et).match(/^(\d{4})-(\d{2})-(\d{2})(?:_(\d{2})(\d{2})([rc])?)?$/);
+  if(!m) return String(et);
+  const testo=m[3]+' '+MESI[+m[2]-1].toLowerCase()+' '+m[1];
+  if(!m[4]) return testo;
+  const perche = m[6]==='r' ? 'prima di un ripristino' : m[6]==='c' ? 'prima di un caricamento' : 'copia aggiuntiva';
+  return testo+' · ore '+m[4]+':'+m[5]+' ('+perche+')';
+}
+function snapOra(suffisso){
+  const d=new Date();
+  return snapOggi()+'_'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+(suffisso||'');
+}
+/* i quattro numeri che fanno riconoscere una copia senza aprirla */
+function snapRiassunto(raw){
+  try{
+    const s=JSON.parse(raw);
+    const anni=[...new Set([Number(s.anno)||0, ...Object.keys(s.storico||{}).map(Number)])].filter(a=>a>2000).sort((a,b)=>a-b);
+    let ric=0, mesi=0;
+    (s.ce||[]).forEach(x=>{ const r=(+x.rf||0)+(+x.rb||0)+(+x.ra||0); ric+=r; if(Math.abs(r)>0.005) mesi++; });
+    return {n:s.cliente||'', anno:Number(s.anno)||0, ric:Math.round(ric*100)/100, mesi,
+            pers:(s.ru||[]).filter(x=>(x.m||[]).some(v=>+v)).length,
+            voci:(s.sg||[]).filter(x=>(x.m||[]).some(v=>+v)).length,
+            anni, b:(raw||'').length};
+  }catch(e){ return null; }
+}
+async function snapElenco(cid){
+  const u=SB_URL+'/rest/v1/'+SB_TAB+'?select=chiave,valore,aggiornato&chiave=like.snapx:'+encodeURIComponent(cid)+':*&order=chiave.desc';
+  const r=await fetch(u,{headers:await sbTeste()});
+  if(r.status===401||r.status===403){ sbEsci(); throw new Error('sessione scaduta'); }
+  if(!r.ok) throw new Error('lettura non riuscita ('+r.status+')');
+  return (await r.json()).map(x=>{
+    let info=null; try{ info=JSON.parse(x.valore); }catch(e){}
+    return {et:x.chiave.slice(('snapx:'+cid+':').length), quando:x.aggiornato, info};
+  });
+}
+async function snapLeggi(cid, et){
+  const u=SB_URL+'/rest/v1/'+SB_TAB+'?select=valore&chiave=eq.'+encodeURIComponent('snap:'+cid+':'+et);
+  const r=await fetch(u,{headers:await sbTeste()});
+  if(!r.ok) throw new Error('lettura non riuscita ('+r.status+')');
+  const j=await r.json();
+  return j.length ? j[0].valore : null;
+}
+async function snapScrivi(cid, raw, et){
+  const info=snapRiassunto(raw); if(!info) return false;
+  return await sbScrivi([{k:'snap:'+cid+':'+et, v:raw}, {k:'snapx:'+cid+':'+et, v:JSON.stringify(info)}]);
+}
+async function snapPulisci(cid, etichette){
+  const extra=etichette.slice(SNAP_GIORNI);
+  if(!extra.length) return;
+  const chiavi=[]; extra.forEach(et=>chiavi.push('"snap:'+cid+':'+et+'"', '"snapx:'+cid+':'+et+'"'));
+  try{ await fetch(SB_URL+'/rest/v1/'+SB_TAB+'?chiave=in.('+chiavi.join(',')+')',
+      {method:'DELETE', headers:await sbTeste()}); }catch(e){}
+}
+/* una copia anche prima di un caricamento di dati: è il momento in cui una
+   scheda può cambiare di colpo, ed è lì che serve il punto di ritorno.
+   Una sola per ondata: quattro file caricati di fila fanno una copia sola. */
+const snapUltima={};
+async function snapPrima(cid){
+  cid=cid||sOwner;
+  if(!SB.token || !cid) return;
+  if(Date.now()-(snapUltima[cid]||0) < 120000) return;
+  snapUltima[cid]=Date.now();
+  try{
+    const raw = cid===sOwner ? JSON.stringify(S) : await stGet('planetone-fb:'+cid);
+    if(!raw || raw.length<80) return;                   // scheda vuota: niente da salvare
+    if(await snapScrivi(cid, raw, snapOra('c')))
+      await snapPulisci(cid, (await snapElenco(cid)).map(x=>x.et));
+  }catch(e){}
+}
+/* la fotografia del giorno: una sola, e solo se qualcuno apre il cliente */
+const snapFatto={};
+async function snapGiornaliero(cid){
+  if(!SB.token || !cid) return;
+  const giorno=snapOggi();
+  if(snapFatto[cid]===giorno) return;
+  try{ if(localStorage.getItem('p1:snapfatto:'+cid)===giorno){ snapFatto[cid]=giorno; return; } }catch(e){}
+  try{
+    const raw=await stGet('planetone-fb:'+cid);
+    if(!raw) return;
+    const elenco=await snapElenco(cid);
+    if(!elenco.some(x=>x.et===giorno)){
+      if(await snapScrivi(cid, raw, giorno))
+        await snapPulisci(cid, [giorno, ...elenco.map(x=>x.et)]);
+    }
+    snapFatto[cid]=giorno;
+    try{ localStorage.setItem('p1:snapfatto:'+cid, giorno); }catch(e){}
+  }catch(e){}
+}
+
 /* ---- schermata di accesso: l'app non parte finché non si entra ---- */
 function schermataAccesso(messaggio){
   return new Promise(risolvi=>{
@@ -4431,6 +4688,7 @@ document.addEventListener('visibilitychange', async ()=>{
   await cloudAvvio();
   await loadClients();
   sOwner=CLIENTS.activeId;
+  snapGiornaliero(CLIENTS.activeId);
   const rec=await recoverClients();
   const seeded=await ensureSeedBarcollo();
   const raw=await stGet('planetone-fb:'+CLIENTS.activeId);
