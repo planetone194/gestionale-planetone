@@ -553,7 +553,7 @@
     <button data-page="an">Analisi &amp; presentazione</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v57</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v58</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1138,8 +1138,29 @@ const ZC=['v-ok','v-warn','v-hot','v-bad'];
 
 /* ---------------- quadro mese per mese ----------------
    Ogni centro di costo con il suo valore assoluto e, accanto, l'incidenza a semaforo. */
+/* ---- quadro mese per mese: vista mese/trimestre e business unit ---- */
+let qmPer='mese', qmBU='tot';
+const QM_BU={
+  tot :{et:'Totale',   ric:x=>x.ricavi, ru:x=>x.ru,  mp:x=>x.mp, sg:x=>x.sg},
+  food:{et:'Food',     ric:x=>x.rf,     ru:x=>x.ruF, mp:x=>x.mf, sg:x=>x.sgF},
+  bev :{et:'Beverage', ric:x=>x.rb,     ru:x=>x.ruB, mp:x=>x.mb, sg:x=>x.sgB}
+};
+const TRIM=['1° trimestre','2° trimestre','3° trimestre','4° trimestre'];
+/* raggruppa i mesi consuntivati in trimestri, dicendo quali mesi ci sono dentro */
+function perTrimestre(righe){
+  const g={};
+  righe.forEach(x=>{ const q=Math.floor(x.i/3); (g[q]=g[q]||[]).push(x); });
+  return Object.keys(g).map(Number).sort((a,b)=>a-b).map(q=>{
+    const dentro=g[q], somma={mese:TRIM[q], i:-1};
+    ['ricavi','ru','mp','sg','ro','rf','rb','mf','mb','ruF','ruB','sgF','sgB']
+      .forEach(k=>somma[k]=dentro.reduce((a,x)=>a+num(x[k]),0));
+    if(dentro.length<3) somma.mese+=' ('+dentro.map(x=>MESI[x.i].slice(0,3)).join('-')+')';
+    return somma;
+  });
+}
 function quadroMese(m, t, isM){
   if(!m.complete.length) return '';
+  const BU=QM_BU[qmBU]||QM_BU.tot, perMese=(qmPer!=='trim');
   const pil=(inc,target,steps)=>{
     const z=isFinite(inc)?zone(inc,target,steps||[5,10]):0;
     return `<span class="pil ${ZC[z]}">${fmtP(inc)}</span>`;
@@ -1149,26 +1170,42 @@ function quadroMese(m, t, isM){
     return `<span class="pil ${cl}">${fmtP(iro)}</span>`;
   };
   const cella=(val,inc,target,steps)=>`<td><b>${fmtE(val)}</b>${pil(inc,target,steps)}</td>`;
-  const riga=(x,classe)=>{
-    const iru=x.ru/x.ricavi, imp=x.mp/x.ricavi, isg=x.sg/x.ricavi, iro=x.ro/x.ricavi;
-    return `<tr class="${classe||''}">
-      <td>${x.mese}</td>
-      <td><b>${fmtE(x.ricavi)}</b></td>
-      ${cella(x.ru,iru,t.ru)}
-      ${cella(x.mp,imp,t.mp)}
-      ${cella(x.sg,isg,t.sg)}
-      <td class="ro"><b style="color:${x.ro<0?'var(--bad)':'var(--ok)'}">${fmtE(x.ro)}</b>${pilRo(iro)}</td>
-    </tr>`;
+  /* ogni riga letta con la lente della business unit scelta */
+  const lente=x=>{
+    const ric=num(BU.ric(x)), ru=num(BU.ru(x)), mp=num(BU.mp(x)), sg=num(BU.sg(x));
+    return {mese:x.mese, i:x.i, ric, ru, mp, sg, ro:ric-ru-mp-sg};
   };
-  const tot=sumRows(m.complete, m.orphanCosts);
-  tot.mese='Totale'; tot.ricavi=tot.ricavi; tot.ro=tot.ro;
+  const righe=(perMese?m.complete:perTrimestre(m.complete)).map(lente);
+  const tot=righe.reduce((a,x)=>({mese:'Totale', i:-1,
+    ric:a.ric+x.ric, ru:a.ru+x.ru, mp:a.mp+x.mp, sg:a.sg+x.sg, ro:a.ro+x.ro}),
+    {ric:0,ru:0,mp:0,sg:0,ro:0});
+  if(qmBU==='tot') tot.ro-=m.orphanCosts;        // i costi dei mesi senza ricavi pesano sul totale
+  const riga=(x,classe)=>`<tr class="${classe||''}">
+      <td>${x.mese}</td>
+      <td><b>${fmtE(x.ric)}</b></td>
+      ${cella(x.ru,x.ru/x.ric,t.ru)}
+      ${cella(x.mp,x.mp/x.ric,t.mp)}
+      ${cella(x.sg,x.sg/x.ric,t.sg)}
+      <td class="ro"><b style="color:${x.ro<0?'var(--bad)':'var(--ok)'}">${fmtE(x.ro)}</b>${pilRo(x.ro/x.ric)}</td>
+    </tr>`;
+  const sw=(attr,voci,attivo,etichetta)=>`<span class="ordsw"><span class="ol">${etichetta}</span>`+
+    voci.map(([k,et])=>`<button type="button" ${attr}="${k}" class="${k===attivo?'on':''}">${et}</button>`).join('')+`</span>`;
+  const nota = qmBU==='tot'
+    ? "Per ogni centro di costo l'importo del periodo e, accanto, la sua incidenza sui ricavi a semaforo."
+    : `Solo la quota ${BU.et}: materia prima diretta, cucina o bar per intero, sala e management ripartiti per incidenza dei ricavi, spese generali secondo la regola scelta. Gli altri ricavi restano fuori.`;
   return `<section>
-    <h2>Quadro mese per mese</h2>
-    <div class="sub">Per ogni centro di costo l'importo del mese e, accanto, la sua incidenza sui ricavi a semaforo.${isM?' Il mese selezionato è evidenziato.':''}</div>
+    <div class="sechead">
+      <div><h2>Quadro ${perMese?'mese per mese':'per trimestre'}</h2>
+      <div class="sub">${nota}${isM&&perMese?' Il mese selezionato è evidenziato.':''}</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${sw('data-qmper',[['mese','Mese'],['trim','Trimestre']],qmPer,'Vista')}
+        ${sw('data-qmbu',[['tot','Totale'],['food','Food'],['bev','Beverage']],qmBU,'Business unit')}
+      </div>
+    </div>
     <div style="overflow-x:auto"><table class="obtable quadro">
-      <tr><th>Mese</th><th>Fatturato</th><th>Risorse umane</th><th>Materia prima</th><th>Spese generali</th><th>Margine operativo</th></tr>
+      <tr><th>${perMese?'Mese':'Trimestre'}</th><th>Fatturato</th><th>Risorse umane</th><th>Materia prima</th><th>Spese generali</th><th>Margine operativo</th></tr>
       ${riga(tot,'tot')}
-      ${m.complete.map(x=>riga(x, isM&&x.i===scope?'cur':'')).join('')}
+      ${righe.map(x=>riga(x, isM&&perMese&&x.i===scope?'cur':'')).join('')}
     </table></div>
   </section>`;
 }
@@ -2535,6 +2572,8 @@ document.addEventListener('click',e=>{
   if(rb){ renameFlow(rb.dataset.rename); return; }
   const dc=e.target.closest('[data-delclient]');
   if(dc){ delClientFlow(dc.dataset.delclient); return; }
+  const qp=e.target.closest('[data-qmper]'); if(qp){ qmPer=qp.dataset.qmper; renderDash(); return; }
+  const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
   const mw=e.target.closest('[data-merch]');
