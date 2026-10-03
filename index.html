@@ -395,6 +395,17 @@
   .cfbar select{border:1.5px solid var(--line);border-radius:9px;background:#fff;font:inherit;font-size:13px;padding:7px 9px;color:var(--ink);cursor:pointer;}
   .cfbar select:focus{outline:2px solid var(--brass);outline-offset:-2px;}
   .cfbar .cl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);}
+  .cftab{margin-top:10px;}
+  .cftab tr.g th{border-bottom:1px solid var(--line);padding-bottom:4px;text-align:center;color:var(--ink);}
+  .cftab tr.g th[rowspan]{text-align:left;vertical-align:bottom;border-bottom:2px solid var(--ink);}
+  .cftab .gsep{border-left:1px solid var(--line);}
+  .cftab td.az{text-align:left;font-weight:600;}
+  .cftab td.inc{color:var(--ink2);}
+  .cftab td.c-v-ok{color:var(--ok);font-weight:600;}
+  .cftab td.c-v-bad{color:var(--bad);font-weight:600;}
+  .cftab tr.cap td{border-top:1.5px solid var(--brand);background:#F6F4EF;font-weight:600;}
+  .cftab tr.cap td.inc{font-weight:600;color:var(--ink);}
+  .cfleg{font-size:12px;color:var(--ink2);margin-top:10px;line-height:1.5;}
   .cfgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px;}
   .cfcard{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:13px 14px;}
   .cfcard .t{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:700;}
@@ -595,7 +606,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v62</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v63</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2186,33 +2197,44 @@ function renderCF(){
       ${mesiPari.length?`<a href="#" data-cfper="pari" style="color:var(--brass);font-weight:600">Confronta solo i mesi in comune (${mesiPari.map(i=>M3[i]).join(', ')}) →</a>`:'Guarda le incidenze invece dei totali.'}</div>`;
   }
 
-  /* --- la fascia dei cinque numeri --- */
+  /* --- il prospetto: una riga per voce, i due anni in colonna ---
+     Si legge come un conto economico affiancato: a sinistra l'anno vecchio,
+     a destra quello nuovo, a destra ancora di quanto si è mosso. Il colore
+     sta solo sulle colonne della variazione, e segue l'effetto sul margine. */
   const incA=v=>A.ric>0?v/A.ric:NaN, incB=v=>B.ric>0?v/B.ric:NaN;
-  const dpp=(a,b)=>(isFinite(a)&&isFinite(b))?(b-a)*100:NaN;
-  const card=(titolo,vA,vB,costo)=>{
+  /* in colonna i decimali devono esserci sempre, se no i numeri non si allineano */
+  const un1=v=>new Intl.NumberFormat('it-IT',{minimumFractionDigits:1,maximumFractionDigits:1}).format(v);
+  const pc1=v=>(v==null||isNaN(v)||!isFinite(v))?'—':un1(v*100)+'%';
+  const riga=(titolo,vA,vB,tipo)=>{
     const d=vB-vA, pc=vA?d/Math.abs(vA):NaN;
-    const ia=incA(vA), ib=incB(vB), pp=dpp(ia,ib);
-    /* su un costo il bene è scendere; sui ricavi e sul margine è salire */
-    const buono = costo ? (isFinite(pp)?pp<-0.05:d<0) : d>0;
-    const pari  = costo ? (isFinite(pp)&&Math.abs(pp)<=0.05) : Math.abs(d)<0.5;
-    const cl = pari?'pari':(buono?'su':'giu');
+    const ia=incA(vA), ib=incB(vB);
+    const pp=(isFinite(ia)&&isFinite(ib))?(ib-ia)*100:NaN;
+    /* su un costo il bene è scendere, sui ricavi e sul margine è salire */
+    const buono = tipo==='costo' ? (isFinite(pp)? pp<-0.05 : d<0) : d>0;
+    const fermo = tipo==='costo' ? (isFinite(pp)&&Math.abs(pp)<=0.05) : Math.abs(d)<0.5;
+    const cl = fermo?'' : (buono?'v-ok':'v-bad');
+    const inc = tipo==='ricavo' ? '—' : fmtP;
     const segno=d>=0?'+':'−';
-    return `<div class="cfcard">
-      <div class="t">${titolo}</div>
-      <div class="v">${fmtE(vB)}</div>
-      <div class="p">${costo?`${fmtP(ib)} sui ricavi · `:''}${cfB}</div>
-      <div class="p">${fmtE(vA)}${costo?` · ${fmtP(ia)}`:''} nel ${cfA}</div>
-      <div class="d ${cl}">${segno}${fmtE(Math.abs(d))}${isFinite(pc)?` · ${segno}${fmtNum(Math.abs(pc)*100)}%`:''}${
-        costo&&isFinite(pp)?`<br>${pp>=0?'+':'−'}${fmtNum(Math.abs(pp))} p.p. di incidenza`:''}</div>
-    </div>`;
+    return `<tr class="${tipo==='margine'?'cap':''}">
+      <td class="az">${titolo}</td>
+      <td class="tot gsep">${fmtE(vA)}</td><td class="tot inc">${tipo==='ricavo'?'—':pc1(ia)}</td>
+      <td class="tot gsep">${fmtE(vB)}</td><td class="tot inc">${tipo==='ricavo'?'—':pc1(ib)}</td>
+      <td class="tot gsep ${cl?'c-'+cl:''}">${segno}${fmtE(Math.abs(d))}</td>
+      <td class="tot ${cl?'c-'+cl:''}">${isFinite(pc)?segno+un1(Math.abs(pc)*100)+'%':'—'}</td>
+      <td class="tot ${cl?'c-'+cl:''}">${tipo==='ricavo'||!isFinite(pp)?'—':(pp>=0?'+':'−')+un1(Math.abs(pp))}</td>
+    </tr>`;
   };
-  h+=`<div class="cfgrid">
-    ${card('Fatturato',A.ric,B.ric,false)}
-    ${card('Materia prima',A.mp,B.mp,true)}
-    ${card('Risorse umane',A.ru,B.ru,true)}
-    ${card('Spese generali',A.sg,B.sg,true)}
-    ${card('Margine operativo',A.ro,B.ro,false)}
-  </div></section>`;
+  h+=`<div style="overflow-x:auto"><table class="obtable quadro cftab">
+      <tr class="g"><th rowspan="2">Voce</th><th colspan="2" class="gsep">${cfA}</th><th colspan="2" class="gsep">${cfB}</th><th colspan="3" class="gsep">Variazione</th></tr>
+      <tr><th class="gsep">Importo</th><th>sui ricavi</th><th class="gsep">Importo</th><th>sui ricavi</th><th class="gsep">in euro</th><th>in %</th><th title="punti percentuali di incidenza sui ricavi">p.p.</th></tr>
+      ${riga('Fatturato',A.ric,B.ric,'ricavo')}
+      ${riga('Materia prima',A.mp,B.mp,'costo')}
+      ${riga('Risorse umane',A.ru,B.ru,'costo')}
+      ${riga('Spese generali',A.sg,B.sg,'costo')}
+      ${riga('Margine operativo',A.ro,B.ro,'margine')}
+    </table></div>
+    <div class="cfleg">Sulla variazione il colore segue l'effetto sul margine: un costo che cresce in euro ma scende in incidenza è una buona notizia, e si legge in verde. La colonna <b>p.p.</b> è la differenza di incidenza sui ricavi, in punti percentuali.</div>
+    </section>`;
 
   /* --- il ponte: da dove nasce la differenza di margine ---
      ΔM = ΔRicavi × margine%A  +  Ricavi(B) × (incidenzaA − incidenzaB) per ogni costo.
