@@ -553,7 +553,7 @@
     <button data-page="an">Analisi &amp; presentazione</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v55</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v56</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -921,6 +921,11 @@ async function stDel(k){
 }
 
 let CLIENTS={list:[], activeId:null};
+/* sOwner = il cliente a cui appartengono i dati caricati in memoria.
+   Non si usa CLIENTS.activeId perché quello può cambiare sotto i piedi
+   (per esempio quando arriva una sincronizzazione), e i dati finirebbero
+   scritti nella scheda di un altro cliente. */
+let sOwner=null;
 function migrateS(){
   if(!S.merch||!S.merch.mode) S.merch={mode:'incl'};
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
@@ -982,11 +987,11 @@ function renderClientSelect(){
   sel.innerHTML=CLIENTS.list.map(c=>`<option value="${c.id}" ${c.id===CLIENTS.activeId?'selected':''}>${c.nome}</option>`).join('');
 }
 async function switchClient(id){
-  if(CLIENTS.activeId && CLIENTS.activeId!==id){ // salva subito il cliente corrente prima di cambiare
+  if(sOwner && sOwner!==id){ // salva subito il cliente corrente prima di cambiare
     clearTimeout(saveTimer);
-    await stSet('planetone-fb:'+CLIENTS.activeId, JSON.stringify(S));
+    await stSet('planetone-fb:'+sOwner, JSON.stringify(S));
   }
-  CLIENTS.activeId=id; await stSet('planetone-clients', JSON.stringify(CLIENTS));
+  CLIENTS.activeId=id; sOwner=id; await stSet('planetone-clients', JSON.stringify(CLIENTS));
   const raw=await stGet('planetone-fb:'+id);
   scope='ytd'; anTexts=null;
   if(raw){ try{ S=JSON.parse(raw); migrateS(); }catch(e){ S=freshState(); } }
@@ -1004,9 +1009,9 @@ async function saveNow(){
   btns.forEach(b=>b.classList.add('saving'));
   document.getElementById('savestate').textContent='salvataggio…';
   try{
-    const ok=await stSet('planetone-fb:'+CLIENTS.activeId, JSON.stringify(S));
+    const ok=await stSet('planetone-fb:'+sOwner, JSON.stringify(S));
     storageOk=ok;
-    const c=CLIENTS.list.find(x=>x.id===CLIENTS.activeId);
+    const c=CLIENTS.list.find(x=>x.id===sOwner);
     if(c){ c.updated=Date.now(); if(c.nome!==S.cliente){ c.nome=S.cliente||c.nome; renderClientSelect(); } }
     await stSet('planetone-clients', JSON.stringify(CLIENTS));
     const hh=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
@@ -1040,10 +1045,11 @@ async function saveState(){
   dirty=true;
   segnaStato('dirty','modifiche non salvate…');
   clearTimeout(saveTimer);
+  const cid=sOwner;              // il cliente a cui appartengono i dati in memoria ADESSO
   saveTimer=setTimeout(async ()=>{
-    const ok=await stSet('planetone-fb:'+CLIENTS.activeId, JSON.stringify(S));
+    const ok=await stSet('planetone-fb:'+cid, JSON.stringify(S));
     storageOk=ok;
-    const c=CLIENTS.list.find(x=>x.id===CLIENTS.activeId);
+    const c=CLIENTS.list.find(x=>x.id===cid);
     if(c){ c.updated=Date.now(); if(c.nome!==S.cliente){ c.nome=S.cliente||c.nome; renderClientSelect(); } await stSet('planetone-clients', JSON.stringify(CLIENTS)); }
     const hh=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
     dirty=!ok;
@@ -3878,7 +3884,7 @@ document.addEventListener('keydown',e=>{
 });
 window.addEventListener('beforeunload',e=>{ // flush sincrono di sicurezza alla chiusura
   let salvato=false;
-  try{ localStorage.setItem('p1:planetone-fb:'+CLIENTS.activeId, JSON.stringify(S));
+  try{ if(sOwner) localStorage.setItem('p1:planetone-fb:'+sOwner, JSON.stringify(S));
        localStorage.setItem('p1:planetone-clients', JSON.stringify(CLIENTS)); salvato=true; }catch(err){}
   /* Si avvisa solo se la scrittura di sicurezza non è riuscita: lì i dati andrebbero persi davvero. */
   if(!salvato && (dirty || !storageOk)){ e.preventDefault(); e.returnValue=''; return ''; }
@@ -3954,7 +3960,7 @@ async function sbCancella(k){
 const sbCoda=new Map(); let sbTimer=null, sbInvio=false;
 function sbAccoda(k,v){
   if(!SB.token) return;
-  sbCoda.set(k,v);
+  sbCoda.set(k, k==='planetone-clients' ? sbSenzaAttivo(v) : v);
   clearTimeout(sbTimer); sbTimer=setTimeout(sbSvuota, 1200);
 }
 async function sbSvuota(){
@@ -3982,17 +3988,34 @@ stSet=async function(k,v){ const ok=await stSetLocale(k,v); sbAccoda(k,v); retur
 stDel=async function(k){ const r=await stDelLocale(k); if(SB.token) sbCancella(k); return r; };
 
 /* ---- all'avvio: prima si scende quello che c'è nel database ---- */
+/* L'elenco clienti è di tutti, ma "quale cliente ho aperto" è di ciascuno:
+   se viaggiasse nel database, la sincronizzazione sposterebbe il cliente
+   aperto sotto le mani di chi sta lavorando. Quindi entra ed esce ripulito. */
+function sbSenzaAttivo(valore){
+  try{ const o=JSON.parse(valore); delete o.activeId; return JSON.stringify(o); }catch(e){ return valore; }
+}
+function sbConAttivoLocale(valore){
+  try{
+    const o=JSON.parse(valore), mio=JSON.parse(localStorage.getItem('p1:planetone-clients')||'{}');
+    o.activeId = mio.activeId || o.activeId || null;
+    return JSON.stringify(o);
+  }catch(e){ return valore; }
+}
 async function sbScarica(){
   const righe=await sbTutto();
-  for(const r of righe) await stSetLocale(r.chiave, r.valore);
+  for(const r of righe){
+    const v = r.chiave==='planetone-clients' ? sbConAttivoLocale(r.valore) : r.valore;
+    await stSetLocale(r.chiave, v);
+  }
   return righe.length;
 }
 async function sbCarica(){                 // il contrario: manda su quello che c'è qui
   const righe=[];
   try{
     for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i);
-      if(k && k.indexOf('p1:planetone')===0) righe.push({k:k.slice(3), v:localStorage.getItem(k)});
+      const k=localStorage.key(i); if(!k || k.indexOf('p1:planetone')!==0) continue;
+      const kk=k.slice(3), vv=localStorage.getItem(k);
+      righe.push({k:kk, v: kk==='planetone-clients' ? sbSenzaAttivo(vv) : vv});
     }
   }catch(e){}
   if(righe.length) await sbScrivi(righe);
@@ -4066,6 +4089,7 @@ document.addEventListener('visibilitychange', async ()=>{
 (async ()=>{
   await cloudAvvio();
   await loadClients();
+  sOwner=CLIENTS.activeId;
   const rec=await recoverClients();
   const seeded=await ensureSeedBarcollo();
   const raw=await stGet('planetone-fb:'+CLIENTS.activeId);
