@@ -367,12 +367,38 @@
   .ordsw button{border:none;border-left:1px solid var(--line);background:#fff;padding:7px 11px;font:inherit;font-size:12.5px;color:var(--ink2);cursor:pointer;}
   .ordsw button:hover{background:#F5F3EF;color:var(--ink);}
   .ordsw button.on{background:var(--brand);color:#fff;font-weight:600;}
+  .annosw{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:9px;overflow:hidden;background:#fff;}
+  .annosw .al{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);
+    padding:0 9px;background:#F2F0EB;border-right:1px solid var(--line);align-self:stretch;display:flex;align-items:center;}
+  .annosw select{border:none;background:#fff;font:inherit;font-family:var(--num);font-size:13px;padding:5px 6px;color:var(--ink);cursor:pointer;}
+  .annosw select:focus{outline:2px solid var(--brass);outline-offset:-2px;}
+  .annosw button{border:none;border-left:1px solid var(--line);background:#fff;padding:5px 9px;font:inherit;font-size:14px;color:var(--ink2);cursor:pointer;}
+  .annosw button:hover{background:var(--brass);color:#fff;}
   .merchsw{display:inline-flex;align-items:center;gap:0;border:1.5px solid var(--porpora);border-radius:9px;overflow:hidden;background:#fff;}
   .merchsw .ml{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--porpora);padding:0 9px;}
   .merchsw button{border:none;border-left:1px solid #E7D3DA;background:#fff;padding:6px 10px;font:inherit;font-size:12px;color:var(--ink2);cursor:pointer;}
   .merchsw button:hover{background:var(--porpora-bg);color:var(--porpora);}
   .merchsw button.on{background:var(--porpora);color:#fff;font-weight:600;}
   .merchsw.off{opacity:.55;}
+  /* confronto tra periodi */
+  .cfbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+  .cfbar select{border:1.5px solid var(--line);border-radius:9px;background:#fff;font:inherit;font-size:13px;padding:7px 9px;color:var(--ink);cursor:pointer;}
+  .cfbar select:focus{outline:2px solid var(--brass);outline-offset:-2px;}
+  .cfbar .cl{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);}
+  .cfgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:20px;}
+  .cfcard{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:13px 14px;}
+  .cfcard .t{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:700;}
+  .cfcard .v{font-family:var(--num);font-size:21px;font-weight:600;margin:5px 0 1px;}
+  .cfcard .p{font-family:var(--num);font-size:12px;color:var(--ink2);}
+  .cfcard .d{font-family:var(--num);font-size:12.5px;font-weight:600;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);}
+  .cfcard .d.su{color:var(--ok)} .cfcard .d.giu{color:var(--bad)} .cfcard .d.pari{color:var(--ink2)}
+  .ponte{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:16px 16px 10px;margin-bottom:20px;}
+  .ponte .riga{display:grid;grid-template-columns:minmax(150px,1.1fr) 1fr minmax(110px,auto);gap:12px;align-items:center;padding:5px 0;font-size:13px;}
+  .ponte .barra{height:13px;background:#F2F0EB;border-radius:7px;position:relative;overflow:hidden;}
+  .ponte .barra i{position:absolute;top:0;bottom:0;border-radius:7px;}
+  .ponte .num{font-family:var(--num);font-size:13px;font-weight:600;text-align:right;}
+  .ponte .riga.cap{border-top:1px solid var(--line);margin-top:6px;padding-top:9px;font-weight:600;}
+  .cfnota{font-size:12.5px;color:var(--ink2);background:#FBF6EC;border:1px solid #EADFC6;border-radius:9px;padding:9px 12px;margin-bottom:16px;}
   /* quadranti del cruscotto */
   .gaugegrid{display:grid;grid-template-columns:1fr 1fr minmax(230px,.85fr);gap:14px;margin-bottom:16px;}
   .gaugecard{border:1.5px solid var(--line);border-radius:14px;background:#fff;padding:16px 14px 18px;text-align:center;}
@@ -551,12 +577,13 @@
     <div class="grp">Analisi &amp; controllo</div>
     <button data-page="pr">Produttività HR</button>
     <button data-page="ceagg">CE aggregato</button>
+    <button data-page="cf">Confronto tra periodi</button>
     <button data-page="ob">Obiettivi</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v59</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v60</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -568,6 +595,11 @@
         <span class="merchsw" id="merchSw" title="il merchandising entra nei conti, ne resta fuori, oppure si guarda da solo">
           <span class="ml">Merch</span>
           <button type="button" data-merch="incl">Acceso</button><button type="button" data-merch="escl">Spento</button><button type="button" data-merch="solo">Isolato</button>
+        </span>
+        <span class="annosw cli" title="anno di lavoro del cliente">
+          <span class="al">Anno</span>
+          <select id="annoSel"></select>
+          <button type="button" id="btnNuovoAnno" title="aggiungi un altro anno a questo cliente">+</button>
         </span>
         <div class="period" id="period"></div>
       </div>
@@ -745,6 +777,7 @@
   <div class="page" id="page-home"><div id="homeBody"></div></div>
 
   <!-- ============ OBIETTIVI ============ -->
+  <div class="page" id="page-cf"><div id="cfBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
@@ -892,6 +925,7 @@ function freshState(){
     merch:{mode:'incl'},   // incl = acceso · escl = spento · solo = isolato
     ce: MESI.map(()=>({rf:0, rb:0, ra:0, mf:0, mb:0, rfm:0, rbm:0, mfm:0, mbm:0})),
     ru: [],
+    storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
       {id:'cn1', nome:'Autoconsumi (pasti e bevande staff)', m:zeros()},
@@ -931,6 +965,7 @@ let CLIENTS={list:[], activeId:null};
 let sOwner=null;
 function migrateS(){
   if(!S.merch||!S.merch.mode) S.merch={mode:'incl'};
+  if(!S.storico||typeof S.storico!=='object') S.storico={};
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
@@ -999,7 +1034,7 @@ async function switchClient(id){
   scope='ytd'; anTexts=null;
   if(raw){ try{ S=JSON.parse(raw); migrateS(); }catch(e){ S=freshState(); } }
   else{ S=freshState(); S.cliente=(CLIENTS.list.find(c=>c.id===id)||{}).nome||'Nuovo cliente'; }
-  renderClientSelect(); renderMerchSw(); renderAll(); renderDash();
+  renderClientSelect(); renderMerchSw(); renderAnni(); renderAll(); renderDash();
   document.getElementById('savestate').textContent='cliente: '+S.cliente;
 }
 /* Salva ora: scrive subito, senza aspettare il salvataggio automatico, e lo dice */
@@ -1058,6 +1093,54 @@ async function saveState(){
     dirty=!ok;
     segnaStato(ok?'ok':'ko', ok ? 'salvataggio automatico ✓ '+hh : 'dati in sessione (salvataggio non disponibile)');
   }, 600);
+}
+
+/* ---------------- gli anni del cliente ----------------
+   Un cliente tiene più anni dentro lo stesso record: quello aperto sta nei campi
+   normali (S.ce, S.ru, …), gli altri in S.storico. Un solo record per cliente,
+   come prima: niente chiavi in più da tenere allineate. */
+const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales'];
+function anniCliente(){
+  return [...new Set([num(S.anno), ...Object.keys(S.storico||{}).map(Number)])]
+    .filter(a=>a>2000).sort((a,b)=>b-a);
+}
+function annoVuoto(){
+  const f=freshState();
+  const o={}; ANNO_CAMPI.forEach(k=>o[k]=f[k]); return o;
+}
+async function cambiaAnno(nuovo){
+  nuovo=num(nuovo); if(!nuovo || nuovo===num(S.anno)) return;
+  S.storico=S.storico||{};
+  const corrente={}; ANNO_CAMPI.forEach(k=>corrente[k]=S[k]);
+  S.storico[S.anno]=corrente;                       // metto via l'anno che lascio
+  const dati=S.storico[nuovo]||annoVuoto();
+  delete S.storico[nuovo];                          // l'anno aperto non sta anche nello storico
+  ANNO_CAMPI.forEach(k=>S[k]=dati[k]);
+  S.anno=nuovo; migrateS(); scope='ytd';
+  await saveState(); renderAnni(); renderAll(); renderDash();
+  toast('Anno '+nuovo+': '+(compute().complete.length||'nessun')+' mese consuntivato');
+}
+async function nuovoAnno(){
+  const a=await uiPrompt('Che anno vuoi aggiungere a questo cliente?', String(num(S.anno)-1));
+  const n=num(a); if(!n||n<2000||n>2100){ if(a) toast('Anno non valido',true); return; }
+  if(anniCliente().includes(n)){ await cambiaAnno(n); return; }
+  S.storico=S.storico||{}; S.storico[n]=annoVuoto();
+  await cambiaAnno(n);
+}
+function renderAnni(){
+  const el=document.getElementById('annoSel'); if(!el) return;
+  el.innerHTML=anniCliente().map(a=>`<option value="${a}" ${a===num(S.anno)?'selected':''}>${a}</option>`).join('');
+}
+/* calcola un anno qualsiasi del cliente: per gli altri anni si presta lo stato
+   un istante, così tutte le regole di calcolo restano scritte in un posto solo */
+function computeAnno(anno){
+  anno=num(anno);
+  if(anno===num(S.anno)) return compute();
+  const dati=(S.storico||{})[anno]; if(!dati) return null;
+  const vero=S;
+  S=Object.assign({}, vero, dati, {anno});
+  let r=null; try{ r=compute(); } finally { S=vero; }
+  return r;
 }
 
 /* ---------------- modello di calcolo ---------------- */
@@ -1851,6 +1934,196 @@ function sgChart(){
 }
 
 /* ================================================================
+   RENDER · CONFRONTO TRA PERIODI
+   Confronta lo stesso periodo in due anni diversi dello stesso cliente:
+   l'anno intero, un trimestre o un mese. I costi si leggono sempre in due
+   modi — in euro e in incidenza sui ricavi — perché un costo che cresce in
+   euro ma scende in incidenza è una buona notizia, non una cattiva.
+================================================================ */
+let cfA=null, cfB=null, cfPer='anno', cfBU='tot';
+const CF_PERIODI=()=>[['anno','Anno intero'],
+  ...[0,1,2,3].map(q=>['t'+q, TRIM[q]]),
+  ...MESI.map((m,i)=>['m'+i, m])];
+function cfMesi(per){
+  if(per==='anno') return [0,1,2,3,4,5,6,7,8,9,10,11];
+  if(per[0]==='t'){ const q=+per[1]; return [q*3,q*3+1,q*3+2]; }
+  return [+per.slice(1)];
+}
+/* somma i mesi scelti di un anno, letti con la lente della business unit */
+function cfSomma(anno, mesi, bu){
+  const m=computeAnno(anno); if(!m) return null;
+  const L=QM_BU[bu]||QM_BU.tot;
+  const o={ric:0,ru:0,mp:0,sg:0,n:0,mesiConDati:[]};
+  mesi.forEach(i=>{
+    const x=m.months[i]; if(!x) return;
+    if(x.ricavi>0||x.totCosti>0){ o.n++; o.mesiConDati.push(i); }
+    o.ric+=num(L.ric(x)); o.ru+=num(L.ru(x)); o.mp+=num(L.mp(x)); o.sg+=num(L.sg(x));
+  });
+  o.ro=o.ric-o.ru-o.mp-o.sg;
+  return o;
+}
+/* le voci di spese generali di un anno, sommate sui mesi scelti */
+function cfVociSG(anno, mesi){
+  const dati = num(anno)===num(S.anno) ? S : (S.storico||{})[anno];
+  const out={}; ((dati&&dati.sg)||[]).forEach(c=>{
+    if(isMerchSG(c) && merchMode()==='escl') return;
+    const v=mesi.reduce((a,i)=>a+num(c.m[i]),0);
+    if(Math.abs(v)>0.005) out[c.nome]=(out[c.nome]||0)+v;
+  });
+  return out;
+}
+function renderCF(){
+  const el=document.getElementById('cfBody');
+  const anni=anniCliente();
+  if(cfB===null||!anni.includes(cfB)) cfB=num(S.anno);
+  if(cfA===null||!anni.includes(cfA)||cfA===cfB) cfA=anni.find(a=>a!==cfB)||cfB;
+  if(anni.length<2){
+    el.innerHTML=`<section><h2>Confronto tra periodi</h2>
+      <div class="sub">Questo cliente ha un anno solo: il ${S.anno}. Per confrontare serve un secondo anno — aggiungilo con il <b>+</b> accanto all'anno in testata e carica i suoi dati con i soliti tre file.</div></section>`;
+    return;
+  }
+  const mesi=cfMesi(cfPer), BU=QM_BU[cfBU]||QM_BU.tot;
+  const A=cfSomma(cfA,mesi,cfBU), B=cfSomma(cfB,mesi,cfBU);
+  const etPer=(CF_PERIODI().find(x=>x[0]===cfPer)||['','']) [1];
+  const sel=(id,voci,attivo)=>`<select id="${id}">`+voci.map(([k,et])=>`<option value="${k}" ${String(k)===String(attivo)?'selected':''}>${et}</option>`).join('')+`</select>`;
+  const sw=(attr,voci,attivo,etichetta)=>`<span class="ordsw"><span class="ol">${etichetta}</span>`+
+    voci.map(([k,et])=>`<button type="button" ${attr}="${k}" class="${k===attivo?'on':''}">${et}</button>`).join('')+`</span>`;
+
+  /* --- intestazione e selettori --- */
+  let h=`<section><div class="sechead">
+      <div><h2>Confronto tra periodi</h2>
+      <div class="sub">Lo stesso periodo in due anni diversi. Per ogni centro di costo l'importo e l'incidenza sui ricavi: il colore segue l'effetto sul margine, non il segno della variazione.</div></div>
+      ${sw('data-cfbu',[['tot','Totale'],['food','Food'],['bev','Beverage']],cfBU,'Business unit')}
+    </div>
+    <div class="cfbar">
+      <span class="cl">Periodo</span>${sel('cfPerSel',CF_PERIODI(),cfPer)}
+      <span class="cl">confronta</span>${sel('cfBSel',anni.map(a=>[a,a]),cfB)}
+      <span class="cl">con</span>${sel('cfASel',anni.map(a=>[a,a]),cfA)}
+    </div>`;
+
+  if(!A||!B||(A.ric===0&&B.ric===0)){
+    return void(el.innerHTML=h+`<div class="cfnota">Per il periodo scelto non ci sono dati in nessuno dei due anni.</div></section>`);
+  }
+  if(A.n!==B.n){
+    h+=`<div class="cfnota"><b>Attenzione:</b> il ${cfB} ha ${B.n} ${B.n===1?'mese':'mesi'} con dati e il ${cfA} ne ha ${A.n}. Il confronto fra totali non è alla pari: guarda le incidenze, oppure scegli un trimestre o un mese presente in entrambi.</div>`;
+  }
+
+  /* --- la fascia dei cinque numeri --- */
+  const incA=v=>A.ric>0?v/A.ric:NaN, incB=v=>B.ric>0?v/B.ric:NaN;
+  const dpp=(a,b)=>(isFinite(a)&&isFinite(b))?(b-a)*100:NaN;
+  const card=(titolo,vA,vB,costo)=>{
+    const d=vB-vA, pc=vA?d/Math.abs(vA):NaN;
+    const ia=incA(vA), ib=incB(vB), pp=dpp(ia,ib);
+    /* su un costo il bene è scendere; sui ricavi e sul margine è salire */
+    const buono = costo ? (isFinite(pp)?pp<-0.05:d<0) : d>0;
+    const pari  = costo ? (isFinite(pp)&&Math.abs(pp)<=0.05) : Math.abs(d)<0.5;
+    const cl = pari?'pari':(buono?'su':'giu');
+    const segno=d>=0?'+':'−';
+    return `<div class="cfcard">
+      <div class="t">${titolo}</div>
+      <div class="v">${fmtE(vB)}</div>
+      <div class="p">${costo?`${fmtP(ib)} sui ricavi · `:''}${cfB}</div>
+      <div class="p">${fmtE(vA)}${costo?` · ${fmtP(ia)}`:''} nel ${cfA}</div>
+      <div class="d ${cl}">${segno}${fmtE(Math.abs(d))}${isFinite(pc)?` · ${segno}${fmtNum(Math.abs(pc)*100)}%`:''}${
+        costo&&isFinite(pp)?`<br>${pp>=0?'+':'−'}${fmtNum(Math.abs(pp))} p.p. di incidenza`:''}</div>
+    </div>`;
+  };
+  h+=`<div class="cfgrid">
+    ${card('Fatturato',A.ric,B.ric,false)}
+    ${card('Materia prima',A.mp,B.mp,true)}
+    ${card('Risorse umane',A.ru,B.ru,true)}
+    ${card('Spese generali',A.sg,B.sg,true)}
+    ${card('Margine operativo',A.ro,B.ro,false)}
+  </div></section>`;
+
+  /* --- il ponte: da dove nasce la differenza di margine ---
+     ΔM = ΔRicavi × margine%A  +  Ricavi(B) × (incidenzaA − incidenzaB) per ogni costo.
+     La somma dei pezzi fa esattamente la differenza, senza residui. */
+  const mA = A.ric>0 ? A.ro/A.ric : 0;
+  const effVol = (B.ric-A.ric)*mA;
+  const eff = v => B.ric*((A.ric>0?v.a/A.ric:0)-(B.ric>0?v.b/B.ric:0));
+  const pezzi=[
+    ['Volume dei ricavi', effVol],
+    ['Materia prima',     eff({a:A.mp,b:B.mp})],
+    ['Risorse umane',     eff({a:A.ru,b:B.ru})],
+    ['Spese generali',    eff({a:A.sg,b:B.sg})],
+  ];
+  const maxAss=Math.max(1,...pezzi.map(x=>Math.abs(x[1])));
+  h+=`<section><h2>Da cosa nasce la differenza</h2>
+    <div class="sub">Il margine passa da ${fmtE(A.ro)} a ${fmtE(B.ro)}. Ecco quanto ha pesato ciascuna causa: il volume dei ricavi valutato al margine del ${cfA}, e per ogni centro di costo il guadagno o la perdita di efficienza misurata in incidenza.</div>
+    <div class="ponte">
+      <div class="riga"><div>Margine ${cfA}</div><div></div><div class="num">${fmtE(A.ro)}</div></div>
+      ${pezzi.map(([n,v])=>`<div class="riga">
+        <div>${n}</div>
+        <div class="barra"><i style="background:${v>=0?'var(--ok)':'var(--bad)'};${v>=0?'left:50%':'right:50%'};width:${(Math.abs(v)/maxAss*50).toFixed(1)}%"></i></div>
+        <div class="num" style="color:${v>=0?'var(--ok)':'var(--bad)'}">${v>=0?'+':'−'}${fmtE(Math.abs(v))}</div></div>`).join('')}
+      <div class="riga cap"><div>Margine ${cfB}</div><div></div><div class="num">${fmtE(B.ro)}</div></div>
+    </div></section>`;
+
+  /* --- il dettaglio dei mesi del periodo --- */
+  if(mesi.length>1){
+    const mA2=computeAnno(cfA), mB2=computeAnno(cfB), L=BU;
+    const cellaDelta=(a,b,costo)=>{
+      const d=b-a, buono = costo ? d<0 : d>0;
+      const cl = Math.abs(d)<0.5?'':(buono?'v-ok':'v-bad');
+      return `<td class="tot"><span class="pil ${cl}">${d>=0?'+':'−'}${fmtE(Math.abs(d))}</span></td>`;
+    };
+    h+=`<section><h2>Mese per mese</h2>
+      <div class="sub">Solo i mesi del periodo scelto, con il fatturato dei due anni e la differenza${cfBU==='tot'?'':' · solo '+BU.et}.</div>
+      <div style="overflow-x:auto"><table class="obtable quadro">
+        <tr><th>Mese</th><th>Fatturato ${cfA}</th><th>Fatturato ${cfB}</th><th>Differenza</th><th>Margine ${cfA}</th><th>Margine ${cfB}</th><th>Differenza</th></tr>
+        ${mesi.map(i=>{
+          const xa=mA2&&mA2.months[i], xb=mB2&&mB2.months[i];
+          const ra=xa?num(L.ric(xa)):0, rb=xb?num(L.ric(xb)):0;
+          const oa=xa?num(L.ric(xa))-num(L.ru(xa))-num(L.mp(xa))-num(L.sg(xa)):0;
+          const ob=xb?num(L.ric(xb))-num(L.ru(xb))-num(L.mp(xb))-num(L.sg(xb)):0;
+          if(!ra&&!rb&&!oa&&!ob) return '';
+          return `<tr><td>${MESI[i]}</td>
+            <td class="tot">${fmtE(ra)}</td><td class="tot">${fmtE(rb)}</td>${cellaDelta(ra,rb,false)}
+            <td class="tot">${fmtE(oa)}</td><td class="tot">${fmtE(ob)}</td>${cellaDelta(oa,ob,false)}</tr>`;
+        }).join('')}
+      </table></div></section>`;
+  }
+
+  /* --- per business unit --- */
+  if(cfBU==='tot'){
+    const righe=[['Food','food'],['Beverage','bev']].map(([et,k])=>{
+      const a=cfSomma(cfA,mesi,k), b=cfSomma(cfB,mesi,k);
+      const q=(x,y)=>`<td class="tot">${fmtE(x)}</td><td class="tot">${fmtE(y)}</td>
+        <td class="tot"><span class="pil ${Math.abs(y-x)<0.5?'':(y>x?'v-ok':'v-bad')}">${y>=x?'+':'−'}${fmtE(Math.abs(y-x))}</span></td>`;
+      return `<tr><td><b>${et}</b></td>${q(a.ric,b.ric)}
+        <td class="tot">${fmtP(a.ric?a.ro/a.ric:NaN)}</td><td class="tot">${fmtP(b.ric?b.ro/b.ric:NaN)}</td>
+        <td class="tot"><span class="pil ${(b.ric?b.ro/b.ric:0)>=(a.ric?a.ro/a.ric:0)?'v-ok':'v-bad'}">${b.ro>=a.ro?'+':'−'}${fmtE(Math.abs(b.ro-a.ro))}</span></td></tr>`;
+    }).join('');
+    h+=`<section><h2>Food e Beverage</h2>
+      <div class="sub">Il fatturato delle due business unit e il margine che ciascuna porta a casa, con i costi ripartiti secondo il metodo Planet One.</div>
+      <div style="overflow-x:auto"><table class="obtable quadro">
+        <tr><th>Business unit</th><th>Fatturato ${cfA}</th><th>Fatturato ${cfB}</th><th>Differenza</th><th>Margine % ${cfA}</th><th>Margine % ${cfB}</th><th>Differenza margine</th></tr>
+        ${righe}
+      </table></div></section>`;
+  }
+
+  /* --- le spese generali che si sono mosse --- */
+  const va=cfVociSG(cfA,mesi), vb=cfVociSG(cfB,mesi);
+  const nomi=[...new Set([...Object.keys(va),...Object.keys(vb)])];
+  const mosse=nomi.map(n=>({n, a:va[n]||0, b:vb[n]||0, d:(vb[n]||0)-(va[n]||0)}))
+                  .filter(x=>Math.abs(x.d)>=1).sort((x,y)=>Math.abs(y.d)-Math.abs(x.d)).slice(0,10);
+  if(mosse.length){
+    h+=`<section><h2>Le spese generali che si sono mosse</h2>
+      <div class="sub">Le dieci voci con la variazione più grande in euro fra i due periodi: è qui che di solito si nascondono le sorprese.${cfBU==='tot'?'':' Importi interi, non ripartiti fra Food e Beverage.'}</div>
+      <div style="overflow-x:auto"><table class="obtable quadro">
+        <tr><th>Voce</th><th>${cfA}</th><th>${cfB}</th><th>Differenza</th></tr>
+        ${mosse.map(x=>`<tr><td>${x.n}</td>
+          <td class="tot">${fmtE(x.a)}</td><td class="tot">${fmtE(x.b)}</td>
+          <td class="tot"><span class="pil ${x.d<0?'v-ok':'v-bad'}">${x.d>=0?'+':'−'}${fmtE(Math.abs(x.d))}</span></td></tr>`).join('')}
+      </table></div></section>`;
+  }
+  el.innerHTML=h;
+  const bind=(id,f)=>{ const e=document.getElementById(id); if(e) e.addEventListener('change',ev=>{ f(ev.target.value); renderCF(); }); };
+  bind('cfPerSel',v=>cfPer=v); bind('cfASel',v=>cfA=num(v)); bind('cfBSel',v=>cfB=num(v));
+}
+
+/* ================================================================
    RENDER · COSTI NASCOSTI
 ================================================================ */
 function renderCN(){
@@ -2430,7 +2703,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, ob:renderOB, an:renderAN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -2575,6 +2848,7 @@ document.addEventListener('click',e=>{
   if(rb){ renameFlow(rb.dataset.rename); return; }
   const dc=e.target.closest('[data-delclient]');
   if(dc){ delClientFlow(dc.dataset.delclient); return; }
+  const cb=e.target.closest('[data-cfbu]'); if(cb){ cfBU=cb.dataset.cfbu; renderCF(); return; }
   const qp=e.target.closest('[data-qmper]'); if(qp){ qmPer=qp.dataset.qmper; renderDash(); return; }
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
@@ -3943,6 +4217,8 @@ function setMerchMode(m){
       : 'Merchandising isolato: vedi solo ricavi e spese del merchandising.');
 }
 document.getElementById('clientSelect').addEventListener('change',e=>switchClient(e.target.value));
+document.getElementById('annoSel').addEventListener('change',e=>cambiaAnno(e.target.value));
+document.getElementById('btnNuovoAnno').addEventListener('click',nuovoAnno);
 /* Ctrl/Cmd + S salva come in un programma normale */
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey) && String(e.key).toLowerCase()==='s'){ e.preventDefault(); saveNow(); }
@@ -4161,7 +4437,7 @@ document.addEventListener('visibilitychange', async ()=>{
   let had=false;
   if(raw){ try{ S=JSON.parse(raw); migrateS(); had=true; }catch(e){ loadDemo(); } }
   else loadDemo();
-  renderClientSelect(); renderMerchSw();
+  renderClientSelect(); renderMerchSw(); renderAnni();
   if(CLIENTS.list.length>1){ gotoPage('home'); } else { renderDash(); }
   document.getElementById('savestate').textContent = had ? 'salvataggio automatico attivo ✓' : 'dati demo · salvataggio automatico attivo';
   if(rec>0) toast('✓ Recuperati '+rec+' clienti che risultavano scollegati dall\'archivio: li trovi nella schermata Clienti.');
