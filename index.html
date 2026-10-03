@@ -595,7 +595,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v61</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v62</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2090,8 +2090,29 @@ async function verRipristina(){
    modi — in euro e in incidenza sui ricavi — perché un costo che cresce in
    euro ma scende in incidenza è una buona notizia, non una cattiva.
 ================================================================ */
-let cfA=null, cfB=null, cfPer='anno', cfBU='tot';
-const CF_PERIODI=()=>[['anno','Anno intero'],
+let cfA=null, cfB=null, cfPer='pari', cfBU='tot';
+/* i mesi che in un anno hanno davvero qualcosa dentro */
+function cfMesiConDati(anno){
+  const m=computeAnno(anno); if(!m) return [];
+  const out=[];
+  for(let i=0;i<12;i++){ const x=m.months[i]; if(x && (x.ricavi>0||x.totCosti>0)) out.push(i); }
+  return out;
+}
+/* il periodo in comune: solo i mesi consuntivati in tutti e due gli anni.
+   È il confronto onesto quando l'anno in corso è fermo a luglio e quello
+   prima è completo: confrontare sette mesi con dodici non dice niente. */
+function cfMesiPari(a,b){
+  const A=new Set(cfMesiConDati(a)), B=new Set(cfMesiConDati(b));
+  return [...A].filter(i=>B.has(i)).sort((x,y)=>x-y);
+}
+function cfEtichettaPari(mesi){
+  if(!mesi.length) return 'Periodo in comune (nessun mese)';
+  const a=M3[mesi[0]], b=M3[mesi[mesi.length-1]];
+  const buchi = mesi.length !== (mesi[mesi.length-1]-mesi[0]+1);
+  return 'Periodo in comune ('+(mesi.length===1?a:a+'–'+b)+(buchi?', '+mesi.length+' mesi':'')+')';
+}
+const CF_PERIODI=(etPari)=>[['pari', etPari||'Periodo in comune'],
+  ['anno','Anno intero'],
   ...[0,1,2,3].map(q=>['t'+q, TRIM[q]]),
   ...MESI.map((m,i)=>['m'+i, m])];
 function cfMesi(per){
@@ -2132,9 +2153,10 @@ function renderCF(){
       <div class="sub">Questo cliente ha un anno solo: il ${S.anno}. Per confrontare serve un secondo anno — aggiungilo con il <b>+</b> accanto all'anno in testata e carica i suoi dati con i soliti tre file.</div></section>`;
     return;
   }
-  const mesi=cfMesi(cfPer), BU=QM_BU[cfBU]||QM_BU.tot;
+  const mesiPari=cfMesiPari(cfA,cfB), etPari=cfEtichettaPari(mesiPari);
+  const mesi = cfPer==='pari' ? mesiPari : cfMesi(cfPer);
+  const BU=QM_BU[cfBU]||QM_BU.tot;
   const A=cfSomma(cfA,mesi,cfBU), B=cfSomma(cfB,mesi,cfBU);
-  const etPer=(CF_PERIODI().find(x=>x[0]===cfPer)||['','']) [1];
   const sel=(id,voci,attivo)=>`<select id="${id}">`+voci.map(([k,et])=>`<option value="${k}" ${String(k)===String(attivo)?'selected':''}>${et}</option>`).join('')+`</select>`;
   const sw=(attr,voci,attivo,etichetta)=>`<span class="ordsw"><span class="ol">${etichetta}</span>`+
     voci.map(([k,et])=>`<button type="button" ${attr}="${k}" class="${k===attivo?'on':''}">${et}</button>`).join('')+`</span>`;
@@ -2146,16 +2168,22 @@ function renderCF(){
       ${sw('data-cfbu',[['tot','Totale'],['food','Food'],['bev','Beverage']],cfBU,'Business unit')}
     </div>
     <div class="cfbar">
-      <span class="cl">Periodo</span>${sel('cfPerSel',CF_PERIODI(),cfPer)}
+      <span class="cl">Periodo</span>${sel('cfPerSel',CF_PERIODI(etPari),cfPer)}
       <span class="cl">confronta</span>${sel('cfBSel',anni.map(a=>[a,a]),cfB)}
       <span class="cl">con</span>${sel('cfASel',anni.map(a=>[a,a]),cfA)}
     </div>`;
 
+  if(cfPer==='pari' && !mesiPari.length){
+    return void(el.innerHTML=h+`<div class="cfnota">Il ${cfB} e il ${cfA} non hanno nessun mese consuntivato in comune: non c'è niente da mettere a confronto alla pari. Scegli <b>Anno intero</b> per vedere comunque i due totali, tenendo presente che coprono periodi diversi.</div></section>`);
+  }
   if(!A||!B||(A.ric===0&&B.ric===0)){
     return void(el.innerHTML=h+`<div class="cfnota">Per il periodo scelto non ci sono dati in nessuno dei due anni.</div></section>`);
   }
-  if(A.n!==B.n){
-    h+=`<div class="cfnota"><b>Attenzione:</b> il ${cfB} ha ${B.n} ${B.n===1?'mese':'mesi'} con dati e il ${cfA} ne ha ${A.n}. Il confronto fra totali non è alla pari: guarda le incidenze, oppure scegli un trimestre o un mese presente in entrambi.</div>`;
+  if(cfPer==='pari'){
+    h+=`<div class="cfnota">Confronto alla pari su <b>${mesiPari.length} ${mesiPari.length===1?'mese':'mesi'}</b> (${mesiPari.map(i=>M3[i]).join(', ')}): sono i mesi consuntivati sia nel ${cfB} sia nel ${cfA}. I mesi presenti in un anno solo restano fuori da tutti i numeri di questa pagina.</div>`;
+  } else if(A.n!==B.n){
+    h+=`<div class="cfnota"><b>Attenzione:</b> il ${cfB} ha ${B.n} ${B.n===1?'mese':'mesi'} con dati e il ${cfA} ne ha ${A.n}. Il confronto fra totali non è alla pari.
+      ${mesiPari.length?`<a href="#" data-cfper="pari" style="color:var(--brass);font-weight:600">Confronta solo i mesi in comune (${mesiPari.map(i=>M3[i]).join(', ')}) →</a>`:'Guarda le incidenze invece dei totali.'}</div>`;
   }
 
   /* --- la fascia dei cinque numeri --- */
@@ -2999,6 +3027,7 @@ document.addEventListener('click',e=>{
   const dc=e.target.closest('[data-delclient]');
   if(dc){ delClientFlow(dc.dataset.delclient); return; }
   const cb=e.target.closest('[data-cfbu]'); if(cb){ cfBU=cb.dataset.cfbu; renderCF(); return; }
+  const cp=e.target.closest('[data-cfper]'); if(cp){ e.preventDefault(); cfPer=cp.dataset.cfper; renderCF(); return; }
   const qp=e.target.closest('[data-qmper]'); if(qp){ qmPer=qp.dataset.qmper; renderDash(); return; }
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
