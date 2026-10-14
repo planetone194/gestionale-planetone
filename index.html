@@ -382,6 +382,27 @@
   .merchsw button:hover{background:var(--porpora-bg);color:var(--porpora);}
   .merchsw button.on{background:var(--porpora);color:#fff;font-weight:600;}
   .merchsw.off{opacity:.55;}
+  /* simulazione */
+  .simgrid{display:grid;grid-template-columns:90px repeat(7,1fr);gap:6px;margin:4px 0 6px;}
+  .simgrid .h{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);font-weight:700;
+    text-align:center;padding-bottom:2px;}
+  .simgrid .h.v{text-align:left;align-self:center;padding:0;}
+  .simsw{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:8px 6px;cursor:pointer;
+    font:inherit;text-align:center;transition:all .12s;}
+  .simsw .t{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:700;}
+  .simsw .v{font-family:var(--num);font-size:13px;font-weight:600;margin-top:2px;}
+  .simsw:hover{border-color:var(--brand);}
+  .simsw.off{background:#F4F2EE;border-style:dashed;border-color:#C9C4B8;}
+  .simsw.off .v, .simsw.off .t{color:#A8A49B;text-decoration:line-through;}
+  .simsw.vuoto{background:#FAFAF8;border-style:dotted;cursor:default;opacity:.55;}
+  .simsw.vuoto:hover{border-color:#C9C4B8;}
+  .simtit{font-size:16px;line-height:1.5;margin:2px 0 4px;}
+  .simtit b{font-family:var(--num);}
+  .simproj{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:4px;}
+  .simproj .c{border:1.5px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;text-align:center;}
+  .simproj .c .t{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:700;}
+  .simproj .c .v{font-family:var(--num);font-size:24px;font-weight:600;margin:6px 0 2px;}
+  .simproj .c .n{font-size:12px;color:var(--ink2);}
   /* analisi dei turni */
   .tutab{width:100%;border-collapse:collapse;font-size:12.5px;}
   .tutab th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:600;
@@ -422,22 +443,22 @@
     text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
   .tutab tr.somma td{background:#F6F4EF;font-weight:600;border-top:1px solid var(--line);}
   .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
-  .srvtab{width:100%;border-collapse:collapse;font-size:13px;}
-  .srvtab th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);font-weight:600;
-    padding:7px 12px;border-bottom:2px solid var(--ink);text-align:center;border-left:1px solid #EFEDE9;}
-  .srvtab th.vc{text-align:left;width:150px;border-left:none;}
+  .srvtab{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .srvtab th{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink2);font-weight:600;
+    padding:5px 9px;border-bottom:2px solid var(--ink);text-align:center;border-left:1px solid #EFEDE9;}
+  .srvtab th.vc{text-align:left;width:140px;border-left:none;}
   .srvtab th.off{color:#C3BFB6;}
   .srvtab th.sett{color:var(--brand);border-left:1.5px solid var(--line);}
-  .srvtab td{padding:7px 12px;border-bottom:1px solid var(--line);border-left:1px solid #EFEDE9;
-    text-align:right;font-family:var(--num);white-space:nowrap;}
-  .srvtab td.vc{text-align:left;font-family:var(--font);font-size:13px;color:var(--ink);border-left:none;}
+  .srvtab td{padding:3px 9px;border-bottom:1px solid var(--line);border-left:1px solid #EFEDE9;
+    text-align:right;font-family:var(--num);white-space:nowrap;font-size:12.5px;}
+  .srvtab td.vc{text-align:left;font-family:var(--font);font-size:12.5px;color:var(--ink);border-left:none;}
   .srvtab td.chiuso{color:#C9C4B8;}
   .srvtab td.sett{border-left:1.5px solid var(--line);background:#FAF9F6;font-weight:600;}
   /* l'importo e, al suo fianco, l'incidenza in una colonnina di larghezza fissa:
      così i numeri restano incolonnati riga per riga */
   .srvtab .e{display:inline-block;font-weight:600;}
-  .srvtab .i{display:inline-block;width:52px;text-align:right;font-size:11px;color:var(--ink2);margin-left:10px;}
-  .srvtab td.big .e{font-size:15px;}
+  .srvtab .i{display:inline-block;width:46px;text-align:right;font-size:10.5px;color:var(--ink2);margin-left:7px;}
+  .srvtab td.big .e{font-size:13.5px;}
   .srvtab tr.ric td{background:#FAFAF8;}
   .srvtab tr.tcosti td{border-top:1px solid var(--line);}
   .srvtab tr.marg td{border-top:1.5px solid var(--brand);background:#F6F4EF;}
@@ -679,6 +700,7 @@
     <button data-page="ceagg">CE aggregato</button>
     <button data-page="cf">Confronto tra periodi</button>
     <button data-page="tu">Analisi dei turni</button>
+    <button data-page="si">Simulazione</button>
     <button data-page="ob">Obiettivi</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
@@ -686,7 +708,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v70</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v71</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -882,6 +904,7 @@
   <!-- ============ OBIETTIVI ============ -->
   <div class="page" id="page-cf"><div id="cfBody"></div></div>
   <div class="page" id="page-tu"><div id="tuBody"></div></div>
+  <div class="page" id="page-si"><div id="siBody"></div></div>
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
 
@@ -1033,6 +1056,7 @@ function freshState(){
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
     turni:{base:0, righe:[]},   // elenco a sé: {id,nome,reparto,c:ore a contratto,o:costo orario,g:[[pIn,pFin,cIn,cFin] ×7]}
     incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
+    sim:{chiusi:{}, recupero:0},   // lo scenario: quali servizi si spengono e quanto fatturato si recupera altrove
     ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
@@ -1094,6 +1118,9 @@ function migrateS(){
   });
   if(!S.incassi||typeof S.incassi!=='object') S.incassi={};
   if(S.ivaInc===undefined||S.ivaInc===null||S.ivaInc==='') S.ivaInc=10;
+  if(!S.sim||typeof S.sim!=='object') S.sim={chiusi:{}, recupero:0};
+  if(!S.sim.chiusi||typeof S.sim.chiusi!=='object') S.sim.chiusi={};
+  if(S.sim.recupero===undefined) S.sim.recupero=0;
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
@@ -1254,7 +1281,7 @@ async function saveState(){
    Un cliente tiene più anni dentro lo stesso record: quello aperto sta nei campi
    normali (S.ce, S.ru, …), gli altri in S.storico. Un solo record per cliente,
    come prima: niente chiavi in più da tenere allineate. */
-const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales','turni','incassi'];
+const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales','turni','incassi','sim'];
 function anniCliente(){
   return [...new Set([num(S.anno), ...Object.keys(S.storico||{}).map(Number)])]
     .filter(a=>a>2000).sort((a,b)=>b-a);
@@ -2177,7 +2204,12 @@ function incassiMedi(){
   return {media, quante, coperti, giornate, da, a, totale, totaleNetto: totale/ivaFatt()};
 }
 /* tutto quello che serve alla pagina, in un colpo solo */
-function tuData(){
+/* tuData() calcola la settimana. Senza argomenti dà la realtà; con uno scenario
+   dà il mondo ipotetico, con lo stesso identico motore: così i due quadri sono
+   confrontabili per costruzione e non c'è una seconda matematica da tenere allineata.
+   scen = {chiusi:{'g-j':true}, recupero: quota del fatturato perso che torna altrove} */
+function tuData(scen){
+  const spento=(g,j)=> !!(scen && scen.chiusi && scen.chiusi[g+'-'+j]);
   const m=compute();
   const isM = scope!=='ytd';
   const mesi = isM ? [scope].filter(i=>m.months[i] && (m.months[i].ricavi>0||m.months[i].totCosti>0))
@@ -2193,8 +2225,8 @@ function tuData(){
     const o=oreSettimana(r), co=costoOrario(r);
     for(let g=0;g<7;g++){
       const og=oreGiorno(r,g);
-      ore[g][0]+=og[0]; ore[g][1]+=og[1];
-      ruE[g][0]+=og[0]*co.v; ruE[g][1]+=og[1]*co.v;
+      /* un servizio spento non ha nessuno in turno: le sue ore non si pagano */
+      for(const j of [0,1]) if(!spento(g,j)){ ore[g][j]+=og[j]; ruE[g][j]+=og[j]*co.v; }
     }
     return {r, ore:o, co};
   });
@@ -2203,17 +2235,27 @@ function tuData(){
   const giorniAperti=[0,1,2,3,4,5,6].filter(g=>serviziDi(g)>0).length;
   const giornateMese=giorniAperti*SETT;
   const sgGiorno = giornateMese>0 ? sgMese/giornateMese : 0;
+  /* il fatturato dei servizi spenti: quello che si recupera si sposta sugli altri,
+     in proporzione a quanto già fanno; il resto è perso. */
+  let persi=0, baseAperta=0;
+  for(let g=0;g<7;g++) for(const j of [0,1]){
+    const v=inc.media[g][j]; if(v==null) continue;
+    if(spento(g,j)) persi+=v; else if(ore[g][j]>0) baseAperta+=v;
+  }
+  const recuperato = persi * Math.max(0, Math.min(1, num(scen&&scen.recupero)/100));
+  const quota = baseAperta>0 ? recuperato/baseAperta : 0;
   /* il conto di ogni giorno e di ogni servizio */
   const celle=Array.from({length:7},(_,g)=>[0,1].map(j=>{
     const ns=serviziDi(g);
     const aperto = ore[g][j]>0;
-    const ric = inc.media[g][j];
+    const base = inc.media[g][j];
+    const ric = spento(g,j) ? (base==null?null:0) : (base==null?null:base*(1+quota));
     const ru  = ruE[g][j];
     const mp  = (ric!=null && isFinite(incMp)) ? ric*incMp : null;
     const sg  = (aperto && ns) ? sgGiorno/ns : 0;
     const costi = ru + (mp||0) + sg;
     const marg = ric!=null ? ric-costi : null;
-    return {aperto, ore:ore[g][j], ric, ru, mp, sg, costi, marg,
+    return {aperto, spento:spento(g,j), base, ore:ore[g][j], ric, ru, mp, sg, costi, marg,
             incRu: ric? ru/ric : NaN, incMp: ric? (mp||0)/ric : NaN,
             incSg: ric? sg/ric : NaN, incMarg: ric? marg/ric : NaN};
   }));
@@ -2225,7 +2267,12 @@ function tuData(){
   const ruSett=celle.reduce((a,x)=>a+x[0].ru+x[1].ru,0);
   const ruMeseTurni=ruSett*SETT;
   const ruMeseCE=mesi.reduce((a,i)=>a+num(m.months[i].ru),0)/nm;
-  return {m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi,
+  /* i totali della settimana, che servono al confronto fra realtà e scenario */
+  const tot=['ric','ru','mp','sg','ore'].reduce((o,k)=>{
+    o[k]=celle.reduce((a,x)=>a+num(x[0][k])+num(x[1][k]),0); return o; },{});
+  tot.costi=tot.ru+tot.mp+tot.sg; tot.marg=tot.ric-tot.costi;
+  tot.servizi=celle.reduce((a,x)=>a+(x[0].aperto?1:0)+(x[1].aperto?1:0),0);
+  return {tot, persi, recuperato, m, isM, mesi, nm, sgMese, incMp, inc, persone, ore, celle, giorniAperti, sgGiorno, serviziDi,
           ricSett, ricMeseCassa, ricMeseCE, scarto: ricMeseCE>0 ? ricMeseCassa/ricMeseCE-1 : NaN,
           ruSett, ruMeseTurni, ruMeseCE, scartoRu: ruMeseCE>0 ? ruMeseTurni/ruMeseCE-1 : NaN};
 }
@@ -2378,10 +2425,10 @@ function renderTU(){
     /* Si legge meglio girata: i giorni in alto come in un calendario, le voci di
        costo in colonna come in un conto economico. Ogni cella ha l'importo e,
        sotto, l'incidenza sui ricavi di quel servizio. */
-    const tabellaServizio=(j,tot)=>{
-      const aperti=GIORNI.map((_,g)=>d.celle[g][j].aperto);
+    const tabellaServizio=(celle,tot)=>{
+      const aperti=GIORNI.map((_,g)=>celle[g].aperto);
       const cella=(g,dentro)=>{
-        const c=d.celle[g][j];
+        const c=celle[g];
         if(!c.aperto) return `<td class="chiuso">—</td>`;
         return dentro(c);
       };
@@ -2413,16 +2460,36 @@ function renderTU(){
       const costi=ru+mp+sg, marg= ric==null?null:ric-costi;
       return {ric,ru,mp,sg,ore,costi,marg};
     };
-    h+=SERVIZI.map(sv=>{
-      const t=totali(sv.k);
-      if(!d.celle.some(x=>x[sv.k].aperto)) return '';
-      return `<section><h2>${sv.et}</h2>
-        <div class="sub">Il conto di ogni ${sv.et.toLowerCase()} della settimana. In ogni casella l'importo e, a fianco in piccolo, l'incidenza sull'incasso di quel servizio.</div>
-        ${tabellaServizio(sv.k,t)}</section>`;
-    }).join('');
+    /* la giornata intera: pranzo e cena sommati, con le incidenze rifatte sul totale */
+    const celleGiorno=[0,1,2,3,4,5,6].map(g=>{
+      const a=d.celle[g][0], b=d.celle[g][1];
+      const aperto=a.aperto||b.aperto;
+      const ric = (a.ric==null && b.ric==null) ? null : num(a.ric)+num(b.ric);
+      const mp  = (a.mp==null && b.mp==null) ? null : num(a.mp)+num(b.mp);
+      const ru=a.ru+b.ru, sg=a.sg+b.sg, ore=a.ore+b.ore;
+      const costi=ru+num(mp)+sg, marg = ric==null?null:ric-costi;
+      return {aperto, ore, ric, ru, mp, sg, costi, marg,
+              incRu: ric?ru/ric:NaN, incMp: ric?num(mp)/ric:NaN, incSg: ric?sg/ric:NaN, incMarg: ric?marg/ric:NaN};
+    });
+    const totGiorno=(()=>{ const cc=celleGiorno.filter(c=>c.aperto);
+      const S1=k=>cc.reduce((a,c)=>a+num(c[k]),0);
+      const ric=cc.some(c=>c.ric!=null)?S1('ric'):null;
+      const ru=S1('ru'), mp=S1('mp'), sg=S1('sg'), ore=S1('ore');
+      return {ric,ru,mp,sg,ore,costi:ru+mp+sg, marg: ric==null?null:ric-(ru+mp+sg)}; })();
+    const viste=[
+      ...SERVIZI.filter(sv=>d.celle.some(x=>x[sv.k].aperto)).map(sv=>({
+        et:sv.et, sub:`Il conto di ogni ${sv.et.toLowerCase()} della settimana.`,
+        celle:[0,1,2,3,4,5,6].map(g=>d.celle[g][sv.k]), tot:totali(sv.k)})),
+      {et:'Totale giornata', sub:'Pranzo e cena sommati: il conto di ogni giornata intera, con le incidenze rifatte sul totale del giorno.',
+       celle:celleGiorno, tot:totGiorno}
+    ];
+    h+=viste.map(v=>`<section><h2>${v.et}</h2>
+        <div class="sub">${v.sub} In ogni casella l'importo e, a fianco in piccolo, l'incidenza sull'incasso.</div>
+        ${tabellaServizio(v.celle,v.tot)}</section>`).join('');
 
     /* ---- il confronto fra i due servizi ---- */
-    const tp=totali(0), tc=totali(1);
+    const tp=viste.find(v=>v.et==='Pranzo')?viste.find(v=>v.et==='Pranzo').tot:totali(0);
+    const tc=viste.find(v=>v.et==='Cena')?viste.find(v=>v.et==='Cena').tot:totali(1);
     const scheda=(et,t)=>`<div class="c"><h4>${et}</h4>
       <div class="r"><span>Incasso medio settimana</span><b>${t.ric==null?'—':fmtE(t.ric)}</b></div>
       <div class="r"><span>Ore in turno</span><b>${fmtNum(t.ore)}</b></div>
@@ -2452,6 +2519,175 @@ function renderTU(){
 /* ridisegna senza perdere il fuoco mentre si digita negli orari */
 let tuTimer=null;
 function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current==='tu') renderTU(); }, 700); }
+
+/* ================================================================
+   RENDER · SIMULAZIONE
+   Lo stesso motore dell'Analisi dei turni, girato su un mondo ipotetico:
+   si spengono dei servizi e si guarda cosa succede ai conti. Le spese generali
+   non spariscono, si ridistribuiscono su quelli che restano; le ore tolte non
+   si pagano; la materia prima mantiene la sua incidenza.
+================================================================ */
+function simScen(rec){
+  migrateS();
+  return {chiusi:S.sim.chiusi, recupero: rec===undefined ? num(S.sim.recupero) : rec};
+}
+/* la quota di recupero che pareggerebbe i conti: sotto conviene tenere aperto */
+function simPareggio(oggi){
+  let a=0, b=100;
+  const marg=r=>tuData(simScen(r)).tot.marg;
+  if(marg(0)>=oggi) return 0;
+  if(marg(100)<oggi) return null;                     // non basta nemmeno recuperare tutto
+  for(let i=0;i<24;i++){ const c=(a+b)/2; if(marg(c)<oggi) a=c; else b=c; }
+  return (a+b)/2;
+}
+function renderSIM(){
+  const body=document.getElementById('siBody');
+  migrateS();
+  const vero=tuData();
+  const scen=tuData(simScen());
+  const chiusi=Object.keys(S.sim.chiusi).filter(k=>S.sim.chiusi[k]);
+  const nessunTurno = vero.tot.ore===0;
+  const nessunIncasso = vero.inc.giornate===0;
+
+  let h=`<section>
+    <h2>Simulazione · ${S.cliente}</h2>
+    <div class="sub">Spegni un servizio e guarda cosa succede. Le ore di quel turno non si pagano più, le spese generali si ridistribuiscono sui servizi che restano aperti, la materia prima mantiene la sua incidenza. Il resto della settimana non si tocca.</div>
+    <div class="chips" id="siChips"></div>
+  </section>`;
+
+  if(nessunTurno){
+    body.innerHTML=h+`<section><div class="tuvuoto">Prima serve la settimana tipo: compila la griglia in <b>Analisi dei turni</b> e poi torna qui.</div></section>`;
+    renderChips(vero.m,'siChips');
+    return;
+  }
+
+  /* --- gli interruttori --- */
+  const nomiG=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
+  const sw=(g,j)=>{
+    const c=vero.celle[g][j];
+    const off=!!S.sim.chiusi[g+'-'+j];
+    if(!c.aperto && !off) return `<div class="simsw vuoto"><div class="t">chiuso</div><div class="v">—</div></div>`;
+    return `<button type="button" class="simsw ${off?'off':''}" data-sim="${g}-${j}"
+      title="${off?'riapri':'chiudi'} il ${SERVIZI[j].et.toLowerCase()} di ${nomiG[g].toLowerCase()}">
+      <div class="t">${fmtNum(c.ore)} h</div>
+      <div class="v">${c.marg==null?'—':fmtE(c.marg)}</div></button>`;
+  };
+  h+=`<section>
+    <div class="sechead"><div><h2>Cosa spegniamo</h2>
+      <div class="sub">Ogni casella è un servizio, con le sue ore e il margine che porta oggi. Cliccala per chiuderla.</div></div></div>
+    <div class="simgrid">
+      <div class="h v"></div>${GIORNI.map(g=>`<div class="h">${g}</div>`).join('')}
+      <div class="h v">Pranzo</div>${GIORNI.map((_,g)=>sw(g,0)).join('')}
+      <div class="h v">Cena</div>${GIORNI.map((_,g)=>sw(g,1)).join('')}
+    </div>
+    <div class="improw" style="margin-top:12px">
+      <button class="btn small tpl" data-simtutti="p" type="button">Chiudi tutti i pranzi</button>
+      <button class="btn small tpl" data-simtutti="c" type="button">Chiudi tutte le cene</button>
+      ${GIORNI.map((g,i)=>`<button class="btn small tpl" data-simgiorno="${i}" type="button">Chiudi ${g.toLowerCase()}</button>`).join('')}
+      ${chiusi.length?`<button class="btn small tpl" id="simReset" type="button">↺ Riapri tutto</button>`:''}
+    </div>
+    <div class="improw" style="margin-top:12px;align-items:center">
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2)">Del fatturato che chiudi, si recupera</span>
+      <input id="simRec" value="${num(S.sim.recupero)||''}" placeholder="0" inputmode="decimal"
+        style="width:64px;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;font-family:var(--num);text-align:right;background:#fff"> %
+      <span style="font-size:12.5px;color:var(--ink2)">sugli altri servizi</span>
+    </div>
+  </section>`;
+
+  if(!chiusi.length){
+    body.innerHTML=h+`<section><div class="tuvuoto">Non hai ancora spento niente: clicca una casella qui sopra e il confronto compare sotto.</div></section>`;
+    renderChips(vero.m,'siChips'); simLega(); return;
+  }
+
+  /* --- la frase --- */
+  const d=scen.tot.marg-vero.tot.marg;
+  const buono=d>=0;
+  const elenco=chiusi.map(k=>{ const [g,j]=k.split('-'); return SERVIZI[+j].et.toLowerCase()+' di '+nomiG[+g].toLowerCase(); });
+  const nomeChiusure = elenco.length<=3 ? elenco.join(', ') : elenco.length+' servizi';
+  h+=`<section>
+    <div class="simtit">Chiudendo <b>${nomeChiusure}</b>, il margine della settimana passa da <b>${fmtE(vero.tot.marg)}</b> a <b>${fmtE(scen.tot.marg)}</b>:
+      <b style="color:${buono?'var(--ok)':'var(--bad)'}">${buono?'+':'−'}${fmtE(Math.abs(d))} a settimana</b>.</div>
+    <div class="simproj">
+      ${[['Settimana',1],['Mese',SETT],['Anno',52]].map(([et,k])=>`<div class="c">
+        <div class="t">${et}</div>
+        <div class="v" style="color:${buono?'var(--ok)':'var(--bad)'}">${buono?'+':'−'}${fmtE(Math.abs(d*k))}</div>
+        <div class="n">margine ${buono?'in più':'in meno'}</div></div>`).join('')}
+    </div>
+    <div class="cfleg">Mese = settimana × 4,33 · anno = settimana × 52, senza tenere conto di chiusure per ferie o stagionalità. Le ore tolte si considerano interamente risparmiate: se le persone sono a contratto fisso, il risparmio vero arriva solo rinegoziando le ore.</div>
+  </section>`;
+
+  /* --- il confronto voce per voce --- */
+  const riga=(et,a,b,costo,senzaInc)=>{
+    const dd=b-a;
+    const ia=senzaInc||!(vero.tot.ric>0)?NaN:a/vero.tot.ric;
+    const ib=senzaInc||!(scen.tot.ric>0)?NaN:b/scen.tot.ric;
+    const pp=(isFinite(ia)&&isFinite(ib))?(ib-ia)*100:NaN;
+    const bene = costo ? dd<0 : dd>0;
+    const fermo = Math.abs(dd)<0.5;
+    const col = fermo?'inherit':(bene?'var(--ok)':'var(--bad)');
+    const segno = fermo?'':(dd>=0?'+':'−');
+    const ppTxt = (!isFinite(pp)||Math.abs(pp)<0.05) ? (isFinite(pp)?'invariata':'—') : (pp>=0?'+':'−')+fmtNum(Math.abs(pp))+' p.p.';
+    return `<tr><td class="vc">${et}</td>
+      <td class="tot"><span class="e">${fmtE(a)}</span><span class="i">${isFinite(ia)?fmtP(ia):'—'}</span></td>
+      <td class="tot"><span class="e">${fmtE(b)}</span><span class="i">${isFinite(ib)?fmtP(ib):'—'}</span></td>
+      <td class="tot sett" style="color:${col}"><span class="e">${segno}${fmtE(Math.abs(dd))}</span><span class="i" style="color:${col}">${ppTxt}</span></td></tr>`;
+  };
+  const par=simPareggio(vero.tot.marg);
+  h+=`<section><h2>La settimana a confronto</h2>
+    <div class="sub">A sinistra com'è oggi, al centro lo scenario, a destra la differenza in euro e in punti di incidenza.</div>
+    <div class="tblwrap"><table class="srvtab">
+      <tr><th class="vc"></th><th>Oggi</th><th>Scenario</th><th class="sett">Differenza</th></tr>
+      ${riga('Fatturato', vero.tot.ric, scen.tot.ric, false, true)}
+      ${riga('Risorse umane', vero.tot.ru, scen.tot.ru, true)}
+      ${riga('Materia prima', vero.tot.mp, scen.tot.mp, true)}
+      ${riga('Spese generali', vero.tot.sg, scen.tot.sg, true)}
+      ${riga('Totale costi', vero.tot.costi, scen.tot.costi, true)}
+      <tr class="marg">${riga('Margine', vero.tot.marg, scen.tot.marg, false).replace(/^<tr>|<\/tr>$/g,'')}</tr>
+      <tr><td class="vc">Ore in turno</td>
+        <td class="tot"><span class="e">${fmtNum(vero.tot.ore)}</span><span class="i"></span></td>
+        <td class="tot"><span class="e">${fmtNum(scen.tot.ore)}</span><span class="i"></span></td>
+        <td class="tot sett"><span class="e">${scen.tot.ore-vero.tot.ore>=0?'+':'−'}${fmtNum(Math.abs(scen.tot.ore-vero.tot.ore))}</span><span class="i"></span></td></tr>
+      <tr><td class="vc">Servizi aperti</td>
+        <td class="tot"><span class="e">${vero.tot.servizi}</span><span class="i"></span></td>
+        <td class="tot"><span class="e">${scen.tot.servizi}</span><span class="i"></span></td>
+        <td class="tot sett"><span class="e">${scen.tot.servizi-vero.tot.servizi}</span><span class="i"></span></td></tr>
+    </table></div>
+    <div class="cfleg">Le <b>spese generali</b> restano le stesse in euro: ${fmtE(vero.tot.sg)} alla settimana prima e ${fmtE(scen.tot.sg)} dopo. Quello che cambia è su quanti servizi si dividono — da ${vero.tot.servizi} a ${scen.tot.servizi} — quindi ogni servizio che resta aperto se ne carica una fetta più grande.${
+      par===null ? ' <b>Nota:</b> anche recuperando tutto il fatturato chiuso il margine non tornerebbe ai livelli di oggi.'
+      : par>0 ? ` Perché chiudere sia indifferente, degli incassi che spegni dovrebbe recuperarsene <b>il ${fmtNum(par)}%</b> sugli altri servizi: sotto quella soglia chiudere conviene, sopra conviene tenere aperto.`
+      : ' Chiudere conviene anche senza recuperare un euro altrove.'}${
+      (scen.tot.marg<vero.tot.marg && scen.tot.ric>0 && vero.tot.ric>0 && scen.tot.marg/scen.tot.ric > vero.tot.marg/vero.tot.ric)
+        ? ` <b>Occhio alla trappola:</b> la marginalità in percentuale <b>sale</b> (da ${fmtP(vero.tot.marg/vero.tot.ric)} a ${fmtP(scen.tot.marg/scen.tot.ric)}) mentre gli euro in cassa <b>scendono</b>. Il locale sembra più sano e porta a casa meno: è quello che succede quando si chiude un servizio che copriva i suoi costi diretti e contribuiva alle spese generali.`
+        : ''}</div>
+  </section>`;
+
+  /* --- cosa stai spegnendo --- */
+  h+=`<section><h2>I servizi che spegni</h2>
+    <div class="sub">Quello che ciascuno porta oggi, e il perché della somma qui sopra.</div>
+    <div class="tblwrap"><table class="srvtab">
+      <tr><th class="vc">Servizio</th><th>Ore</th><th>Incasso</th><th>Risorse umane</th><th>Materia prima</th><th>Spese generali</th><th class="sett">Margine oggi</th></tr>
+      ${chiusi.map(k=>{ const [g,j]=k.split('-').map(Number); const c=vero.celle[g][j];
+        return `<tr><td class="vc">${SERVIZI[j].et} · ${nomiG[g].toLowerCase()}</td>
+          <td class="tot"><span class="e">${fmtNum(c.ore)}</span><span class="i"></span></td>
+          <td class="tot"><span class="e">${c.ric==null?'—':fmtE(c.ric)}</span><span class="i"></span></td>
+          <td class="tot"><span class="e">${fmtE(c.ru)}</span><span class="i"></span></td>
+          <td class="tot"><span class="e">${c.mp==null?'—':fmtE(c.mp)}</span><span class="i"></span></td>
+          <td class="tot"><span class="e">${fmtE(c.sg)}</span><span class="i"></span></td>
+          <td class="tot sett" style="color:${c.marg==null?'inherit':(c.marg>=0?'var(--ok)':'var(--bad)')}"><span class="e">${c.marg==null?'—':fmtE(c.marg)}</span><span class="i"></span></td></tr>`;
+      }).join('')}
+    </table></div>
+    <div class="cfleg">Attenzione a leggere l'ultima colonna come "quanto risparmio": il margine di un servizio comprende già la sua quota di spese generali, che però non sparisce — si sposta sugli altri. Il risparmio vero è quello del riquadro grande qui sopra.${
+      num(S.sim.recupero)>0?` Nello scenario si considera recuperato il ${fmtNum(num(S.sim.recupero))}% degli incassi chiusi, cioè ${fmtE(scen.recuperato)} alla settimana, ripartito sui servizi che restano aperti in proporzione a quello che già fanno.`:''}</div>
+  </section>`;
+
+  body.innerHTML=h;
+  renderChips(vero.m,'siChips');
+  simLega();
+}
+function simLega(){
+  const r=document.getElementById('simRec');
+  if(r) r.addEventListener('change', e=>{ S.sim.recupero=Math.max(0,Math.min(100,parseIt(e.target.value))); saveState(); renderSIM(); });
+}
 
 /* ================================================================
    RENDER · VERSIONI PRECEDENTI
@@ -3439,7 +3675,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, tu:renderTU, ver:renderVER, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -3603,6 +3839,28 @@ document.addEventListener('click',async e=>{
   const cb=e.target.closest('[data-cfbu]'); if(cb){ cfBU=cb.dataset.cfbu; renderCF(); return; }
   const cp=e.target.closest('[data-cfper]'); if(cp){ e.preventDefault(); cfPer=cp.dataset.cfper; renderCF(); return; }
   const iz=e.target.closest('[data-incz]'); if(iz){ incZeri=iz.dataset.incz==='1'; renderTU(); return; }
+  const sm=e.target.closest('[data-sim]');
+  if(sm){ migrateS(); const k=sm.dataset.sim;
+    if(S.sim.chiusi[k]) delete S.sim.chiusi[k]; else S.sim.chiusi[k]=true;
+    await saveState(); renderSIM(); return;
+  }
+  const st=e.target.closest('[data-simtutti]');
+  if(st){ migrateS(); const j=st.dataset.simtutti==='p'?0:1;
+    const d=tuData();
+    const tutti=[0,1,2,3,4,5,6].filter(g=>d.celle[g][j].aperto);
+    const giaTutti=tutti.every(g=>S.sim.chiusi[g+'-'+j]);
+    tutti.forEach(g=>{ if(giaTutti) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
+    await saveState(); renderSIM(); return;
+  }
+  const sg=e.target.closest('[data-simgiorno]');
+  if(sg){ migrateS(); const g=+sg.dataset.simgiorno;
+    const d=tuData();
+    const quali=[0,1].filter(j=>d.celle[g][j].aperto);
+    const gia=quali.length>0 && quali.every(j=>S.sim.chiusi[g+'-'+j]);
+    quali.forEach(j=>{ if(gia) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
+    await saveState(); renderSIM(); return;
+  }
+  if(e.target.id==='simReset'){ migrateS(); S.sim.chiusi={}; await saveState(); renderSIM(); return; }
   const ta=e.target.closest('[data-tuadd]');
   if(ta){ migrateS();
     S.turni.righe.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
