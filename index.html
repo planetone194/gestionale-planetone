@@ -396,6 +396,14 @@
   .simsw.off .v, .simsw.off .t{color:#A8A49B;text-decoration:line-through;}
   .simsw.vuoto{background:#FAFAF8;border-style:dotted;cursor:default;opacity:.55;}
   .simsw.vuoto:hover{border-color:#C9C4B8;}
+  /* i comandi rapidi: una riga per servizio, "tutti" e poi i sette giorni */
+  .simriga{display:grid;grid-template-columns:120px 72px repeat(7,1fr);gap:6px;align-items:center;margin-top:10px;}
+  .simriga .et{font-size:10.5px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--ink2);}
+  .simriga .btn{width:100%;padding:6px 4px;}
+  .simriga .btn.on{background:var(--brass);color:#fff;border-color:var(--brass);}
+  .simriga .btn[disabled]{opacity:.3;cursor:default;border-style:dashed;}
+  .simriga .btn[disabled]:hover{background:#fff;color:var(--brass);}
+  @media(max-width:900px){ .simriga{grid-template-columns:1fr 1fr 1fr 1fr;} }
   .simtit{font-size:16px;line-height:1.5;margin:2px 0 4px;}
   .simtit b{font-family:var(--num);}
   .simproj{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:4px;}
@@ -710,7 +718,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v72</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v73</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2594,12 +2602,21 @@ function renderSIM(){
       <div class="h v">Pranzo</div>${GIORNI.map((_,g)=>sw(g,0)).join('')}
       <div class="h v">Cena</div>${GIORNI.map((_,g)=>sw(g,1)).join('')}
     </div>
-    <div class="improw" style="margin-top:12px">
-      <button class="btn small tpl" data-simtutti="p" type="button">Chiudi tutti i pranzi</button>
-      <button class="btn small tpl" data-simtutti="c" type="button">Chiudi tutte le cene</button>
-      ${GIORNI.map((g,i)=>`<button class="btn small tpl" data-simgiorno="${i}" type="button">Chiudi ${g.toLowerCase()}</button>`).join('')}
-      ${chiusi.length?`<button class="btn small tpl" id="simReset" type="button">↺ Riapri tutto</button>`:''}
-    </div>
+    ${SERVIZI.map(sv=>{
+      const j=sv.k;
+      const esiste=g=>vero.celle[g][j].aperto || !!S.sim.chiusi[g+'-'+j];
+      const quali=[0,1,2,3,4,5,6].filter(esiste);
+      const tuttiOff = quali.length>0 && quali.every(g=>S.sim.chiusi[g+'-'+j]);
+      return `<div class="simriga">
+        <span class="et">${tuttiOff?'Apri':'Chiudi'} ${sv.et.toLowerCase()}</span>
+        <button class="btn small tpl ${tuttiOff?'on':''}" data-simtutti="${j}" type="button" ${quali.length?'':'disabled'}>tutti</button>
+        ${GIORNI.map((g,i)=>{
+          const off=!!S.sim.chiusi[i+'-'+j];
+          return `<button class="btn small tpl ${off?'on':''}" data-sim="${i}-${j}" type="button" ${esiste(i)?'':'disabled'}>${g.toLowerCase()}</button>`;
+        }).join('')}
+      </div>`;
+    }).join('')}
+    ${chiusi.length?`<div class="improw" style="margin-top:10px"><button class="btn small tpl" id="simReset" type="button">↺ Riapri tutto</button></div>`:''}
     <div class="improw" style="margin-top:12px;align-items:center">
       <span style="font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2)">Del fatturato che chiudi, si recupera</span>
       <input id="simRec" value="${num(S.sim.recupero)||''}" placeholder="0" inputmode="decimal"
@@ -3859,19 +3876,11 @@ document.addEventListener('click',async e=>{
     await saveState(); renderSIM(); return;
   }
   const st=e.target.closest('[data-simtutti]');
-  if(st){ migrateS(); const j=st.dataset.simtutti==='p'?0:1;
+  if(st){ migrateS(); const j=+st.dataset.simtutti;
     const d=tuData();
-    const tutti=[0,1,2,3,4,5,6].filter(g=>d.celle[g][j].aperto);
-    const giaTutti=tutti.every(g=>S.sim.chiusi[g+'-'+j]);
+    const tutti=[0,1,2,3,4,5,6].filter(g=>d.celle[g][j].aperto || S.sim.chiusi[g+'-'+j]);
+    const giaTutti=tutti.length>0 && tutti.every(g=>S.sim.chiusi[g+'-'+j]);
     tutti.forEach(g=>{ if(giaTutti) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
-    await saveState(); renderSIM(); return;
-  }
-  const sg=e.target.closest('[data-simgiorno]');
-  if(sg){ migrateS(); const g=+sg.dataset.simgiorno;
-    const d=tuData();
-    const quali=[0,1].filter(j=>d.celle[g][j].aperto);
-    const gia=quali.length>0 && quali.every(j=>S.sim.chiusi[g+'-'+j]);
-    quali.forEach(j=>{ if(gia) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
     await saveState(); renderSIM(); return;
   }
   if(e.target.id==='simReset'){ migrateS(); S.sim.chiusi={}; await saveState(); renderSIM(); return; }
