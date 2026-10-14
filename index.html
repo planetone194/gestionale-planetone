@@ -718,7 +718,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v73</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v74</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1066,7 +1066,7 @@ function freshState(){
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
     turni:{base:0, righe:[]},   // elenco a sé: {id,nome,reparto,c:ore a contratto,o:costo orario,g:[[pIn,pFin,cIn,cFin] ×7]}
     incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
-    sim:{chiusi:{}, recupero:0},   // lo scenario: quali servizi si spengono e quanto fatturato si recupera altrove
+    sim:{chiusi:{}, recupero:0, righe:null},  // lo scenario: servizi spenti, recupero, e — se c'è — la sua griglia dei turni
     ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
@@ -1131,6 +1131,12 @@ function migrateS(){
   if(!S.sim||typeof S.sim!=='object') S.sim={chiusi:{}, recupero:0};
   if(!S.sim.chiusi||typeof S.sim.chiusi!=='object') S.sim.chiusi={};
   if(S.sim.recupero===undefined) S.sim.recupero=0;
+  if(S.sim.righe!==null && !Array.isArray(S.sim.righe)) S.sim.righe=null;
+  if(Array.isArray(S.sim.righe)) S.sim.righe.forEach(r=>{
+    if(!r.id) r.id=newId();
+    if(!Array.isArray(r.g)||r.g.length!==7) r.g=Array.from({length:7},()=>['','','','']);
+    r.g=r.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
+  });
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
@@ -2164,8 +2170,12 @@ function durata(a,b){
 const TU_REP=['Cucina','Sala','Bar','Management'];
 function turnoDi(id){
   migrateS();
-  return S.turni.righe.find(r=>r.id===id) || null;
+  return S.turni.righe.find(r=>r.id===id)
+      || (Array.isArray(S.sim.righe) ? S.sim.righe.find(r=>r.id===id) : null)
+      || null;
 }
+/* le righe su cui lavora un calcolo: quelle vere, o quelle dello scenario se c'è */
+function righeDi(scen){ migrateS(); return (scen && Array.isArray(scen.righe)) ? scen.righe : S.turni.righe; }
 /* ore di una riga in un giorno, divise per servizio */
 function oreGiorno(r,g){
   const t=(typeof r==='string'?turnoDi(r):r);
@@ -2231,7 +2241,7 @@ function tuData(scen){
   /* ore e costo per giorno e servizio */
   migrateS();
   const ore=Array.from({length:7},()=>[0,0]), ruE=Array.from({length:7},()=>[0,0]);
-  const persone=S.turni.righe.map(r=>{
+  const persone=righeDi(scen).map(r=>{
     const o=oreSettimana(r), co=costoOrario(r);
     for(let g=0;g<7;g++){
       const og=oreGiorno(r,g);
@@ -2290,7 +2300,12 @@ function tuData(scen){
 function renderTU(){
   const body=document.getElementById('tuBody');
   const d=tuData();
-  const usati=[...new Set(S.turni.righe.map(r=>r.reparto))].filter(Boolean);
+  return grigliaTurni(S.turni.righe, d, '');
+}
+/* La griglia dei turni, usata due volte: nell'Analisi dei turni sui turni veri e
+   nella Simulazione su quelli dello scenario. Cambia solo da dove prende le righe. */
+function grigliaTurni(elenco, d, dove){
+  const usati=[...new Set(elenco.map(r=>r.reparto))].filter(Boolean);
   const gruppi=TU_REP.filter(r=>usati.includes(r)).concat(usati.filter(r=>!TU_REP.includes(r)));
   if(!gruppi.length) gruppi.push('Sala');
   const cellaOra=(r,g,i)=>{
@@ -2312,9 +2327,9 @@ function renderTU(){
 
   let righe='';
   gruppi.forEach(rep=>{
-    const pp=S.turni.righe.filter(r=>r.reparto===rep);
+    const pp=elenco.filter(r=>r.reparto===rep);
     righe+=`<tr class="rep"><td colspan="14">${rep}</td>
-      <td style="background:#EDEBE7;text-align:center"><button class="minibtn" data-tuadd="${rep}" title="aggiungi una persona in ${rep}">+</button></td></tr>`;
+      <td style="background:#EDEBE7;text-align:center"><button class="minibtn" data-tuadd="${rep}" data-dove="${dove}" title="aggiungi una persona in ${rep}">+</button></td></tr>`;
     pp.forEach(r=>{
       const o=oreSettimana(r), co=costoOrario(r);
       const contr=num(r.c), diff=o.tot-contr;
@@ -2331,7 +2346,7 @@ function renderTU(){
         <td class="num ${clDiff}" rowspan="2">${contr?(diff>=0?'+':'−')+fmtNum(Math.abs(diff)):'—'}</td>
         <td rowspan="2"><input data-tuo="${r.id}" class="wide" value="${r.o!=null&&r.o!==''?r.o:''}" placeholder="${num(S.turni.base)?fmtNum(num(S.turni.base)):'—'}" inputmode="decimal" title="costo orario di questa persona; vuoto = quello di base"></td>
         <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td>
-        <td rowspan="2"><button class="minibtn del" data-tudel="${r.id}" title="togli questa persona">✕</button></td></tr>
+        <td rowspan="2"><button class="minibtn del" data-tudel="${r.id}" data-dove="${dove}" title="togli questa persona">✕</button></td></tr>
       <tr class="cena">
         <td class="srv">C</td>
         ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,2)}${cellaOra(r,g,3)}</td>`).join('')}</tr>`;
@@ -2341,8 +2356,31 @@ function renderTU(){
       righe+=rigaSomma('Ore totali '+rep.toLowerCase(), sm, null, 'sub');
     }
   });
-  const tutte=sommaDi(S.turni.righe);
-  const noPers = !S.turni.righe.length;
+  const tutte=sommaDi(elenco);
+  const noPers = !elenco.length;
+  if(noPers){
+    return `<div class="tuvuoto">La griglia è vuota. Aggiungi le persone con i pulsanti <b>+</b> qui sotto, reparto per reparto${dove?'':' — oppure prendi i nomi dall\'organico e poi correggi quello che serve'}.</div>
+      <div class="improw">${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" data-dove="${dove}" type="button">+ ${r}</button>`).join(' ')}
+      ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}</div>`;
+  }
+  return `<div style="overflow-x:auto"><table class="tutab">
+      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th>${g}</th>`).join('')}
+        <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
+        <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
+      ${righe}
+      ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran')}
+      ${rigaSomma('Ore totali cena', tutte, 1)}
+      ${rigaSomma('Ore totali', tutte, null)}
+    </table></div>
+    <div class="improw" style="margin-top:12px">
+      ${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" data-dove="${dove}" type="button">+ ${r}</button>`).join(' ')}
+      ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}
+    </div>`;
+}
+
+function renderTU(){
+  const body=document.getElementById('tuBody');
+  const d=tuData();
   const noTurni = d.ore.every(x=>x[0]+x[1]===0);
   const noInc = d.inc.giornate===0;
 
@@ -2355,25 +2393,7 @@ function renderTU(){
   h+=`<section>
     <div class="sechead"><div><h2>Settimana tipo</h2>
       <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.</div></div></div>`;
-  if(noPers){
-    h+=`<div class="tuvuoto">La griglia è vuota. Aggiungi le persone con i pulsanti <b>+</b> qui sotto, reparto per reparto — oppure prendi i nomi dall'organico e poi correggi quello che serve.</div>
-      <div class="improw">${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" type="button">+ ${r}</button>`).join(' ')}
-      ${S.ru.length?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}</div>`;
-  } else {
-    h+=`<div style="overflow-x:auto"><table class="tutab">
-      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th>${g}</th>`).join('')}
-        <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
-        <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
-      ${righe}
-      ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran')}
-      ${rigaSomma('Ore totali cena', tutte, 1)}
-      ${rigaSomma('Ore totali', tutte, null)}
-    </table></div>
-    <div class="improw" style="margin-top:12px">
-      ${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" type="button">+ ${r}</button>`).join(' ')}
-      ${S.ru.length?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}
-    </div>`;
-  }
+  h+=grigliaTurni(S.turni.righe, d, '');
   h+=`<div class="improw" style="margin-top:12px;align-items:center">
       <span class="cl" style="font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2)">Costo orario di base</span>
       <input id="tuBase" value="${num(S.turni.base)||''}" placeholder="es. 14,41" inputmode="decimal"
@@ -2540,7 +2560,7 @@ function renderTU(){
 }
 /* ridisegna senza perdere il fuoco mentre si digita negli orari */
 let tuTimer=null;
-function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current==='tu') renderTU(); }, 700); }
+function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current==='tu') renderTU(); else if(current==='si') renderSIM(); }, 700); }
 
 /* ================================================================
    RENDER · SIMULAZIONE
@@ -2551,7 +2571,7 @@ function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current
 ================================================================ */
 function simScen(rec){
   migrateS();
-  return {chiusi:S.sim.chiusi, recupero: rec===undefined ? num(S.sim.recupero) : rec};
+  return {chiusi:S.sim.chiusi, righe:S.sim.righe, recupero: rec===undefined ? num(S.sim.recupero) : rec};
 }
 /* la quota di recupero che pareggerebbe i conti: sotto conviene tenere aperto */
 function simPareggio(oggi){
@@ -2568,6 +2588,7 @@ function renderSIM(){
   const vero=tuData();
   const scen=tuData(simScen());
   const chiusi=Object.keys(S.sim.chiusi).filter(k=>S.sim.chiusi[k]);
+  /* se lo scenario ha i suoi turni, il confronto ha senso anche senza chiusure */
   const nessunTurno = vero.tot.ore===0;
   const nessunIncasso = vero.inc.giornate===0;
 
@@ -2625,8 +2646,25 @@ function renderSIM(){
     </div>
   </section>`;
 
-  if(!chiusi.length){
-    body.innerHTML=h+`<section><div class="tuvuoto">Non hai ancora spento niente: clicca una casella qui sopra e il confronto compare sotto.</div></section>`;
+  /* --- i turni dello scenario --- */
+  const suoi=Array.from(S.sim.righe||[]).length>0;
+  h+=`<section>
+    <div class="sechead"><div><h2>I turni dello scenario</h2>
+      <div class="sub">${suoi
+        ? 'Questa griglia è staccata da quella vera: cambia gli orari qui e vedi sotto quanto cambia il conto. L\'Analisi dei turni non si tocca.'
+        : 'Oltre a spegnere servizi puoi provare turni diversi. Parti da una copia della settimana vera e modificala: l\'originale resta dov\'è.'}</div></div>
+      <div class="improw">${suoi
+        ? `<button class="btn small tpl" id="simTurniVia" type="button">↺ Torna ai turni veri</button>`
+        : `<button class="btn small tpl" id="simTurniCopia" type="button">✎ Prova turni diversi</button>`}</div></div>`;
+  if(suoi){
+    h+=grigliaTurni(S.sim.righe, scen, 'sim');
+    const dOre=scen.tot.ore-vero.tot.ore, dRu=scen.tot.ru-vero.tot.ru;
+    h+=`<div class="cfleg">Nello scenario ci sono <b>${fmtNum(scen.tot.ore)} ore</b> contro le <b>${fmtNum(vero.tot.ore)}</b> della settimana vera: <b style="color:${dOre<=0?'var(--ok)':'var(--bad)'}">${dOre>=0?'+':'−'}${fmtNum(Math.abs(dOre))} ore</b>, cioè <b style="color:${dRu<=0?'var(--ok)':'var(--bad)'}">${dRu>=0?'+':'−'}${fmtE(Math.abs(dRu))}</b> di personale alla settimana. Il costo orario di base è lo stesso dell'Analisi dei turni.</div>`;
+  }
+  h+=`</section>`;
+
+  if(!chiusi.length && !suoi){
+    body.innerHTML=h+`<section><div class="tuvuoto">Non hai ancora cambiato niente: spegni un servizio qui sopra, oppure prova turni diversi, e il confronto compare sotto.</div></section>`;
     renderChips(vero.m,'siChips'); simLega(); return;
   }
 
@@ -2635,8 +2673,11 @@ function renderSIM(){
   const buono=d>=0;
   const elenco=chiusi.map(k=>{ const [g,j]=k.split('-'); return SERVIZI[+j].et.toLowerCase()+' di '+nomiG[+g].toLowerCase(); });
   const nomeChiusure = elenco.length<=3 ? elenco.join(', ') : elenco.length+' servizi';
+  const cosa = chiusi.length
+    ? (suoi ? `Chiudendo <b>${nomeChiusure}</b> e rifacendo i turni` : `Chiudendo <b>${nomeChiusure}</b>`)
+    : 'Con i turni dello scenario';
   h+=`<section>
-    <div class="simtit">Chiudendo <b>${nomeChiusure}</b>, il margine della settimana passa da <b>${fmtE(vero.tot.marg)}</b> a <b>${fmtE(scen.tot.marg)}</b>:
+    <div class="simtit">${cosa}, il margine della settimana passa da <b>${fmtE(vero.tot.marg)}</b> a <b>${fmtE(scen.tot.marg)}</b>:
       <b style="color:${buono?'var(--ok)':'var(--bad)'}">${buono?'+':'−'}${fmtE(Math.abs(d))} a settimana</b>.</div>
     <div class="simproj">
       ${[['Settimana',1],['Mese',SETT],['Anno',52]].map(([et,k])=>`<div class="c">
@@ -2661,32 +2702,38 @@ function renderSIM(){
     return `<tr><td class="vc">${et}</td>
       <td class="tot"><span class="e">${fmtE(a)}</span><span class="i">${isFinite(ia)?fmtP(ia):'—'}</span></td>
       <td class="tot"><span class="e">${fmtE(b)}</span><span class="i">${isFinite(ib)?fmtP(ib):'—'}</span></td>
-      <td class="tot sett" style="color:${col}"><span class="e">${segno}${fmtE(Math.abs(dd))}</span><span class="i" style="color:${col}">${ppTxt}</span></td></tr>`;
+      <td class="tot sett" style="color:${col}"><span class="e">${segno}${fmtE(Math.abs(dd))}</span><span class="i" style="color:${col}">${ppTxt}</span></td>
+      <td class="tot sett m" style="color:${col}"><span class="e">${segno}${fmtE(Math.abs(dd*SETT))}</span></td>
+      <td class="tot sett m" style="color:${col}"><span class="e">${segno}${fmtE(Math.abs(dd*52))}</span></td></tr>`;
   };
   const par=simPareggio(vero.tot.marg);
   h+=`<section><h2>La settimana a confronto</h2>
-    <div class="sub">A sinistra com'è oggi, al centro lo scenario, a destra la differenza in euro e in punti di incidenza.</div>
+    <div class="sub">A sinistra com'è oggi, al centro lo scenario, a destra la differenza — alla settimana con i punti di incidenza, poi al mese e all'anno.</div>
     <div class="tblwrap"><table class="srvtab">
-      <tr><th class="vc"></th><th>Oggi</th><th>Scenario</th><th class="sett">Differenza</th></tr>
+      <tr><th class="vc"></th><th>Oggi</th><th>Scenario</th><th class="sett">Diff. settimana</th><th class="sett m">Diff. mese</th><th class="sett m">Diff. anno</th></tr>
       ${riga('Fatturato', vero.tot.ric, scen.tot.ric, false, true)}
       ${riga('Risorse umane', vero.tot.ru, scen.tot.ru, true)}
       ${riga('Materia prima', vero.tot.mp, scen.tot.mp, true)}
       ${riga('Spese generali', vero.tot.sg, scen.tot.sg, true)}
       ${riga('Totale costi', vero.tot.costi, scen.tot.costi, true)}
       <tr class="marg">${riga('Margine', vero.tot.marg, scen.tot.marg, false).replace(/^<tr>|<\/tr>$/g,'')}</tr>
-      <tr><td class="vc">Ore in turno</td>
+      ${(()=>{ const dO=scen.tot.ore-vero.tot.ore, sgn=dO>=0?'+':'−';
+        return `<tr><td class="vc">Ore in turno</td>
         <td class="tot"><span class="e">${fmtNum(vero.tot.ore)}</span><span class="i"></span></td>
         <td class="tot"><span class="e">${fmtNum(scen.tot.ore)}</span><span class="i"></span></td>
-        <td class="tot sett"><span class="e">${scen.tot.ore-vero.tot.ore>=0?'+':'−'}${fmtNum(Math.abs(scen.tot.ore-vero.tot.ore))}</span><span class="i"></span></td></tr>
+        <td class="tot sett"><span class="e">${sgn}${fmtNum(Math.abs(dO))}</span><span class="i"></span></td>
+        <td class="tot sett m"><span class="e">${sgn}${fmtNum(Math.abs(dO*SETT))}</span></td>
+        <td class="tot sett m"><span class="e">${sgn}${fmtNum(Math.abs(dO*52))}</span></td></tr>`; })()}
       <tr><td class="vc">Servizi aperti</td>
         <td class="tot"><span class="e">${vero.tot.servizi}</span><span class="i"></span></td>
         <td class="tot"><span class="e">${scen.tot.servizi}</span><span class="i"></span></td>
-        <td class="tot sett"><span class="e">${scen.tot.servizi-vero.tot.servizi}</span><span class="i"></span></td></tr>
+        <td class="tot sett"><span class="e">${scen.tot.servizi-vero.tot.servizi}</span><span class="i"></span></td>
+        <td class="tot sett m"></td><td class="tot sett m"></td></tr>
     </table></div>
-    <div class="cfleg">Le <b>spese generali</b> restano le stesse in euro: ${fmtE(vero.tot.sg)} alla settimana prima e ${fmtE(scen.tot.sg)} dopo. Quello che cambia è su quanti servizi si dividono — da ${vero.tot.servizi} a ${scen.tot.servizi} — quindi ogni servizio che resta aperto se ne carica una fetta più grande.${
-      par===null ? ' <b>Nota:</b> anche recuperando tutto il fatturato chiuso il margine non tornerebbe ai livelli di oggi.'
+    <div class="cfleg">${chiusi.length?`Le <b>spese generali</b> restano le stesse in euro: ${fmtE(vero.tot.sg)} alla settimana prima e ${fmtE(scen.tot.sg)} dopo. Quello che cambia è su quanti servizi si dividono — da ${vero.tot.servizi} a ${scen.tot.servizi} — quindi ogni servizio che resta aperto se ne carica una fetta più grande.`:'Qui non si chiude niente: cambia solo il monte ore, quindi fatturato, materia prima e spese generali restano dove sono e tutta la differenza passa dal personale.'}${
+      !chiusi.length ? '' : par===null ? ' <b>Nota:</b> anche recuperando tutto il fatturato chiuso il margine non tornerebbe ai livelli di oggi.'
       : par>0 ? ` Perché chiudere sia indifferente, degli incassi che spegni dovrebbe recuperarsene <b>il ${fmtNum(par)}%</b> sugli altri servizi: sotto quella soglia chiudere conviene, sopra conviene tenere aperto.`
-      : ' Chiudere conviene anche senza recuperare un euro altrove.'}${
+      : (chiusi.length?' Chiudere conviene anche senza recuperare un euro altrove.':'')}${
       (scen.tot.marg<vero.tot.marg && scen.tot.ric>0 && vero.tot.ric>0 && scen.tot.marg/scen.tot.ric > vero.tot.marg/vero.tot.ric)
         ? ` <b>Occhio alla trappola:</b> la marginalità in percentuale <b>sale</b> (da ${fmtP(vero.tot.marg/vero.tot.ric)} a ${fmtP(scen.tot.marg/scen.tot.ric)}) mentre gli euro in cassa <b>scendono</b>. Il locale sembra più sano e porta a casa meno: è quello che succede quando si chiude un servizio che copriva i suoi costi diretti e contribuiva alle spese generali.`
         : ''}</div>
@@ -2716,6 +2763,20 @@ function renderSIM(){
   simLega();
 }
 function simLega(){
+  const cp=document.getElementById('simTurniCopia');
+  if(cp) cp.addEventListener('click', async ()=>{
+    migrateS();
+    S.sim.righe=S.turni.righe.map(r=>({id:newId(), nome:r.nome, reparto:r.reparto, c:num(r.c),
+      o:r.o!=null?r.o:null, g:r.g.map(x=>x.slice())}));
+    await saveState(); renderSIM();
+    toast('✓ Copia dei turni creata: modificala pure, quella vera resta com\'è.');
+  });
+  const vi=document.getElementById('simTurniVia');
+  if(vi) vi.addEventListener('click', async ()=>{
+    if(await uiConfirm('Buttare via i turni dello scenario e tornare a quelli veri?\n\nLe modifiche fatte qui dentro si perdono; i servizi spenti restano.')){
+      S.sim.righe=null; await saveState(); renderSIM();
+    }
+  });
   const r=document.getElementById('simRec');
   if(r) r.addEventListener('change', e=>{ S.sim.recupero=Math.max(0,Math.min(100,parseIt(e.target.value))); saveState(); renderSIM(); });
 }
@@ -3747,6 +3808,7 @@ document.addEventListener('input',e=>{
     t.o = el.value.trim()==='' ? null : parseIt(el.value);
     saveState(); tuPartial(); return;
   }
+  if(el.id==='simRec'){ S.sim.recupero=Math.max(0,Math.min(100,parseIt(el.value))); saveState(); tuPartial(); return; }
   if(el.id==='tuBase'){ S.turni.base=parseIt(el.value); saveState(); tuPartial(); return; }
   if(el.dataset.cesplit!==undefined){
     const i=+el.dataset.cesplit;
@@ -3886,16 +3948,22 @@ document.addEventListener('click',async e=>{
   if(e.target.id==='simReset'){ migrateS(); S.sim.chiusi={}; await saveState(); renderSIM(); return; }
   const ta=e.target.closest('[data-tuadd]');
   if(ta){ migrateS();
-    S.turni.righe.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
-    saveState(); renderTU();
-    const ult=document.querySelector('[data-tun="'+S.turni.righe[S.turni.righe.length-1].id+'"]');
+    const sim=ta.dataset.dove==='sim';
+    const arr = sim ? S.sim.righe : S.turni.righe;
+    if(!Array.isArray(arr)) return;
+    arr.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
+    await saveState(); if(sim) renderSIM(); else renderTU();
+    const ult=document.querySelector('[data-tun="'+arr[arr.length-1].id+'"]');
     if(ult) ult.focus();
     return;
   }
   const td=e.target.closest('[data-tudel]');
   if(td){ const r=turnoDi(td.dataset.tudel); if(!r) return;
-    if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia dei turni?\n\nL\'organico e le paghe non si toccano.')){
-      S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id); await saveState(); renderTU();
+    const sim=td.dataset.dove==='sim';
+    if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia'+(sim?' dello scenario':' dei turni')+'?'+(sim?'':'\n\nL\'organico e le paghe non si toccano.'))){
+      if(sim) S.sim.righe=S.sim.righe.filter(x=>x.id!==r.id);
+      else S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id);
+      await saveState(); if(sim) renderSIM(); else renderTU();
     }
     return;
   }
@@ -5477,10 +5545,11 @@ document.addEventListener('change', e=>{
     const t=turnoDi(id); if(!t) return;
     const v=oraTesto(el.value);
     if(v){ t.g[+g][+i]=v; el.value=v; saveState(); }
-    if(current==='tu') renderTU();
+    if(current==='tu') renderTU(); else if(current==='si') renderSIM();
   }
   if(el && el.dataset && el.dataset.tur!==undefined){
-    const t=turnoDi(el.dataset.tur); if(t){ t.reparto=el.value; saveState(); if(current==='tu') renderTU(); }
+    const t=turnoDi(el.dataset.tur);
+    if(t){ t.reparto=el.value; saveState(); if(current==='tu') renderTU(); else if(current==='si') renderSIM(); }
   }
 });
 document.getElementById('clientSelect').addEventListener('change',e=>switchClient(e.target.value));
