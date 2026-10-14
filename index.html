@@ -454,6 +454,8 @@
   .srvtab td.vc{text-align:left;font-family:var(--font);font-size:12.5px;color:var(--ink);border-left:none;}
   .srvtab td.chiuso{color:#C9C4B8;}
   .srvtab td.sett{border-left:1.5px solid var(--line);background:#FAF9F6;font-weight:600;}
+  .srvtab td.sett.m, .srvtab th.sett.m{border-left:1px solid #E7E4DE;}
+  .srvtab td.sett.m{background:#F6F4F0;color:var(--ink2);}
   /* l'importo e, al suo fianco, l'incidenza in una colonnina di larghezza fissa:
      così i numeri restano incolonnati riga per riga */
   .srvtab .e{display:inline-block;font-weight:600;}
@@ -708,7 +710,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v71</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v72</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2433,23 +2435,35 @@ function renderTU(){
         return dentro(c);
       };
       const eur=(v)=>v==null?'—':fmtE(v);
-      const riga=(et,dentro,finale,cl)=>`<tr class="${cl||''}"><td class="vc">${et}</td>`+
-        GIORNI.map((_,g)=>cella(g,dentro)).join('')+`<td class="tot sett">${finale}</td></tr>`;
       const vuota='<span class="i"></span>';
-      const conInc=(v,i,colore)=>`<td class="tot"><span class="e">${eur(v)}</span><span class="i"${colore?` style="color:${colore(v,i)}"`:''}>${isFinite(i)?fmtP(i):'—'}</span></td>`;
+      const conInc=(v,i)=>`<td class="tot"><span class="e">${eur(v)}</span><span class="i">${isFinite(i)?fmtP(i):'—'}</span></td>`;
+      /* le tre colonne di destra: la settimana e le sue proiezioni.
+         L'incidenza si scrive una volta sola perché moltiplicando non cambia. */
+      const code=(v,fmt,inc,col)=>{
+        const f=fmt||eur, st=col?` style="color:${col}"`:'';
+        return `<td class="tot sett"${st}><span class="e">${f(v)}</span>`
+             + (inc==null?vuota:`<span class="i"${st}>${inc}</span>`) + `</td>`
+             + `<td class="tot sett m"${st}><span class="e">${v==null?'—':f(v*SETT)}</span></td>`
+             + `<td class="tot sett m"${st}><span class="e">${v==null?'—':f(v*52)}</span></td>`;
+      };
+      const riga=(et,dentro,v,fmt,inc,cl,col)=>`<tr class="${cl||''}"><td class="vc">${et}</td>`+
+        GIORNI.map((_,g)=>cella(g,dentro)).join('')+code(v,fmt,inc,col)+`</tr>`;
+      const q=(x)=>tot.ric?fmtP(x/tot.ric):'—';
+      const colMarg = tot.marg==null?'':(tot.marg>=0?'var(--ok)':'var(--bad)');
       return `<div class="tblwrap"><table class="srvtab">
-        <tr><th class="vc"></th>${GIORNI.map((g,i)=>`<th class="${aperti[i]?'':'off'}">${g}</th>`).join('')}<th class="sett">Settimana</th></tr>
-        ${riga('Ore in turno', c=>`<td class="tot"><span class="e">${fmtNum(c.ore)}</span>${vuota}</td>`, `<span class="e">${fmtNum(tot.ore)}</span>${vuota}`)}
-        ${riga('Incasso medio', c=>`<td class="tot big"><span class="e">${eur(c.ric)}</span>${vuota}</td>`, `<span class="e">${eur(tot.ric)}</span>${vuota}`, 'ric')}
-        ${riga('Risorse umane', c=>conInc(c.ru,c.incRu), `<span class="e">${eur(tot.ru)}</span><span class="i">${tot.ric?fmtP(tot.ru/tot.ric):'—'}</span>`)}
-        ${riga('Materia prima', c=>conInc(c.mp,c.incMp), `<span class="e">${eur(tot.mp)}</span><span class="i">${tot.ric?fmtP(tot.mp/tot.ric):'—'}</span>`)}
-        ${riga('Spese generali', c=>conInc(c.sg,c.incSg), `<span class="e">${eur(tot.sg)}</span><span class="i">${tot.ric?fmtP(tot.sg/tot.ric):'—'}</span>`)}
+        <tr><th class="vc"></th>${GIORNI.map((g,i)=>`<th class="${aperti[i]?'':'off'}">${g}</th>`).join('')}
+          <th class="sett">Settimana</th><th class="sett m">Mese</th><th class="sett m">Anno</th></tr>
+        ${riga('Ore in turno', c=>`<td class="tot"><span class="e">${fmtNum(c.ore)}</span>${vuota}</td>`, tot.ore, fmtNum, null)}
+        ${riga('Incasso medio', c=>`<td class="tot big"><span class="e">${eur(c.ric)}</span>${vuota}</td>`, tot.ric, null, null, 'ric')}
+        ${riga('Risorse umane', c=>conInc(c.ru,c.incRu), tot.ru, null, q(tot.ru))}
+        ${riga('Materia prima', c=>conInc(c.mp,c.incMp), tot.mp, null, q(tot.mp))}
+        ${riga('Spese generali', c=>conInc(c.sg,c.incSg), tot.sg, null, q(tot.sg))}
         ${riga('Totale costi', c=>`<td class="tot"><span class="e">${eur(c.costi)}</span><span class="i">${c.ric?fmtP(c.costi/c.ric):'—'}</span></td>`,
-               `<span class="e">${eur(tot.costi)}</span><span class="i">${tot.ric?fmtP(tot.costi/tot.ric):'—'}</span>`, 'tcosti')}
+               tot.costi, null, q(tot.costi), 'tcosti')}
         ${riga('Margine', c=>{
             const col=c.marg==null?'inherit':(c.marg>=0?'var(--ok)':'var(--bad)');
             return `<td class="tot big" style="color:${col}"><span class="e">${eur(c.marg)}</span><span class="i" style="color:${col}">${isFinite(c.incMarg)&&c.ric?fmtP(c.incMarg):'—'}</span></td>`;
-          }, `<span class="e" style="color:${tot.marg==null?'inherit':(tot.marg>=0?'var(--ok)':'var(--bad)')}">${eur(tot.marg)}</span><span class="i" style="color:${tot.marg==null?'inherit':(tot.marg>=0?'var(--ok)':'var(--bad)')}">${tot.ric?fmtP(tot.marg/tot.ric):'—'}</span>`, 'marg')}
+          }, tot.marg, null, tot.ric?fmtP(tot.marg/tot.ric):'—', 'marg', colMarg)}
       </table></div>`;
     };
     const totali=(j)=>{
@@ -2484,7 +2498,7 @@ function renderTU(){
        celle:celleGiorno, tot:totGiorno}
     ];
     h+=viste.map(v=>`<section><h2>${v.et}</h2>
-        <div class="sub">${v.sub} In ogni casella l'importo e, a fianco in piccolo, l'incidenza sull'incasso.</div>
+        <div class="sub">${v.sub} In ogni casella l'importo e, a fianco in piccolo, l'incidenza sull'incasso. A destra la settimana e le sue proiezioni: mese = settimana × 4,33, anno = settimana × 52.</div>
         ${tabellaServizio(v.celle,v.tot)}</section>`).join('');
 
     /* ---- il confronto fra i due servizi ---- */
