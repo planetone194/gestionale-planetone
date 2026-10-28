@@ -446,6 +446,8 @@
   .tutab input.on{background:#E8F1E9;border-color:#CFE0D3;color:var(--ink);}
   .tutab input.wide{width:52px;font-size:11.5px;padding:3px 0;}
   .tutab td.num{font-weight:600;white-space:nowrap;}
+  .tutab .pax{font-weight:400;font-size:10px;color:var(--ink2);margin-left:5px;}
+  .tutab .pax::before{content:'·';margin-right:4px;color:#C9C4B8;}
   .tutab td.piu{color:var(--bad);} .tutab td.meno{color:var(--ink2);}
   .tutab tr.rep td{background:#EDEBE7;color:var(--brand);font-weight:600;font-size:10.5px;
     text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
@@ -718,7 +720,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v74</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v75</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2315,14 +2317,24 @@ function grigliaTurni(elenco, d, dove){
   /* le ore e il costo di un gruppo di righe, giorno per giorno */
   const sommaDi=(righe)=>{
     const ore=Array.from({length:7},()=>[0,0]), eur=Array.from({length:7},()=>[0,0]);
+    /* quante persone sono in turno: per casella, e nella settimana senza contarle due volte */
+    const pax=Array.from({length:7},()=>[0,0]), chi=[new Set(), new Set()];
     righe.forEach(r=>{ const co=costoOrario(r);
       for(let g=0;g<7;g++){ const o=oreGiorno(r,g);
-        ore[g][0]+=o[0]; ore[g][1]+=o[1]; eur[g][0]+=o[0]*co.v; eur[g][1]+=o[1]*co.v; } });
-    return {ore,eur};
+        ore[g][0]+=o[0]; ore[g][1]+=o[1]; eur[g][0]+=o[0]*co.v; eur[g][1]+=o[1]*co.v;
+        for(const j of [0,1]) if(o[j]>0){ pax[g][j]++; chi[j].add(r.id); } } });
+    const unione=new Set([...chi[0],...chi[1]]);
+    return {ore, eur, pax, paxSett:[chi[0].size, chi[1].size, unione.size]};
   };
+  /* il numero di persone sta accanto alle ore, piccolo e leggero: si legge se lo cerchi */
+  const pz=(n)=>n?`<span class="pax" title="${n} ${n===1?'persona':'persone'} in turno">${n}</span>`:'';
   const rigaSomma=(et,sm,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl" colspan="2">${et}</td>`+
-    GIORNI.map((_,g)=>`<td class="num">${fmtNum(j==null? sm.ore[g][0]+sm.ore[g][1] : sm.ore[g][j])||'—'}</td>`).join('')+
-    `<td class="num">${fmtNum(sm.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))||'—'}</td><td colspan="3"></td>
+    GIORNI.map((_,g)=>{
+      const o = j==null ? sm.ore[g][0]+sm.ore[g][1] : sm.ore[g][j];
+      const n = j==null ? Math.max(sm.pax[g][0], sm.pax[g][1]) : sm.pax[g][j];
+      return `<td class="num">${o?fmtNum(o):'—'}${o?pz(n):''}</td>`;
+    }).join('')+
+    `<td class="num">${fmtNum(sm.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))||'—'}${pz(sm.paxSett[j==null?2:j])}</td><td colspan="3"></td>
      <td class="num">${fmtE(sm.eur.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td></td></tr>`;
 
   let righe='';
