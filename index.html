@@ -861,6 +861,8 @@
     border-radius:10px;padding:14px 18px;margin-top:16px;font-size:14.5px;line-height:1.55;}
   .ribox .rt{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--brass-dk);margin-bottom:6px;}
   .ribox p{margin:6px 0;}
+  .ribox .rilist{margin:8px 0 10px 20px;}
+  .ribox .rilist li{margin:3px 0;}
   /* produttività nelle business unit */
   .produ{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);}
   .produ > div{display:flex;flex-direction:column;}
@@ -923,6 +925,28 @@
     font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--ink);resize:vertical;}
   .mettxt:focus{outline:none;border-color:var(--brass);}
   @media(max-width:1000px){ .metwrap{grid-template-columns:1fr} .metind{position:static} }
+  /* le caselle dei servizi che si vorrebbero aprire */
+  .simsw.vuoto .apri{border:1px dashed var(--line);background:#fff;border-radius:7px;cursor:pointer;
+    font:600 11px/1 var(--font);color:var(--ink2);padding:5px 11px;margin-top:5px;}
+  .simsw.vuoto .apri:hover{border-color:var(--brass);color:var(--brass);border-style:solid;}
+  .simsw.nuovo{border:1.5px solid var(--brass);background:#FDF6E9;border-radius:10px;padding:7px 8px;
+    display:flex;flex-direction:column;gap:5px;text-align:center;}
+  .simsw.nuovo .t{font-family:var(--num);font-size:12px;color:var(--ink2);
+    display:flex;align-items:center;justify-content:center;gap:6px;}
+  .simsw.nuovo .via{border:none;background:transparent;color:#B9A478;cursor:pointer;font-size:10px;padding:0 2px;}
+  .simsw.nuovo .via:hover{color:var(--bad);}
+  .simsw.nuovo input{width:100%;border:1px solid #E6D3AE;border-radius:6px;background:#fff;font:inherit;
+    font-family:var(--num);font-size:12.5px;text-align:center;padding:4px 2px;color:var(--ink);}
+  .simsw.nuovo input:focus{outline:none;border-color:var(--brass);}
+  .simsw.nuovo .pa{font-size:10.5px;line-height:1.35;color:var(--ink2);}
+  .simsw.nuovo .pa b{font-family:var(--num);color:var(--ink);}
+  .simsw.nuovo .pa .p2{font-size:10px;opacity:.75;}
+  .simsw.nuovo.mezzo{border-color:#E6C98A;background:#FDF6E3;}
+  .simsw.nuovo.mezzo .pa b{color:#8A6A0C;}
+  .simsw.nuovo.ok{border-color:#9BC6A8;background:#EDF6F0;}
+  .simsw.nuovo.ok .pa b{color:var(--ok);}
+  .simsw.nuovo.ko{border-color:#E2B4AC;background:#FBEFED;}
+  .simsw.nuovo.ko .pa b{color:var(--bad);}
   .passi .pa{padding:12px 0;border-bottom:1px dashed var(--line);}
   .passi .pa:last-child{border-bottom:none;}
   .passi .pt{display:flex;align-items:baseline;gap:10px;font-weight:600;font-size:16.5px;color:var(--brand);}
@@ -1028,7 +1052,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v91</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v92</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1381,7 +1405,7 @@ function freshState(){
     storico:{},          // gli altri anni dello stesso cliente: anno → {ce,ru,sg,cn,salesSplit}
     turni:{base:0, righe:[]},   // elenco a sé: {id,nome,reparto,c:ore a contratto,o:costo orario,g:[[pIn,pFin,cIn,cFin] ×7]}
     incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
-    sim:{chiusi:{}, recupero:0, righe:null},  // lo scenario: servizi spenti, recupero, e — se c'è — la sua griglia dei turni
+    sim:{chiusi:{}, recupero:0, righe:null, aperti:{}},  // lo scenario: servizi spenti, servizi che si vorrebbero aprire, recupero, e — se c'è — la sua griglia dei turni
     pian:{aperta:'', settimane:{}, regole:null},  // i turni pianificati: 'lunedì AAAA-MM-GG' → {righe, note}
     ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
@@ -1446,6 +1470,7 @@ function migrateS(){
   if(S.ivaInc===undefined||S.ivaInc===null||S.ivaInc==='') S.ivaInc=10;
   if(!S.sim||typeof S.sim!=='object') S.sim={chiusi:{}, recupero:0};
   if(!S.sim.chiusi||typeof S.sim.chiusi!=='object') S.sim.chiusi={};
+  if(!S.sim.aperti||typeof S.sim.aperti!=='object') S.sim.aperti={};
   if(S.sim.recupero===undefined) S.sim.recupero=0;
   if(S.sim.righe!==null && !Array.isArray(S.sim.righe)) S.sim.righe=null;
   if(Array.isArray(S.sim.righe)) S.sim.righe.forEach(r=>{
@@ -2590,6 +2615,14 @@ function incassiMedi(){
    scen = {chiusi:{'g-j':true}, recupero: quota del fatturato perso che torna altrove} */
 function tuData(scen){
   const spento=(g,j)=> !!(scen && scen.chiusi && scen.chiusi[g+'-'+j]);
+  /* un servizio che oggi è chiuso e che vogliamo aprire: l'incasso non ce l'ha
+     la storia, lo mette chi fa la simulazione. Si scrive come si legge in cassa,
+     IVA inclusa, e qui dentro si scorpora come tutto il resto. */
+  const nuovo=(g,j)=>{
+    const v=scen && scen.aperti && scen.aperti[g+'-'+j];
+    const r=v ? num(v.ric) : 0;
+    return r>0 ? r/ivaFatt() : null;
+  };
   const m=compute();
   const isM = scope!=='ytd';
   const mesi = isM ? [scope].filter(i=>m.months[i] && (m.months[i].ricavi>0||m.months[i].totCosti>0))
@@ -2628,14 +2661,23 @@ function tuData(scen){
   const celle=Array.from({length:7},(_,g)=>[0,1].map(j=>{
     const ns=serviziDi(g);
     const aperto = ore[g][j]>0;
-    const base = inc.media[g][j];
+    const base = inc.media[g][j]!=null ? inc.media[g][j] : nuovo(g,j);
     const ric = spento(g,j) ? (base==null?null:0) : (base==null?null:base*(1+quota));
     const ru  = ruE[g][j];
     const mp  = (ric!=null && isFinite(incMp)) ? ric*incMp : null;
     const sg  = (aperto && ns) ? sgGiorno/ns : 0;
     const costi = ru + (mp||0) + sg;
     const marg = ric!=null ? ric-costi : null;
-    return {aperto, spento:spento(g,j), base, ore:ore[g][j], ric, ru, mp, sg, costi, marg,
+    /* Due soglie, e sono diverse.
+       · pareggio: quanto deve incassare il servizio per coprirsi tutto, quota di
+         spese generali compresa —  ric = (ru + sg) / (1 − incMp)
+       · pareggioLocale: da quanto in su il LOCALE ci guadagna ad aprirlo. Le
+         spese generali si pagherebbero comunque: aprire le ridistribuisce, non
+         le aggiunge. Quindi conta solo che l'incasso copra personale e materia
+         prima —  ric = ru / (1 − incMp) */
+    const pareggio       = (isFinite(incMp) && incMp<1) ? (ru+sg)/(1-incMp) : null;
+    const pareggioLocale = (isFinite(incMp) && incMp<1) ? ru/(1-incMp) : null;
+    return {aperto, spento:spento(g,j), base, ore:ore[g][j], ric, ru, mp, sg, costi, marg, pareggio, pareggioLocale,
             incRu: ric? ru/ric : NaN, incMp: ric? (mp||0)/ric : NaN,
             incSg: ric? sg/ric : NaN, incMarg: ric? marg/ric : NaN};
   }));
@@ -3694,7 +3736,7 @@ function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ ridisegna(
 ================================================================ */
 function simScen(rec){
   migrateS();
-  return {chiusi:S.sim.chiusi, righe:S.sim.righe, recupero: rec===undefined ? num(S.sim.recupero) : rec};
+  return {chiusi:S.sim.chiusi, aperti:S.sim.aperti, righe:S.sim.righe, recupero: rec===undefined ? num(S.sim.recupero) : rec};
 }
 /* la quota di recupero che pareggerebbe i conti: sotto conviene tenere aperto */
 function simPareggio(oggi){
@@ -3731,17 +3773,37 @@ function renderSIM(){
   /* --- gli interruttori --- */
   const nomiG=['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'];
   const sw=(g,j)=>{
-    const c=vero.celle[g][j];
-    const off=!!S.sim.chiusi[g+'-'+j];
-    if(!c.aperto && !off) return `<div class="simsw vuoto"><div class="t">chiuso</div><div class="v">—</div></div>`;
+    const c=vero.celle[g][j], k=g+'-'+j;
+    const off=!!S.sim.chiusi[k];
+    const ap=S.sim.aperti[k];
+    /* un servizio che oggi non c'è: lo si può accendere */
+    if(!c.aperto && !off){
+      if(!ap) return `<div class="simsw vuoto"><div class="t">chiuso</div>
+        <button type="button" class="apri" data-simapri="${k}" title="prova ad aprire il ${SERVIZI[j].et.toLowerCase()} di ${nomiG[g].toLowerCase()}">+ apri</button></div>`;
+      const cs=scen.celle[g][j];
+      const iva=ivaFatt();
+      const pa  = cs.pareggio!=null       ? cs.pareggio*iva       : null;   // si copre tutto
+      const paL = cs.pareggioLocale!=null ? cs.pareggioLocale*iva : null;   // conviene al locale
+      const ric=num(ap.ric);
+      const esito = (paL!=null && ric>0) ? (ric>=pa ? 'ok' : (ric>=paL ? 'mezzo' : 'ko')) : '';
+      return `<div class="simsw nuovo ${esito}">
+        <div class="t">${fmtNum(cs.ore)} h <button type="button" class="via" data-simchiudiapri="${k}" title="lascia chiuso">✕</button></div>
+        <input data-simric="${k}" value="${ap.ric||''}" placeholder="incasso atteso" inputmode="decimal" title="quanto pensi di incassare, IVA inclusa come in cassa">
+        <div class="pa">${cs.ore>0
+          ? (paL!=null
+              ? `conviene da <b>${fmtE(paL)}</b><br><span class="p2">si copre tutto a ${fmtE(pa)}</span>`
+              : 'servono gli incassi degli altri servizi')
+          : 'metti le ore nella griglia dello scenario'}</div>
+      </div>`;
+    }
     return `<button type="button" class="simsw ${off?'off':''}" data-sim="${g}-${j}"
       title="${off?'riapri':'chiudi'} il ${SERVIZI[j].et.toLowerCase()} di ${nomiG[g].toLowerCase()}">
       <div class="t">${fmtNum(c.ore)} h</div>
       <div class="v">${c.marg==null?'—':fmtE(c.marg)}</div></button>`;
   };
   h+=`<section>
-    <div class="sechead"><div><h2>Cosa spegniamo</h2>
-      <div class="sub">Ogni casella è un servizio, con le sue ore e il margine che porta oggi. Cliccala per chiuderla.</div></div>
+    <div class="sechead"><div><h2>Cosa spegniamo, cosa apriamo</h2>
+      <div class="sub">Ogni casella è un servizio, con le sue ore e il margine che porta oggi: cliccala per chiuderla. I servizi che oggi non ci sono hanno un <b>+ apri</b>: le ore si prendono da un giorno simile e si correggono nella griglia dello scenario, l'incasso atteso lo scrivi tu, IVA inclusa come in cassa.<br>Compaiono due soglie, e sono diverse. <b>Conviene da</b> è il punto da cui il locale ci guadagna ad aprire: le spese generali si pagherebbero comunque, aprire le ridistribuisce e non le aggiunge, quindi basta coprire personale e materia prima. <b>Si copre tutto a</b> è la soglia più severa, quella in cui il servizio si paga anche la sua quota di spese generali. Fra le due il locale guadagna, ma il servizio vive sulle spalle degli altri.</div></div>
       ${barraFrecce()}</div>
     <div class="simgrid">
       <div class="h v"></div>${GIORNI.map(g=>`<div class="h">${g}</div>`).join('')}
@@ -3798,8 +3860,16 @@ function renderSIM(){
   const buono=d>=0;
   const elenco=chiusi.map(k=>{ const [g,j]=k.split('-'); return SERVIZI[+j].et.toLowerCase()+' di '+nomiG[+g].toLowerCase(); });
   const nomeChiusure = elenco.length<=3 ? elenco.join(', ') : elenco.length+' servizi';
-  const cosa = chiusi.length
-    ? (suoi ? `Chiudendo <b>${nomeChiusure}</b> e rifacendo i turni` : `Chiudendo <b>${nomeChiusure}</b>`)
+  /* anche le aperture entrano nella frase: lo scenario può fare le due cose insieme */
+  const apertiK=Object.keys(S.sim.aperti||{});
+  const elencoA=apertiK.map(k=>{ const [g,j]=k.split('-'); return SERVIZI[+j].et.toLowerCase()+' di '+nomiG[+g].toLowerCase(); });
+  const nomeAperture = elencoA.length<=3 ? elencoA.join(', ') : elencoA.length+' servizi';
+  const pezzi=[];
+  if(chiusi.length)  pezzi.push(`chiudendo <b>${nomeChiusure}</b>`);
+  if(apertiK.length) pezzi.push(`aprendo <b>${nomeAperture}</b>`);
+  if(suoi)           pezzi.push('rifacendo i turni');
+  const cosa = pezzi.length
+    ? pezzi.join(' e ').replace(/^./, x=>x.toUpperCase())
     : 'Con i turni dello scenario';
   h+=`<section>
     <div class="simtit">${cosa}, il margine della settimana passa da <b>${fmtE(vero.tot.marg)}</b> a <b>${fmtE(scen.tot.marg)}</b>:
@@ -5683,10 +5753,17 @@ function renderAN(){
   let boxRib='';
   if(rib.ribilancio){
     const q=rib.ribilancio;
+    const sfonda=q.quota.filter(x=>x.dpp>5).sort((x,y)=>y.dpp-x.dpp);
+    const capo=sfonda[0];
+    const righe=q.quota.filter(x=>x.chiedo>0)
+      .map(x=>`<li><b>${x.n}</b>: dal ${fmtP(x.inc)} al ${fmtNum(x.inc*100-x.chiedo)}%, cioè ${puntiTxt(x.chiedo)} in meno</li>`).join('');
     boxRib=`<div class="ribox">
-      <div class="rt">Obiettivo realistico per i prossimi mesi</div>
-      <p>Un'area sfonda di più di cinque punti: chiedere tutto a lei sola non è un piano, è un auspicio. Il recupero si spalma — ${q.quota.filter(x=>x.chiedo>0).map(x=>`<b>${puntiTxt(x.chiedo)}</b> da ${x.n.toLowerCase()}`).join(', ')}.</p>
-      <p>Sono <b>${puntiTxt(q.puntiTot)}</b> in tutto, pari a <b>${fmtE(q.euro)}</b> sul periodo: un passo che si può davvero fare, invece di un numero che resta sulla carta.</p>
+      <div class="rt">Un obiettivo che si può davvero raggiungere</div>
+      <p>${capo ? `<b>${capo.n}</b> ${capo.n==='Spese generali'?'stanno':'sta'} al ${fmtP(capo.inc)} contro un obiettivo del ${fmtNum(capo.tgt)}%: ${puntiTxt(capo.dpp)} di distanza.` : ''}
+         Chiedere tutta quella distanza a un'area sola, in pochi mesi, non è un piano: è un auspicio. Alcune voci — l'affitto, i contratti pluriennali, l'organico a tempo indeterminato — non si muovono a comando.</p>
+      <p>Ha più senso distribuire lo sforzo su tutte e tre le aree, chiedendo a ciascuna quello che può dare:</p>
+      <ul class="rilist">${righe}</ul>
+      <p>Sono <b>${puntiTxt(q.puntiTot)}</b> di incidenza in meno in tutto, che su questo periodo valgono <b>${fmtE(q.euro)}</b>. Un traguardo più basso di quello teorico, ma raggiungibile — e quindi utile.</p>
     </div>`;
   }
   S_('',`<div class="kicker">Incidenze</div><h3>Dove siamo rispetto agli obiettivi</h3>
@@ -6048,6 +6125,14 @@ function printSlides(){
   if(!vere.length){ toast('Non c\'è ancora una presentazione da stampare.', true); return; }
   const scatola=document.createElement('div');
   vere.forEach(x=>scatola.appendChild(x.cloneNode(true)));
+  /* il contenuto di ogni pagina va in un contenitore suo, così in stampa si può
+     rimpicciolire quel tanto che basta a farlo stare dentro senza tagliarlo */
+  scatola.querySelectorAll('.slide').forEach(sl=>{
+    const foot=sl.querySelector('.sfoot');
+    const cnt=document.createElement('div'); cnt.className='cnt';
+    Array.from(sl.childNodes).forEach(n=>{ if(n!==foot) cnt.appendChild(n); });
+    sl.insertBefore(cnt, sl.firstChild);
+  });
   /* i grafici diventano immagini */
   const canvasVeri=body.querySelectorAll('canvas');
   scatola.querySelectorAll('canvas').forEach((c,i)=>{
@@ -6085,6 +6170,7 @@ ${stili}
  .slide.cover{background:#1B2A3A;padding:0 22mm;justify-content:center;}
  .slide.cover h3{font-size:46px;}
  .slide.cover .sfoot{border-top-color:#3A4A5A;}
+ .cnt{flex:1;min-height:0;display:flex;flex-direction:column;}
  .chartbox{flex:1;min-height:0;display:flex;align-items:center;}
  img.graf{width:100%;max-height:95mm;object-fit:contain;}
  .leve label{grid-template-columns:190px 80px;}
@@ -6107,10 +6193,24 @@ ${stili}
  .produ{margin-top:22px;padding-top:17px;}
  .slide ul.bul li{font-size:16px;padding:11px 0 11px 26px;}
  @media screen{ body{background:#55585C;padding:18px;} .slide{box-shadow:0 2px 14px rgba(0,0,0,.25);margin:0 auto 18px;} }
-</style></head><body><div class="foglio">${scatola.innerHTML}</div></body></html>`);
+</style></head><body><div class="foglio">${scatola.innerHTML}</div>
+<script>
+/* nessuna pagina deve tagliare il testo: dove il contenuto esce, si riduce di
+   qualche punto finché rientra. Meglio due righe più piccole che mezza frase. */
+function adatta(){
+  document.querySelectorAll('.slide').forEach(function(sl){
+    var c=sl.querySelector('.cnt'); if(!c) return;
+    c.style.zoom=''; var k=1;
+    while(c.scrollHeight>c.clientHeight+1 && k>0.62){ k-=0.02; c.style.zoom=k; }
+  });
+}
+window.addEventListener('load', adatta);
+setTimeout(adatta, 700);
+<\/script>
+</body></html>`);
   w.document.close();
   toast('Nella finestra di stampa scegli «Salva come PDF» e tieni attiva la «Grafica di sfondo».');
-  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 900);
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 1400);
 }
 
 /* ================================================================
@@ -6532,6 +6632,35 @@ document.addEventListener('click',async e=>{
     tutti.forEach(g=>{ if(giaTutti) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
     await saveState(); storiaSegna(); renderSIM(); return;
   }
+  const sa=e.target.closest&&e.target.closest('[data-simapri]');
+  if(sa){ migrateS(); storiaPrima();
+    const [g,j]=sa.dataset.simapri.split('-').map(Number);
+    S.sim.aperti[g+'-'+j]={ric:''};
+    /* le ore: se nello scenario quel servizio è vuoto, le copio dal giorno che
+       gli somiglia di più, così si parte da qualcosa di sensato e si corregge */
+    if(!Array.isArray(S.sim.righe))
+      S.sim.righe=S.turni.righe.map(r=>({...r, id:newId(), g:r.g.map(x=>x.slice())}));
+    const R=S.sim.righe;
+    const vuoto=R.every(r=>!r.g[g][j*2] && !r.g[g][j*2+1]);
+    if(vuoto){
+      let best=-1, bestOre=0;
+      for(let dd=0; dd<7; dd++){ if(dd===g) continue;
+        const o=R.reduce((a,r)=>a+durata(r.g[dd][j*2], r.g[dd][j*2+1]),0);
+        if(o>bestOre){ bestOre=o; best=dd; } }
+      if(best>=0){
+        R.forEach(r=>{ r.g[g][j*2]=r.g[best][j*2]; r.g[g][j*2+1]=r.g[best][j*2+1]; });
+        toast('Ore copiate da '+GIORNI[best].toLowerCase()+': correggile nella griglia dello scenario qui sotto.');
+      }else{
+        toast('Non c\'è nessun giorno da cui copiare le ore: scrivile nella griglia dello scenario.');
+      }
+    }
+    await saveState(); storiaSegna(); renderSIM(); return; }
+  const sc2=e.target.closest&&e.target.closest('[data-simchiudiapri]');
+  if(sc2){ migrateS(); storiaPrima();
+    const k=sc2.dataset.simchiudiapri, [g,j]=k.split('-').map(Number);
+    delete S.sim.aperti[k];
+    if(Array.isArray(S.sim.righe)) S.sim.righe.forEach(r=>{ r.g[g][j*2]=''; r.g[g][j*2+1]=''; });
+    await saveState(); storiaSegna(); renderSIM(); return; }
   if(e.target.id==='simReset'){ migrateS(); storiaPrima(); S.sim.chiusi={}; await saveState(); storiaSegna(); renderSIM(); return; }
   const cop=e.target.closest('[data-tucopy]');
   if(cop){ const [id,g]=cop.dataset.tucopy.split('.'); const r=turnoDi(id); if(!r) return;
@@ -8382,6 +8511,7 @@ document.addEventListener('change', e=>{
 /* la settimana scelta dal calendario o dall'archivio */
 document.addEventListener('change', async e=>{
   const el=e.target;
+  if(el.dataset && el.dataset.simric!==undefined){ migrateS(); renderSIM(); return; }
   if(el.dataset && el.dataset.rt!==undefined){
     const [rep,sv,t,i,c]=el.dataset.rt.split('.');
     const R=regole(), v=oraTesto(el.value);
@@ -8403,6 +8533,11 @@ document.addEventListener('input', e=>{
   }
   if(el.id==='regLiberi'){ regole().liberi=Math.max(0,Math.min(6,num(el.value))); saveState(); }
   if(el.id==='regTetto'){ regole().maxOreGiorno=Math.max(0,Math.min(16,num(el.value))); saveState(); }
+  if(el.dataset && el.dataset.simric!==undefined){ migrateS();
+    const k=el.dataset.simric;
+    if(S.sim.aperti[k]){ S.sim.aperti[k].ric=el.value; saveState(); }
+    return;
+  }
   if(el.dataset && el.dataset.leva){ migrateS();
     S.leve[el.dataset.leva]=num(el.value); saveState(); renderAN(); }
   if(el.dataset && el.dataset.rt!==undefined){
