@@ -841,7 +841,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v83</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v84</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2677,7 +2677,16 @@ function pianCompila(){
   const maxGiorni = Math.max(0, 7 - Math.max(0, Math.min(6, num(R.liberi))));
   /* si riparte da zero: altrimenti non si capisce più cosa ha fatto il compilatore */
   righe.forEach(r=>{ r.g=Array.from({length:7},()=>['','','','']); });
-  const stato=new Map(righe.map(r=>[r.id,{ore:0, giorni:new Set()}]));
+  /* le ore a contratto sono il metro: chi ne ha 40 deve arrivare a 40, chi ne ha 20 a 20.
+     Il compilatore non pareggia le ore in assoluto, pareggia QUANTO MANCA a ciascuno
+     per arrivare al proprio contratto. Chi non ha il contratto scritto viene trattato
+     come la media di chi ce l'ha (e se non ce l'ha nessuno, valgono tutti uguale). */
+  const conContratto=righe.filter(r=>num(r.c)>0);
+  const mediaContratto = conContratto.length
+    ? conContratto.reduce((a,r)=>a+num(r.c),0)/conContratto.length : 38;
+  const obiettivo = r => num(r.c)>0 ? num(r.c) : mediaContratto;
+  const stato=new Map(righe.map(r=>[r.id,{ore:0, giorni:new Set(), obj:obiettivo(r)}]));
+  const quota = st => st.obj>0 ? st.ore/st.obj : st.ore;
   let scoperti=0, messi=0;
   for(let g=0;g<7;g++){
     if(w.note[g] && w.note[g].k==='chiuso') continue;          // chiusura: nessuno in turno
@@ -2700,13 +2709,16 @@ function pianCompila(){
             return true;
           });
           if(!liberi.length){ scoperti++; return; }
-          /* prima chi oggi lavora già (così i riposi restano giornate intere),
-             poi chi ha meno ore: il carico si pareggia da solo */
+          /* si guarda a come si resterebbe DOPO aver preso questo turno: così un turno
+             lungo non va a chi è quasi a posto, e un part time non sfora per un'ora di troppo.
+             Solo a parità quasi perfetta conta chi oggi lavora già, per tenere interi i riposi. */
           liberi.sort((x,y)=>{
             const sx=stato.get(x.id), sy=stato.get(y.id);
+            const qx=(sx.ore+durata1)/(sx.obj||1), qy=(sy.ore+durata1)/(sy.obj||1);
+            if(Math.abs(qx-qy)>0.05) return qx-qy;
             const ox=sx.giorni.has(g)?0:1, oy=sy.giorni.has(g)?0:1;
             if(ox!==oy) return ox-oy;
-            if(sx.ore!==sy.ore) return sx.ore-sy.ore;
+            if(qx!==qy) return qx-qy;
             return sx.giorni.size-sy.giorni.size;
           });
           const scelto=liberi[0], st=stato.get(scelto.id);
@@ -2716,9 +2728,54 @@ function pianCompila(){
       });
     });
   }
-  const senzaRiposo=righe.filter(r=>stato.get(r.id).giorni.size>maxGiorni).length;
+  /* ---- seconda passata: si riequilibra ----
+     La prima passata va in ordine di giorno, quindi chi arriva in fondo può restare
+     indietro per forza di cose. Qui si prende chi è andato più avanti rispetto al
+     proprio contratto e gli si sposta un turno addosso a chi è rimasto più indietro,
+     finché lo scambio migliora le cose. Pochi giri bastano e il conto resta identico. */
+  const rifai=()=>{
+    righe.forEach(r=>{ const st=stato.get(r.id); st.ore=0; st.giorni=new Set();
+      for(let g=0;g<7;g++){ const og=oreGiorno(r,g);
+        if(og[0]+og[1]>0){ st.ore+=og[0]+og[1]; st.giorni.add(g); } } });
+  };
+  const q = r => { const st=stato.get(r.id); return st.ore/(st.obj||1); };
+  for(let giro=0; giro<300; giro++){
+    let mosso=false;
+    for(const rep of TU_REP){
+      const inRep=righe.filter(r=>(TU_REP.includes(r.reparto)?r.reparto:'Sala')===rep);
+      if(inRep.length<2) continue;
+      const ord=inRep.slice().sort((x,y)=>q(y)-q(x));
+      const alto=ord[0], basso=ord[ord.length-1];
+      const qa=q(alto), qb=q(basso);
+      if(qa-qb<=0.03) continue;
+      /* un turno di alto che basso possa prendere davvero */
+      let scelto=null;
+      for(let g=0;g<7 && !scelto;g++) for(const j of [0,1]){
+        const da=alto.g[g][j*2], a2=alto.g[g][j*2+1];
+        if(!da&&!a2) continue;
+        if(basso.g[g][j*2]||basso.g[g][j*2+1]) continue;         // basso è già in questo servizio
+        const stB=stato.get(basso.id);
+        if(!stB.giorni.has(g) && stB.giorni.size>=maxGiorni) continue;
+        const d=durata(da,a2);
+        const nA=(stato.get(alto.id).ore-d)/(stato.get(alto.id).obj||1);
+        const nB=(stB.ore+d)/(stB.obj||1);
+        if(Math.max(Math.abs(nA-1),Math.abs(nB-1)) >= Math.max(Math.abs(qa-1),Math.abs(qb-1))) continue;
+        scelto={g,j,da,a:a2}; break;
+      }
+      if(!scelto) continue;
+      alto.g[scelto.g][scelto.j*2]=''; alto.g[scelto.g][scelto.j*2+1]='';
+      basso.g[scelto.g][scelto.j*2]=scelto.da; basso.g[scelto.g][scelto.j*2+1]=scelto.a;
+      rifai(); mosso=true;
+    }
+    if(!mosso) break;
+  }
   const fermi=righe.filter(r=>stato.get(r.id).giorni.size===0).length;
-  return {messi, scoperti, fermi, senzaRiposo, maxGiorni};
+  /* quanto ci siamo discostati dai contratti: è il numero che dice se la settimana regge */
+  let scarto=0, chiScarto='';
+  righe.forEach(r=>{ if(!(num(r.c)>0)) return;
+    const d=stato.get(r.id).ore-num(r.c);
+    if(Math.abs(d)>Math.abs(scarto)){ scarto=d; chiScarto=r.nome||'una persona'; } });
+  return {messi, scoperti, fermi, maxGiorni, scarto, chiScarto, conContratto:conContratto.length};
 }
 
 /* ---------------- la pagina ---------------- */
@@ -2801,7 +2858,7 @@ function renderPIAN(){
       <td class="fs">${fascia(rep,sv,'festivo')}</td></tr>`;
   h+=`<section>
     <div class="sechead"><div><h2>Compilatore automatico ${bottoneAiuto('aiutoComp')}</h2>
-      ${boxAiuto('aiutoComp', `Si dice quante persone servono in ogni servizio e con che orari: una riga per ogni persona da mettere in campo. Il compilatore sceglie chi, tenendo d'occhio due cose — che nessuno superi i giorni di lavoro consentiti e che le ore si distribuiscano in modo simile. I riposi li accorpa in giornate intere, perché a parità di tutto preferisce chi quel giorno lavora già.<br>I giorni segnati <b>chiusi</b> restano vuoti; quelli segnati <b>festa</b> usano gli orari del weekend. Quello che esce è una bozza: si corregge a mano come sempre.`)}</div></div>
+      ${boxAiuto('aiutoComp', `Si dice quante persone servono in ogni servizio e con che orari: una riga per ogni persona da mettere in campo. Il compilatore sceglie chi, guardando le <b>ore a contratto</b>: non dà a tutti lo stesso monte ore, ma porta ognuno il più vicino possibile al proprio — chi ne ha 40 verso 40, chi ne ha 20 verso 20. Chi non ha il contratto scritto nella griglia viene trattato come la media degli altri. Poi bada che nessuno superi i giorni di lavoro consentiti, e accorpa i riposi in giornate intere perché a parità preferisce chi quel giorno lavora già.<br>I giorni segnati <b>chiusi</b> restano vuoti; quelli segnati <b>festa</b> usano gli orari del weekend. Quello che esce è una bozza: si corregge a mano come sempre.`)}</div></div>
     <div class="regbar">
       <span class="t">Giorni liberi a testa, almeno</span>
       <input id="regLiberi" value="${num(R.liberi)}" inputmode="numeric">
@@ -4846,6 +4903,8 @@ document.addEventListener('click',async e=>{
     let m='✦ Compilata: '+esito.messi+' turni assegnati.';
     if(esito.scoperti) m+=' '+esito.scoperti+' turni restano scoperti: servono più persone, o meno giorni liberi.';
     if(esito.fermi)    m+=' '+esito.fermi+(esito.fermi===1?' persona resta':' persone restano')+' senza turni.';
+    if(esito.conContratto && Math.abs(esito.scarto)>0.4)
+      m+=' Scostamento più grosso dal contratto: '+(esito.scarto>0?'+':'−')+fmtNum(Math.abs(esito.scarto))+' h su '+esito.chiScarto+'.';
     toast(m, !!esito.scoperti);
     return; }
   const ta=e.target.closest('[data-tuadd]');
