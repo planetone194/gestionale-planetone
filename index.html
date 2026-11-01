@@ -412,6 +412,14 @@
   .simproj .c .v{font-family:var(--num);font-size:24px;font-weight:600;margin:6px 0 2px;}
   .simproj .c .n{font-size:12px;color:var(--ink2);}
   /* analisi dei turni */
+  /* la "i" accanto al titolo apre e chiude le istruzioni */
+  .aiuto{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
+    margin-left:9px;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff;
+    color:var(--ink2);font:italic 700 11px/1 Georgia,serif;cursor:pointer;vertical-align:2px;}
+  .aiuto:hover{border-color:var(--brand);color:var(--brand);}
+  .aiuto.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .aiutobox{margin-top:6px;}
+  .aiutobox.chiuso{display:none;}
   .tutab{width:100%;border-collapse:collapse;font-size:12.5px;}
   .tutab th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:600;
     padding:6px 5px;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;}
@@ -765,7 +773,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v80</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v81</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2468,8 +2476,8 @@ function renderTU(){
   </section>`;
 
   h+=`<section>
-    <div class="sechead"><div><h2>Settimana tipo</h2>
-      <div class="sub">Per ogni persona due righe: sopra il <b>pranzo</b>, sotto la <b>cena</b>. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.<br>Fra una casella e l'altra ci si muove da tastiera: <b>Tab</b> va avanti, <b>Maiusc+Tab</b> indietro, le <b>frecce ↑ ↓</b> e <b>Invio</b> passano dal pranzo alla cena e alla persona sotto.</div></div>
+    <div class="sechead"><div><h2>Settimana tipo ${bottoneAiuto('aiutoTurni')}</h2>
+      ${boxAiuto('aiutoTurni', `Per ogni persona due righe: sopra il <b>pranzo</b>, sotto la <b>cena</b>. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.<br>Fra una casella e l'altra ci si muove da tastiera: <b>Tab</b> va avanti, <b>Maiusc+Tab</b> indietro, le <b>frecce ↑ ↓</b> e <b>Invio</b> passano dal pranzo alla cena e alla persona sotto.`)}</div>
       ${barraFrecce()}</div>`;
   h+=grigliaTurni(S.turni.righe, d, '');
   h+=`<div class="improw" style="margin-top:12px;align-items:center">
@@ -3147,6 +3155,22 @@ document.addEventListener('keydown', e=>{
 const barraFrecce=()=>`<span class="ordsw frecce">
     <button type="button" data-storia="-1" title="annulla l'ultima modifica">↶</button>
     <button type="button" data-storia="1" title="rifai">↷</button></span>`;
+
+/* ---------------- le istruzioni sotto la "i" ----------------
+   Le spiegazioni lunghe stanno chiuse: si aprono con la "i" accanto al titolo
+   e restano aperte finché non le si richiude, anche se la pagina si ridisegna. */
+const aiutiAperti=new Set();
+const bottoneAiuto=(id)=>`<button type="button" class="aiuto${aiutiAperti.has(id)?' on':''}" data-aiuto="${id}" title="come funziona">i</button>`;
+const boxAiuto=(id,testo)=>`<div class="sub aiutobox${aiutiAperti.has(id)?'':' chiuso'}" id="${id}">${testo}</div>`;
+document.addEventListener('click', e=>{
+  const b=e.target.closest && e.target.closest('[data-aiuto]'); if(!b) return;
+  const id=b.dataset.aiuto, box=document.getElementById(id);
+  if(!box) return;
+  const apro=box.classList.contains('chiuso');
+  box.classList.toggle('chiuso', !apro);
+  b.classList.toggle('on', apro);
+  if(apro) aiutiAperti.add(id); else aiutiAperti.delete(id);
+});
 
 let appunti=null;          // {ore:[p1,p2,c1,c2], da:'Gabriele · martedì'}
 function appuntiTesto(v){
