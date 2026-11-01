@@ -879,6 +879,39 @@
   .slides-print header,.slides-print nav,.slides-print .side,.slides-print .anTools,.slides-print .repbar,.slides-print .repctrl,.slides-print footer,.slides-print #toast{display:none!important;}
   .slides-print .page{display:none!important;}
   .slides-print #page-an{display:block!important;}
+  /* ---------------- la presentazione stampata ----------------
+     Una slide = una pagina A4 orizzontale, a tutta pagina e a colori.
+     Il foglio deve reggere da solo: va in mano al cliente. */
+  @media print{
+    .slides-print{ --pw:297mm; --ph:210mm; }
+    .slides-print, .slides-print body{background:#fff !important;margin:0 !important;padding:0 !important;}
+    .slides-print *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
+    .slides-print .app,.slides-print .main,.slides-print .wrap,.slides-print #page-an,.slides-print #anBody{
+      margin:0 !important;padding:0 !important;max-width:none !important;width:auto !important;
+      display:block !important;min-height:0 !important;flex:none !important;}
+    .slides-print .slide{
+      width:297mm;height:207mm;margin:0 !important;padding:16mm 22mm 14mm !important;
+      border:none !important;border-radius:0 !important;min-height:0 !important;
+      page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid;
+      display:flex;flex-direction:column;overflow:hidden;background:#fff;}
+    .slides-print .slide:last-child{page-break-after:auto;break-after:auto;}
+    .slides-print .slide .kicker{font-size:10.5px;letter-spacing:2.4px;}
+    .slides-print .slide .kicker::after{content:'';display:block;width:34px;height:2px;background:var(--brass);margin-top:7px;}
+    .slides-print .slide h3{font-size:26px;margin:9px 0 14px;}
+    .slides-print .slide .sfoot{left:22mm;right:22mm;bottom:9mm;font-size:9px;letter-spacing:1.6px;
+      padding-top:5px;border-top:1px solid var(--line);}
+    /* la copertina a tutta pagina */
+    .slides-print .slide.cover{background:#1B2A3A !important;padding:0 22mm !important;justify-content:center;}
+    .slides-print .slide.cover h3{font-size:46px;}
+    .slides-print .slide.cover .sfoot{border-top-color:#3A4A5A;}
+    /* i cursori non si stampano: resta il valore */
+    .slides-print .leve input[type=range]{display:none !important;}
+    .slides-print .leve label{grid-template-columns:180px 70px;}
+    .slides-print .chartbox{flex:1;min-height:0;}
+    .slides-print .chartbox canvas{max-height:92mm !important;}
+    .slides-print .quadro .qrow{padding:15px 0;}
+    .slides-print .dtesto p{font-size:14.5px;}
+  }
   @media print{ .slide{page-break-after:always;border:none;border-radius:0;min-height:auto;} }
   @media(max-width:900px){ .obkpis{grid-template-columns:repeat(2,1fr)} .tgrid{grid-template-columns:1fr} .slide{padding:24px 22px 42px} }
 
@@ -938,7 +971,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v86</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v87</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4477,6 +4510,7 @@ let anTexts=null; // commenti AI opzionali
    stanno scritte una volta sola qui, così ogni cliente riceve lo stesso ragionamento.
    Le cure sono suggerimenti: conosciamo i numeri, non le dinamiche interne. */
 
+const puntiTxt = v => fmtNum(v)+' '+(Math.abs(num(v))===1?'punto':'punti');
 const TRIM_LUNGO=['Gennaio – Marzo','Aprile – Giugno','Luglio – Settembre','Ottobre – Dicembre'];
 let repPer={tipo:'anno', i:null};          // 'mese' i=0..11 · 'trim' i=0..3 · 'anno'
 const mesiDelPeriodo = per => per.tipo==='mese' ? [per.i]
@@ -4604,9 +4638,9 @@ function repDiagnosi(d){
         ver.push('Confrontare le ore servizio per servizio con gli incassi medi in Analisi dei turni: le ore stanno dove c\'è l\'incasso?');
       }
       if(dpp>10){
-        diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b> sopra l'obiettivo del ${fmtNum(num(t.ru))}%: oltre i dieci punti non è una questione di sfumature, c'è <b>extracosto da tagliare</b> per ${fmtE(e)} sul periodo.`);
+        diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo del ${fmtNum(num(t.ru))}%: oltre i dieci punti non è una questione di sfumature, c'è <b>extracosto da tagliare</b> per ${fmtE(e)} sul periodo.`);
       }else{
-        diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
+        diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
       }
       if(isFinite(d.prodF)&&isFinite(d.prodB)){
         const basso = d.prodF<d.prodB ? 'Food' : 'Beverage';
@@ -4646,7 +4680,7 @@ function repDiagnosi(d){
     if(delta.length){
       const dove=x=> x.d>4 ? 'dispersione certa' : x.d>2 ? 'zona migliorabile' : 'divario fisiologico';
       diag.push('Il confronto fra le schede ricetta e il bilancio: '
-        + delta.map(x=>`<b>${x.n}</b> ${fmtP(x.id)} sulle schede contro ${fmtP(x.re)} reale, <b>${fmtNum(x.d)} punti</b> di divario — ${dove(x)}`).join('; ') + '.');
+        + delta.map(x=>`<b>${x.n}</b> ${fmtP(x.id)} sulle schede contro ${fmtP(x.re)} reale, <b>${puntiTxt(x.d)}</b> di divario — ${dove(x)}`).join('; ') + '.');
       const grosso=delta.filter(x=>x.d>4), medio=delta.filter(x=>x.d>2&&x.d<=4), piccolo=delta.filter(x=>x.d<=2);
       if(grosso.length) diag.push(`Su ${grosso.map(x=>x.n.toLowerCase()).join(' e ')} un divario di quella misura non si spiega con il pricing: è <b>dispersione</b> — sprechi, omaggi non registrati, errori di dosaggio, scarti, ammanchi. È lì che sta il recupero, non nei listini.`);
       if(medio.length)  diag.push(`Su ${medio.map(x=>x.n.toLowerCase()).join(' e ')} il divario è nella fascia migliorabile: un po' di dispersione c'è, ma non è la causa principale.`);
@@ -4655,7 +4689,7 @@ function repDiagnosi(d){
     }
     if(!delta.length) ver.push('Compilare la «% da schede ricetta» nel Conto economico: senza il food cost ideale non si può dire se il problema è dispersione o pricing, e sono due cure diverse.');
     if(dpp>0){
-      diag.push(`Lo scostamento complessivo è di <b>${fmtNum(dpp)} punti</b>, pari a ${fmtE(e)} sul periodo. La materia prima sopra obiettivo è extracosto: qui non c'è zona grigia.`);
+      diag.push(`Lo scostamento complessivo è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)} sul periodo. La materia prima sopra obiettivo è extracosto: qui non c'è zona grigia.`);
       cure.push({t:'Listini e condizioni di acquisto', v:'medio', e:e*0.3,
         x:'Rimettere a gara le referenze più pesanti, verificare i prezzi effettivamente applicati in fattura contro il listino concordato, consolidare gli ordini per alzare gli sconti quantità.'});
       cure.push({t:'Dosi e grammature', v:'subito', e:e*0.25,
@@ -4683,7 +4717,7 @@ function repDiagnosi(d){
     const top=Object.entries(gr).sort((x,y)=>y[1]-x[1]).slice(0,3);
     if(top.length) diag.push('I gruppi che pesano di più sono '+top.map(([g,v])=>`<b>${g}</b> (${fmtE(v)}, ${fmtP(v/a.ricavi)} dei ricavi)`).join(', ')+'.');
     if(dpp>0){
-      diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b>, pari a ${fmtE(e)}. Le voci di spesa generale sono poche e in buona parte rigide: vanno guardate una per una per capire se c'è davvero qualcosa da tagliare. Dove non c'è, la strada non è il taglio ma <b>alzare il fatturato</b> finché l'incidenza rientra.`);
+      diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)}. Le voci di spesa generale sono poche e in buona parte rigide: vanno guardate una per una per capire se c'è davvero qualcosa da tagliare. Dove non c'è, la strada non è il taglio ma <b>alzare il fatturato</b> finché l'incidenza rientra.`);
       cure.push({t:'Passare le voci una per una', v:'subito', e:e*0.15,
         x:'Mettere in fila le voci dalla più pesante e, per ognuna, decidere: si rinegozia, si elimina, o è un vincolo. Spesso un terzo della lista non è mai stato riguardato da anni.'});
       cure.push({t:'Rinegoziare utenze e contratti ricorrenti', v:'medio', e:e*0.2,
@@ -4888,8 +4922,8 @@ function renderAN(){
     const q=rib.ribilancio;
     boxRib=`<div class="ribox">
       <div class="rt">Obiettivo realistico per i prossimi mesi</div>
-      <p>Un'area sfonda di più di cinque punti: chiedere tutto a lei sola non è un piano, è un auspicio. Il recupero si spalma — ${q.quota.filter(x=>x.chiedo>0).map(x=>`<b>${fmtNum(x.chiedo)} punti</b> da ${x.n.toLowerCase()}`).join(', ')}.</p>
-      <p>Sono <b>${fmtNum(q.puntiTot)} punti</b> in tutto, pari a <b>${fmtE(q.euro)}</b> sul periodo: un passo che si può davvero fare, invece di un numero che resta sulla carta.</p>
+      <p>Un'area sfonda di più di cinque punti: chiedere tutto a lei sola non è un piano, è un auspicio. Il recupero si spalma — ${q.quota.filter(x=>x.chiedo>0).map(x=>`<b>${puntiTxt(x.chiedo)}</b> da ${x.n.toLowerCase()}`).join(', ')}.</p>
+      <p>Sono <b>${puntiTxt(q.puntiTot)}</b> in tutto, pari a <b>${fmtE(q.euro)}</b> sul periodo: un passo che si può davvero fare, invece di un numero che resta sulla carta.</p>
     </div>`;
   }
   S_('',`<div class="kicker">Incidenze</div><h3>Dove siamo rispetto agli obiettivi</h3>
@@ -5101,10 +5135,77 @@ async function exportPPTX(){
   }catch(e){ toast('Export PowerPoint non riuscito: '+e.message, true); }
 }
 function printSlides(){
-  document.documentElement.classList.add('slides-print');
-  const undo=()=>{ document.documentElement.classList.remove('slides-print'); window.removeEventListener('afterprint',undo); };
-  window.addEventListener('afterprint',undo);
-  setTimeout(()=>window.print(), 60);
+  /* La presentazione si stampa in una finestra sua: niente barra laterale, niente
+     comandi, nessun margine dell'applicazione — solo le pagine, in orizzontale.
+     I grafici sono su canvas e non sopravvivono alla copia: li porto come immagine. */
+  const body=document.getElementById('anBody');
+  const vere=body?Array.from(body.querySelectorAll('.slide')):[];
+  if(!vere.length){ toast('Non c\'è ancora una presentazione da stampare.', true); return; }
+  const scatola=document.createElement('div');
+  vere.forEach(x=>scatola.appendChild(x.cloneNode(true)));
+  /* i grafici diventano immagini */
+  const canvasVeri=body.querySelectorAll('canvas');
+  scatola.querySelectorAll('canvas').forEach((c,i)=>{
+    const vero=canvasVeri[i]; if(!vero) return;
+    try{
+      const img=document.createElement('img');
+      img.src=vero.toDataURL('image/png');
+      img.className='graf';
+      c.replaceWith(img);
+    }catch(e){}
+  });
+  /* i cursori non servono su carta: resta il valore, che è già scritto accanto */
+  scatola.querySelectorAll('input[type=range]').forEach(x=>x.remove());
+  const stili=Array.from(document.querySelectorAll('link[rel="stylesheet"],style'))
+    .map(x=>x.outerHTML).join('');
+  const w=window.open('','_blank');
+  if(!w){ toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito.', true); return; }
+  w.document.write(`<!doctype html><html lang="it" class="slides-print"><head><meta charset="utf-8">
+<title>${(S.cliente||'Planet One')} · ${etichettaPeriodo(repPer)}</title>
+${stili}
+<style>
+ @page{size:A4 landscape;margin:0}
+ html,body{margin:0;padding:0;background:#fff;}
+ body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+ .foglio{display:block;}
+ .slide{width:297mm;height:207mm;margin:0;padding:16mm 22mm 14mm;border:none;border-radius:0;
+   min-height:0;display:flex;flex-direction:column;overflow:hidden;background:#fff;
+   page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid;position:relative;}
+ .slide:last-child{page-break-after:auto;break-after:auto;}
+ .slide .kicker{font-size:10.5px;letter-spacing:2.4px;}
+ .slide .kicker::after{content:'';display:block;width:34px;height:2px;background:#F07F1F;margin-top:7px;}
+ .slide h3{font-size:26px;margin:9px 0 14px;}
+ .slide .sfoot{left:22mm;right:22mm;bottom:9mm;font-size:9px;letter-spacing:1.6px;
+   padding-top:5px;border-top:1px solid #E4E1DA;}
+ .slide.cover{background:#1B2A3A;padding:0 22mm;justify-content:center;}
+ .slide.cover h3{font-size:46px;}
+ .slide.cover .sfoot{border-top-color:#3A4A5A;}
+ .chartbox{flex:1;min-height:0;display:flex;align-items:center;}
+ img.graf{width:100%;max-height:95mm;object-fit:contain;}
+ .leve label{grid-template-columns:190px 80px;}
+ /* su una pagina intera il respiro è diverso: si allarga la spaziatura */
+ .quadro .qrow{padding:21px 0;}
+ .qchiusa{margin-top:26px;font-size:16px;}
+ .qchiusa p{margin:9px 0;}
+ .dtesto p{font-size:15px;line-height:1.65;margin:13px 0;}
+ .dsom{font-size:14.5px;padding:7px 16px;}
+ .dver{margin-top:22px;padding-top:15px;}
+ .dver ul{font-size:14.5px;}
+ .slide .azione{padding:15px 0;}
+ .slide .azione .ax{font-size:14.5px;line-height:1.55;}
+ .leve{gap:15px;}
+ .levares{margin-top:26px;padding-top:20px;}
+ .slide .bigclose{font-size:34px;}
+ .yoy{margin-top:18px;}
+ .yotab td{padding:9px 8px;}
+ .ribox{margin-top:20px;padding:16px 20px;}
+ .produ{margin-top:22px;padding-top:17px;}
+ .slide ul.bul li{font-size:16px;padding:11px 0 11px 26px;}
+ @media screen{ body{background:#55585C;padding:18px;} .slide{box-shadow:0 2px 14px rgba(0,0,0,.25);margin:0 auto 18px;} }
+</style></head><body><div class="foglio">${scatola.innerHTML}</div></body></html>`);
+  w.document.close();
+  toast('Nella finestra di stampa scegli «Salva come PDF» e tieni attiva la «Grafica di sfondo».');
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 900);
 }
 
 /* ================================================================
