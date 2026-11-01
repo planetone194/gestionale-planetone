@@ -471,13 +471,18 @@
   .improw{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   /* le ore: caselle piccole e incolonnate, senza grassetto, così una persona
      occupa in altezza la metà di prima e la griglia si legge a colpo d'occhio */
-  .tutab input{width:40px;border:1px solid #E8E5DF;border-radius:3px;background:#F7F6F3;font:inherit;
+  .tutab input{width:40px;border:1px solid transparent;border-radius:3px;background:transparent;font:inherit;
     font-family:var(--num);font-size:10.5px;font-weight:400;text-align:center;padding:1px 0;color:var(--ink);
     letter-spacing:-.2px;margin:0 1px;}
-  .tutab input:hover{border-color:var(--line);}
+  .tutab input::placeholder{color:#C4BFB4;opacity:1;}
+  .tutab input:hover{background:#F2F1ED;}
   .tutab input:focus{outline:none;border-color:var(--brass);background:#fff;}
-  .tutab input.on{background:#E8F1E9;border-color:#CFE0D3;color:var(--ink);}
+  .tutab input.on{background:#E8F1E9;color:var(--ink);}
+  .tutab input.on:hover{background:#DEEBE1;}
   .tutab input.wide{width:52px;font-size:11.5px;padding:3px 0;}
+  /* il nome e il reparto restano incasellati: lì il box serve a tenere la colonna */
+  .tutab input.nome{border-color:#E7E4DE;background:#F7F6F3;}
+  .tutab input.nome:hover{border-color:var(--line);background:#F7F6F3;}
   .tutab td.num{font-weight:600;white-space:nowrap;}
   .tutab .pax{font-weight:400;font-size:10px;color:var(--ink2);margin-left:5px;}
   .tutab .pax::before{content:'·';margin-right:4px;color:#C9C4B8;}
@@ -753,7 +758,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v76</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v77</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
