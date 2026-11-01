@@ -839,6 +839,23 @@
   .yotab td:first-child{text-align:left;font-family:var(--font);}
   .yotab tr.fine td{font-weight:600;border-bottom:none;border-top:1.5px solid var(--brand);}
   .yotab td.su{color:var(--ok);} .yotab td.giu{color:var(--bad);}
+  /* la tabella dell'analisi a scalare */
+  .scalatab{width:100%;border-collapse:collapse;font-size:15px;margin-top:4px;}
+  .scalatab th{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:700;
+    text-align:center;padding:7px 10px;border-bottom:2px solid var(--ink);}
+  .scalatab th span{display:block;font-weight:400;letter-spacing:0;text-transform:none;font-size:10.5px;
+    font-family:var(--num);margin-top:3px;color:#9A958C;}
+  .scalatab th:first-child{width:34%;}
+  .scalatab td{padding:11px 10px;border-bottom:1px dashed var(--line);text-align:center;}
+  .scalatab td:first-child{text-align:left;font-weight:600;}
+  .scalatab td:first-child i{display:block;font-style:normal;font-weight:400;font-size:11.5px;color:var(--ink2);margin-top:1px;}
+  .scalatab td.num{font-family:var(--num);}
+  .scalatab td.num i{display:block;font-style:normal;font-size:11.5px;color:var(--ink2);margin-top:2px;}
+  .scalatab tr.sep td{border-bottom:1px solid var(--line);font-weight:600;}
+  .scalatab tr.fine td{border-bottom:none;border-top:1.5px solid var(--brand);font-weight:600;padding-top:13px;}
+  .scalatab tr.fine td.su{color:var(--ok);} .scalatab tr.fine td.giu{color:var(--bad);}
+  .scalatab .verdict{font-size:14px;padding:3px 12px;font-family:var(--num);}
+  .scalanota{margin-top:16px;font-size:15px;line-height:1.55;padding-top:14px;border-top:1px dashed var(--line);}
   /* il riquadro del ribilanciamento */
   .ribox{background:#F6F4EF;border:1px solid var(--line);border-left:3px solid var(--brass);
     border-radius:10px;padding:14px 18px;margin-top:16px;font-size:14.5px;line-height:1.55;}
@@ -971,7 +988,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v87</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v88</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4512,7 +4529,7 @@ let anTexts=null; // commenti AI opzionali
 
 const puntiTxt = v => fmtNum(v)+' '+(Math.abs(num(v))===1?'punto':'punti');
 const TRIM_LUNGO=['Gennaio – Marzo','Aprile – Giugno','Luglio – Settembre','Ottobre – Dicembre'];
-let repPer={tipo:'anno', i:null};          // 'mese' i=0..11 · 'trim' i=0..3 · 'anno'
+let repPer={tipo:'mese', i:null};          // 'mese' i=0..11 · 'trim' i=0..3 · 'anno'; i=null = ultimo mese completo
 const mesiDelPeriodo = per => per.tipo==='mese' ? [per.i]
                             : per.tipo==='trim' ? [0,1,2].map(k=>per.i*3+k)
                             : MESI.map((_,i)=>i);
@@ -4549,6 +4566,37 @@ function scalaProd(v){
   if(v<50) return {z:1, t:'buono'};
   if(v<60) return {z:0, t:'ottimo'};
   return {z:0, t:'eccellente'};
+}
+
+/* ---------------- l'analisi a scalare ----------------
+   Un numero da solo non dice niente: il 38% di personale a novembre è un
+   incidente o è così tutto l'anno? Il report parte dal livello più stretto che
+   hai scelto e sale — mese, trimestre, anno — così si vede subito se quello che
+   stiamo guardando è un episodio o una tendenza. */
+function ultimoCompleto(){
+  const m=compute();
+  for(let i=11;i>=0;i--) if(meseAperto(i) && meseCompleto(m.months[i])) return i;
+  return null;
+}
+function repLivelli(per){
+  const out=[];
+  if(per.tipo==='mese'){
+    out.push({et:MESI[per.i]+' '+S.anno, breve:MESI[per.i], per:{tipo:'mese', i:per.i}});
+    out.push({et:TRIM_LUNGO[Math.floor(per.i/3)], breve:(Math.floor(per.i/3)+1)+'° trimestre', per:{tipo:'trim', i:Math.floor(per.i/3)}});
+  }else if(per.tipo==='trim'){
+    out.push({et:TRIM_LUNGO[per.i], breve:(per.i+1)+'° trimestre', per:{tipo:'trim', i:per.i}});
+  }
+  out.push({et:'Anno '+S.anno, breve:'Anno '+S.anno, per:{tipo:'anno', i:null}});
+  /* un livello che non ha mesi completi non si mostra: non c'è niente da dire */
+  return out.map(x=>({...x, d:repDati(x.per)})).filter(x=>x.d.completi.length);
+}
+/* il mese è un caso a sé o è così tutto l'anno? */
+function confrontoLivelli(inc, incAnno){
+  if(!isFinite(inc)||!isFinite(incAnno)) return null;
+  const dpp=(inc-incAnno)*100;
+  if(Math.abs(dpp)<=1.5) return {v:'linea', t:'in linea con l\'anno'};
+  return dpp>0 ? {v:'peggio', t:puntiTxt(Math.abs(dpp))+' peggio della media annua'}
+               : {v:'meglio', t:puntiTxt(Math.abs(dpp))+' meglio della media annua'};
 }
 
 /* tutto quello che serve al report, per il periodo scelto */
@@ -4617,9 +4665,21 @@ const VEL={subito:{m:3, t:'subito', d:'effetto dentro il mese'},
            medio:{m:1.5, t:'1–3 mesi', d:'effetto in uno-tre mesi'},
            lento:{m:1, t:'oltre 3 mesi', d:'effetto oltre i tre mesi'}};
 
-function repDiagnosi(d){
+function repDiagnosi(d, annoD){
   const {a,t}=d, out=[];
   const extra=(inc,tgt)=>(inc-tgt/100)*a.ricavi;
+  /* la frase che colloca il periodo dentro l'anno */
+  const contesto=(inc, nome)=>{
+    if(!annoD || annoD===d) return null;
+    const c=confrontoLivelli(inc, annoD.a['inc'+nome]);
+    if(!c) return null;
+    const annoTxt=fmtP(annoD.a['inc'+nome]);
+    return c.v==='linea'
+      ? `Sull'anno l'incidenza è ${annoTxt}: questo periodo è <b>in linea</b>, quindi non è un episodio — è il modo in cui il locale funziona.`
+      : c.v==='peggio'
+        ? `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>. Vale la pena capire cosa ha di diverso prima di cambiare la struttura.`
+        : `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>, quindi il problema, dove c'è, è più marcato negli altri mesi.`;
+  };
 
   /* ---- personale ---- */
   if(isFinite(a.incRu)){
@@ -4642,6 +4702,7 @@ function repDiagnosi(d){
       }else{
         diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
       }
+      const cx=contesto(a.incRu,'Ru'); if(cx) diag.push(cx);
       if(isFinite(d.prodF)&&isFinite(d.prodB)){
         const basso = d.prodF<d.prodB ? 'Food' : 'Beverage';
         const vb = d.prodF<d.prodB ? d.prodF : d.prodB;
@@ -4690,6 +4751,7 @@ function repDiagnosi(d){
     if(!delta.length) ver.push('Compilare la «% da schede ricetta» nel Conto economico: senza il food cost ideale non si può dire se il problema è dispersione o pricing, e sono due cure diverse.');
     if(dpp>0){
       diag.push(`Lo scostamento complessivo è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)} sul periodo. La materia prima sopra obiettivo è extracosto: qui non c'è zona grigia.`);
+      const cxm=contesto(a.incMp,'Mp'); if(cxm) diag.push(cxm);
       cure.push({t:'Listini e condizioni di acquisto', v:'medio', e:e*0.3,
         x:'Rimettere a gara le referenze più pesanti, verificare i prezzi effettivamente applicati in fattura contro il listino concordato, consolidare gli ordini per alzare gli sconti quantità.'});
       cure.push({t:'Dosi e grammature', v:'subito', e:e*0.25,
@@ -4717,6 +4779,7 @@ function repDiagnosi(d){
     const top=Object.entries(gr).sort((x,y)=>y[1]-x[1]).slice(0,3);
     if(top.length) diag.push('I gruppi che pesano di più sono '+top.map(([g,v])=>`<b>${g}</b> (${fmtE(v)}, ${fmtP(v/a.ricavi)} dei ricavi)`).join(', ')+'.');
     if(dpp>0){
+      const cxs=contesto(a.incSg,'Sg'); if(cxs) diag.push(cxs);
       diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)}. Le voci di spesa generale sono poche e in buona parte rigide: vanno guardate una per una per capire se c'è davvero qualcosa da tagliare. Dove non c'è, la strada non è il taglio ma <b>alzare il fatturato</b> finché l'incidenza rientra.`);
       cure.push({t:'Passare le voci una per una', v:'subito', e:e*0.15,
         x:'Mettere in fila le voci dalla più pesante e, per ognuna, decidere: si rinegozia, si elimina, o è un vincolo. Spesso un terzo della lista non è mai stato riguardato da anni.'});
@@ -4829,18 +4892,23 @@ function renderAN(){
   const body=document.getElementById('anBody');
   const el=document.getElementById('anChips'); if(el) el.innerHTML='';
   migrateS();
-  const d=repDati(repPer);
+  /* alla prima apertura si parte dall'ultimo mese completo: è il report che si fa davvero */
+  if(repPer.tipo==='mese' && repPer.i===null){ const u=ultimoCompleto(); repPer = u===null?{tipo:'anno',i:null}:{tipo:'mese',i:u}; }
+  const livelli=repLivelli(repPer);
+  const base=livelli.length?livelli[0]:null;
+  const annoLiv=livelli.length?livelli[livelli.length-1]:null;
+  const d=base?base.d:repDati(repPer);
   const t=d.t, a=d.a;
 
   /* --- la barra del periodo, sempre visibile --- */
   const haMese=i=>meseCompleto(d.m.months[i]);
   const haTrim=q=>[0,1,2].some(k=>haMese(q*3+k));
   const barra=`<div class="repbar">
-    <span class="t">Periodo</span>
-    <button class="chip ${repPer.tipo==='anno'?'active':''}" data-rper="anno">Anno ${S.anno}</button>
-    ${[0,1,2,3].map(q=>`<button class="chip ${repPer.tipo==='trim'&&repPer.i===q?'active':''}" data-rper="trim.${q}" ${haTrim(q)?'':'disabled'}>${q+1}° trim</button>`).join('')}
-    <span class="sep"></span>
+    <span class="t" title="il report parte da qui e sale: mese, trimestre, anno">Parti da</span>
     ${MESI.map((mm,i)=>`<button class="chip ${repPer.tipo==='mese'&&repPer.i===i?'active':''}" data-rper="mese.${i}" ${haMese(i)?'':'disabled'}>${mm.slice(0,3)}</button>`).join('')}
+    <span class="sep"></span>
+    ${[0,1,2,3].map(q=>`<button class="chip ${repPer.tipo==='trim'&&repPer.i===q?'active':''}" data-rper="trim.${q}" ${haTrim(q)?'':'disabled'}>${q+1}° trim</button>`).join('')}
+    <button class="chip ${repPer.tipo==='anno'?'active':''}" data-rper="anno">Solo anno</button>
     <span class="sep"></span>
     <button class="chip ${stagionale()?'active':''}" id="repStag" title="nei locali stagionali i mesi di chiusura non entrano nelle medie e non generano allarmi">${stagionale()?'✓ ':''}Locale stagionale</button>
   </div>
@@ -4859,7 +4927,7 @@ function renderAN(){
     killChart('an'); return;
   }
 
-  const schede=repDiagnosi(d);
+  const schede=repDiagnosi(d, (annoLiv && annoLiv.d!==d) ? annoLiv.d : null);
   const rib=repTarget(d);
   const piano=repPiano(schede);
   const controlli=repControlli(d);
@@ -4877,7 +4945,9 @@ function renderAN(){
   S_('cover',`<div class="kicker">Planet One · Consulenza F&B</div>
     <h3>${S.cliente}</h3>
     <div class="sub2">Analisi gestionale extracontabile · ${periodo}</div>
-    <div class="sub2" style="font-size:13px;margin-top:14px;color:#8E8B85">${d.completi.length} mes${d.completi.length===1?'e':'i'} nei conti: ${mesiDetti}</div>`);
+    <div class="sub2" style="font-size:13px;margin-top:14px;color:#8E8B85">${
+      livelli.length>1 ? 'Analisi a scalare: '+livelli.map(x=>x.breve.toLowerCase()).join(' → ')
+                       : d.completi.length+' mes'+(d.completi.length===1?'e':'i')+' nei conti: '+mesiDetti}</div>`);
 
   /* 2 — il quadro in sintesi */
   const riga=sc=>`<div class="qrow z${sc.z}">
@@ -4895,6 +4965,42 @@ function renderAN(){
         : (forti.length===schede.length ? '<p>Tutte le aree sono dentro gli obiettivi concordati: il lavoro ora è tenerle lì.</p>' : '')}
       <p>Riportando le incidenze in obiettivo il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}.</p>
     </div>`);
+
+  /* 2b — la scala: lo stesso numero visto da vicino e da lontano */
+  if(livelli.length>1){
+    const aree=[
+      {n:'Risorse umane', k:'incRu', tgt:num(t.ru)},
+      {n:'Materia prima', k:'incMp', tgt:num(t.mp)},
+      {n:'Spese generali', k:'incSg', tgt:num(t.sg)},
+      {n:'Costi nascosti', k:'incCn', tgt:num(t.cn), steps:[1,2]}
+    ];
+    const cella=(x,ar)=>{
+      const v=x.d.a[ar.k];
+      if(!isFinite(v)) return '<td class="num">—</td>';
+      const z=zone(v, ar.tgt, ar.steps||[5,10]);
+      return `<td class="num"><span class="verdict ${ZC[z]}">${fmtP(v)}</span></td>`;
+    };
+    S_('',`<div class="kicker">L'analisi a scalare</div><h3>Lo stesso quadro da vicino e da lontano</h3>
+      <div class="sub" style="margin-bottom:12px">Un'incidenza alta in un mese può essere un incidente o il modo in cui il locale funziona tutto l'anno. Le tre colonne servono a distinguere le due cose prima di decidere.</div>
+      <table class="scalatab">
+        <tr><th></th>${livelli.map(x=>`<th>${x.breve}<span>${x.d.completi.length} mes${x.d.completi.length===1?'e':'i'}</span></th>`).join('')}</tr>
+        <tr class="sep"><td>Ricavi</td>${livelli.map(x=>`<td class="num">${fmtE(x.d.a.ricavi)}</td>`).join('')}</tr>
+        ${aree.map(ar=>`<tr><td>${ar.n}<i>obiettivo ${fmtNum(ar.tgt)}%</i></td>${livelli.map(x=>cella(x,ar)).join('')}</tr>`).join('')}
+        <tr class="fine"><td>Risultato</td>${livelli.map(x=>`<td class="num ${x.d.a.ro>=0?'su':'giu'}">${fmtE(x.d.a.ro)}<i>${fmtP(x.d.a.ro/x.d.a.ricavi)}</i></td>`).join('')}</tr>
+      </table>
+      ${(()=>{
+        if(livelli.length<2) return '';
+        const an=livelli[livelli.length-1].d.a;
+        const righe=[['Ru','personale'],['Mp','materia prima'],['Sg','spese generali']]
+          .map(([k,nome])=>{ const c=confrontoLivelli(a['inc'+k], an['inc'+k]); return c?{nome, c}:null; }).filter(Boolean);
+        const fuori=righe.filter(x=>x.c.v!=='linea');
+        return `<div class="scalanota">${
+          fuori.length
+            ? `In questo periodo ${fuori.map(x=>`<b>${x.nome}</b> sta ${x.c.t}`).join(' e ')}. ${righe.length>fuori.length?'Le altre aree sono in linea con l\'anno.':''}`
+            : 'Tutte le aree sono in linea con la media annua: quello che si legge qui non è un episodio del periodo, è la struttura del locale.'
+        }</div>`;
+      })()}`);
+  }
 
   /* 3 — andamento */
   let yoy='';
