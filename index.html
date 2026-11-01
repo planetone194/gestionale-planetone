@@ -420,6 +420,73 @@
   .aiuto.on{background:var(--brand);border-color:var(--brand);color:#fff;}
   .aiutobox{margin-top:6px;}
   .aiutobox.chiuso{display:none;}
+  /* la barra della settimana in pianificazione */
+  .pianbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
+  .pianbar .pw{display:flex;flex-direction:column;line-height:1.25;min-width:150px;text-align:center;}
+  .pianbar .pw b{font-size:14px;}
+  .pianbar .pw span{font-size:11px;color:var(--ink2);font-family:var(--num);}
+  .pianbar .sep{width:1px;height:22px;background:var(--line);margin:0 3px;}
+  .pianbar input[type=date], .pianbar select{border:1px solid var(--line);border-radius:8px;background:#fff;
+    font:inherit;font-size:12.5px;padding:5px 8px;color:var(--ink);}
+  .pianbar [data-pisett]{font-size:17px;line-height:1;padding:3px 11px;}
+  .avviso{background:#FBF6EC;border:1px solid #EADFC6;border-radius:10px;padding:9px 13px;
+    font-size:12.5px;color:var(--ink2);margin-bottom:12px;}
+  .avviso a{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:underline;}
+  /* le note sopra ai giorni */
+  .notegrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:14px;}
+  .notecell{border:1px solid var(--line);border-radius:10px;padding:7px 8px 6px;background:#fff;}
+  .notecell .nt{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--ink2);
+    display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;}
+  .notecell .nt span{font-weight:400;letter-spacing:0;text-transform:none;font-family:var(--num);font-size:10.5px;}
+  .notecell input{width:100%;border:1px solid transparent;border-radius:5px;background:#F7F6F3;
+    font:inherit;font-size:12px;padding:4px 6px;color:var(--ink);}
+  .notecell input:focus{outline:none;border-color:var(--brass);background:#fff;}
+  .notecell .nk{display:flex;gap:4px;margin-top:5px;}
+  .notecell .nk button{flex:1;border:1px solid var(--line);background:#fff;border-radius:5px;cursor:pointer;
+    font:600 10px/1 var(--font);padding:3px 0;color:var(--ink2);}
+  .notecell .nk button.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .notecell .nk button.f.on{background:var(--brass);border-color:var(--brass);color:#2B2516;}
+  .notecell .nk button.c.on{background:#4A4742;border-color:#4A4742;color:#fff;}
+  .notecell.festa{background:#FDF6E3;border-color:#E8D9AC;}
+  .notecell.chiuso{background:#ECEAE6;border-color:#D2CEC7;}
+  .notecell.chiuso input{background:#E2DFDA;}
+  /* i giorni segnati si vedono anche nelle tabelle */
+  .tutab tr.rep th.gg.festa{background:#F4E8C8;}
+  .tutab tr.rep th.gg.chiuso{background:#D9D6D0;color:#4A4742;}
+  .tutab tr.pranzo td.gg.festa, .tutab tr.cena td.gg.festa{background:#FDF8EA;}
+  .tutab tr.pranzo td.gg.chiuso, .tutab tr.cena td.gg.chiuso{background:#EDEBE7;}
+  .tutab td.num.festa{background:#FDF8EA;} .tutab td.num.chiuso{background:#EDEBE7;}
+  .tutab th.gg .dd{display:block;font-weight:400;letter-spacing:0;text-transform:none;font-size:9.5px;opacity:.75;}
+  /* il compilatore */
+  .regbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 0 12px;}
+  .regbar .t{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:var(--ink2);}
+  .regbar .sep{width:1px;height:20px;background:var(--line);margin:0 5px;}
+  .regbar #regLiberi{width:46px;border:1px solid var(--line);border-radius:7px;background:#fff;
+    font:inherit;font-family:var(--num);font-size:13px;text-align:center;padding:4px 0;}
+  .regbar .gday{border:1px solid var(--line);background:#fff;border-radius:7px;cursor:pointer;
+    font:600 11px/1 var(--font);padding:5px 9px;color:var(--ink2);}
+  .regbar .gday.on{background:var(--brand);border-color:var(--brand);color:#fff;}
+  .regtab td.lbl{width:150px;padding-left:18px;font-size:12.5px;}
+  .regtab tr.rep.sotto th{background:#F6F4EF;border-bottom:1px solid var(--line);color:var(--brand);}
+  .regtab td.fs{text-align:left;padding:5px 8px;}
+  .regtab .fascia{display:inline-flex;align-items:center;gap:2px;background:#F3F5F3;border:1px solid #DDE4DD;
+    border-radius:7px;padding:2px 3px 2px 5px;margin:2px 5px 2px 0;}
+  .regtab .fascia input{width:44px;border:none;background:transparent;font-family:var(--num);font-size:11.5px;
+    text-align:center;padding:2px 0;color:var(--ink);}
+  .regtab .fascia input:focus{outline:none;background:#fff;border-radius:4px;}
+  .regtab .fascia i{font-style:normal;color:var(--ink2);font-size:10px;}
+  .regtab .fascia button{border:none;background:transparent;color:#A8A49B;cursor:pointer;font-size:10px;padding:0 3px;}
+  .regtab .fascia button:hover{color:var(--bad);}
+  .regtab .piufascia{border:1px dashed var(--line);background:#fff;border-radius:7px;cursor:pointer;
+    color:var(--ink2);font-size:13px;line-height:1;padding:4px 9px;}
+  .regtab .piufascia:hover{border-color:var(--brand);color:var(--brand);border-style:solid;}
+  /* le tabelle dei totali della pianificazione */
+  .piantot td.lbl{width:200px;padding-left:10px;}
+  .piantot td.num{padding:3px 5px;font-weight:600;}
+  .piantot td.tot, .piantot th.tot{border-left:1.5px solid var(--line);}
+  .piantot tr.ii td{font-weight:400;border-bottom:1.5px solid #D9D5CC;}
+  .piantot tr.ii td.lbl{font-size:11px;color:var(--ink2);text-transform:none;letter-spacing:0;}
+  .piantot .verdict{font-size:11px;padding:1px 7px;}
   .tutab{width:100%;border-collapse:collapse;font-size:12.5px;}
   .tutab th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);font-weight:600;
     padding:6px 5px;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;}
@@ -761,19 +828,20 @@
     <button data-page="sg">3 · Spese generali</button>
     <button data-page="cn">4 · Costi nascosti</button>
     <div class="grp">Analisi &amp; controllo</div>
-    <button data-page="pr">Produttività HR</button>
-    <button data-page="ceagg">CE aggregato</button>
     <button data-page="cf">Confronto tra periodi</button>
+    <button data-page="pi">Pianificazione turni</button>
     <button data-page="tu">Analisi dei turni</button>
     <button data-page="si">Simulazione</button>
     <button data-page="ob">Obiettivi</button>
+    <button data-page="pr">Produttività HR</button>
+    <button data-page="ceagg">CE aggregato</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
     <div class="grp">Archivio</div>
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v81</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v82</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -968,6 +1036,7 @@
 
   <!-- ============ OBIETTIVI ============ -->
   <div class="page" id="page-cf"><div id="cfBody"></div></div>
+  <div class="page" id="page-pi"><div id="piBody"></div></div>
   <div class="page" id="page-tu"><div id="tuBody"></div></div>
   <div class="page" id="page-si"><div id="siBody"></div></div>
   <div class="page" id="page-ver"><div id="verBody"></div></div>
@@ -1122,6 +1191,7 @@ function freshState(){
     turni:{base:0, righe:[]},   // elenco a sé: {id,nome,reparto,c:ore a contratto,o:costo orario,g:[[pIn,pFin,cIn,cFin] ×7]}
     incassi:{},          // 'AAAA-MM-GG' → [incasso pranzo, incasso cena, coperti pranzo, coperti cena] — lordi, come escono dalla cassa
     sim:{chiusi:{}, recupero:0, righe:null},  // lo scenario: servizi spenti, recupero, e — se c'è — la sua griglia dei turni
+    pian:{aperta:'', settimane:{}, regole:null},  // i turni pianificati: 'lunedì AAAA-MM-GG' → {righe, note}
     ivaInc:10,           // aliquota degli incassi importati: in somministrazione è il 10%
     sg: SG_DEFAULT.map(([g,n])=>({id:newId(), gruppo:g, nome:n, m:zeros()})),
     cn: [
@@ -1191,6 +1261,21 @@ function migrateS(){
     if(!r.id) r.id=newId();
     if(!Array.isArray(r.g)||r.g.length!==7) r.g=Array.from({length:7},()=>['','','','']);
     r.g=r.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
+  });
+  /* la pianificazione: una settimana per lunedì, ognuna con le sue righe e le sue note */
+  if(!S.pian||typeof S.pian!=='object') S.pian={aperta:'', settimane:{}, regole:null};
+  if(!S.pian.settimane||typeof S.pian.settimane!=='object') S.pian.settimane={};
+  if(S.pian.aperta===undefined) S.pian.aperta='';
+  if(S.pian.regole===undefined) S.pian.regole=null;
+  Object.values(S.pian.settimane).forEach(w=>{
+    if(!Array.isArray(w.righe)) w.righe=[];
+    w.righe.forEach(r=>{
+      if(!r.id) r.id='p'+newId();
+      if(!Array.isArray(r.g)||r.g.length!==7) r.g=Array.from({length:7},()=>['','','','']);
+      r.g=r.g.map(x=>Array.isArray(x)&&x.length===4?x:['','','','']);
+    });
+    if(!Array.isArray(w.note)||w.note.length!==7) w.note=Array.from({length:7},()=>({t:'',k:''}));
+    w.note=w.note.map(n=> (n&&typeof n==='object') ? {t:String(n.t||''),k:(n.k==='festa'||n.k==='chiuso')?n.k:''} : {t:'',k:''});
   });
   if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
@@ -1353,7 +1438,7 @@ async function saveState(){
    Un cliente tiene più anni dentro lo stesso record: quello aperto sta nei campi
    normali (S.ce, S.ru, …), gli altri in S.storico. Un solo record per cliente,
    come prima: niente chiavi in più da tenere allineate. */
-const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales','turni','incassi','sim'];
+const ANNO_CAMPI=['ce','ru','sg','cn','salesSplit','weekSales','turni','incassi','sim','pian'];
 function anniCliente(){
   return [...new Set([num(S.anno), ...Object.keys(S.storico||{}).map(Number)])]
     .filter(a=>a>2000).sort((a,b)=>b-a);
@@ -2226,10 +2311,29 @@ function durata(a,b){
 const TU_REP=['Cucina','Sala','Bar','Management'];
 function turnoDi(id){
   migrateS();
+  if(String(id).charAt(0)==='p'){
+    for(const w of Object.values(S.pian.settimane)){
+      const r=w.righe.find(x=>x.id===id); if(r) return r;
+    }
+  }
   return S.turni.righe.find(r=>r.id===id)
       || (Array.isArray(S.sim.righe) ? S.sim.righe.find(r=>r.id===id) : null)
       || null;
 }
+/* le tre griglie parlano la stessa lingua: '' = settimana tipo, 'sim' = scenario, 'pian' = pianificazione */
+function righeDove(dove){
+  migrateS();
+  if(dove==='sim')  return S.sim.righe;
+  if(dove==='pian') return pianSett().righe;
+  return S.turni.righe;
+}
+function ridisegna(dove){
+  if(dove==='pian') return renderPIAN();
+  if(dove==='sim')  return renderSIM();
+  return renderTU();
+}
+/* quella aperta adesso: il nome della pagina basta a capire quale griglia stiamo guardando */
+const doveOra = ()=> current==='pi' ? 'pian' : (current==='si' ? 'sim' : '');
 /* le righe su cui lavora un calcolo: quelle vere, o quelle dello scenario se c'è */
 function righeDi(scen){ migrateS(); return (scen && Array.isArray(scen.righe)) ? scen.righe : S.turni.righe; }
 /* ore di una riga in un giorno, divise per servizio */
@@ -2438,7 +2542,9 @@ function grigliaTurni(elenco, d, dove){
   if(noPers){
     return `<div class="tuvuoto">La griglia è vuota. Aggiungi le persone con i pulsanti <b>+</b> qui sotto, reparto per reparto${dove?'':' — oppure prendi i nomi dall\'organico e poi correggi quello che serve'}.</div>
       <div class="improw">${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" data-dove="${dove}" type="button">+ ${r}</button>`).join(' ')}
-      ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}</div>`;
+      ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}
+      ${(!dove&&settimaneP().length)?`<button class="btn small tpl" id="tuDaPian" type="button">⤓ Importa l'ultima settimana</button>`:''}
+      ${(dove==='pian'&&S.turni.righe.length)?`<button class="btn small tpl" id="piAllinea" type="button">⤓ Prendi i nomi dalla settimana tipo</button>`:''}</div>`;
   }
   const barra = appunti ? `<div class="appbar">
       <span class="t">Giorno copiato</span>
@@ -2459,7 +2565,395 @@ function grigliaTurni(elenco, d, dove){
     <div class="improw" style="margin-top:12px">
       ${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" data-dove="${dove}" type="button">+ ${r}</button>`).join(' ')}
       ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}
+      ${(!dove&&settimaneP().length)?`<button class="btn small tpl" id="tuDaPian" type="button" title="porta qui gli orari dell'ultima settimana pianificata">⤓ Importa l'ultima settimana</button>`:''}
     </div>`;
+}
+
+
+/* ================= Pianificazione turni =================
+   Qui si scrivono i turni della settimana che verrà. L'elenco delle persone
+   nasce dalla settimana tipo di Analisi; da lì in poi ogni settimana vive
+   per conto suo, si archivia e si può ricopiare su quella dopo. */
+const GG_LUNGHI=['lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'];
+const MESI_BREVI=['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const isoDi = d => { const x=new Date(d); x.setHours(12,0,0,0);
+  return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); };
+function lunediDi(d){ const x=new Date(d); x.setHours(12,0,0,0);
+  x.setDate(x.getDate()-((x.getDay()+6)%7)); return isoDi(x); }
+function piuGiorni(iso,n){ const x=new Date(iso+'T12:00:00'); x.setDate(x.getDate()+n); return isoDi(x); }
+const giornoBreve = iso => { const d=new Date(iso+'T12:00:00'); return d.getDate()+' '+MESI_BREVI[d.getMonth()]; };
+function etichettaSett(k){
+  const f=new Date(k+'T12:00:00'), a=new Date(piuGiorni(k,6)+'T12:00:00');
+  const anno = a.getFullYear()!==(new Date()).getFullYear() ? ' '+a.getFullYear() : '';
+  return f.getDate()+' '+MESI_BREVI[f.getMonth()]+' – '+a.getDate()+' '+MESI_BREVI[a.getMonth()]+anno;
+}
+const settimaneP = () => { migrateS(); return Object.keys(S.pian.settimane).sort(); };
+/* una copia dell'elenco della settimana tipo: stessi nomi, reparti e paghe, orari a scelta */
+function pianDaTipo(conOre){
+  migrateS();
+  return S.turni.righe.map(r=>({ id:'p'+newId(), nome:r.nome, reparto:r.reparto, c:r.c, o:r.o,
+    g: conOre ? r.g.map(x=>x.slice()) : Array.from({length:7},()=>['','','','']) }));
+}
+const noteVuote = () => Array.from({length:7},()=>({t:'',k:''}));
+/* la settimana aperta: se non c'è, si apre quella corrente e la si crea dall'organico */
+function pianSett(){
+  migrateS();
+  let k=S.pian.aperta;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(k||'')){ k=lunediDi(new Date()); S.pian.aperta=k; }
+  if(!S.pian.settimane[k]) S.pian.settimane[k]={righe:pianDaTipo(false), note:noteVuote()};
+  const w=S.pian.settimane[k];
+  if(!Array.isArray(w.righe)) w.righe=[];
+  if(!Array.isArray(w.note)||w.note.length!==7) w.note=noteVuote();
+  return w;
+}
+/* ore e costo di una settimana, divisi per reparto e per servizio */
+function pianConti(righe){
+  const vuoto=()=>Array.from({length:7},()=>[0,0]);
+  const ore={tot:vuoto()}, eur={tot:vuoto()}, pers={};
+  TU_REP.forEach(rep=>{ ore[rep]=vuoto(); eur[rep]=vuoto(); pers[rep]=new Set(); });
+  pers.tot=new Set();
+  (righe||[]).forEach(r=>{
+    const rep = TU_REP.includes(r.reparto) ? r.reparto : 'Sala';
+    const co  = costoOrario(r).v;
+    for(let g=0;g<7;g++){
+      const og=oreGiorno(r,g);
+      for(const j of [0,1]) if(og[j]>0){
+        ore[rep][g][j]+=og[j]; ore.tot[g][j]+=og[j];
+        eur[rep][g][j]+=og[j]*co; eur.tot[g][j]+=og[j]*co;
+        pers[rep].add(r.id); pers.tot.add(r.id);
+      }
+    }
+  });
+  const sommaSett = m => m.reduce((a,x)=>a+x[0]+x[1],0);
+  const sommaServ = (m,j) => m.reduce((a,x)=>a+x[j],0);
+  return {ore, eur, pers, sommaSett, sommaServ};
+}
+
+/* ---------------- il compilatore automatico ----------------
+   Si dice quante persone servono in ogni reparto, in ogni servizio, con che
+   orari, e quanti giorni liberi deve avere ognuno. Il compilatore distribuisce
+   le persone cercando di tenere basse le ore di chi ne ha già tante e di
+   accorpare i riposi in giornate intere. Scrive una bozza: si corregge a mano. */
+function regoleBase(){
+  const f=(a,b)=>[a,b];
+  return {
+    liberi:2,
+    weekend:[false,false,false,false,true,true,true],
+    turni:{
+      Cucina:{ p:{feriale:[f('10:00','15:00')], festivo:[f('10:00','15:00')]},
+               c:{feriale:[f('18:00','23:00')], festivo:[f('18:00','23:00'),f('18:00','23:30')]} },
+      Sala:  { p:{feriale:[f('11:00','15:00')], festivo:[f('11:00','15:00'),f('12:00','15:00')]},
+               c:{feriale:[f('18:00','23:30')], festivo:[f('18:00','23:30'),f('19:00','00:00')]} },
+      Bar:   { p:{feriale:[], festivo:[]},
+               c:{feriale:[f('18:00','00:00')], festivo:[f('18:00','00:30')]} },
+      Management:{ p:{feriale:[], festivo:[]}, c:{feriale:[], festivo:[]} }
+    }
+  };
+}
+function regole(){
+  migrateS();
+  if(!S.pian.regole || typeof S.pian.regole!=='object') S.pian.regole=regoleBase();
+  const R=S.pian.regole;
+  if(!Array.isArray(R.weekend)||R.weekend.length!==7) R.weekend=regoleBase().weekend;
+  if(R.liberi===undefined) R.liberi=2;
+  if(!R.turni||typeof R.turni!=='object') R.turni=regoleBase().turni;
+  TU_REP.forEach(rep=>{
+    if(!R.turni[rep]) R.turni[rep]={p:{feriale:[],festivo:[]}, c:{feriale:[],festivo:[]}};
+    ['p','c'].forEach(sv=>{
+      if(!R.turni[rep][sv]) R.turni[rep][sv]={feriale:[],festivo:[]};
+      ['feriale','festivo'].forEach(t=>{
+        if(!Array.isArray(R.turni[rep][sv][t])) R.turni[rep][sv][t]=[];
+        R.turni[rep][sv][t]=R.turni[rep][sv][t].map(x=>Array.isArray(x)&&x.length===2?x:['','']);
+      });
+    });
+  });
+  return R;
+}
+/* compila la settimana aperta seguendo le regole; torna il resoconto */
+function pianCompila(){
+  migrateS();
+  const R=regole(), w=pianSett();
+  const righe=w.righe;
+  const maxGiorni = Math.max(0, 7 - Math.max(0, Math.min(6, num(R.liberi))));
+  /* si riparte da zero: altrimenti non si capisce più cosa ha fatto il compilatore */
+  righe.forEach(r=>{ r.g=Array.from({length:7},()=>['','','','']); });
+  const stato=new Map(righe.map(r=>[r.id,{ore:0, giorni:new Set()}]));
+  let scoperti=0, messi=0;
+  for(let g=0;g<7;g++){
+    if(w.note[g] && w.note[g].k==='chiuso') continue;          // chiusura: nessuno in turno
+    const festivo = !!R.weekend[g] || (w.note[g] && w.note[g].k==='festa');
+    const tipo = festivo ? 'festivo' : 'feriale';
+    TU_REP.forEach(rep=>{
+      const inRep=righe.filter(r=>(TU_REP.includes(r.reparto)?r.reparto:'Sala')===rep);
+      ['p','c'].forEach((sv,j)=>{
+        const fasce=R.turni[rep][sv][tipo]||[];
+        fasce.forEach(fa=>{
+          const da=oraTesto(fa[0]), a=oraTesto(fa[1]);
+          if(!da||!a) return;
+          const durata1=durata(da,a);
+          /* chi può: non è già in questo servizio oggi, e non sfora i giorni di lavoro */
+          const liberi=inRep.filter(r=>{
+            const st=stato.get(r.id);
+            const giaOggi = r.g[g][j*2] || r.g[g][j*2+1];
+            if(giaOggi) return false;
+            if(!st.giorni.has(g) && st.giorni.size>=maxGiorni) return false;
+            return true;
+          });
+          if(!liberi.length){ scoperti++; return; }
+          /* prima chi oggi lavora già (così i riposi restano giornate intere),
+             poi chi ha meno ore: il carico si pareggia da solo */
+          liberi.sort((x,y)=>{
+            const sx=stato.get(x.id), sy=stato.get(y.id);
+            const ox=sx.giorni.has(g)?0:1, oy=sy.giorni.has(g)?0:1;
+            if(ox!==oy) return ox-oy;
+            if(sx.ore!==sy.ore) return sx.ore-sy.ore;
+            return sx.giorni.size-sy.giorni.size;
+          });
+          const scelto=liberi[0], st=stato.get(scelto.id);
+          scelto.g[g][j*2]=da; scelto.g[g][j*2+1]=a;
+          st.ore+=durata1; st.giorni.add(g); messi++;
+        });
+      });
+    });
+  }
+  const senzaRiposo=righe.filter(r=>stato.get(r.id).giorni.size>maxGiorni).length;
+  const fermi=righe.filter(r=>stato.get(r.id).giorni.size===0).length;
+  return {messi, scoperti, fermi, senzaRiposo, maxGiorni};
+}
+
+/* ---------------- la pagina ---------------- */
+function renderPIAN(){
+  tieniIlFuoco();
+  migrateS();
+  const body=document.getElementById('piBody');
+  const k=S.pian.aperta, w=pianSett();
+  const elenco=w.righe;
+  const c=pianConti(elenco);
+  const inc=incassiMedi();
+  const haIncassi = inc.giornate>0;
+
+  /* --- testata: quale settimana, e cosa posso farci --- */
+  let h=`<section>
+    <div class="sechead"><div><h2>Pianificazione turni ${bottoneAiuto('aiutoPian')}</h2>
+      ${boxAiuto('aiutoPian', `I turni della settimana che verrà, da scrivere e da mandare al personale. L'elenco delle persone nasce dalla settimana tipo di <b>Analisi dei turni</b>, poi ogni settimana va per conto suo: si archivia da sola e la puoi ricopiare su quella dopo.<br>Sopra ai giorni c'è una riga di note: segna lì le feste e le chiusure, così in fase di compilazione te le ricordi. Una festa colora il giorno di giallo, una chiusura di grigio.<br>Gli orari si scrivono come in Analisi: copia e incolla del giorno, annulla e rifai, <b>Tab</b> e <b>frecce</b> per muoverti.`)}</div>
+      ${barraFrecce()}</div>
+    <div class="pianbar">
+      <button class="btn small tpl" data-pisett="-1" type="button" title="settimana precedente">‹</button>
+      <div class="pw"><b>${etichettaSett(k)}</b><span>lunedì ${k.split('-').reverse().join('/')}</span></div>
+      <button class="btn small tpl" data-pisett="1" type="button" title="settimana successiva">›</button>
+      <input type="date" id="piData" value="${k}" title="vai a una settimana qualsiasi">
+      <span class="sep"></span>
+      <select id="piArchivio" title="le settimane già pianificate">
+        <option value="">Archivio · ${settimaneP().length} settiman${settimaneP().length===1?'a':'e'}</option>
+        ${settimaneP().slice().reverse().map(x=>`<option value="${x}" ${x===k?'selected':''}>${etichettaSett(x)}</option>`).join('')}
+      </select>
+      <span class="sep"></span>
+      <button class="btn small tpl" id="piCopia" type="button" title="riporta qui gli orari della settimana pianificata prima di questa">⧉ Copia la precedente</button>
+      <button class="btn small tpl" id="piDaTipo" type="button" title="riporta qui gli orari della settimana tipo di Analisi">⤓ Dalla settimana tipo</button>
+      <button class="btn small tpl" id="piAllinea" type="button" title="aggiungi le persone che ci sono in Analisi e qui mancano">↻ Allinea l'elenco</button>
+      <button class="btn small tpl" id="piVuota" type="button" title="cancella tutti gli orari di questa settimana">✕ Svuota</button>
+      <span class="sep"></span>
+      <button class="btn small" id="piStampa" type="button" title="foglio pulito da dare al personale">🖨 Turno in PDF</button>
+    </div>
+  </section>`;
+
+  /* --- note sui giorni --- */
+  h+=`<section>
+    <div class="sechead"><div><h2>Note della settimana ${bottoneAiuto('aiutoNote')}</h2>
+      ${boxAiuto('aiutoNote', `Scrivi qui feste, eventi, chiusure straordinarie. Il bollino a destra di ogni casella sceglie il colore: <b>·</b> giorno normale, <b>F</b> festa (giallo), <b>C</b> chiuso (grigio). Le note finiscono anche sul foglio che dai al personale.`)}</div></div>
+    <div class="notegrid">
+      ${GIORNI.map((g,i)=>{
+        const n=w.note[i]||{t:'',k:''};
+        return `<div class="notecell ${n.k}">
+          <div class="nt">${g} <span>${giornoBreve(piuGiorni(k,i))}</span></div>
+          <input data-pinota="${i}" value="${String(n.t).replace(/"/g,'&quot;')}" placeholder="—" maxlength="40">
+          <div class="nk">
+            <button type="button" data-pitipo="${i}." class="${n.k===''?'on':''}" title="giorno normale">·</button>
+            <button type="button" data-pitipo="${i}.festa" class="f ${n.k==='festa'?'on':''}" title="festa o evento">F</button>
+            <button type="button" data-pitipo="${i}.chiuso" class="c ${n.k==='chiuso'?'on':''}" title="chiuso eccezionalmente">C</button>
+          </div></div>`;
+      }).join('')}
+    </div>
+  </section>`;
+
+  /* --- la griglia --- */
+  h+=`<section>
+    <div class="sechead"><div><h2>Turni · ${etichettaSett(k)}</h2></div></div>`;
+  h+=grigliaTurni(elenco, null, 'pian');
+  h+=`</section>`;
+
+
+  /* --- il compilatore --- */
+  const R=regole();
+  const fascia=(rep,sv,t)=>{
+    const arr=R.turni[rep][sv][t];
+    return arr.map((x,i)=>`<span class="fascia">
+        <input data-rt="${rep}.${sv}.${t}.${i}.0" value="${x[0]||''}" placeholder="—" inputmode="numeric">
+        <i>→</i>
+        <input data-rt="${rep}.${sv}.${t}.${i}.1" value="${x[1]||''}" placeholder="—" inputmode="numeric">
+        <button type="button" data-rx="${rep}.${sv}.${t}.${i}" title="togli questo turno">✕</button>
+      </span>`).join('')
+      + `<button type="button" class="piufascia" data-ra="${rep}.${sv}.${t}" title="aggiungi una persona in questo servizio">+</button>`;
+  };
+  const rigaReg=(rep,sv,nome)=>`<tr>
+      <td class="lbl">${nome}</td>
+      <td class="fs">${fascia(rep,sv,'feriale')}</td>
+      <td class="fs">${fascia(rep,sv,'festivo')}</td></tr>`;
+  h+=`<section>
+    <div class="sechead"><div><h2>Compilatore automatico ${bottoneAiuto('aiutoComp')}</h2>
+      ${boxAiuto('aiutoComp', `Si dice quante persone servono in ogni servizio e con che orari: una riga per ogni persona da mettere in campo. Il compilatore sceglie chi, tenendo d'occhio due cose — che nessuno superi i giorni di lavoro consentiti e che le ore si distribuiscano in modo simile. I riposi li accorpa in giornate intere, perché a parità di tutto preferisce chi quel giorno lavora già.<br>I giorni segnati <b>chiusi</b> restano vuoti; quelli segnati <b>festa</b> usano gli orari del weekend. Quello che esce è una bozza: si corregge a mano come sempre.`)}</div></div>
+    <div class="regbar">
+      <span class="t">Giorni liberi a testa, almeno</span>
+      <input id="regLiberi" value="${num(R.liberi)}" inputmode="numeric">
+      <span class="sep"></span>
+      <span class="t">Giorni da weekend</span>
+      ${GIORNI.map((g,i)=>`<button type="button" class="gday ${R.weekend[i]?'on':''}" data-rw="${i}">${g.toLowerCase()}</button>`).join('')}
+    </div>
+    <div style="overflow-x:auto"><table class="tutab regtab">
+      <tr class="rep"><th class="lbl">Chi serve in turno</th><th>Infrasettimanale</th><th>Weekend e feste</th></tr>
+      ${TU_REP.map(rep=>`<tr class="rep sotto"><th class="lbl" colspan="3">${rep}</th></tr>`
+        + rigaReg(rep,'p','Pranzo') + rigaReg(rep,'c','Cena')).join('')}
+    </table></div>
+    <div class="improw" style="margin-top:12px">
+      <button class="btn small" id="regVai" type="button">✦ Compila la settimana</button>
+      <button class="btn small tpl" id="regBase" type="button">↺ Rimetti le regole di partenza</button>
+    </div>
+  </section>`;
+
+  /* --- totali per reparto --- */
+  const repAttivi=TU_REP.filter(rep=>c.sommaSett(c.ore[rep])>0);
+  const colGiorni = GIORNI.map((g,i)=>`<th class="gg ${w.note[i].k}">${g}<span class="dd">${giornoBreve(piuGiorni(k,i))}</span></th>`).join('');
+  const rigaOre=(nome,rep,j,cl)=>{
+    const m=c.ore[rep];
+    const cella=g=> j==null ? m[g][0]+m[g][1] : m[g][j];
+    const tot = j==null ? c.sommaSett(m) : c.sommaServ(m,j);
+    if(!tot && rep!=='tot') return '';
+    return `<tr class="${cl||''}"><td class="lbl">${nome}</td>`
+      + GIORNI.map((_,g)=>`<td class="num ${w.note[g].k}">${cella(g)?fmtNum(cella(g)):'—'}</td>`).join('')
+      + `<td class="num tot">${tot?fmtNum(tot):'—'}</td></tr>`;
+  };
+  const blocco=(titolo,j)=>`<tr class="rep"><th class="lbl">${titolo}</th>${colGiorni}<th class="tot">Settimana</th></tr>`
+    + TU_REP.map(rep=>rigaOre(rep,rep,j)).join('')
+    + rigaOre(titolo==='Totale'?'Ore totali della settimana':'Totale '+titolo.toLowerCase(),'tot',j,'somma gran');
+  h+=`<section>
+    <div class="sechead"><div><h2>Ore per reparto</h2>
+      <div class="sub">Quante ore mette in campo ogni reparto, servizio per servizio. La colonna a destra è la settimana intera.</div></div></div>
+    <div style="overflow-x:auto"><table class="tutab piantot">
+      ${blocco('Pranzo',0)}${blocco('Cena',1)}${blocco('Totale',null)}
+    </table></div>
+  </section>`;
+
+  /* --- spesa e incidenza --- */
+  const tgt=num(S.targets.ru)||34;
+  const cellaInc=(costo, ricavo)=>{
+    if(ricavo==null||!(ricavo>0)) return `<td class="num"></td>`;
+    const i=costo/ricavo, z=zone(i,tgt,[5,10]);
+    return `<td class="num"><span class="verdict ${ZC[z]}">${fmtP(i)}</span></td>`;
+  };
+  const rigaSpesa=(nome,j,cl)=>{
+    const e=c.eur.tot, ric=g=> j==null
+      ? ((inc.media[g][0]==null&&inc.media[g][1]==null) ? null : num(inc.media[g][0])+num(inc.media[g][1]))
+      : inc.media[g][j];
+    const costo=g=> j==null ? e[g][0]+e[g][1] : e[g][j];
+    const totC = j==null ? c.sommaSett(e) : c.sommaServ(e,j);
+    let totR=0, haR=false;
+    for(let g=0;g<7;g++){ const v=ric(g); if(v!=null){ totR+=v; haR=true; } }
+    return `<tr class="${cl||''}"><td class="lbl">${nome}</td>`
+      + GIORNI.map((_,g)=>`<td class="num ${w.note[g].k}">${costo(g)?fmtE(costo(g)):'—'}</td>`).join('')
+      + `<td class="num tot">${totC?fmtE(totC):'—'}</td></tr>`
+      + `<tr class="${cl||''} ii"><td class="lbl">incidenza personale</td>`
+      + GIORNI.map((_,g)=>cellaInc(costo(g), ric(g))).join('')
+      + (haR&&totC ? cellaInc(totC,totR).replace('<td class="num">','<td class="num tot">') : `<td class="num tot"></td>`)
+      + `</tr>`;
+  };
+  h+=`<section>
+    <div class="sechead"><div><h2>Spesa del personale e incidenza ${bottoneAiuto('aiutoSpesa')}</h2>
+      ${boxAiuto('aiutoSpesa', `La spesa nasce dalle ore scritte sopra per il costo orario di ciascuno. L'incidenza la confronta con l'incasso medio di quel giorno e di quel servizio, preso dai dati caricati in <b>Analisi dei turni</b> e già scorporato dell'IVA: dove l'incasso non c'è, la casella resta vuota. I colori sono quelli del cruscotto, sull'obiettivo del personale (${fmtNum(tgt)}%).`)}</div></div>
+    ${haIncassi?'':`<div class="avviso">Per vedere le incidenze servono gli incassi: caricali in <a data-goto="tu">Analisi dei turni</a>. Finché mancano, qui si legge solo la spesa.</div>`}
+    <div style="overflow-x:auto"><table class="tutab piantot">
+      <tr class="rep"><th class="lbl">Spesa</th>${colGiorni}<th class="tot">Settimana</th></tr>
+      ${rigaSpesa('Pranzo',0)}${rigaSpesa('Cena',1)}${rigaSpesa('Totale giornata',null,'somma gran')}
+    </table></div>
+  </section>`;
+
+  body.innerHTML=h;
+  /* i giorni di festa e di chiusura si tingono in tutte le tabelle della pagina */
+  body.querySelectorAll('table.tutab tr').forEach(tr=>{
+    const celle=tr.querySelectorAll('.gg');
+    if(celle.length===7) celle.forEach((cl,i)=>{ if(w.note[i].k) cl.classList.add(w.note[i].k); });
+  });
+  frecce();
+}
+
+/* ---------------- il foglio da dare al personale ----------------
+   Niente costi, niente incidenze: i giorni, gli orari, le ore di ciascuno
+   e il totale di ogni giornata. Si apre pronto per la stampa o il PDF. */
+function pianStampa(){
+  migrateS();
+  const k=S.pian.aperta, w=pianSett(), c=pianConti(w.righe);
+  const usati=[...new Set(w.righe.map(r=>r.reparto))].filter(Boolean);
+  const gruppi=TU_REP.filter(r=>usati.includes(r)).concat(usati.filter(r=>!TU_REP.includes(r)));
+  const fascia=(a,b)=> (a||b) ? ((a||'—')+'–'+(b||'—')) : '';
+  const cella=(r,g)=>{
+    const p=fascia(r.g[g][0],r.g[g][1]), s2=fascia(r.g[g][2],r.g[g][3]);
+    return (!p&&!s2) ? '<i>riposo</i>' : [p,s2].filter(Boolean).join('<br>');
+  };
+  const capi = GIORNI.map((g,i)=>{
+    const n=w.note[i]||{t:'',k:''};
+    return `<th class="${n.k}">${g}<span>${giornoBreve(piuGiorni(k,i))}</span>${n.t?`<em>${n.t}</em>`:''}</th>`;
+  }).join('');
+  let righe='';
+  gruppi.forEach(rep=>{
+    const pp=w.righe.filter(r=>r.reparto===rep);
+    if(!pp.length) return;
+    righe+=`<tr class="rep"><td colspan="9">${rep}</td></tr>`;
+    pp.forEach(r=>{
+      const o=oreSettimana(r);
+      righe+=`<tr><td class="nm">${(r.nome||'—')}</td>`
+        + GIORNI.map((_,g)=>`<td class="${w.note[g].k}">${cella(r,g)}</td>`).join('')
+        + `<td class="tot">${o.tot?fmtNum(o.tot)+' h':'—'}</td></tr>`;
+    });
+  });
+  const totGiorno = GIORNI.map((_,g)=>{
+    const v=c.ore.tot[g][0]+c.ore.tot[g][1];
+    return `<td class="${w.note[g].k}">${v?fmtNum(v)+' h':'—'}</td>`;
+  }).join('');
+  const totSett=c.sommaSett(c.ore.tot);
+  const html=`<!doctype html><html lang="it"><head><meta charset="utf-8">
+<title>Turni ${etichettaSett(k)}</title>
+<style>
+ @page{size:A4 landscape;margin:12mm}
+ *{box-sizing:border-box}
+ body{font:13px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1B2A3A;margin:0}
+ h1{font-size:19px;margin:0 0 2px} .sub{color:#5D6B79;font-size:12px;margin-bottom:14px}
+ table{width:100%;border-collapse:collapse}
+ th,td{border:1px solid #D8D4CC;padding:6px 7px;text-align:center;vertical-align:middle}
+ th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#5D6B79;background:#F6F4EF}
+ th span{display:block;font-weight:400;letter-spacing:0;text-transform:none;font-size:10.5px}
+ th em{display:block;font-style:normal;font-weight:600;color:#1B2A3A;font-size:10px;margin-top:2px}
+ th.festa{background:#F7EBCB} th.chiuso{background:#D9D6D0;color:#3A3835}
+ td.festa{background:#FDF8EA} td.chiuso{background:#EDEBE7;color:#8A8680}
+ td.nm{text-align:left;font-weight:600;white-space:nowrap}
+ td i{color:#A8A49B;font-style:normal;font-size:11px}
+ tr.rep td{background:#EDEBE7;text-align:left;font-weight:700;font-size:10.5px;
+   text-transform:uppercase;letter-spacing:1px;color:#8A5A28}
+ tr.fine td{background:#F6F4EF;font-weight:700}
+ td.tot{font-weight:700;white-space:nowrap}
+ .pie{margin-top:12px;color:#5D6B79;font-size:11px}
+</style></head><body>
+<h1>Turni · ${etichettaSett(k)}</h1>
+<div class="sub">${S.cliente||''} — settimana dal ${k.split('-').reverse().join('/')} · ${fmtNum(totSett)} ore in tutto</div>
+<table>
+  <tr><th style="text-align:left">Persona</th>${capi}<th>Ore</th></tr>
+  ${righe}
+  <tr class="fine"><td class="nm">Ore della giornata</td>${totGiorno}<td class="tot">${fmtNum(totSett)} h</td></tr>
+</table>
+<div class="pie">Planet One · Gestionale F&amp;B — stampato il ${new Date().toLocaleDateString('it-IT')}</div>
+</body></html>`;
+  const win=window.open('','_blank');
+  if(!win){ toast('Il browser ha bloccato la finestra della stampa: consenti i popup per questo sito.', true); return; }
+  win.document.write(html); win.document.close();
+  setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 500);
 }
 
 function renderTU(){
@@ -2647,7 +3141,7 @@ function renderTU(){
 }
 /* ridisegna senza perdere il fuoco mentre si digita negli orari */
 let tuTimer=null;
-function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ if(current==='tu') renderTU(); else if(current==='si') renderSIM(); }, 700); }
+function tuPartial(){ clearTimeout(tuTimer); tuTimer=setTimeout(()=>{ ridisegna(doveOra()); }, 700); }
 
 /* ================================================================
    RENDER · SIMULAZIONE
@@ -3049,7 +3543,7 @@ function cfVociSG(anno, mesi){
    Si tiene da parte una fotografia di turni e scenario dopo ogni pausa nella
    digitazione: le frecce camminano su quelle, non sul singolo carattere. */
 let storia=[], storiaPos=-1, storiaTimer=null;
-const statoTurni=()=>JSON.stringify({t:S.turni, s:S.sim});
+const statoTurni=()=>JSON.stringify({t:S.turni, s:S.sim, p:S.pian});
 function storiaAzzera(){ migrateS(); storia=[statoTurni()]; storiaPos=0; frecce(); }
 function storiaPrima(){
   clearTimeout(storiaTimer);
@@ -3081,9 +3575,9 @@ async function storiaVai(d){
   if(p<0 || p>=storia.length) return;
   storiaPos=p;
   const o=JSON.parse(storia[p]);
-  S.turni=o.t; S.sim=o.s;
+  S.turni=o.t; S.sim=o.s; if(o.p) S.pian=o.p;
   await saveState();
-  if(current==='tu') renderTU(); else if(current==='si') renderSIM();
+  ridisegna(doveOra());
   toast(d<0?'↶ Annullato':'↷ Rifatto');
 }
 function frecce(){
@@ -4003,7 +4497,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -4185,7 +4679,7 @@ document.addEventListener('click',async e=>{
   const cop=e.target.closest('[data-tucopy]');
   if(cop){ const [id,g]=cop.dataset.tucopy.split('.'); const r=turnoDi(id); if(!r) return;
     appunti={ore:r.g[+g].slice(), da:(r.nome||'senza nome')+' · '+['lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'][+g]};
-    if(current==='tu') renderTU(); else renderSIM();
+    ridisegna(cop.dataset.dove||'');
     toast('⧉ Giorno copiato: '+appuntiTesto(appunti.ore)+'. Ora scegli dove incollarlo.');
     return;
   }
@@ -4195,46 +4689,136 @@ document.addEventListener('click',async e=>{
     storiaPrima();
     r.g[+g]=appunti.ore.slice();
     await saveState(); storiaSegna();
-    if(current==='tu') renderTU(); else renderSIM();
+    ridisegna(inc.dataset.dove||'');
     return;
   }
   const su=e.target.closest('[data-tuinc]');
   if(su){ if(!appunti) return;
-    const sim=su.dataset.dove==='sim';
-    const arr = sim ? (S.sim.righe||[]) : S.turni.righe;
+    const dove=su.dataset.dove||'';
+    const arr = righeDove(dove)||[];
     const r = arr.find(x=>(x.nome||'senza nome')===appunti.da.split(' · ')[0]) || null;
     if(!r){ toast('La persona da cui avevi copiato non è più in griglia.', true); return; }
     storiaPrima();
     const quali = su.dataset.tuinc==='tutti' ? [0,1,2,3,4,5,6] : [+su.dataset.tuinc];
     quali.forEach(g=>{ r.g[g]=appunti.ore.slice(); });
     await saveState(); storiaSegna();
-    if(sim) renderSIM(); else renderTU();
+    ridisegna(dove);
     toast('✓ Incollato su '+(quali.length===7?'tutti i giorni':GIORNI[quali[0]].toLowerCase())+'.');
     return;
   }
-  if(e.target.id==='appVia'){ appunti=null; if(current==='tu') renderTU(); else renderSIM(); return; }
+  if(e.target.id==='appVia'){ appunti=null; ridisegna(doveOra()); return; }
   const fr=e.target.closest('[data-storia]');
   if(fr){ await storiaVai(+fr.dataset.storia); return; }
+  /* ---- pianificazione: settimana, archivio, copie, stampa ---- */
+  const ps=e.target.closest('[data-pisett]');
+  if(ps){ pianSett();                       // assicura che una settimana sia aperta
+    S.pian.aperta=piuGiorni(S.pian.aperta, 7*(+ps.dataset.pisett));
+    await saveState(); renderPIAN(); return; }
+  if(e.target.id==='piCopia'){ migrateS();
+    const k=S.pian.aperta, tutte=settimaneP().filter(x=>x<k);
+    const prima=tutte[tutte.length-1];
+    if(!prima){ toast('Non c\'è nessuna settimana pianificata prima di questa.', true); return; }
+    if(!await uiConfirm('Riportare qui gli orari della settimana '+etichettaSett(prima)+'?\n\nQuello che c\'è adesso in questa settimana viene sostituito.')) return;
+    storiaPrima();
+    S.pian.settimane[k]={ righe: S.pian.settimane[prima].righe.map(r=>({...r, id:'p'+newId(), g:r.g.map(x=>x.slice())})),
+                          note: S.pian.settimane[k].note };
+    await saveState(); storiaSegna(); renderPIAN();
+    toast('✓ Copiata la settimana '+etichettaSett(prima)+'.');
+    return; }
+  if(e.target.id==='piDaTipo'){ migrateS();
+    if(!S.turni.righe.length){ toast('La settimana tipo è vuota: compilala in Analisi dei turni.', true); return; }
+    if(!await uiConfirm('Riportare qui gli orari della settimana tipo?\n\nQuello che c\'è adesso in questa settimana viene sostituito.')) return;
+    storiaPrima();
+    S.pian.settimane[S.pian.aperta].righe=pianDaTipo(true);
+    await saveState(); storiaSegna(); renderPIAN();
+    toast('✓ Presa la settimana tipo di Analisi.');
+    return; }
+  if(e.target.id==='piAllinea'){ migrateS();
+    const w=pianSett(), gia=new Set(w.righe.map(r=>norm(r.nome)));
+    let n=0;
+    S.turni.righe.forEach(r=>{ if(!r.nome||gia.has(norm(r.nome))) return;
+      w.righe.push({id:'p'+newId(), nome:r.nome, reparto:r.reparto, c:r.c, o:r.o,
+                    g:Array.from({length:7},()=>['','','',''])}); n++; });
+    if(n){ storiaPrima(); await saveState(); storiaSegna(); }
+    renderPIAN();
+    toast(n?('✓ '+n+' person'+(n===1?'a aggiunta':'e aggiunte')+' dalla settimana tipo.')
+           :'In questa settimana ci sono già tutte le persone della settimana tipo.');
+    return; }
+  if(e.target.id==='piVuota'){ migrateS();
+    if(!await uiConfirm('Cancellare tutti gli orari di questa settimana?\n\nI nomi restano, le note anche.')) return;
+    storiaPrima();
+    pianSett().righe.forEach(r=>{ r.g=Array.from({length:7},()=>['','','','']); });
+    await saveState(); storiaSegna(); renderPIAN();
+    return; }
+  if(e.target.id==='piStampa'){ pianStampa(); return; }
+  const pt=e.target.closest('[data-pitipo]');
+  if(pt){ migrateS();
+    const [i,tipo]=pt.dataset.pitipo.split('.');
+    storiaPrima();
+    pianSett().note[+i].k = tipo||'';
+    await saveState(); storiaSegna(); renderPIAN();
+    return; }
+  /* ---- compilatore: regole e compilazione ---- */
+  const rw=e.target.closest('[data-rw]');
+  if(rw){ const R=regole(); R.weekend[+rw.dataset.rw]=!R.weekend[+rw.dataset.rw];
+    await saveState(); renderPIAN(); return; }
+  const rx=e.target.closest('[data-rx]');
+  if(rx){ const [rep,sv,t,i]=rx.dataset.rx.split('.'); const R=regole();
+    R.turni[rep][sv][t].splice(+i,1); await saveState(); renderPIAN(); return; }
+  const ra=e.target.closest('[data-ra]');
+  if(ra){ const [rep,sv,t]=ra.dataset.ra.split('.'); const R=regole();
+    const ult=R.turni[rep][sv][t][R.turni[rep][sv][t].length-1];
+    R.turni[rep][sv][t].push(ult?ult.slice():(sv==='p'?['11:00','15:00']:['18:00','23:30']));
+    await saveState(); renderPIAN(); return; }
+  if(e.target.id==='regBase'){
+    if(!await uiConfirm('Rimettere le regole di partenza?\n\nQuelle che hai scritto vanno perse; i turni già compilati restano.')) return;
+    S.pian.regole=regoleBase(); await saveState(); renderPIAN(); return; }
+  if(e.target.id==='regVai'){
+    const w=pianSett();
+    const pieno=w.righe.some(r=>r.g.some(x=>x.some(Boolean)));
+    if(pieno && !await uiConfirm('Compilare la settimana da capo?\n\nGli orari che ci sono adesso vengono sostituiti.')) return;
+    if(!w.righe.length){ toast('In questa settimana non c\'è nessuno: prendi i nomi dalla settimana tipo.', true); return; }
+    storiaPrima();
+    const esito=pianCompila();
+    await saveState(); storiaSegna(); renderPIAN();
+    let m='✦ Compilata: '+esito.messi+' turni assegnati.';
+    if(esito.scoperti) m+=' '+esito.scoperti+' turni restano scoperti: servono più persone, o meno giorni liberi.';
+    if(esito.fermi)    m+=' '+esito.fermi+(esito.fermi===1?' persona resta':' persone restano')+' senza turni.';
+    toast(m, !!esito.scoperti);
+    return; }
   const ta=e.target.closest('[data-tuadd]');
   if(ta){ migrateS(); storiaPrima();
-    const sim=ta.dataset.dove==='sim';
-    const arr = sim ? S.sim.righe : S.turni.righe;
+    const dove=ta.dataset.dove||'';
+    const arr = righeDove(dove);
     if(!Array.isArray(arr)) return;
-    arr.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
-    await saveState(); storiaSegna(); if(sim) renderSIM(); else renderTU();
+    arr.push({id:(dove==='pian'?'p':'')+newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
+    await saveState(); storiaSegna(); ridisegna(dove);
     const ult=document.querySelector('[data-tun="'+arr[arr.length-1].id+'"]');
     if(ult) ult.focus();
     return;
   }
   const td=e.target.closest('[data-tudel]');
   if(td){ const r=turnoDi(td.dataset.tudel); if(!r) return;
-    const sim=td.dataset.dove==='sim';
+    const dove=td.dataset.dove||'';
+    const doveDet = dove==='sim' ? ' dello scenario' : (dove==='pian' ? ' della settimana pianificata' : ' dei turni');
     storiaPrima();
-    if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia'+(sim?' dello scenario':' dei turni')+'?'+(sim?'':'\n\nL\'organico e le paghe non si toccano.'))){
-      if(sim) S.sim.righe=S.sim.righe.filter(x=>x.id!==r.id);
-      else S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id);
-      await saveState(); storiaSegna(); if(sim) renderSIM(); else renderTU();
+    if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia'+doveDet+'?'+(dove?'':'\n\nL\'organico e le paghe non si toccano.'))){
+      if(dove==='sim')       S.sim.righe=S.sim.righe.filter(x=>x.id!==r.id);
+      else if(dove==='pian'){ const w=pianSett(); w.righe=w.righe.filter(x=>x.id!==r.id); }
+      else                   S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id);
+      await saveState(); storiaSegna(); ridisegna(dove);
     }
+    return;
+  }
+  if(e.target.id==='tuDaPian'){ migrateS();
+    const tutte=settimaneP(); const k=tutte[tutte.length-1];
+    if(!k){ toast('Non c\'è nessuna settimana pianificata da importare.', true); return; }
+    const w=S.pian.settimane[k];
+    if(!await uiConfirm('Portare nella settimana tipo gli orari della settimana '+etichettaSett(k)+'?\n\nLa griglia di questa pagina viene sostituita.')) return;
+    storiaPrima();
+    S.turni.righe=w.righe.map(r=>({id:newId(), nome:r.nome, reparto:r.reparto, c:r.c, o:r.o, g:r.g.map(x=>x.slice())}));
+    await saveState(); storiaSegna(); renderTU();
+    toast('✓ Importata la settimana '+etichettaSett(k)+'.');
     return;
   }
   if(e.target.id==='tuDaRu'){ migrateS();
@@ -5843,7 +6427,7 @@ document.addEventListener('drop', async e=>{
 });
 async function spostaPersona(idDa, idA, sopra, dove){
   migrateS(); storiaPrima();
-  const arr = dove==='sim' ? (S.sim.righe||[]) : S.turni.righe;
+  const arr = righeDove(dove)||[];
   const i=arr.findIndex(x=>x.id===idDa), j=arr.findIndex(x=>x.id===idA);
   if(i<0||j<0||i===j) return;
   const [mosso]=arr.splice(i,1);
@@ -5851,7 +6435,7 @@ async function spostaPersona(idDa, idA, sopra, dove){
   let k=arr.findIndex(x=>x.id===idA);
   arr.splice(sopra?k:k+1, 0, mosso);
   await saveState(); storiaSegna();
-  if(dove==='sim') renderSIM(); else renderTU();
+  ridisegna(dove);
 }
 
 /* incollare "11:00 - 15:00 / 18:00 - 23:00" dentro una casella riempie tutto il giorno */
@@ -5867,7 +6451,7 @@ document.addEventListener('paste', async e=>{
   storiaPrima();
   for(let i=0;i<4;i++) t.g[+g][i]= ore[i]||'';
   await saveState(); storiaSegna();
-  if(current==='tu') renderTU(); else if(current==='si') renderSIM();
+  ridisegna(doveOra());
   toast('✓ Giorno compilato da quello che hai incollato: '+appuntiTesto(t.g[+g])+'.');
 });
 document.addEventListener('change', e=>{
@@ -5877,11 +6461,41 @@ document.addEventListener('change', e=>{
     const t=turnoDi(id); if(!t) return;
     const v=oraTesto(el.value);
     if(v){ t.g[+g][+i]=v; el.value=v; saveState(); }
-    if(current==='tu') renderTU(); else if(current==='si') renderSIM();
+    ridisegna(doveOra());
   }
   if(el && el.dataset && el.dataset.tur!==undefined){
     const t=turnoDi(el.dataset.tur);
-    if(t){ t.reparto=el.value; saveState(); if(current==='tu') renderTU(); else if(current==='si') renderSIM(); }
+    if(t){ t.reparto=el.value; saveState(); ridisegna(doveOra()); }
+  }
+});
+/* la settimana scelta dal calendario o dall'archivio */
+document.addEventListener('change', async e=>{
+  const el=e.target;
+  if(el.dataset && el.dataset.rt!==undefined){
+    const [rep,sv,t,i,c]=el.dataset.rt.split('.');
+    const R=regole(), v=oraTesto(el.value);
+    if(R.turni[rep]&&R.turni[rep][sv]&&R.turni[rep][sv][t][+i]){
+      R.turni[rep][sv][t][+i][+c]= v || '';
+      el.value = v || '';
+      await saveState();
+    }
+    return;
+  }
+  if(el.id==='piData' && el.value){ migrateS(); S.pian.aperta=lunediDi(el.value); await saveState(); renderPIAN(); return; }
+  if(el.id==='piArchivio' && el.value){ migrateS(); S.pian.aperta=el.value; await saveState(); renderPIAN(); return; }
+});
+/* le note dei giorni si scrivono senza ridisegnare: la pagina resta ferma */
+document.addEventListener('input', e=>{
+  const el=e.target;
+  if(el.dataset && el.dataset.pinota!==undefined){
+    migrateS(); pianSett().note[+el.dataset.pinota].t = el.value; saveState();
+  }
+  if(el.id==='regLiberi'){ regole().liberi=Math.max(0,Math.min(6,num(el.value))); saveState(); }
+  if(el.dataset && el.dataset.rt!==undefined){
+    const [rep,sv,t,i,c]=el.dataset.rt.split('.');
+    const R=regole(); if(R.turni[rep]&&R.turni[rep][sv]&&R.turni[rep][sv][t][+i]){
+      R.turni[rep][sv][t][+i][+c]=el.value; saveState();
+    }
   }
 });
 document.getElementById('clientSelect').addEventListener('change',e=>switchClient(e.target.value));
