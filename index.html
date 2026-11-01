@@ -491,6 +491,10 @@
     text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
   .tutab tr.somma td{background:#F6F4EF;font-weight:600;border-top:1px solid var(--line);}
   .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
+  /* un filo di bianco prima di ogni reparto e prima dei totali generali,
+     così le sezioni si staccano a colpo d'occhio */
+  .tutab tr.rep.stacco td{border-top:10px solid var(--card);}
+  .tutab tr.somma.gran.stacco td{border-top:10px solid var(--card);box-shadow:inset 0 1.5px 0 var(--brand);}
   .srvtab{width:100%;border-collapse:collapse;font-size:12.5px;}
   .srvtab th{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink2);font-weight:600;
     padding:5px 9px;border-bottom:2px solid var(--ink);text-align:center;border-left:1px solid #EFEDE9;}
@@ -758,7 +762,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v77</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v79</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2385,9 +2389,9 @@ function grigliaTurni(elenco, d, dove){
      <td class="num">${fmtE(sm.eur.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td></td></tr>`;
 
   let righe='', nPers=0;
-  gruppi.forEach(rep=>{
+  gruppi.forEach((rep,gi)=>{
     const pp=elenco.filter(r=>r.reparto===rep);
-    righe+=`<tr class="rep"><td colspan="14">${rep}</td>
+    righe+=`<tr class="rep${gi?' stacco':''}"><td colspan="14">${rep}</td>
       <td style="background:#EDEBE7;text-align:center"><button class="minibtn" data-tuadd="${rep}" data-dove="${dove}" title="aggiungi una persona in ${rep}">+</button></td></tr>`;
     pp.forEach(r=>{
       const o=oreSettimana(r), co=costoOrario(r);
@@ -2439,7 +2443,7 @@ function grigliaTurni(elenco, d, dove){
         <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
         <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
       ${righe}
-      ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran')}
+      ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran stacco')}
       ${rigaSomma('Ore totali cena', tutte, 1)}
       ${rigaSomma('Ore totali', tutte, null)}
     </table></div>
@@ -2450,6 +2454,7 @@ function grigliaTurni(elenco, d, dove){
 }
 
 function renderTU(){
+  tieniIlFuoco();
   const body=document.getElementById('tuBody');
   const d=tuData();
   const noTurni = d.ore.every(x=>x[0]+x[1]===0);
@@ -2463,7 +2468,7 @@ function renderTU(){
 
   h+=`<section>
     <div class="sechead"><div><h2>Settimana tipo</h2>
-      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.</div></div>
+      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.<br>Fra una casella e l'altra ci si muove da tastiera: <b>Tab</b> va avanti, <b>Maiusc+Tab</b> indietro, le <b>frecce ↑ ↓</b> e <b>Invio</b> passano dal pranzo alla cena e alla persona sotto.</div></div>
       ${barraFrecce()}</div>`;
   h+=grigliaTurni(S.turni.righe, d, '');
   h+=`<div class="improw" style="margin-top:12px;align-items:center">
@@ -2656,6 +2661,7 @@ function simPareggio(oggi){
   return (a+b)/2;
 }
 function renderSIM(){
+  tieniIlFuoco();
   const body=document.getElementById('siBody');
   migrateS();
   const vero=tuData();
@@ -3076,7 +3082,67 @@ function frecce(){
     const d=+b.dataset.storia;
     b.disabled = (storiaPos+d<0) || (storiaPos+d>=storia.length);
   });
+  rimettiFuoco();
 }
+
+/* ---------------- muoversi fra le caselle degli orari con la tastiera ----------------
+   Ogni modifica ridisegna la griglia, quindi la casella su cui stavamo scrivendo
+   sparisce: qui ci segniamo dove andare e ci torniamo appena la tabella è rifatta. */
+let fuocoDopo=null, fuocoSel=null;
+/* prima di rifare la tabella mi segno dov'era il cursore, così un salvataggio
+   automatico che arriva mentre si scrive non fa perdere il segno */
+function tieniIlFuoco(){
+  const a=document.activeElement;
+  if(fuocoDopo || !a || !a.dataset || a.dataset.tu===undefined) return;
+  fuocoDopo=a.dataset.tu;
+  try{ fuocoSel=[a.selectionStart,a.selectionEnd]; }catch(_){ fuocoSel=null; }
+}
+function rimettiFuoco(){
+  if(!fuocoDopo) return;
+  const k=fuocoDopo, s=fuocoSel; fuocoDopo=null; fuocoSel=null;
+  const el=document.querySelector(`input[data-tu="${k}"]`);
+  if(!el) return;
+  el.focus();
+  try{ if(s) el.setSelectionRange(s[0],s[1]); else el.select(); }catch(_){}
+  el.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+const tuCerca=(caselle,id,g,i)=>caselle.find(c=>c.dataset.tu===id+'.'+g+'.'+i);
+function tuPersone(caselle){
+  const v=[];
+  caselle.forEach(c=>{ const id=c.dataset.tu.split('.')[0]; if(!v.includes(id)) v.push(id); });
+  return v;
+}
+function tuSotto(caselle, el){
+  const [id,g,i]=el.dataset.tu.split('.');
+  if(+i<2) return tuCerca(caselle,id,g,+i+2);            // dal pranzo scendo alla cena
+  const p=tuPersone(caselle), j=p.indexOf(id);
+  return j<p.length-1 ? tuCerca(caselle,p[j+1],g,+i-2) : null;   // poi alla persona dopo
+}
+function tuSopra(caselle, el){
+  const [id,g,i]=el.dataset.tu.split('.');
+  if(+i>=2) return tuCerca(caselle,id,g,+i-2);
+  const p=tuPersone(caselle), j=p.indexOf(id);
+  return j>0 ? tuCerca(caselle,p[j-1],g,+i+2) : null;
+}
+document.addEventListener('keydown', e=>{
+  const el=e.target;
+  if(!el || !el.dataset || el.dataset.tu===undefined) return;
+  if(e.metaKey || e.ctrlKey || e.altKey) return;
+  const tab=el.closest('table'); if(!tab) return;
+  const caselle=Array.from(tab.querySelectorAll('input[data-tu]'));
+  const k=caselle.indexOf(el); if(k<0) return;
+  let vai=null;
+  if(e.key==='Tab')            vai = caselle[k + (e.shiftKey?-1:1)];
+  else if(e.key==='Enter')     vai = e.shiftKey ? tuSopra(caselle,el) : tuSotto(caselle,el);
+  else if(e.key==='ArrowDown') vai = tuSotto(caselle,el);
+  else if(e.key==='ArrowUp')   vai = tuSopra(caselle,el);
+  else return;
+  if(!vai) return;                       // ai bordi lascio fare al browser
+  e.preventDefault();
+  fuocoDopo = vai.dataset.tu;
+  el.blur();                             // fa scattare il salvataggio e il ridisegno
+  setTimeout(rimettiFuoco,0);            // se non ha ridisegnato, ci penso io
+});
 const barraFrecce=()=>`<span class="ordsw frecce">
     <button type="button" data-storia="-1" title="annulla l'ultima modifica">↶</button>
     <button type="button" data-storia="1" title="rifai">↷</button></span>`;
