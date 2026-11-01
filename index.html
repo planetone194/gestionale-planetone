@@ -152,6 +152,30 @@
   section .sub{color:var(--ink2);font-size:13px;margin-bottom:16px;}
   .sechead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
   /* il riquadro delle pagine non ancora portate dentro */
+  /* ingredienti e fornitori: tabelle larghe, tutte scrivibili */
+  .mpbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 12px;}
+  .mpbar input.cerca{flex:1 1 220px;min-width:180px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;}
+  .mpbar select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12.5px;background:#fff;color:var(--ink);}
+  .mpbar .conta{font-size:12px;color:var(--ink2);margin-left:auto;}
+  table.entry.mp{min-width:1240px;font-size:12px;}
+  table.entry.mp td{padding:0;}
+  table.entry.mp td input,table.entry.mp td select{border:none;background:transparent;font:inherit;font-size:12px;
+    width:100%;padding:6px 8px;color:var(--ink);}
+  table.entry.mp td input:focus,table.entry.mp td select:focus{outline:2px solid var(--brass);outline-offset:-2px;background:#FFFDF6;}
+  table.entry.mp td.n input{font-family:var(--num);text-align:right;width:62px;}
+  table.entry.mp td.n.largo input{width:84px;}
+  table.entry.mp td select{min-width:62px;}
+  table.entry.mp td.et{min-width:220px;}
+  table.entry.mp td.fo{min-width:102px;} table.entry.mp td.ca{min-width:128px;}
+  table.entry.mp td.da input{min-width:124px;}
+  table.entry.mp td.et input{font-weight:500;}
+  table.entry.mp td.calc{font-family:var(--num);text-align:right;padding:6px 9px;background:#FAF9F6;white-space:nowrap;}
+  table.entry.mp td.calc.vuoto{color:var(--bad);}
+  table.entry.mp td.az{white-space:nowrap;padding:0 4px;text-align:center;}
+  table.entry.mp tr.senza td{background:#FDF4F2;}
+  table.entry.mp tr.senza td.calc{background:#F7E4E1;}
+  .mpnota{font-size:12px;color:var(--ink2);margin-top:10px;line-height:1.5;max-width:76ch;}
+  .mpaltro{text-align:center;padding:10px;}
   .soonbox{margin-top:14px;padding:18px 20px;border:1px dashed var(--line);border-radius:12px;background:#FBF9F5;}
   .soonbox .st{font-family:'Fraunces',serif;font-size:17px;color:var(--ink);margin-bottom:8px;}
   .soonbox p{margin:0 0 8px;max-width:62ch;line-height:1.55;}
@@ -1111,8 +1135,8 @@
 
     <div class="gh" data-g="ric">Ricette e fornitori<span class="ca">▼</span></div>
     <div class="gb" data-gb="ric">
-      <button data-page="ring" class="soon" title="in arrivo">Ingredienti e prezzi d'acquisto</button>
-      <button data-page="rforn" class="soon" title="in arrivo">Fornitori</button>
+      <button data-page="ring">Ingredienti e prezzi d'acquisto</button>
+      <button data-page="rforn">Fornitori</button>
       <button data-page="rprep" class="soon" title="in arrivo">Preparazioni e guarnizioni</button>
       <button data-page="rric" class="soon" title="in arrivo">Ricette e schede costo</button>
       <button data-page="rteam" class="soon" title="in arrivo">Ricettario per il team</button>
@@ -1120,7 +1144,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v93</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v94</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1322,6 +1346,8 @@
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
   <div class="page" id="page-soon"><div id="soonBody"></div></div>
+  <div class="page" id="page-ring"><div id="ringBody"></div></div>
+  <div class="page" id="page-rforn"><div id="rfornBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
   <div class="page" id="page-an">
@@ -6520,7 +6546,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -6534,6 +6560,16 @@ document.addEventListener('input',e=>{
   if(el.dataset && el.dataset.mettxt!==undefined && METODO){ METODO[+el.dataset.mettxt].x=el.value; return; }
   if(el.dataset && el.dataset.mettit!==undefined && METODO){ METODO[+el.dataset.mettit].t=el.value; return; }
   if(el.dataset && el.dataset.mpsagg!==undefined){ migrateS(); S.mpSchede.agg=el.value; saveState(); return; }
+  if(el.dataset && el.dataset.ing!==undefined){
+    const [id,campo]=el.dataset.ing.split('|');
+    const x=MP && MP.ing.find(y=>y.id===id); if(!x) return;
+    x[campo] = ['f','c','e','u','d'].includes(campo) ? el.value : numIt(el.value);
+    mpSalva(); ingPartial(id); return;
+  }
+  if(el.dataset && el.dataset.forn!==undefined){
+    const i=el.dataset.forn.lastIndexOf('|');
+    fornCambia(el.dataset.forn.slice(0,i), el.dataset.forn.slice(i+1), el.value); return;
+  }
   if(el.dataset.t){
     if(el.readOnly) return;                       // l'utile obiettivo si ricava, non si scrive
     S.targets[el.dataset.t]= el.classList.contains('euroin') ? parseIt(el.value) : num(el.value);
@@ -7901,10 +7937,6 @@ const SOON={
           d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
   obinc :{t:'Incentivi', g:'Obiettivi',
           d:"Il piano incentivi per la squadra, legato agli obiettivi e ai prodotti focus."},
-  ring  :{t:"Ingredienti e prezzi d'acquisto", g:'Ricette e fornitori',
-          d:"Il database degli ingredienti con il prezzo d'acquisto, l'unità di misura e il fornitore: è la base di ogni scheda costo."},
-  rforn :{t:'Fornitori', g:'Ricette e fornitori',
-          d:"I fornitori con i loro listini, da cui le schede ricetta pescano i prezzi."},
   rprep :{t:'Preparazioni e guarnizioni', g:'Ricette e fornitori',
           d:"Le preparazioni home made e le guarnizioni: hanno un costo loro, calcolato dagli ingredienti, e rientrano nelle ricette."},
   rric  :{t:'Ricette e schede costo', g:'Ricette e fornitori',
@@ -7962,6 +7994,353 @@ function navSegna(p){
   });
 }
 
+
+/* ================================================================
+   RICETTE E FORNITORI — l'archivio degli ingredienti
+   Vive in una chiave sua, separata dalla scheda del cliente: il conto
+   economico si salva mille volte al giorno e non ha senso rispedire ogni
+   volta anche milleduecento ingredienti. Si carica solo quando si apre una
+   di queste pagine.
+     planetone-mp:<cliente>:ing   { forn:[anagrafiche], ing:[ingredienti] }
+   ================================================================ */
+let MP=null, mpOwner=null, mpTimer=null;
+const MP_VUOTO = ()=>({v:1, forn:[], ing:[]});
+const UM=['CL','GR','PZ'];              // le uniche tre unità di misura che usiamo
+
+/* parsing dei numeri all'italiana ma SENZA arrotondare al centesimo:
+   il costo di un centilitro può valere 0,1048 € e va tenuto intero. */
+function numIt(v){
+  if(typeof v==='number') return isFinite(v)?v:0;
+  let t=String(v==null?'':v).replace(/[^\d.,-]/g,'').trim();
+  if(!t||t==='-') return 0;
+  const neg=/^-/.test(t); t=t.replace(/-/g,'');
+  const c=t.lastIndexOf(','), d=t.lastIndexOf('.');
+  if(c>-1 && d>-1) t = c>d ? t.replace(/\./g,'').replace(',','.') : t.replace(/,/g,'');
+  else if(c>-1) t=t.replace(/\./g,'').replace(',','.');
+  const n=parseFloat(t);
+  return isFinite(n) ? (neg?-n:n) : 0;
+}
+const escH = x => (x==null?'':String(x)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmtE4 = v => (v==null||!isFinite(v)) ? '—'
+  : new Intl.NumberFormat('it-IT',{minimumFractionDigits:4,maximumFractionDigits:4}).format(v)+' €';
+const fmtEu2 = v => (v==null||!isFinite(v)) ? '—'
+  : new Intl.NumberFormat('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v)+' €';
+
+async function mpCarica(){
+  const cid=sOwner;
+  if(MP && mpOwner===cid) return MP;
+  let raw=null; try{ raw=await stGet('planetone-mp:'+cid+':ing'); }catch(e){}
+  try{ MP = raw ? JSON.parse(raw) : MP_VUOTO(); }catch(e){ MP=MP_VUOTO(); }
+  if(!MP || typeof MP!=='object') MP=MP_VUOTO();
+  if(!Array.isArray(MP.forn)) MP.forn=[];
+  if(!Array.isArray(MP.ing))  MP.ing=[];
+  mpOwner=cid;
+  return MP;
+}
+function mpSalva(){
+  const cid=mpOwner; if(!cid) return;
+  clearTimeout(mpTimer);
+  segnaStato('dirty','modifiche non salvate…');
+  mpTimer=setTimeout(async ()=>{
+    const ok=await stSet('planetone-mp:'+cid+':ing', JSON.stringify(MP));
+    const hh=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    segnaStato(ok?'ok':'ko', ok ? 'salvataggio automatico ✓ '+hh : 'dati in sessione (salvataggio non disponibile)');
+  }, 600);
+}
+
+/* --- il prezzo: dal listino del fornitore al costo di un centilitro ---
+   listino  = quanto costa la confezione
+   sconti   = due in percentuale, uno in euro, e le accise che si sommano
+   pezzi    = quante bottiglie/confezioni contiene la cassa
+   contiene = quanti cl / gr / pz sta dentro un pezzo                     */
+function ingNetto(x){
+  const l=numIt(x.li)*(1-numIt(x.s1)/100)*(1-numIt(x.s2)/100) - numIt(x.se) + numIt(x.ac);
+  return isFinite(l)&&l>0 ? l : 0;
+}
+function ingCostoPezzo(x){ const pz=numIt(x.pz)||1; return ingNetto(x)/pz; }
+function ingCostoUnita(x){ const co=numIt(x.co)||1; return ingCostoPezzo(x)/co; }
+function ingVecchio(x){                    // prezzo più vecchio di un anno
+  if(!x.d) return false;
+  const t=Date.parse(x.d); if(!isFinite(t)) return false;
+  return (Date.now()-t) > 365*24*3600*1000;
+}
+const fornDi = n => MP.forn.find(f=>norm(f.n)===norm(n));
+function fornElenco(){
+  const set=new Map();
+  MP.forn.forEach(f=>{ if(f.n) set.set(norm(f.n), f.n); });
+  MP.ing.forEach(x=>{ if(x.f && !set.has(norm(x.f))) set.set(norm(x.f), x.f); });
+  return [...set.values()].sort((a,b)=>a.localeCompare(b,'it'));
+}
+
+/* ---------------- pagina: ingredienti ---------------- */
+let ingQ='', ingF='', ingU='', ingLim=150;
+async function renderING(){
+  await mpCarica();
+  const body=document.getElementById('ringBody');
+  const forn=fornElenco();
+  const senzaPrezzo=MP.ing.filter(x=>!(ingNetto(x)>0)).length;
+  const vecchi=MP.ing.filter(ingVecchio).length;
+  const senzaData=MP.ing.filter(x=>!x.d).length;
+
+  const q=norm(ingQ);
+  const filtrati=MP.ing.filter(x=>{
+    if(ingF && norm(x.f)!==norm(ingF)) return false;
+    if(ingU && String(x.u||'').toUpperCase()!==ingU) return false;
+    if(q && !(norm(x.e).includes(q)||norm(x.f).includes(q)||norm(x.c).includes(q))) return false;
+    return true;
+  });
+  const mostra=filtrati.slice(0, ingLim);
+
+  const kpi=`<div class="kpis">
+    <div class="kpi"><div class="lbl">Ingredienti in archivio</div><div class="val">${fmtNum(MP.ing.length)}</div>
+      <div class="note">${MP.ing.length? 'da '+forn.length+' '+(forn.length===1?'fornitore':'fornitori') : 'archivio ancora vuoto'}</div></div>
+    <div class="kpi"><div class="lbl">Senza prezzo</div><div class="val ${senzaPrezzo?'neg':''}">${fmtNum(senzaPrezzo)}</div>
+      <div class="note">${senzaPrezzo? 'finché manca il listino non entrano in nessuna scheda costo' : 'tutti hanno un prezzo'}</div></div>
+    <div class="kpi"><div class="lbl">Prezzi più vecchi di un anno</div><div class="val ${vecchi?'neg':''}">${fmtNum(vecchi)}</div>
+      <div class="note">${senzaData? fmtNum(senzaData)+' senza data di aggiornamento' : 'tutti con la data'}</div></div>
+    <div class="kpi"><div class="lbl">Aziende fornitrici</div><div class="val">${fmtNum(forn.length)}</div>
+      <div class="note">l'anagrafica si completa in Fornitori</div></div>
+  </div>`;
+
+  const opz = v => forn.map(f=>`<option value="${escH(f)}"${norm(f)===norm(v)?' selected':''}>${escH(f)}</option>`).join('');
+  const righe = mostra.map(x=>{
+    const cp=ingCostoPezzo(x), cu=ingCostoUnita(x), vuoto=!(cp>0);
+    return `<tr class="${vuoto?'senza':''}" data-ingrow="${x.id}">
+      <td class="fo"><input list="mpForn" data-ing="${x.id}|f" value="${escH(x.f)}" placeholder="fornitore"></td>
+      <td class="ca"><input list="mpCat" data-ing="${x.id}|c" value="${escH(x.c)}" placeholder="categoria"></td>
+      <td class="et"><input data-ing="${x.id}|e" value="${escH(x.e)}" placeholder="nome dell'ingrediente"></td>
+      <td><select data-ing="${x.id}|u">${UM.map(u=>`<option${String(x.u||'').toUpperCase()===u?' selected':''}>${u}</option>`).join('')}</select></td>
+      <td class="n"><input data-ing="${x.id}|pz" value="${x.pz??''}" placeholder="1"></td>
+      <td class="n"><input data-ing="${x.id}|co" value="${x.co??''}" placeholder="1"></td>
+      <td class="n largo"><input data-ing="${x.id}|li" value="${x.li??''}" placeholder="0"></td>
+      <td class="n"><input data-ing="${x.id}|s1" value="${x.s1??''}" placeholder="0"></td>
+      <td class="n"><input data-ing="${x.id}|s2" value="${x.s2??''}" placeholder="0"></td>
+      <td class="n"><input data-ing="${x.id}|se" value="${x.se??''}" placeholder="0"></td>
+      <td class="n"><input data-ing="${x.id}|ac" value="${x.ac??''}" placeholder="0"></td>
+      <td class="calc ${vuoto?'vuoto':''}" data-ingcp="${x.id}">${vuoto?'manca il prezzo':fmtEu2(cp)}</td>
+      <td class="calc ${vuoto?'vuoto':''}" data-ingcu="${x.id}">${vuoto?'—':fmtE4(cu)}</td>
+      <td class="da"><input type="date" data-ing="${x.id}|d" value="${escH(x.d)}" title="${ingVecchio(x)?'prezzo più vecchio di un anno':'quando hai controllato il prezzo'}" style="${ingVecchio(x)?'color:var(--bad)':''}"></td>
+      <td class="az"><button class="rowdel" data-ingdel="${x.id}" title="elimina">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  const cats=[...new Set(MP.ing.map(x=>x.c).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'it'));
+
+  body.innerHTML=`<section>
+    <div class="sechead"><h2>Ingredienti e prezzi d'acquisto</h2>
+      <span class="note">prezzi di acquisto da fornitore, IVA esclusa</span></div>
+    ${kpi}
+    <div class="mpbar">
+      <button class="btn small" id="ingAdd">+ Ingrediente</button>
+      <input class="cerca" id="ingQ" value="${escH(ingQ)}" placeholder="cerca per nome, fornitore o categoria…">
+      <select id="ingF"><option value="">tutti i fornitori</option>${opz(ingF)}</select>
+      <select id="ingU"><option value="">tutte le u.m.</option>${UM.map(u=>`<option${ingU===u?' selected':''}>${u}</option>`).join('')}</select>
+      <button class="btn ghost small" id="ingGiu">⤓ Scarica Excel</button>
+      <button class="btn ghost small" id="ingSu">⤒ Carica Excel</button>
+      <input type="file" id="ingFile" accept=".xlsx,.xls,.csv" hidden>
+      <span class="conta">${fmtNum(filtrati.length)} su ${fmtNum(MP.ing.length)}</span>
+    </div>
+    <datalist id="mpForn">${forn.map(f=>`<option value="${escH(f)}">`).join('')}</datalist>
+    <datalist id="mpCat">${cats.map(c=>`<option value="${escH(c)}">`).join('')}</datalist>
+    ${MP.ing.length>0 ? '<p class="mpnota" style="margin:0 0 8px">» la tabella continua a destra: si scorre in orizzontale</p>' : ''}
+    ${MP.ing.length===0 ? `<div class="soonbox"><div class="st">L'archivio è vuoto</div>
+        <p>Aggiungi gli ingredienti uno per uno con <b>+ Ingrediente</b>, oppure carica il file Excel
+        del listino: l'app riconosce le colonne dall'intestazione, quindi va bene anche l'export
+        di Menu Profits così com'è.</p></div>`
+     : `<div class="tblwrap"><table class="entry mp">
+      <thead><tr>
+        <th>Fornitore</th><th>Categoria</th><th>Etichetta</th><th>U.M.</th>
+        <th>Pezzi<br>per conf.</th><th>Contiene<br>un pezzo</th><th>Listino</th>
+        <th>Sconto 1 %</th><th>Sconto 2 %</th><th>Sconto €</th><th>Accise</th>
+        <th>Costo<br>di un pezzo</th><th>Costo<br>per cl / gr / pz</th><th>Data prezzo</th><th></th>
+      </tr></thead><tbody>${righe}</tbody></table></div>
+      ${filtrati.length>mostra.length ? `<div class="mpaltro"><button class="btn ghost small" id="ingPiu">Mostra altri ${fmtNum(Math.min(500, filtrati.length-mostra.length))}</button></div>`:''}
+      <p class="mpnota">Il costo di un pezzo è il listino meno gli sconti, più le accise, diviso per i pezzi
+      della confezione. Il costo per unità divide ancora per quanto contiene un pezzo: è il numero che
+      finisce nelle schede ricetta. Le unità sono solo tre — <b>cl</b> per i liquidi, <b>gr</b> per i solidi,
+      <b>pz</b> per quello che si conta.</p>`}
+  </section>`;
+
+  const on=(id,ev,f)=>{ const e=document.getElementById(id); if(e) e.addEventListener(ev,f); };
+  on('ingQ','input',e=>{ ingQ=e.target.value; ingLim=150; renderING().then(()=>{
+    const c=document.getElementById('ingQ'); if(c){ c.focus(); c.setSelectionRange(c.value.length,c.value.length); } }); });
+  on('ingF','change',e=>{ ingF=e.target.value; ingLim=150; renderING(); });
+  on('ingU','change',e=>{ ingU=e.target.value; ingLim=150; renderING(); });
+  on('ingPiu','click',()=>{ ingLim+=500; renderING(); });
+  on('ingAdd','click',()=>{
+    MP.ing.unshift({id:newId(), f:ingF||'', c:'', e:'', u:'CL', pz:1, co:1, li:0, s1:0, s2:0, se:0, ac:0, d:new Date().toISOString().slice(0,10)});
+    ingQ=''; ingLim=Math.max(ingLim,150); mpSalva(); renderING();
+    setTimeout(()=>{ const i=document.querySelector('table.mp tbody tr:first-child td.et input'); if(i) i.focus(); },30);
+  });
+  on('ingGiu','click',ingExcelGiu);
+  on('ingSu','click',()=>{ const f=document.getElementById('ingFile'); if(f) f.click(); });
+  on('ingFile','change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(f) await ingExcelSu(f); });
+}
+
+/* ricalcolo di una riga sola: la tabella non si ridisegna mentre si scrive */
+function ingPartial(id){
+  const x=MP.ing.find(y=>y.id===id); if(!x) return;
+  const cp=ingCostoPezzo(x), cu=ingCostoUnita(x), vuoto=!(cp>0);
+  const a=document.querySelector(`[data-ingcp="${id}"]`), b=document.querySelector(`[data-ingcu="${id}"]`);
+  if(a){ a.textContent = vuoto?'manca il prezzo':fmtEu2(cp); a.classList.toggle('vuoto',vuoto); }
+  if(b){ b.textContent = vuoto?'—':fmtE4(cu); b.classList.toggle('vuoto',vuoto); }
+  const tr=document.querySelector(`[data-ingrow="${id}"]`); if(tr) tr.classList.toggle('senza',vuoto);
+}
+
+/* ---------------- Excel: stesse colonne di Menu Profits ---------------- */
+const ING_COL=[['Fornitore','f'],['Categoria','c'],['Etichetta','e'],['U.M.','u'],
+  ['Pezzi per confezione','pz'],['Contiene un pezzo','co'],['Listino','li'],
+  ['Sconto1 %','s1'],['Sconto2 %','s2'],['Sconto €','se'],['Accise','ac'],['Data agg. prezzo','d']];
+function ingExcelGiu(){
+  const righe=[ING_COL.map(c=>c[0]).concat(['Costo di un pezzo','Costo per cl / gr / pz'])];
+  MP.ing.forEach(x=>righe.push(ING_COL.map(c=>x[c[1]]??'').concat([ingCostoPezzo(x), ingCostoUnita(x)])));
+  const ws=XLSX.utils.aoa_to_sheet(righe);
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Ingredienti');
+  XLSX.writeFile(wb, 'ingredienti-'+(S.cliente||'cliente').replace(/[^\w]+/g,'-').toLowerCase()+'.xlsx');
+  toast('✓ Scaricato: '+MP.ing.length+' ingredienti. Le ultime due colonne sono calcolate, puoi lasciarle.');
+}
+async function ingExcelSu(file){
+  let aoa;
+  try{
+    const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});
+    aoa=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:true,defval:null});
+  }catch(e){ return toast('Non riesco a leggere il file: '+e.message, true); }
+  if(!aoa || aoa.length<2) return toast('Il file sembra vuoto.', true);
+  /* l'intestazione può stare anche due o tre righe più in basso */
+  let hi=-1;
+  for(let i=0;i<Math.min(8,aoa.length);i++){
+    const r=(aoa[i]||[]).map(c=>norm(c));
+    if(r.some(c=>c.includes('etichetta')||c.includes('ingrediente')) && r.some(c=>c.includes('fornitore'))){ hi=i; break; }
+  }
+  if(hi<0) return toast('Non trovo l\'intestazione: servono almeno le colonne Fornitore ed Etichetta.', true);
+  const head=(aoa[hi]||[]).map(c=>norm(c));
+  const col={};
+  const trova=(...chiavi)=>{ for(const k of chiavi){ const i=head.findIndex(h=>h.includes(k)); if(i>-1) return i; } return -1; };
+  col.f=trova('fornitore'); col.c=trova('categoria');
+  col.e=trova('etichetta','ingrediente','prodotto'); col.u=trova('u.m','um','unità','unita');
+  col.pz=trova('pezzi'); col.co=trova('contiene'); col.li=trova('listino','prezzo di listino');
+  col.s1=trova('sconto1','sconto 1'); col.s2=trova('sconto2','sconto 2');
+  col.se=trova('sconto €','sconto eur','sconto e'); col.ac=trova('accis'); col.d=trova('data');
+  const cella=(r,k)=>col[k]>-1 ? r[col[k]] : null;
+  const indice=new Map(MP.ing.map(x=>[norm(x.f)+'|'+norm(x.e), x]));
+  let nuovi=0, agg=0, saltati=0;
+  for(let i=hi+1;i<aoa.length;i++){
+    const r=aoa[i]||[];
+    const f=String(cella(r,'f')??'').trim(), e=String(cella(r,'e')??'').trim();
+    if(!e){ saltati++; continue; }
+    let u=String(cella(r,'u')??'').trim().toUpperCase().replace(/[^A-Z]/g,'');
+    if(!UM.includes(u)) u = /ml|cl|lt|litr/i.test(String(cella(r,'u')??'')) ? 'CL' : (/kg|gr|gramm/i.test(String(cella(r,'u')??'')) ? 'GR' : 'PZ');
+    let d=cella(r,'d');
+    if(d instanceof Date) d=d.toISOString().slice(0,10);
+    else if(typeof d==='number' && d>20000){ const dt=new Date(Date.UTC(1899,11,30)+d*86400000); d=dt.toISOString().slice(0,10); }
+    else d=String(d??'').slice(0,10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) d='';
+    /* si scrive solo quello che il file contiene davvero: un listino parziale
+       non deve azzerare gli sconti o le accise già in archivio */
+    const campi={f, e, u};
+    if(col.c>-1)  campi.c  = String(cella(r,'c')??'').trim();
+    if(col.pz>-1) campi.pz = numIt(cella(r,'pz'))||1;
+    if(col.co>-1) campi.co = numIt(cella(r,'co'))||1;
+    if(col.li>-1) campi.li = numIt(cella(r,'li'));
+    if(col.s1>-1) campi.s1 = numIt(cella(r,'s1'));
+    if(col.s2>-1) campi.s2 = numIt(cella(r,'s2'));
+    if(col.se>-1) campi.se = numIt(cella(r,'se'));
+    if(col.ac>-1) campi.ac = numIt(cella(r,'ac'));
+    if(col.d>-1 && d) campi.d = d;
+    const chi=norm(f)+'|'+norm(e), ex=indice.get(chi);
+    if(ex){ Object.assign(ex, campi); agg++; }
+    else {
+      const nuovo={id:newId(), c:'', pz:1, co:1, li:0, s1:0, s2:0, se:0, ac:0, d:'', ...campi};
+      MP.ing.push(nuovo); indice.set(chi, nuovo); nuovi++;
+    }
+  }
+  mpSalva(); ingLim=Math.max(ingLim,150); renderING();
+  toast(`✓ ${nuovi} ingredienti nuovi, ${agg} aggiornati${saltati?', '+saltati+' righe senza nome saltate':''}.`);
+}
+
+/* ---------------- pagina: fornitori ---------------- */
+async function renderFORN(){
+  await mpCarica();
+  const body=document.getElementById('rfornBody');
+  const nomi=fornElenco();
+  /* chi vende una referenza che vendono anche altri: serve per capire dove si può trattare */
+  const perEtichetta=new Map();
+  MP.ing.forEach(x=>{
+    const k=norm(x.e); if(!k) return;
+    if(!perEtichetta.has(k)) perEtichetta.set(k, new Set());
+    perEtichetta.get(k).add(norm(x.f));
+  });
+  const dati=nomi.map(n=>{
+    const mie=MP.ing.filter(x=>norm(x.f)===norm(n));
+    const condivise=mie.filter(x=>(perEtichetta.get(norm(x.e))||new Set()).size>1);
+    const con=new Set();
+    condivise.forEach(x=>(perEtichetta.get(norm(x.e))||new Set()).forEach(f=>{ if(f!==norm(n)) con.add(f); }));
+    const a=fornDi(n)||{};
+    const spesa=mie.reduce((t,x)=>t+ingCostoPezzo(x),0);
+    return {n, ref:mie.length, cond:condivise.length, solo:mie.length-condivise.length,
+            con:[...con].map(k=>nomi.find(y=>norm(y)===k)||k), a, spesa};
+  }).sort((x,y)=>y.ref-x.ref);
+
+  const kpi=`<div class="kpis">
+    <div class="kpi"><div class="lbl">Fornitori</div><div class="val">${fmtNum(nomi.length)}</div>
+      <div class="note">${fmtNum(MP.ing.length)} referenze in tutto</div></div>
+    <div class="kpi"><div class="lbl">Anagrafiche complete</div><div class="val">${fmtNum(dati.filter(d=>d.a.piva||d.a.tel||d.a.ref).length)}</div>
+      <div class="note">partita IVA, telefono o referente</div></div>
+    <div class="kpi"><div class="lbl">Referenze da un solo fornitore</div><div class="val">${fmtNum(dati.reduce((t,d)=>t+d.solo,0))}</div>
+      <div class="note">su queste non c'è confronto di prezzo</div></div>
+    <div class="kpi"><div class="lbl">Referenze in concorrenza</div><div class="val">${fmtNum(dati.reduce((t,d)=>t+d.cond,0))}</div>
+      <div class="note">le stesse le vende più di un fornitore: qui si tratta</div></div>
+  </div>`;
+
+  const righe=dati.map(d=>`<tr>
+      <td class="et"><input data-forn="${escH(d.n)}|n" value="${escH(d.n)}" title="rinominare qui rinomina il fornitore su tutti i suoi ingredienti"></td>
+      <td class="calc">${fmtNum(d.ref)}</td>
+      <td class="calc">${d.solo? fmtNum(d.solo) : '—'}</td>
+      <td class="calc">${d.cond? fmtNum(d.cond) : '—'}</td>
+      <td style="padding:6px 9px;font-size:11.5px;color:var(--ink2)">${d.con.length? escH(d.con.slice(0,3).join(' · '))+(d.con.length>3?' +'+(d.con.length-3):'') : '—'}</td>
+      <td><input data-forn="${escH(d.n)}|piva" value="${escH(d.a.piva)}" placeholder="—"></td>
+      <td><input data-forn="${escH(d.n)}|tel" value="${escH(d.a.tel)}" placeholder="—"></td>
+      <td><input data-forn="${escH(d.n)}|mail" value="${escH(d.a.mail)}" placeholder="—"></td>
+      <td><input data-forn="${escH(d.n)}|ref" value="${escH(d.a.ref)}" placeholder="—"></td>
+    </tr>`).join('');
+
+  body.innerHTML=`<section>
+    <div class="sechead"><h2>Fornitori</h2><span class="note">anagrafica e sovrapposizioni</span></div>
+    ${kpi}
+    ${nomi.length===0 ? `<div class="soonbox"><div class="st">Nessun fornitore</div>
+       <p>I fornitori nascono da soli man mano che si caricano gli ingredienti: qui si completano
+       con partita IVA, telefono e referente, e si vede su quali referenze c'è più di un fornitore
+       — che è dove si può trattare il prezzo.</p></div>`
+    : `<div class="tblwrap"><table class="entry mp" style="min-width:1050px">
+      <thead><tr><th>Fornitore</th><th>Referenze</th><th>Solo da lui</th><th>Anche da altri</th>
+        <th>Con chi si sovrappone</th><th>P. IVA</th><th>Telefono</th><th>Email</th><th>Referente</th></tr></thead>
+      <tbody>${righe}</tbody></table></div>
+      <p class="mpnota">«Solo da lui» sono le referenze che nessun altro fornitore ha in archivio: lì il
+      prezzo non si confronta, si tratta sul volume. «Anche da altri» sono quelle su cui basta aprire
+      due listini per vedere chi costa meno.</p>`}
+  </section>`;
+}
+
+/* un fornitore rinominato si porta dietro tutti i suoi ingredienti */
+function fornCambia(nome, campo, valore){
+  if(campo==='n'){
+    const nuovo=valore.trim(); if(!nuovo) return;
+    MP.ing.forEach(x=>{ if(norm(x.f)===norm(nome)) x.f=nuovo; });
+    const a=fornDi(nome); if(a) a.n=nuovo;
+    mpSalva(); return;
+  }
+  let a=fornDi(nome);
+  if(!a){ a={n:nome}; MP.forn.push(a); }
+  a[campo]=valore;
+  mpSalva();
+}
+
+document.addEventListener('click', async e=>{
+  const d=e.target.closest('[data-ingdel]'); if(!d) return;
+  const x=MP && MP.ing.find(y=>y.id===d.dataset.ingdel); if(!x) return;
+  if(!await uiConfirm('Elimino «'+(x.e||'questo ingrediente')+'»? Se è usato in una scheda ricetta, quella scheda resterà senza il suo costo.')) return;
+  MP.ing=MP.ing.filter(y=>y.id!==x.id); mpSalva(); renderING();
+});
 function gotoPage(p){
   if(typeof closeImport==='function') closeImport();   // i riquadri tornano al loro posto
   current=p;
