@@ -988,7 +988,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v88</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v89</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4949,24 +4949,7 @@ function renderAN(){
       livelli.length>1 ? 'Analisi a scalare: '+livelli.map(x=>x.breve.toLowerCase()).join(' → ')
                        : d.completi.length+' mes'+(d.completi.length===1?'e':'i')+' nei conti: '+mesiDetti}</div>`);
 
-  /* 2 — il quadro in sintesi */
-  const riga=sc=>`<div class="qrow z${sc.z}">
-      <div class="qn">${sc.area}<span class="verdict ${ZC[sc.z]}">${sc.z===0?'forte':sc.z===1?'buono':sc.z===2?'da migliorare':'urgente'}</span></div>
-      <div class="qv">${fmtP(sc.inc)}<small> obiettivo ${fmtNum(sc.tgt)}%</small></div>
-      <div class="qe">${sc.dpp>0?`+${fmtNum(sc.dpp)} p.p. · ${fmtE(sc.euro)}`:'in obiettivo'}</div>
-    </div>`;
-  S_('',`<div class="kicker">Il quadro in sintesi</div><h3>Dove siamo forti, dove serve intervenire</h3>
-    <div class="quadro">${schede.map(riga).join('')}</div>
-    <div class="qchiusa">
-      ${forti.length?`<p><b>In obiettivo:</b> ${forti.map(x=>x.area.toLowerCase()).join(', ')}.</p>`:''}
-      ${buone.length?`<p><b>Sotto controllo, ma da non perdere di vista:</b> ${buone.map(x=>`${x.area.toLowerCase()} (+${fmtNum(x.dpp)} p.p.)`).join(', ')}.</p>`:''}
-      ${deboli.length
-        ? `<p><b>Dove intervenire per primi:</b> ${deboli[0].area.toLowerCase()} — ${deboli[0].sommario}</p>`
-        : (forti.length===schede.length ? '<p>Tutte le aree sono dentro gli obiettivi concordati: il lavoro ora è tenerle lì.</p>' : '')}
-      <p>Riportando le incidenze in obiettivo il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}.</p>
-    </div>`);
-
-  /* 2b — la scala: lo stesso numero visto da vicino e da lontano */
+  /* 2 — la scala: lo stesso numero visto da vicino e da lontano, prima di tutto */
   if(livelli.length>1){
     const aree=[
       {n:'Risorse umane', k:'incRu', tgt:num(t.ru)},
@@ -5002,7 +4985,24 @@ function renderAN(){
       })()}`);
   }
 
-  /* 3 — andamento */
+  /* 3 — il quadro in sintesi: il verdetto, dopo la fotografia */
+  const riga=sc=>`<div class="qrow z${sc.z}">
+      <div class="qn">${sc.area}<span class="verdict ${ZC[sc.z]}">${sc.z===0?'forte':sc.z===1?'buono':sc.z===2?'da migliorare':'urgente'}</span></div>
+      <div class="qv">${fmtP(sc.inc)}<small> obiettivo ${fmtNum(sc.tgt)}%</small></div>
+      <div class="qe">${sc.dpp>0?`+${fmtNum(sc.dpp)} p.p. · ${fmtE(sc.euro)}`:'in obiettivo'}</div>
+    </div>`;
+  S_('',`<div class="kicker">Il quadro in sintesi</div><h3>Dove siamo forti, dove serve intervenire</h3>
+    <div class="quadro">${schede.map(riga).join('')}</div>
+    <div class="qchiusa">
+      ${forti.length?`<p><b>In obiettivo:</b> ${forti.map(x=>x.area.toLowerCase()).join(', ')}.</p>`:''}
+      ${buone.length?`<p><b>Sotto controllo, ma da non perdere di vista:</b> ${buone.map(x=>`${x.area.toLowerCase()} (+${fmtNum(x.dpp)} p.p.)`).join(', ')}.</p>`:''}
+      ${deboli.length
+        ? `<p><b>Dove intervenire per primi:</b> ${deboli[0].area.toLowerCase()} — ${deboli[0].sommario}</p>`
+        : (forti.length===schede.length ? '<p>Tutte le aree sono dentro gli obiettivi concordati: il lavoro ora è tenerle lì.</p>' : '')}
+      <p>Riportando le incidenze in obiettivo il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}.</p>
+    </div>`);
+
+  /* 4 — andamento */
   let yoy='';
   if(d.prec){
     const dr=(d.prec.ora.ricavi-d.prec.prima.ricavi)/d.prec.prima.ricavi;
