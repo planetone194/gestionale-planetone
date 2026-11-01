@@ -900,6 +900,36 @@
   .levares span{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:600;}
   .levares b{font-family:var(--num);font-size:18px;margin-top:4px;}
   .levares i{font-style:normal;font-family:var(--num);font-size:13px;color:var(--ok);margin-top:2px;}
+  /* la pagina del metodo */
+  .metwrap{display:grid;grid-template-columns:250px 1fr;gap:20px;align-items:start;}
+  .metind{position:sticky;top:16px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .metind .mt{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);margin-bottom:8px;}
+  .metind a{display:block;font-size:13px;padding:5px 8px;border-radius:7px;cursor:pointer;color:var(--ink);line-height:1.35;}
+  .metind a:hover{background:#F2F1ED;color:var(--brand);}
+  .metind .btn{width:100%;margin-top:5px;}
+  .metcap{margin-bottom:16px;}
+  .mdbody h4{font-size:10.5px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink2);font-weight:700;margin:18px 0 6px;}
+  .mdbody p{font-size:14.5px;line-height:1.65;margin:8px 0;}
+  .mdbody ul{margin:8px 0 8px 20px;font-size:14.5px;line-height:1.6;}
+  .mdbody li{margin:4px 0;}
+  .mdbody code{font-family:var(--num);font-size:13px;background:#F2F1ED;border-radius:4px;padding:1px 5px;}
+  .mdtab{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+  .mdtab th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;color:var(--ink2);
+    font-weight:700;padding:7px 10px;border-bottom:1.5px solid var(--ink);background:#F6F4EF;}
+  .mdtab td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .mettit{flex:1;border:1.5px solid var(--line);border-radius:9px;padding:8px 12px;font:inherit;
+    font-size:16px;font-weight:600;background:#fff;color:var(--ink);}
+  .mettxt{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;
+    font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--ink);resize:vertical;}
+  .mettxt:focus{outline:none;border-color:var(--brass);}
+  @media(max-width:1000px){ .metwrap{grid-template-columns:1fr} .metind{position:static} }
+  .passi .pa{padding:12px 0;border-bottom:1px dashed var(--line);}
+  .passi .pa:last-child{border-bottom:none;}
+  .passi .pt{display:flex;align-items:baseline;gap:10px;font-weight:600;font-size:16.5px;color:var(--brand);}
+  .passi .pt .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+    border-radius:50%;background:var(--brand);color:#fff;font:700 11px/1 var(--font);flex:none;}
+  .passi .pt b{margin-left:auto;font-family:var(--num);font-size:16px;color:var(--ok);}
+  .passi .px{font-size:14.5px;line-height:1.55;margin-top:4px;padding-left:32px;}
   .slide .bigclose{font-family:'Fraunces',serif;font-size:30px;line-height:1.25;margin-top:8px;}
   .slide .bigclose b{color:#1e6a53;}
   .slides-print header,.slides-print nav,.slides-print .side,.slides-print .anTools,.slides-print .repbar,.slides-print .repctrl,.slides-print footer,.slides-print #toast{display:none!important;}
@@ -993,11 +1023,12 @@
     <button data-page="ceagg">CE aggregato</button>
     <div class="grp">Report cliente</div>
     <button data-page="an">Analisi &amp; presentazione</button>
+    <button data-page="me">Metodo</button>
     <div class="grp">Archivio</div>
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v90</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v91</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1195,6 +1226,7 @@
   <div class="page" id="page-pi"><div id="piBody"></div></div>
   <div class="page" id="page-tu"><div id="tuBody"></div></div>
   <div class="page" id="page-si"><div id="siBody"></div></div>
+  <div class="page" id="page-me"><div id="meBody"></div></div>
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
 
@@ -4535,6 +4567,279 @@ function renderOB(){
 ================================================================ */
 let anTexts=null; // commenti AI opzionali
 
+
+/* ================= Il metodo =================
+   Il know how di Planet One, scritto una volta e consultabile da dentro
+   l'applicazione. Non appartiene a un cliente: vive accanto all'elenco dei
+   clienti e si sincronizza come loro, quindi chi lo aggiorna lo aggiorna per
+   tutti. È la stessa fonte da cui nascono le diagnosi del report: quando qui
+   cambia una soglia, va cambiata anche nel motore — il testo non comanda il
+   calcolo, lo spiega. */
+let METODO=null, metEdit=null;      // metEdit = indice del capitolo aperto in modifica
+
+function metodoDiFabbrica(){ return [
+ {t:'Come si legge un locale', x:
+`I principi che valgono prima di qualsiasi numero.
+
+- La **cassa** è la fonte dei ricavi, sempre IVA esclusa. Il **bilancino** è la fonte di materia prima, personale e spese generali.
+- I **costi nascosti** stanno dentro la materia prima, non accanto: se il food cost da schede è il 28%, in Conto economico ci si aspetta di trovare il 30%.
+- Cucina = 100% Food, Bar = 100% Beverage. Sala e Management si ripartiscono sull'incidenza dei ricavi.
+- Gli incassi importati dalla cassa sono IVA inclusa al 10%, l'aliquota della somministrazione.
+- Il costo del personale del bilancino è già comprensivo di contributi e TFR: è il costo pieno.
+- I target sono quelli impostati per il singolo locale in **Cruscotto → Obiettivi Planet One**. Non esistono valori di default per tipologia.`},
+
+ {t:'Il semaforo e le soglie', x:
+`| Scostamento dal target | Colore | Lettura |
+|---|---|---|
+| in obiettivo o sotto | verde | area **forte** |
+| fino a +5 punti | giallo | area **buona** |
+| da +5 a +10 punti | arancio | zona ibrida |
+| oltre +10 punti | rosso | extracosto da tagliare |
+
+La **zona ibrida** — si taglia un po' e insieme si lavora sul fatturato — vale **solo per le risorse umane**. La materia prima sopra target è extracosto puro a qualsiasi scostamento.
+
+Un'area si dichiara **forte** se è verde, **buona** se è gialla.`},
+
+ {t:"L'analisi a scalare", x:
+`Il report parte dal livello più stretto scelto e sale: **mese → trimestre → anno**.
+
+Serve a distinguere l'incidente dalla tendenza. Un 67% di personale a giugno, con il trimestre al 44% e l'anno al 38%, è un mese storto: non si smonta l'organico per quello.
+
+**Un allarme non scatta sul mese da solo.** Perché un'area diventi un allarme, lo deve confermare il trimestre o l'anno. Altrimenti il report la dichiara *episodio da verificare* e tiene le sue cure fuori dal piano.
+
+**I costi non ricorrenti** — acqua, IMU, saldo del commercialista, un acquisto in stock — si riconoscono perché nell'anno compaiono una o due volte. Il report li mette da parte e mostra l'incidenza depurata accanto a quella lorda.`},
+
+ {t:'Le priorità e i tempi', x:
+`Un'azione immediata vale **tre volte** una lenta: meglio 1.000 € recuperati questo mese che 3.000 € fra sei.
+
+| Velocità | Effetto entro | Peso |
+|---|---|---|
+| immediata | il mese — turni, ore, dosi, listini | × 3 |
+| media | 1–3 mesi — rinegoziazioni, menu engineering, formazione | × 1,5 |
+| lenta | oltre 3 mesi — affitto, assunzioni, lavori | × 1 |
+
+Il piano è a due fasi: **Fase 1** quello che si fa subito, **Fase 2** il resto, che non si butta ma si programma.`},
+
+ {t:'Le parole da usare', x:
+`Le cure sono **suggerimenti, non imperativi**: conosciamo i numeri, non le dinamiche interne del locale.
+
+| Area | Come si chiama lo scostamento |
+|---|---|
+| Personale, materia prima | **extracosto** — si agisce nel mese, la durezza è voluta |
+| Spese generali | **costo che oggi il fatturato non sostiene** — la frase si gira sul denominatore |
+| Costi nascosti | **margine non intercettato** — non è una spesa in più, è una spesa che già c'è e non si vede |
+
+Dove l'area non è comprimibile nel breve si usa il condizionale: non «va tagliato» ma «si recupererebbe, se».
+
+E non si promette un recupero senza spiegare i passaggi che lo rendono possibile.`},
+
+ {t:'Personale', x:
+`## Indicatori
+**Incidenza sui ricavi**, totale e per business unit — si può essere in extracosto sul food e non sul beverage.
+**Produttività oraria** = fatturato ÷ ore totali, anche per business unit.
+
+| €/h | Giudizio |
+|---|---|
+| sotto 30 | critico |
+| 30 – 40 | appena sufficiente |
+| 40 – 50 | buono |
+| 50 – 60 | ottimo |
+| oltre 60 | eccellente |
+
+## La matrice
+I due numeri sono legati: **incidenza = costo orario medio ÷ produttività**.
+
+| Produttività | Incidenza | Diagnosi |
+|---|---|---|
+| buona | alta | l'ora rende, ma **costa troppo** |
+| bassa | in obiettivo | **troppe ore** per quello che entra |
+| bassa | alta | entrambi: si taglia **e** si lavora sul fatturato |
+
+Se dalle ore e dalle paghe esce un costo orario impossibile — sotto 9 €/h o sopra 32 €/h — le ore non quadrano e la produttività **non si dichiara**.
+
+## Cause e cure
+**L'ora rende ma costa troppo** · produttività buona e incidenza alta → inquadramenti e livelli contro il ruolo effettivo; figure di responsabilità sovrapposte sullo stesso turno; straordinari pianificati sui picchi noti invece che subiti; maggiorazioni di notturni e festivi.
+
+**Troppe ore per l'incasso** · produttività sotto i 40 €/h → ingressi scaglionati, che è la cura più veloce e meno visibile in sala.
+
+**Ci sono servizi che non reggono** · lo dice la Simulazione, non l'intuito: si spegne un servizio alla volta e si guarda il margine della settimana **dopo** che le spese generali si sono ridistribuite. Se peggiora, non si chiude: si riducono le ore dentro il servizio debole.
+
+**Ore dove non c'è l'incasso** · oltre 15 punti di differenza fra due servizi → ribilanciare, non tagliare.
+
+**Organico tarato sui mesi pieni** · il mese magro oltre 5 punti peggiore del mese pieno → part-time verticale, stagionali, monte ore che segue la domanda.
+
+**Entrate e uscite frequenti** → percorso di inserimento standard. Ogni sostituzione costa 500–1.500 € fra ricerca, formazione e settimane a mezzo regime.
+
+**Il denominatore**, nella zona ibrida → upselling e cross-selling, piatti smart, spinta sui dolci, canali che si pagano solo quando portano lavoro.
+
+*Riferimento esterno: FIPE indica 30–35% come zona sana e oltre il 38% come problema strutturale.*`},
+
+ {t:'Materia prima', x:
+`**Target: Food 32%, Beverage 24%.** Sopra target è extracosto puro: niente zona ibrida.
+
+## Il metodo del delta
+Si confronta il **food cost ideale** dalle schede ricetta con il **food cost reale** di bilancio.
+
+| Delta ideale → reale | Lettura |
+|---|---|
+| fino a 2 punti | fisiologico |
+| 2 – 4 punti | migliorabile |
+| oltre 4 punti | **dispersione certa** |
+
+**Le schede vecchie mentono.** Oltre i sei mesi dall'ultimo aggiornamento il confronto non regge: i prezzi di acquisto nel frattempo sono cambiati. Prima si rifanno le schede, poi si diagnostica.
+
+## Cause e cure
+**Dispersione** · delta oltre 4 → inventario di reparto su tre o quattro referenze pesanti; registrazione di omaggi, autoconsumi e rotture; etichettatura, rotazione FIFO, controllo scadenze.
+
+**Dosaggio** · delta 2–4 → pesare dieci piatti e dieci drink contro la scheda; jigger al bar e pour test periodici.
+
+**Pricing e prezzi di acquisto** · delta sotto 2 ma incidenza alta → audit delle fatture contro il listino; referenze pesanti rimesse a gara con i volumi in mano; revisione dei prezzi di vendita.
+
+**Si registrano gli acquisti, non i consumi** · la materia prima balla di oltre 8 punti da un mese all'altro → inventario di fine mese.
+
+**Mix di vendita** → è il menu engineering, capitolo a sé.
+
+## La scorciatoia della business unit
+Quando una delle due pesa molto di più, conviene concentrarsi lì. Se il beverage vale il 70% del fatturato e sta al 29% contro il suo 24%, portarlo a target **basta da solo** a centrare l'obiettivo complessivo, anche lasciando il food com'è.
+
+*Riferimento esterno: il pour cost di riferimento per un bar è 18–24%.*`},
+
+ {t:'Spese generali', x:
+`Le voci sono poche: si guardano una per una. Dove non c'è niente da tagliare, la strada non è il taglio ma **alzare il fatturato** finché l'incidenza rientra.
+
+## Cause e cure
+**Voci rigide pesanti** · struttura, affitti, banche, imposte → diluire sul fatturato, calcolando quanti ricavi servono a parità di spesa; rinegoziare alla scadenza, segnando le date.
+
+**Costi non ricorrenti** · presenti in uno o due mesi su dodici → nessuna cura: è lettura.
+
+**Contratti mai rivisti** · energia, gas, software, noleggi → passare le voci dalla più pesante e decidere: si rinegozia, si elimina, o è un vincolo.
+
+**Commissioni che crescono col fatturato** · POS, delivery, portali → sono costi variabili travestiti da spese generali: non rientrano crescendo, si rinegoziano sui volumi.
+
+## Ribilanciamento dei target
+Sotto i **5 punti** di scostamento si chiede tutto all'area che sfonda. Sopra, si spalma: spese generali al 28% contro un target del 18% non si risolvono togliendo 10 punti da lì, ma chiedendone **3–4 alle spese generali, 3 al food cost e 3 alle risorse umane**.`},
+
+ {t:'Ricavi, coperti e battuta media', x:
+`## Indicatori
+Coperto medio · scontrino medio · prodotti per coperto · incasso medio per servizio.
+
+Non ci sono valori di riferimento assoluti: si giudica contro lo **storico del locale** e si costruiscono simulazioni migliorative verso il target.
+
+## La crescita in leva
+Non serve un salto, servono tre spinte piccole insieme: **+10% di coperto medio × +10% di clienti × +10% di visite per cliente** vale molto più della somma — un terzo di fatturato in più, non il trenta per cento sommato.
+
+## Leggere un calo
+Si verifica in quest'ordine se è calato il **numero di coperti**, il **numero di prodotti acquistati** o il **coperto medio**. Sono tre problemi diversi con tre cure diverse.`},
+
+ {t:'Costi nascosti', x:
+`Soglia **2%**, valida per ogni tipo di locale.
+
+Il senso: se il food cost ideale è il 28%, in Conto economico ci si aspetta di trovare il 30%. Quel due per cento è fisiologico; quello che eccede è margine recuperabile.
+
+**Voci**: autoconsumi · omaggi · prodotti scaduti o inutilizzati · dispersioni, cioè rotture ed errori nei dosaggi.
+
+**Cure**: se non sono registrati, introdurre la registrazione quotidiana — basta un foglio in cucina e uno al bar. Se sono sopra il 2%, procedura e tetto presidiato mese per mese.`},
+
+ {t:'Prima di fidarsi dei numeri', x:
+`Si diagnostica solo su dati che reggono. I controlli, prima di scrivere qualsiasi cosa:
+
+- mesi incompleti, rimasti fuori dai conti — un mese entra solo con **ricavi, materia prima, personale e spese generali** tutti caricati;
+- mesi con costi ma senza ricavi: competenza disallineata, falsa tutte le incidenze;
+- ore assenti o non riconciliate con le paghe;
+- «% da schede ricetta» mancante o vecchia di oltre sei mesi;
+- incassi giornalieri assenti: senza, non si sa quali servizi reggono;
+- costi nascosti mai registrati.
+
+**Dati mancanti.** Non si inventa: o si salta la sezione, o si scrive che non siamo ancora in possesso di quei dati.
+
+**Stagionalità.** Un locale dichiarato stagionale ha i suoi mesi di apertura: i mesi chiusi escono dalle medie e non generano allarmi.`},
+
+ {t:'Cosa consegniamo', x:
+`**La presentazione** — A4 orizzontale, una slide per pagina. È quella della riunione.
+
+**Il riepilogo di una pagina** — A4 verticale: risultato, incidenze sui tre livelli, le tre cose da fare per prime, il recupero potenziale. È quello che il titolare rilegge dal telefono il giorno dopo.
+
+## Avvertenze
+Le stime in euro accanto alle cure sono **ordini di grandezza, non impegni**. Vanno tarate sui risultati ottenuti davvero.
+
+Il recupero potenziale non si presenta mai come una cifra promessa: si scompone nei passaggi che lo rendono possibile, ognuno con la sua mossa e il suo tempo.`}
+]; }
+
+async function metodoCarica(){
+  if(METODO) return METODO;
+  try{
+    const raw=await stGet('planetone-metodo');
+    if(raw){ const v=JSON.parse(raw); if(Array.isArray(v)&&v.length) { METODO=v; return METODO; } }
+  }catch(e){}
+  METODO=metodoDiFabbrica();
+  return METODO;
+}
+async function metodoSalva(){
+  try{ await stSet('planetone-metodo', JSON.stringify(METODO)); toast('✓ Metodo salvato: vale per tutti i clienti.'); }
+  catch(e){ toast('Salvataggio del metodo non riuscito.', true); }
+}
+
+/* un markdown ridotto all'osso: titoli, grassetto, corsivo, elenchi, tabelle */
+function mdHtml(t){
+  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline=x=>esc(x).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*]+?)\*/g,'$1<i>$2</i>')
+                        .replace(/`(.+?)`/g,'<code>$1</code>');
+  const righe=String(t||'').split('\n');
+  let out='', lista=false, tab=null;
+  const chiudi=()=>{ if(lista){ out+='</ul>'; lista=false; }
+                     if(tab){ out+='</tbody></table>'; tab=null; } };
+  righe.forEach(r=>{
+    const l=r.trim();
+    if(/^\|(.+)\|$/.test(l)){
+      const celle=l.slice(1,-1).split('|').map(x=>x.trim());
+      if(/^[-: ]+$/.test(celle.join(''))) return;              // la riga dei trattini
+      if(!tab){ out+='<table class="mdtab"><thead><tr>'+celle.map(c=>`<th>${inline(c)}</th>`).join('')+'</tr></thead><tbody>'; tab=1; return; }
+      out+='<tr>'+celle.map(c=>`<td>${inline(c)}</td>`).join('')+'</tr>'; return;
+    }
+    if(tab) chiudi();
+    if(/^## /.test(l)){ chiudi(); out+=`<h4>${inline(l.slice(3))}</h4>`; return; }
+    if(/^[-*] /.test(l)){ if(!lista){ out+='<ul>'; lista=true; } out+=`<li>${inline(l.slice(2))}</li>`; return; }
+    if(!l){ chiudi(); return; }
+    chiudi();
+    out+=`<p>${inline(l)}</p>`;
+  });
+  chiudi();
+  return out;
+}
+
+async function renderMET(){
+  const body=document.getElementById('meBody');
+  await metodoCarica();
+  const ind=`<div class="metind"><div class="mt">Capitoli</div>
+    ${METODO.map((c,i)=>`<a data-metgo="${i}">${i+1}. ${c.t}</a>`).join('')}
+    <button class="btn small tpl" id="metAdd" type="button" style="margin-top:10px">+ Capitolo</button>
+    <button class="btn small tpl" id="metStampa" type="button">🖨 Stampa</button>
+    <button class="btn small tpl" id="metReset" type="button">↺ Testo di fabbrica</button>
+  </div>`;
+  const cap=(c,i)=> metEdit===i
+    ? `<section id="met-${i}" class="metcap">
+        <div class="improw" style="margin-bottom:10px">
+          <input class="mettit" data-mettit="${i}" value="${String(c.t).replace(/"/g,'&quot;')}">
+          <button class="btn small" data-metok="${i}" type="button">✓ Fatto</button>
+          <button class="btn small tpl" data-metsu="${i}" type="button" title="sposta su">↑</button>
+          <button class="btn small tpl" data-metgiu="${i}" type="button" title="sposta giù">↓</button>
+          <button class="btn small tpl del" data-metdel="${i}" type="button">✕ Elimina</button>
+        </div>
+        <textarea class="mettxt" data-mettxt="${i}" rows="22">${String(c.x).replace(/</g,'&lt;')}</textarea>
+        <div class="sub" style="margin-top:7px">Si scrive in testo semplice: <b>##</b> per un sottotitolo, <b>**grassetto**</b>, <b>*corsivo*</b>, <b>-</b> per gli elenchi, e le tabelle con le barre verticali.</div>
+      </section>`
+    : `<section id="met-${i}" class="metcap">
+        <div class="sechead"><div><h2>${i+1}. ${c.t}</h2></div>
+          <span class="ordsw"><button type="button" data-metedit="${i}" title="modifica questo capitolo">✎</button></span></div>
+        <div class="mdbody">${mdHtml(c.x)}</div>
+      </section>`;
+  body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Il metodo Planet One</h2>
+        <div class="sub">Il know how che alimenta le diagnosi del report, scritto una volta e consultabile da qui. Non appartiene a un cliente: vale per tutti e si sincronizza come l'elenco clienti, quindi chi lo aggiorna lo aggiorna per tutti.</div></div></div>
+    </section>
+    <div class="metwrap">${ind}<div class="metdoc">${METODO.map(cap).join('')}</div></div>`;
+}
+
 /* ================= Il motore di diagnosi =================
    Il report non improvvisa: legge i numeri, li confronta con gli obiettivi del
    locale e tira fuori diagnosi e cure secondo il metodo Planet One. Le regole
@@ -4782,6 +5087,134 @@ function vociCommissioni(d){
   return tot>0 ? {tot, nomi, inc:tot/d.a.ricavi} : null;
 }
 
+/* ---------------- chiudere conviene davvero? ----------------
+   Un servizio in perdita non è automaticamente un servizio da chiudere: le
+   spese generali che portava si ridistribuiscono sugli altri, e il margine
+   complessivo può peggiorare. Qui si spegne un servizio alla volta con lo
+   stesso motore della Simulazione e si guarda cosa succede al margine della
+   settimana. Il report consiglia una chiusura solo se il conto torna. */
+function provaChiusure(){
+  let base;
+  try{ base=tuData(); }catch(e){ return null; }
+  if(!base || !base.tot || !isFinite(base.tot.marg)) return null;
+  if(!base.inc || base.inc.giornate===0) return null;      // senza incassi non si può dire nulla
+  const m0=base.tot.marg, cand=[];
+  for(let g=0;g<7;g++) for(const j of [0,1]){
+    const c=base.celle[g][j];
+    if(!c.aperto || c.ric==null || !(c.marg<0)) continue;   // chi è in utile non si tocca
+    let sc; try{ sc=tuData({chiusi:{[g+'-'+j]:true}, recupero:0}); }catch(e){ continue; }
+    cand.push({g, j, et:GIORNI[g].toLowerCase()+' a '+(j?'cena':'pranzo'),
+               marg:c.marg, delta:sc.tot.marg-m0});
+  }
+  const utili=cand.filter(x=>x.delta>0.5).sort((x,y)=>y.delta-x.delta);
+  let insieme=null;
+  if(utili.length>1){
+    const ch={}; utili.forEach(x=>ch[x.g+'-'+x.j]=true);
+    try{ insieme={n:utili.length, delta:tuData({chiusi:ch, recupero:0}).tot.marg-m0}; }catch(e){}
+  }
+  return {m0, inPerdita:cand.length, utili, insieme,
+          nessuna: cand.length>0 && utili.length===0};
+}
+
+/* ---------------- il percorso per arrivare all'obiettivo ----------------
+   Promettere un recupero senza dire come ci si arriva è una promessa in aria.
+   Qui il recupero si scompone: quanto da ogni area, con che mossa, e cosa
+   invece non si taglia ma si raggiunge facendo crescere il fatturato. */
+function percorsoRecupero(d){
+  const {a,t}=d, passi=[];
+  /* materia prima: e la scorciatoia della business unit */
+  if(isFinite(a.incMp) && a.incMp*100>num(t.mp)){
+    const eu=(a.incMp-num(t.mp)/100)*a.ricavi;
+    let come=`Portare la materia prima dal ${fmtP(a.incMp)} al ${fmtNum(num(t.mp))}%.`;
+    const rf=a.ricaviFood, rb=a.ricaviBev, tot=rf+rb;
+    if(tot>0){
+      const incF=rf>0?a.mpFood/rf:NaN, incB=rb>0?a.mpBev/rb:NaN;
+      const seFood=(rf*0.32 + a.mpBev)/a.ricavi;
+      const seBev =(a.mpFood + rb*0.24)/a.ricavi;
+      const quota=x=>fmtP(x/tot);
+      if(isFinite(incB) && incB>0.24 && seBev<=num(t.mp)/100+0.001)
+        come=`Il beverage vale il ${quota(rb)} del fatturato e sta al ${fmtP(incB)} contro un riferimento del 24%: portarlo lì <b>basta da solo</b> a centrare il ${fmtNum(num(t.mp))}% complessivo, anche lasciando il food com'è.`;
+      else if(isFinite(incF) && incF>0.32 && seFood<=num(t.mp)/100+0.001)
+        come=`Il food vale il ${quota(rf)} del fatturato e sta al ${fmtP(incF)} contro un riferimento del 32%: portarlo lì <b>basta da solo</b> a centrare il ${fmtNum(num(t.mp))}% complessivo.`;
+      else if(isFinite(incF) && isFinite(incB)){
+        const peggio = (incF-0.32) > (incB-0.24) ? {n:'food', i:incF, r:32, q:quota(rf)} : {n:'beverage', i:incB, r:24, q:quota(rb)};
+        come=`Si parte dal ${peggio.n}, che vale il ${peggio.q} del fatturato e sta al ${fmtP(peggio.i)} contro un riferimento del ${peggio.r}%: è lì che c'è più spazio, e si procede per passi.`;
+      }
+    }
+    passi.push({area:'Materia prima', eu, come});
+  }
+  /* personale */
+  if(isFinite(a.incRu) && a.incRu*100>num(t.ru)){
+    const eu=(a.incRu-num(t.ru)/100)*a.ricavi;
+    const ore=oreAttendibili(d);
+    const oreDaTogliere = (ore.ok && ore.implicito>0) ? eu/ore.implicito : null;
+    const come = oreDaTogliere
+      ? `Portare il personale dal ${fmtP(a.incRu)} al ${fmtNum(num(t.ru))}% vuol dire, a parità di incasso, circa <b>${fmtNum(oreDaTogliere)} ore in meno</b> sul periodo — ${fmtNum(oreDaTogliere/(SETT*Math.max(1,d.nMesi)))} ore a settimana. Non è un taglio secco: si ottiene scaglionando gli ingressi, ribilanciando le ore fra i servizi e, dove il conto torna, rivedendo le aperture.`
+      : `Portare il personale dal ${fmtP(a.incRu)} al ${fmtNum(num(t.ru))}%, lavorando sulla distribuzione delle ore prima che sul numero delle persone.`;
+    passi.push({area:'Personale', eu, come});
+  }
+  /* spese generali: non si tagliano, si diluiscono */
+  let cresc=null;
+  if(isFinite(a.incSg) && a.incSg*100>num(t.sg)){
+    const nr=sgNonRicorrenti(d);
+    const sgPulite=a.sg-nr.tot;
+    const ricServono=sgPulite/(num(t.sg)/100);
+    const piu=ricServono-a.ricavi;
+    if(piu>0){
+      const pct=piu/a.ricavi;
+      const L=S.leve, f=(1+num(L.cop)/100)*(1+num(L.cli)/100)*(1+num(L.vis)/100)-1;
+      cresc={pct, piu, basta:f>=pct, f,
+        come:`Le spese generali non si comprimono a comando: per portarle dal ${fmtP(sgPulite/a.ricavi)} al ${fmtNum(num(t.sg))}% senza toccare un euro di spesa servono <b>${fmtE(piu)}</b> di fatturato in più, cioè un <b>+${fmtP(pct)}</b>. ${f>=pct?`Le tre leve impostate — coperto medio, clienti e visite — valgono insieme +${fmtP(f)}: <b>basterebbero</b>.`:`Le tre leve impostate valgono insieme +${fmtP(f)}: non bastano, servirebbe spingerle di più o rivedere l'obiettivo.`}`};
+    }
+  }
+  return {passi, cresc};
+}
+
+/* ---------------- il periodo raccontato a parole ---------------- */
+function raccontoPeriodo(d, livelli){
+  const {a,t}=d, out=[];
+  const per=etichettaPeriodo(d.per||repPer);
+  out.push(`${per} chiude con un fatturato di <b>${fmtE(a.ricavi)}</b> e un risultato operativo ${a.ro<0?'negativo per':'di'} <b>${fmtE(Math.abs(a.ro))}</b>, pari al ${fmtP(Math.abs(a.ro)/a.ricavi)} del venduto${a.ro<0?'':` contro un obiettivo del ${fmtNum(num(t.ro))}%`}.`);
+  if(d.prec){
+    const dr=(d.prec.ora.ricavi-d.prec.prima.ricavi)/d.prec.prima.ricavi;
+    const dro=d.prec.ora.ro-d.prec.prima.ro;
+    out.push(`Rispetto allo stesso periodo del ${num(S.anno)-1}, sui ${d.prec.n} mes${d.prec.n===1?'e':'i'} in comune, il fatturato ${dr>=0?'cresce':'cala'} del <b>${fmtP(Math.abs(dr))}</b> e il risultato ${dro>=0?'migliora':'peggiora'} di <b>${fmtE(Math.abs(dro))}</b>.`);
+  }
+  /* regolarità dei mesi e anomalie */
+  if(d.completi.length>2){
+    const ric=d.completi.map(x=>x.ricavi);
+    const med=ric.reduce((x,y)=>x+y,0)/ric.length;
+    const disp=Math.max(...ric.map(v=>Math.abs(v-med)))/med;
+    const nr=sgNonRicorrenti(d), mb=mpBallerina();
+    let frase = disp<0.2
+      ? 'L\'andamento mensile è <b>regolare</b>: i mesi si somigliano, e questo rende prevedibile la pianificazione della liquidità.'
+      : 'L\'andamento mensile è <b>irregolare</b>: fra il mese più pieno e quello più magro c\'è una distanza che conta, e la pianificazione finanziaria deve tenerne conto.';
+    const note=[];
+    if(nr.tot>0) note.push(`in questo periodo cadono ${fmtE(nr.tot)} di costi non ricorrenti (${nr.voci.slice(0,2).map(v=>v.nome.toLowerCase()).join(', ')}), che gonfiano le spese generali di quei mesi senza essere spesa corrente`);
+    if(mb) note.push(`la materia prima oscilla di ${puntiTxt(mb.dpp)} da un mese all'altro, segno di acquisti in stock registrati tutti su un mese solo`);
+    if(note.length) frase+=' Due cose da tenere presenti: '+note.join('; ')+'.';
+    out.push(frase);
+  }
+  /* il centro di costo più sensibile */
+  const aree=[{n:'il personale',k:'incRu',tgt:num(t.ru)},{n:'la materia prima',k:'incMp',tgt:num(t.mp)},
+              {n:'le spese generali',k:'incSg',tgt:num(t.sg)}]
+    .map(x=>({...x, dpp:(a[x.k]*100)-x.tgt})).filter(x=>isFinite(x.dpp)).sort((x,y)=>y.dpp-x.dpp);
+  if(aree.length){
+    out.push(aree[0].dpp>0
+      ? `Il centro di costo più sensibile è <b>${aree[0].n}</b>, a ${puntiTxt(aree[0].dpp)} dall'obiettivo: è quello che richiede il monitoraggio più costante, perché incide direttamente sulla marginalità e sulla stabilità dei risultati.`
+      : 'Tutti i centri di costo sono dentro gli obiettivi concordati: il lavoro dei prossimi mesi è tenerli lì, non rincorrerli.');
+  }
+  if(livelli && livelli.length>1){
+    const an=livelli[livelli.length-1].d.a;
+    const fuori=[['Ru','il personale'],['Mp','la materia prima'],['Sg','le spese generali']]
+      .map(([k,nome])=>{ const c=confrontoLivelli(a['inc'+k], an['inc'+k]); return (c&&c.v!=='linea')?{nome,c}:null; }).filter(Boolean);
+    out.push(fuori.length
+      ? `Guardando più in largo, ${fuori.map(x=>`${x.nome} in questo periodo sta ${x.c.t}`).join(' e ')}: prima di intervenire sulla struttura vale la pena capire cosa ha avuto di diverso.`
+      : 'Il periodo è in linea con la media annua: quello che si legge qui non è un episodio, è il modo in cui il locale funziona.');
+  }
+  return out;
+}
+
 /* ---------------- le diagnosi ----------------
    Ogni scheda: cosa dicono i numeri, le cause in ordine, cosa verificare, le cure. */
 const VEL={subito:{m:3, t:'subito', d:'effetto dentro il mese'},
@@ -4849,9 +5282,20 @@ function repDiagnosi(d, livelli){
         cause.push(C('Troppe ore per quello che entra',
           `La produttività è ${sc.t} (${fmtE(d.prod)}/h). Il costo orario medio è ${fmtE(costoOra)}/h, quindi il problema non sono le paghe: sono le ore messe in campo rispetto all'incasso.`,
           [{t:'Ingressi scaglionati', v:'subito', e:e*0.3,
-            x:'Non far entrare tutti insieme: spostare gli ingressi sul momento in cui il servizio parte davvero. Due o tre ore al giorno recuperate pesano molto sul mese e non si vedono in sala.'},
-           {t:'Chiudere i servizi che non reggono', v:'subito', e:e*0.3,
-            x:'In Analisi dei turni si legge il costo del personale di ogni pranzo e di ogni cena contro l\'incasso medio di quella fascia; in Simulazione si prova a spegnere i servizi in perdita e si vede l\'effetto su settimana, mese e anno prima di decidere.'}]));
+            x:'Non far entrare tutti insieme: spostare gli ingressi sul momento in cui il servizio parte davvero. Due o tre ore al giorno recuperate pesano molto sul mese e non si vedono in sala.'}]));
+      }
+      /* le chiusure si consigliano solo se la Simulazione dice che convengono */
+      const pc=provaChiusure();
+      if(pc && pc.utili.length){
+        const primo=pc.utili[0];
+        const elenco=pc.utili.slice(0,3).map(x=>`<b>${x.et}</b> (${fmtE(x.delta)} a settimana)`).join(', ');
+        cause.push(C('Ci sono servizi che non reggono il proprio costo',
+          `Spegnendo un servizio alla volta con il motore della Simulazione, ${pc.utili.length===1?'uno solo migliora':'alcuni migliorano'} il margine della settimana anche dopo che le spese generali si sono ridistribuite sugli altri: ${elenco}.${pc.insieme&&pc.insieme.delta>0?` Chiudendoli tutti insieme il margine settimanale migliora di ${fmtE(pc.insieme.delta)}.`:''}`,
+          [{t:`Valutare la chiusura di ${primo.et}`, v:'subito',
+            e:(pc.insieme&&pc.insieme.delta>0?pc.insieme.delta:primo.delta)*SETT,
+            x:`Il conto è già fatto in Simulazione: il margine migliora di ${fmtE(primo.delta)} a settimana, ${fmtE(primo.delta*SETT)} al mese. Prima di decidere vanno pesate le cose che il conto non vede — l'abitudine dei clienti, il personale a contratto fisso che va comunque pagato, l'immagine di un locale chiuso.`}]));
+      }else if(pc && pc.nessuna){
+        diag.push(`Una verifica che vale la pena scrivere: ${pc.inPerdita===1?'c\'è un servizio in perdita':`ci sono ${pc.inPerdita} servizi in perdita`}, ma <b>chiuderli non conviene</b>. Provando a spegnerli uno per uno in Simulazione il margine della settimana <b>peggiora</b>: le spese generali che quel servizio si portava addosso si ridistribuiscono sugli altri, e il poco margine di contribuzione che faceva viene a mancare. Qui la strada non è chiudere, è <b>ridurre le ore</b> dentro i servizi deboli e lavorare sull'incasso.`);
       }
       const sq=squilibrioServizi();
       if(sq) cause.push(C('Le ore stanno dove non c\'è l\'incasso',
@@ -5157,7 +5601,12 @@ function renderAN(){
       livelli.length>1 ? 'Analisi a scalare: '+livelli.map(x=>x.breve.toLowerCase()).join(' → ')
                        : d.completi.length+' mes'+(d.completi.length===1?'e':'i')+' nei conti: '+mesiDetti}</div>`);
 
-  /* 2 — la scala: lo stesso numero visto da vicino e da lontano, prima di tutto */
+  /* 1b — il periodo raccontato a parole, prima dei numeri */
+  const racconto=raccontoPeriodo(d, livelli);
+  S_('',`<div class="kicker">In sintesi</div><h3>Come è andato ${etichettaPeriodo(repPer).toLowerCase()}</h3>
+    <div class="dtesto">${racconto.map(x=>`<p>${x}</p>`).join('')}</div>`);
+
+  /* 2 — la scala: lo stesso numero visto da vicino e da lontano */
   if(livelli.length>1){
     const aree=[
       {n:'Risorse umane', k:'incRu', tgt:num(t.ru)},
@@ -5307,10 +5756,23 @@ function renderAN(){
     </div>
     <div class="sub" style="margin-top:12px">Il conto tiene la materia prima proporzionale ai ricavi e lascia fermi personale e spese generali: è l'ipotesi prudente di chi cresce senza aggiungere struttura. Se per crescere servono ore in più, il guadagno va ridotto di conseguenza.</div>`);
 
-  /* conclusione */
-  S_('',`<div class="kicker">Conclusioni</div><h3>Il valore del percorso</h3>
-    <div class="bigclose">Riportando i costi in obiettivo il risultato passa da ${fmtE(a.ro)} a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?' — da perdita a utile':''}.</div>
-    <div class="savestate" style="margin-top:auto">Prossimo passo: piano operativo condiviso e verifica mensile degli obiettivi con Planet One.</div>`);
+  /* conclusione: il recupero scomposto nei passaggi che lo rendono possibile */
+  const perc=percorsoRecupero(d);
+  S_('',`<div class="kicker">Conclusioni</div><h3>Come ci si arriva</h3>
+    ${(perc.passi.length||perc.cresc)?`
+      <div class="sub" style="margin-bottom:14px">Il recupero non è una cifra da promettere: è la somma di passaggi distinti, ognuno con la sua mossa e il suo tempo. Eccoli, dal più pesante.</div>
+      <div class="passi">
+        ${perc.passi.sort((x,y)=>y.eu-x.eu).map((x,i)=>`<div class="pa">
+            <div class="pt"><span class="n">${i+1}</span>${x.area}<b>${fmtE(x.eu)}</b></div>
+            <div class="px">${x.come}</div></div>`).join('')}
+        ${perc.cresc?`<div class="pa">
+            <div class="pt"><span class="n">${perc.passi.length+1}</span>Spese generali<b>+${fmtP(perc.cresc.pct)} di fatturato</b></div>
+            <div class="px">${perc.cresc.come}</div></div>`:''}
+      </div>
+      <div class="bigclose" style="font-size:22px;margin-top:16px">Messi insieme, e <b>solo se messi insieme</b>, questi passaggi portano il risultato da ${fmtE(a.ro)} a ${fmtE(roS)}.</div>
+      <div class="savestate" style="margin-top:8px">Nessuno di questi passaggi è immediato né automatico: sono obiettivi di lavoro, non previsioni. Il prossimo passo è scegliere da quale partire e fissare una verifica mensile.</div>`
+    : `<div class="bigclose">Le incidenze sono in obiettivo e il risultato è ${fmtE(a.ro)}, pari al ${fmtP(a.ro/a.ricavi)} del venduto. Il lavoro dei prossimi mesi è tenere la rotta: monitoraggio mensile e presidio delle procedure in essere.</div>
+       <div class="savestate" style="margin-top:auto">Prossimo passo: verifica mensile degli obiettivi con Planet One.</div>`}`);
 
   const avvisi = controlli.length ? `<div class="repctrl">
       <div class="ct">Prima di leggere i numeri</div>
@@ -5540,6 +6002,40 @@ function stampaUnaPagina(){
   const w=window.open('','_blank');
   if(!w){ toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito.', true); return; }
   w.document.write(html); w.document.close();
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 900);
+}
+
+function stampaMetodo(){
+  if(!METODO) return;
+  const w=window.open('','_blank');
+  if(!w){ toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito.', true); return; }
+  w.document.write(`<!doctype html><html lang="it"><head><meta charset="utf-8"><title>Metodo Planet One</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+ @page{size:A4 portrait;margin:18mm 20mm}
+ body{font:13.5px/1.6 Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1B2A3A;margin:0;
+   -webkit-print-color-adjust:exact;print-color-adjust:exact}
+ h1{font:600 30px/1.1 Fraunces,Georgia,serif;margin:0 0 4px}
+ .kick{font:700 9.5px/1 Inter;letter-spacing:3px;color:#F07F1F;margin-bottom:8px}
+ .sub{color:#5D6B79;font-size:13px;margin-bottom:26px;padding-bottom:16px;border-bottom:2px solid #1B2A3A}
+ h2{font:600 20px/1.2 Fraunces,Georgia,serif;margin:26px 0 8px;page-break-after:avoid}
+ h4{font:700 10px/1 Inter;letter-spacing:1.6px;text-transform:uppercase;color:#5D6B79;margin:16px 0 6px}
+ p{margin:8px 0} ul{margin:8px 0 8px 18px} li{margin:4px 0}
+ table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px}
+ th{text-align:left;font:700 9px/1 Inter;letter-spacing:1.1px;text-transform:uppercase;color:#5D6B79;
+   padding:6px 8px;border-bottom:1.5px solid #1B2A3A;background:#F6F4EF}
+ td{padding:6px 8px;border-bottom:1px solid #E4E1DA;vertical-align:top}
+ section{page-break-inside:avoid}
+ .pie{margin-top:30px;padding-top:10px;border-top:1px solid #E4E1DA;font-size:10.5px;color:#8A8680}
+</style></head><body>
+<div class="kick">PLANET ONE · FOOD &amp; BEVERAGE</div>
+<h1>Il metodo</h1>
+<div class="sub">Le regole con cui leggiamo un locale e costruiamo diagnosi e cure. Stampato il ${new Date().toLocaleDateString('it-IT')}.</div>
+${METODO.map((c,i)=>`<section><h2>${i+1}. ${c.t}</h2>${mdHtml(c.x)}</section>`).join('')}
+<div class="pie">Planet One · Gestionale F&amp;B — documento interno</div>
+</body></html>`);
+  w.document.close();
   setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 900);
 }
 
@@ -5855,7 +6351,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -5866,6 +6362,8 @@ document.getElementById('nav').addEventListener('click',e=>{
 document.addEventListener('input',e=>{
   const el=e.target;
   if(el.id==='clientName'){ S.cliente=el.value; saveState(); return; }
+  if(el.dataset && el.dataset.mettxt!==undefined && METODO){ METODO[+el.dataset.mettxt].x=el.value; return; }
+  if(el.dataset && el.dataset.mettit!==undefined && METODO){ METODO[+el.dataset.mettit].t=el.value; return; }
   if(el.dataset && el.dataset.mpsagg!==undefined){ migrateS(); S.mpSchede.agg=el.value; saveState(); return; }
   if(el.dataset.t){
     if(el.readOnly) return;                       // l'utile obiettivo si ricava, non si scrive
@@ -6270,6 +6768,27 @@ document.addEventListener('click',async e=>{
   if(rm){ migrateS(); const i=+rm.dataset.rmese; S.stag.mesi[i]=!S.stag.mesi[i]; saveState(); renderAN(); return; }
   if(b.id==='anPrint'){ printSlides(); return; }
   if(b.id==='anUno'){ stampaUnaPagina(); return; }
+  const mg=b.closest&&b.closest('[data-metgo]');
+  if(mg){ const el=document.getElementById('met-'+mg.dataset.metgo); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+  const me=b.closest&&b.closest('[data-metedit]');
+  if(me){ metEdit=+me.dataset.metedit; renderMET(); return; }
+  const mo=b.closest&&b.closest('[data-metok]');
+  if(mo){ metEdit=null; await metodoSalva(); renderMET(); return; }
+  const mu=b.closest&&b.closest('[data-metsu]');
+  if(mu){ const i=+mu.dataset.metsu; if(i>0){ const [x]=METODO.splice(i,1); METODO.splice(i-1,0,x); metEdit=i-1; await metodoSalva(); renderMET(); } return; }
+  const mgi=b.closest&&b.closest('[data-metgiu]');
+  if(mgi){ const i=+mgi.dataset.metgiu; if(i<METODO.length-1){ const [x]=METODO.splice(i,1); METODO.splice(i+1,0,x); metEdit=i+1; await metodoSalva(); renderMET(); } return; }
+  const md=b.closest&&b.closest('[data-metdel]');
+  if(md){ const i=+md.dataset.metdel;
+    if(await uiConfirm('Eliminare il capitolo «'+METODO[i].t+'»?\n\nVale per tutti i clienti e non si torna indietro.')){
+      METODO.splice(i,1); metEdit=null; await metodoSalva(); renderMET(); }
+    return; }
+  if(b.id==='metAdd'){ METODO.push({t:'Nuovo capitolo', x:'Scrivi qui.'}); metEdit=METODO.length-1; await metodoSalva(); renderMET(); return; }
+  if(b.id==='metReset'){
+    if(await uiConfirm('Rimettere il testo di fabbrica?\n\nTutte le modifiche al metodo vanno perse, per tutti i clienti.')){
+      METODO=metodoDiFabbrica(); metEdit=null; await metodoSalva(); renderMET(); }
+    return; }
+  if(b.id==='metStampa'){ stampaMetodo(); return; }
   if(b.id==='btnReset'){ resetFlow(); return; }
 });
 
