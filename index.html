@@ -806,9 +806,77 @@
   .slide .azione:last-child{border-bottom:none;}
   .slide .azione .at{font-weight:600;font-size:16px;color:var(--brand);}
   .slide .azione .ax{font-size:14.5px;color:var(--ink);margin-top:2px;}
+  /* la barra del periodo del report */
+  .repbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+  .repbar.mesiap{margin-top:-6px;}
+  .repbar .t{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:var(--ink2);margin-right:4px;}
+  .repbar .sep{width:1px;height:18px;background:var(--line);margin:0 4px;}
+  /* i controlli sulla qualità del dato, solo a schermo */
+  .repctrl{background:#FBF6EC;border:1px solid #EADFC6;border-radius:12px;padding:12px 16px;margin-bottom:18px;}
+  .repctrl .ct{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:#8A6A0C;margin-bottom:6px;}
+  .repctrl ul{margin:0 0 0 16px;font-size:13px;line-height:1.5;}
+  .repctrl .cn2{font-size:11.5px;color:var(--ink2);margin-top:7px;}
+  /* il quadro in sintesi */
+  .quadro{margin-top:6px;}
+  .qrow{display:grid;grid-template-columns:1fr auto auto;gap:18px;align-items:baseline;
+    padding:13px 0;border-bottom:1px dashed var(--line);}
+  .qrow:last-child{border-bottom:none;}
+  .qrow .qn{font-size:17px;font-weight:600;display:flex;align-items:center;gap:10px;}
+  .qrow .qv{font-family:var(--num);font-size:19px;font-weight:600;}
+  .qrow .qv small{font-family:var(--font);font-size:11.5px;font-weight:400;color:var(--ink2);margin-left:7px;}
+  .qrow .qe{font-family:var(--num);font-size:13px;color:var(--ink2);min-width:180px;text-align:right;}
+  .qrow.z3 .qe{color:var(--bad);} .qrow.z2 .qe{color:var(--hot);}
+  .qchiusa{margin-top:16px;font-size:15px;line-height:1.55;}
+  .qchiusa p{margin:7px 0;}
+  /* confronto anno su anno */
+  .yoy{margin-top:14px;}
+  .yoy .yt{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;font-weight:700;color:var(--ink2);margin-bottom:7px;}
+  .yotab{width:100%;border-collapse:collapse;font-size:14px;}
+  .yotab th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);font-weight:600;
+    text-align:right;padding:5px 8px;border-bottom:1.5px solid var(--ink);}
+  .yotab th:first-child{text-align:left;}
+  .yotab td{padding:7px 8px;text-align:right;font-family:var(--num);border-bottom:1px solid var(--line);}
+  .yotab td:first-child{text-align:left;font-family:var(--font);}
+  .yotab tr.fine td{font-weight:600;border-bottom:none;border-top:1.5px solid var(--brand);}
+  .yotab td.su{color:var(--ok);} .yotab td.giu{color:var(--bad);}
+  /* il riquadro del ribilanciamento */
+  .ribox{background:#F6F4EF;border:1px solid var(--line);border-left:3px solid var(--brass);
+    border-radius:10px;padding:14px 18px;margin-top:16px;font-size:14.5px;line-height:1.55;}
+  .ribox .rt{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--brass-dk);margin-bottom:6px;}
+  .ribox p{margin:6px 0;}
+  /* produttività nelle business unit */
+  .produ{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);}
+  .produ > div{display:flex;flex-direction:column;}
+  .produ span{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:600;}
+  .produ b{font-family:var(--num);font-size:16px;margin-top:3px;}
+  .produ .fonte{font-size:11.5px;color:var(--ink2);align-self:flex-end;margin-left:auto;font-style:italic;}
+  /* le schede di diagnosi */
+  .dsom{display:inline-block;font-size:14px;padding:6px 14px;border-radius:20px;margin-bottom:12px;font-weight:500;}
+  .dtesto p{font-size:15.5px;line-height:1.6;margin:10px 0;}
+  .dver{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);}
+  .dver .vt{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);margin-bottom:6px;}
+  .dver ul{margin:0 0 0 18px;font-size:14px;line-height:1.55;}
+  /* le cure */
+  .slide .azione .vel{font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:700;
+    border-radius:20px;padding:2px 9px;margin-left:10px;vertical-align:2px;}
+  .slide .azione .vel.subito{background:#E8F1E9;color:#2E7D4F;}
+  .slide .azione .vel.medio{background:#FBF3DC;color:#8A6A0C;}
+  .slide .azione .vel.lento{background:#EDEBE7;color:var(--ink2);}
+  .slide .azione .eu{font-family:var(--num);font-size:13px;color:var(--ink2);margin-left:10px;font-weight:400;}
+  /* le leve della crescita */
+  .leve{display:flex;flex-direction:column;gap:11px;max-width:520px;}
+  .leve label{display:grid;grid-template-columns:150px 1fr 64px;align-items:center;gap:14px;}
+  .leve label span{font-size:13.5px;}
+  .leve label b{font-family:var(--num);font-size:15px;text-align:right;}
+  .leve input[type=range]{width:100%;accent-color:var(--brass);}
+  .levares{display:flex;gap:34px;margin-top:20px;padding-top:16px;border-top:1px dashed var(--line);flex-wrap:wrap;}
+  .levares > div{display:flex;flex-direction:column;}
+  .levares span{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink2);font-weight:600;}
+  .levares b{font-family:var(--num);font-size:18px;margin-top:4px;}
+  .levares i{font-style:normal;font-family:var(--num);font-size:13px;color:var(--ok);margin-top:2px;}
   .slide .bigclose{font-family:'Fraunces',serif;font-size:30px;line-height:1.25;margin-top:8px;}
   .slide .bigclose b{color:#1e6a53;}
-  .slides-print header,.slides-print nav,.slides-print .side,.slides-print .anTools,.slides-print footer,.slides-print #toast{display:none!important;}
+  .slides-print header,.slides-print nav,.slides-print .side,.slides-print .anTools,.slides-print .repbar,.slides-print .repctrl,.slides-print footer,.slides-print #toast{display:none!important;}
   .slides-print .page{display:none!important;}
   .slides-print #page-an{display:block!important;}
   @media print{ .slide{page-break-after:always;border:none;border-radius:0;min-height:auto;} }
@@ -870,7 +938,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v85</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v86</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1212,6 +1280,8 @@ function freshState(){
     targets:{ru:34, mp:28, sg:18, cn:2, ro:20, ltRicavi:'', ltUtile:20, prodOra:60},
     sgSplit:{mode:'incidenze', foodPct:50},
     mpSchede:{food:'', bev:''},
+    stag:{on:false, mesi:Array(12).fill(true)},   // locale stagionale: quali mesi è aperto
+    leve:{cop:10, cli:10, vis:10},                // crescita in leva: coperto medio, clienti, visite
     salesSplit:Array(12).fill(null),
     merch:{mode:'incl'},   // incl = acceso · escl = spento · solo = isolato
     ce: MESI.map(()=>({rf:0, rb:0, ra:0, mf:0, mb:0, rfm:0, rbm:0, mfm:0, mbm:0})),
@@ -1314,6 +1384,11 @@ function migrateS(){
   }
   if(!S.sgSplit) S.sgSplit={mode:'incidenze',foodPct:50};
   if(!S.mpSchede) S.mpSchede={food:'',bev:''};
+  if(!S.stag||typeof S.stag!=='object') S.stag={on:false, mesi:Array(12).fill(true)};
+  if(!Array.isArray(S.stag.mesi)||S.stag.mesi.length!==12) S.stag.mesi=Array(12).fill(true);
+  S.stag.on=!!S.stag.on;
+  if(!S.leve||typeof S.leve!=='object') S.leve={cop:10, cli:10, vis:10};
+  ['cop','cli','vis'].forEach(k=>{ if(S.leve[k]===undefined) S.leve[k]=10; });
   if(!S.salesSplit) S.salesSplit=Array(12).fill(null);
   if(S.targets.ltRicavi===undefined){ S.targets.ltRicavi=''; S.targets.ltUtile=20; }
   if(S.targets.prodOra===undefined) S.targets.prodOra=60;
@@ -4395,6 +4470,283 @@ function renderOB(){
    RENDER · ANALISI (presentazione)
 ================================================================ */
 let anTexts=null; // commenti AI opzionali
+
+/* ================= Il motore di diagnosi =================
+   Il report non improvvisa: legge i numeri, li confronta con gli obiettivi del
+   locale e tira fuori diagnosi e cure secondo il metodo Planet One. Le regole
+   stanno scritte una volta sola qui, così ogni cliente riceve lo stesso ragionamento.
+   Le cure sono suggerimenti: conosciamo i numeri, non le dinamiche interne. */
+
+const TRIM_LUNGO=['Gennaio – Marzo','Aprile – Giugno','Luglio – Settembre','Ottobre – Dicembre'];
+let repPer={tipo:'anno', i:null};          // 'mese' i=0..11 · 'trim' i=0..3 · 'anno'
+const mesiDelPeriodo = per => per.tipo==='mese' ? [per.i]
+                            : per.tipo==='trim' ? [0,1,2].map(k=>per.i*3+k)
+                            : MESI.map((_,i)=>i);
+const etichettaPeriodo = per => per.tipo==='mese' ? MESI[per.i]+' '+S.anno
+                              : per.tipo==='trim' ? TRIM_LUNGO[per.i]+' '+S.anno
+                              : 'Anno '+S.anno;
+
+/* un mese entra nel report base solo se ha tutte e quattro le gambe */
+const meseCompleto = mx => !!(mx && mx.ricavi>0 && mx.mp>0 && mx.ru>0 && mx.sg>0);
+const stagionale = () => !!(S.stag && S.stag.on);
+const meseAperto = i => !stagionale() || !!(S.stag.mesi||[])[i];
+
+/* le ore della settimana tipo: prima i turni, se non ci sono l'organico */
+function oreTipo(){
+  migrateS();
+  const daTurni=(S.turni.righe||[]).reduce((a,r)=>a+oreSettimana(r).tot,0);
+  if(daTurni>0){
+    const perRep={};
+    (S.turni.righe||[]).forEach(r=>{ const k=TU_REP.includes(r.reparto)?r.reparto:'Sala';
+      perRep[k]=(perRep[k]||0)+oreSettimana(r).tot; });
+    return {ore:daTurni, perRep, fonte:'la griglia di Analisi dei turni'};
+  }
+  const perRep={};
+  (S.ru||[]).forEach(pz=>{ const k=TU_REP.includes(pz.reparto)?pz.reparto:'Sala';
+    perRep[k]=(perRep[k]||0)+(pz.ore||[]).reduce((x,v)=>x+num(v),0); });
+  const daRu=Object.values(perRep).reduce((a,v)=>a+v,0);
+  return {ore:daRu, perRep, fonte: daRu>0 ? 'le ore settimanali dell\'organico' : null};
+}
+/* la scala della produttività oraria */
+function scalaProd(v){
+  if(!isFinite(v)||v<=0) return null;
+  if(v<30) return {z:3, t:'critico'};
+  if(v<40) return {z:2, t:'appena sufficiente'};
+  if(v<50) return {z:1, t:'buono'};
+  if(v<60) return {z:0, t:'ottimo'};
+  return {z:0, t:'eccellente'};
+}
+
+/* tutto quello che serve al report, per il periodo scelto */
+function repDati(per){
+  per=per||repPer;
+  const m=compute(), t=S.targets;
+  const idx=mesiDelPeriodo(per).filter(meseAperto);
+  const tutti=idx.map(i=>m.months[i]);
+  const completi=tutti.filter(meseCompleto);
+  const parziali=tutti.filter(x=>!meseCompleto(x) && (x.ricavi>0||x.totCosti>0));
+  const chiusi=mesiDelPeriodo(per).filter(i=>!meseAperto(i)).map(i=>MESI[i]);
+  const a=sumRows(completi,0);
+  /* ore e produttività: la settimana tipo portata ai mesi del periodo */
+  const ot=oreTipo();
+  const nMesi=completi.length;
+  const oreTot=ot.ore*SETT*nMesi;
+  const prod = oreTot>0 ? a.ricavi/oreTot : NaN;
+  const shareF=(a.ricaviFood+a.ricaviBev)>0 ? a.ricaviFood/(a.ricaviFood+a.ricaviBev) : .5;
+  const oreF=((ot.perRep.Cucina||0) + ((ot.perRep.Sala||0)+(ot.perRep.Management||0))*shareF)*SETT*nMesi;
+  const oreB=oreTot-oreF;
+  const prodF = oreF>0 ? a.ricaviFood/oreF : NaN;
+  const prodB = oreB>0 ? a.ricaviBev/oreB : NaN;
+  /* lo stesso periodo dell'anno prima, se i dati ci sono */
+  let prec=null;
+  const mPrec=computeAnno(num(S.anno)-1);
+  if(mPrec){
+    const comuni=idx.filter(i=>meseCompleto(mPrec.months[i]) && meseCompleto(m.months[i]));
+    if(comuni.length){
+      prec={ n:comuni.length, mesi:comuni.map(i=>MESI[i]),
+             ora:sumRows(comuni.map(i=>m.months[i]),0),
+             prima:sumRows(comuni.map(i=>mPrec.months[i]),0) };
+    }
+  }
+  /* il food cost ideale dalle schede ricetta */
+  const idealeF=mpsVal('food'), idealeB=mpsVal('bev');
+  return {m, t, per, tutti, completi, parziali, chiusi, a, ot, oreTot, prod, prodF, prodB,
+          oreF, oreB, shareF, prec, idealeF, idealeB, nMesi};
+}
+
+/* ---------------- il ribilanciamento dei target ----------------
+   Quando un'area sfonda di più di 5 punti non si chiede l'impossibile a lei sola:
+   il recupero si spalma sulle tre aree. Sotto i 5 punti si chiede tutto a chi sfonda. */
+function repTarget(d){
+  const {a,t}=d;
+  const aree=[
+    {k:'ru', n:'Risorse umane', inc:a.incRu, tgt:num(t.ru)},
+    {k:'mp', n:'Materia prima', inc:a.incMp, tgt:num(t.mp)},
+    {k:'sg', n:'Spese generali', inc:a.incSg, tgt:num(t.sg)}
+  ].map(x=>({...x, dpp:(x.inc*100)-x.tgt}));
+  const fuori=aree.filter(x=>x.dpp>5);
+  if(!fuori.length) return {aree, ribilancio:null};
+  /* il punto di arrivo realistico: chi sfonda tanto cede 3–4 punti, gli altri 3 a testa */
+  const quota=[];
+  aree.forEach(x=>{
+    if(x.dpp>5)      quota.push({...x, chiedo:Math.min(x.dpp, 4)});
+    else if(x.dpp>0) quota.push({...x, chiedo:Math.min(x.dpp, 3)});
+    else             quota.push({...x, chiedo:Math.min(Math.max(0,x.dpp+3), 3)});
+  });
+  const puntiTot=quota.reduce((s,x)=>s+x.chiedo,0);
+  return {aree, ribilancio:{quota, puntiTot, euro:puntiTot/100*a.ricavi}};
+}
+
+/* ---------------- le diagnosi ----------------
+   Ogni scheda: cosa dicono i numeri, le cause in ordine, cosa verificare, le cure. */
+const VEL={subito:{m:3, t:'subito', d:'effetto dentro il mese'},
+           medio:{m:1.5, t:'1–3 mesi', d:'effetto in uno-tre mesi'},
+           lento:{m:1, t:'oltre 3 mesi', d:'effetto oltre i tre mesi'}};
+
+function repDiagnosi(d){
+  const {a,t}=d, out=[];
+  const extra=(inc,tgt)=>(inc-tgt/100)*a.ricavi;
+
+  /* ---- personale ---- */
+  if(isFinite(a.incRu)){
+    const dpp=a.incRu*100-num(t.ru), e=extra(a.incRu,num(t.ru));
+    const sc=scalaProd(d.prod);
+    const costoOra = isFinite(d.prod) ? a.incRu*d.prod : NaN;
+    const diag=[], cure=[], ver=[];
+    if(dpp>0){
+      /* la matrice: incidenza = costo orario ÷ produttività */
+      if(sc && sc.z<=1 && dpp>0){
+        diag.push(`La produttività oraria è <b>${sc.t}</b> (${fmtE(d.prod)}/h): l'ora lavorata rende. Se l'incidenza resta alta, il problema non è quanto si incassa ma <b>quanto costa quell'ora</b> — costo orario medio intorno a ${fmtE(costoOra)}/h. Si guardano inquadramenti, straordinari, maggiorazioni di notturni e festivi, e il numero di figure di responsabilità.`);
+        ver.push('Verificare il costo orario medio reale sulle buste paga, separando ordinario, straordinario e maggiorazioni.');
+        ver.push('Controllare quante figure di responsabilità ci sono sullo stesso turno.');
+      }else if(sc && sc.z>=2){
+        diag.push(`La produttività oraria è <b>${sc.t}</b> (${fmtE(d.prod)}/h): entrano pochi euro per ogni ora lavorata. Il costo orario medio è di circa ${fmtE(costoOra)}/h, quindi il peso non viene dalle paghe ma dal <b>numero di ore messe in campo rispetto a quello che si incassa</b>.`);
+        ver.push('Confrontare le ore servizio per servizio con gli incassi medi in Analisi dei turni: le ore stanno dove c\'è l\'incasso?');
+      }
+      if(dpp>10){
+        diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b> sopra l'obiettivo del ${fmtNum(num(t.ru))}%: oltre i dieci punti non è una questione di sfumature, c'è <b>extracosto da tagliare</b> per ${fmtE(e)} sul periodo.`);
+      }else{
+        diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
+      }
+      if(isFinite(d.prodF)&&isFinite(d.prodB)){
+        const basso = d.prodF<d.prodB ? 'Food' : 'Beverage';
+        const vb = d.prodF<d.prodB ? d.prodF : d.prodB;
+        diag.push(`Fra le due business unit la più lenta è <b>${basso}</b>, a ${fmtE(vb)}/h contro ${fmtE(Math.max(d.prodF,d.prodB))}/h dell'altra.`);
+      }
+      cure.push({t:'Ingressi scaglionati', v:'subito', e:e*0.25,
+        x:'Non far entrare tutti insieme: spostare gli ingressi sul momento in cui il servizio parte davvero. Due o tre ore al giorno recuperate pesano molto sul mese, e non si vedono in sala.'});
+      cure.push({t:'Chiudere i servizi che non reggono', v:'subito', e:e*0.3,
+        x:'In <i>Analisi dei turni</i> si vede il costo del personale di ogni pranzo e di ogni cena contro l\'incasso medio di quella fascia. In <i>Simulazione</i> si prova a spegnere i servizi in perdita e si legge l\'effetto su settimana, mese e anno prima di decidere.'});
+      cure.push({t:'Upselling e cross-selling in sala', v:'medio', e:a.ricavi*0.03,
+        x:'Alzare il coperto medio è l\'altra metà del recupero: percorso di vendita per la sala, suggerimenti codificati sui piatti e sui drink a margine alto, obiettivo di vendita per turno.'});
+      cure.push({t:'Piatti smart e spinta sui dolci', v:'medio', e:a.ricavi*0.015,
+        x:'Inserire in carta piatti a marginalità alta e preparazione semplice, e lavorare il dessert come vendita a sé: è la voce che più spesso si perde per strada a fine servizio.'});
+      cure.push({t:'Fonti di reddito aggiuntive', v:'medio', e:null,
+        x:'Canali che si pagano solo quando portano lavoro — TheFork, Deliveroo e simili — per riempire le fasce vuote senza aggiungere costi fissi.'});
+    }
+    out.push({area:'Risorse umane', k:'ru', inc:a.incRu, tgt:num(t.ru), dpp, euro:e,
+      z:zone(a.incRu,num(t.ru),[5,10]),
+      sommario: dpp>0
+        ? `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(num(t.ru))}%: ${fmtE(e)} di extracosto sul periodo.`
+        : `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(num(t.ru))}%: area in obiettivo.`,
+      prod:d.prod, prodScala:sc, costoOra, diag, ver, cure});
+  }
+
+  /* ---- materia prima ---- */
+  if(isFinite(a.incMp)){
+    const dpp=a.incMp*100-num(t.mp), e=extra(a.incMp,num(t.mp));
+    const diag=[], cure=[], ver=[];
+    const incF=a.ricaviFood>0?a.mpFood/a.ricaviFood:NaN;
+    const incB=a.ricaviBev>0?a.mpBev/a.ricaviBev:NaN;
+    if(isFinite(incF)) diag.push(`Food al <b>${fmtP(incF)}</b> (riferimento 32%), Beverage al <b>${isFinite(incB)?fmtP(incB):'—'}</b> (riferimento 24%).`);
+    /* il metodo del delta: ideale da schede contro reale di bilancio */
+    const delta=[];
+    if(d.idealeF!=null && isFinite(incF)) delta.push({n:'Food', id:d.idealeF, re:incF, d:(incF-d.idealeF)*100});
+    if(d.idealeB!=null && isFinite(incB)) delta.push({n:'Beverage', id:d.idealeB, re:incB, d:(incB-d.idealeB)*100});
+    if(delta.length){
+      const dove=x=> x.d>4 ? 'dispersione certa' : x.d>2 ? 'zona migliorabile' : 'divario fisiologico';
+      diag.push('Il confronto fra le schede ricetta e il bilancio: '
+        + delta.map(x=>`<b>${x.n}</b> ${fmtP(x.id)} sulle schede contro ${fmtP(x.re)} reale, <b>${fmtNum(x.d)} punti</b> di divario — ${dove(x)}`).join('; ') + '.');
+      const grosso=delta.filter(x=>x.d>4), medio=delta.filter(x=>x.d>2&&x.d<=4), piccolo=delta.filter(x=>x.d<=2);
+      if(grosso.length) diag.push(`Su ${grosso.map(x=>x.n.toLowerCase()).join(' e ')} un divario di quella misura non si spiega con il pricing: è <b>dispersione</b> — sprechi, omaggi non registrati, errori di dosaggio, scarti, ammanchi. È lì che sta il recupero, non nei listini.`);
+      if(medio.length)  diag.push(`Su ${medio.map(x=>x.n.toLowerCase()).join(' e ')} il divario è nella fascia migliorabile: un po' di dispersione c'è, ma non è la causa principale.`);
+      if(piccolo.length) diag.push(`Su ${piccolo.map(x=>x.n.toLowerCase()).join(' e ')} il divario è fisiologico, quindi la dispersione <b>non è il problema</b>: se l'incidenza resta alta è perché è alto il food cost teorico stesso — pricing, dosaggi previsti o prezzi di acquisto.`);
+      grosso.forEach(x=>ver.push(`${x.n}: inventario di reparto e confronto fra consumo teorico e consumo reale su tre o quattro referenze pesanti.`));
+    }
+    if(!delta.length) ver.push('Compilare la «% da schede ricetta» nel Conto economico: senza il food cost ideale non si può dire se il problema è dispersione o pricing, e sono due cure diverse.');
+    if(dpp>0){
+      diag.push(`Lo scostamento complessivo è di <b>${fmtNum(dpp)} punti</b>, pari a ${fmtE(e)} sul periodo. La materia prima sopra obiettivo è extracosto: qui non c'è zona grigia.`);
+      cure.push({t:'Listini e condizioni di acquisto', v:'medio', e:e*0.3,
+        x:'Rimettere a gara le referenze più pesanti, verificare i prezzi effettivamente applicati in fattura contro il listino concordato, consolidare gli ordini per alzare gli sconti quantità.'});
+      cure.push({t:'Dosi e grammature', v:'subito', e:e*0.25,
+        x:'Pesare le porzioni reali contro le schede su una decina di piatti e drink, dotare il bar di dosatori, formare chi esegue. È la cura più veloce quando il divario fra ideale e reale è grosso.'});
+      cure.push({t:'Registrare omaggi, autoconsumi e rotture', v:'subito', e:null,
+        x:'Non è un costo in più: è un costo che oggi c\'è e non si vede. Registrarlo lo porta nei Costi nascosti, dove si può misurare e contenere.'});
+      cure.push({t:'Pricing e revisione della carta', v:'medio', e:e*0.25,
+        x:'Rivedere i prezzi dove il margine non regge e spostare la spinta sui piatti e sui drink che rendono. Qui si innesta il menu engineering vero e proprio.'});
+    }
+    out.push({area:'Materia prima', k:'mp', inc:a.incMp, tgt:num(t.mp), dpp, euro:e,
+      z:zone(a.incMp,num(t.mp),[5,10]),
+      sommario: dpp>0
+        ? `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(num(t.mp))}%: ${fmtE(e)} di extracosto sul periodo.`
+        : `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(num(t.mp))}%: area in obiettivo.`,
+      diag, ver, cure});
+  }
+
+  /* ---- spese generali ---- */
+  if(isFinite(a.incSg)){
+    const dpp=a.incSg*100-num(t.sg), e=extra(a.incSg,num(t.sg));
+    const diag=[], cure=[], ver=[];
+    const gr={};
+    (S.sg||[]).forEach(c=>{ const v=d.completi.reduce((x,r)=>x+num(c.m[r.i]),0);
+      if(v>0) gr[c.gruppo]=(gr[c.gruppo]||0)+v; });
+    const top=Object.entries(gr).sort((x,y)=>y[1]-x[1]).slice(0,3);
+    if(top.length) diag.push('I gruppi che pesano di più sono '+top.map(([g,v])=>`<b>${g}</b> (${fmtE(v)}, ${fmtP(v/a.ricavi)} dei ricavi)`).join(', ')+'.');
+    if(dpp>0){
+      diag.push(`Lo scostamento è di <b>${fmtNum(dpp)} punti</b>, pari a ${fmtE(e)}. Le voci di spesa generale sono poche e in buona parte rigide: vanno guardate una per una per capire se c'è davvero qualcosa da tagliare. Dove non c'è, la strada non è il taglio ma <b>alzare il fatturato</b> finché l'incidenza rientra.`);
+      cure.push({t:'Passare le voci una per una', v:'subito', e:e*0.15,
+        x:'Mettere in fila le voci dalla più pesante e, per ognuna, decidere: si rinegozia, si elimina, o è un vincolo. Spesso un terzo della lista non è mai stato riguardato da anni.'});
+      cure.push({t:'Rinegoziare utenze e contratti ricorrenti', v:'medio', e:e*0.2,
+        x:'Energia, gas, software, noleggi, servizi periodici: sono i contratti dove la rinegoziazione dà risultato senza toccare il servizio.'});
+      cure.push({t:'Diluire sul fatturato', v:'medio', e:null,
+        x:'Sulle voci rigide — affitto in testa — l\'incidenza scende solo aumentando il denominatore. Qui la leva è il piano di crescita, non il taglio.'});
+    }
+    out.push({area:'Spese generali', k:'sg', inc:a.incSg, tgt:num(t.sg), dpp, euro:e,
+      z:zone(a.incSg,num(t.sg),[5,10]),
+      sommario: dpp>0
+        ? `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(num(t.sg))}%: ${fmtE(e)} di extracosto sul periodo.`
+        : `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(num(t.sg))}%: area in obiettivo.`,
+      diag, ver, cure});
+  }
+
+  /* ---- costi nascosti ---- */
+  {
+    const dpp=(a.incCn||0)*100-num(t.cn);
+    const diag=[], cure=[], ver=[];
+    if(a.cn>0){
+      diag.push(`Sono stati intercettati <b>${fmtE(a.cn)}</b> di costi nascosti, pari al ${fmtP(a.incCn)} del venduto contro una soglia del ${fmtNum(num(t.cn))}%.`);
+      diag.push('Vale la pena ricordare come si legge: se il food cost da schede è il 28%, in Conto economico ci si aspetta di trovare il 30%. Quel due per cento è il costo nascosto fisiologico; quello che eccede è recuperabile.');
+    }else{
+      diag.push('Nessun costo nascosto registrato nel periodo. Non significa che non ci siano: autoconsumi, omaggi, prodotti scaduti e dispersioni esistono in ogni locale, e finché non si registrano restano dentro la materia prima senza poter essere misurati.');
+      ver.push('Introdurre la registrazione quotidiana di autoconsumi, omaggi, rotture e prodotti scaduti, anche solo su un foglio in cucina e uno al bar.');
+    }
+    if(dpp>0) cure.push({t:'Procedura su autoconsumi e omaggi', v:'subito', e:(a.cn-num(t.cn)/100*a.ricavi),
+      x:'Registrazione sistematica di pasti e bevande del personale, omaggi e customer care, rotture e scadenze. Una volta misurati si fissa il tetto e lo si presidia mese per mese.'});
+    out.push({area:'Costi nascosti', k:'cn', inc:a.incCn||0, tgt:num(t.cn), dpp,
+      euro: dpp>0 ? (a.cn-num(t.cn)/100*a.ricavi) : 0,
+      z:zone(a.incCn||0,num(t.cn),[1,2]),
+      sommario: a.cn>0
+        ? `${fmtE(a.cn)} intercettati, ${fmtP(a.incCn)} del venduto (soglia ${fmtNum(num(t.cn))}%).`
+        : 'Nessun costo nascosto registrato nel periodo.',
+      diag, ver, cure});
+  }
+  return out;
+}
+
+/* il piano d'azione: le cure di tutte le aree, ordinate per impatto pesato sulla velocità */
+function repPiano(schede){
+  const tutte=[];
+  schede.forEach(sc=>(sc.cure||[]).forEach(c=>{
+    const v=VEL[c.v]||VEL.medio;
+    tutte.push({...c, area:sc.area, vel:v, peso:(num(c.e)||0)*v.m});
+  }));
+  tutte.sort((x,y)=>y.peso-x.peso);
+  return { fase1:tutte.filter(x=>x.v==='subito'), fase2:tutte.filter(x=>x.v!=='subito') };
+}
+
+/* i controlli sulla qualità del dato: prima di diagnosticare, verifichiamo i numeri */
+function repControlli(d){
+  const out=[];
+  if(d.parziali.length) out.push(`${d.parziali.map(x=>x.mese).join(', ')}: ${d.parziali.length===1?'mese incompleto':'mesi incompleti'} — manca una fra materia prima, personale, spese generali e ricavi. ${d.parziali.length===1?'È rimasto':'Sono rimasti'} fuori dai conti.`);
+  if(d.m.orphan.length) out.push(`${d.m.orphan.map(o=>o.mese).join(', ')}: ci sono costi senza ricavi. Di solito è la competenza mensile disallineata, e falsa tutte le incidenze.`);
+  if(!d.ot.fonte) out.push('Non ci sono ore caricate né in Analisi dei turni né nell\'organico: senza ore non si può calcolare la produttività oraria, che è metà della diagnosi sul personale.');
+  if(d.idealeF==null && d.idealeB==null) out.push('Manca la «% da schede ricetta» nel Conto economico: senza food cost ideale non si distingue la dispersione dal pricing.');
+  const inc=incassiMedi();
+  if(inc.giornate===0) out.push('Non ci sono incassi giornalieri caricati: senza di quelli non si può dire quali servizi reggono e quali no.');
+  if(!(S.cn||[]).some(c=>c.m.some(v=>num(v)))) out.push('I costi nascosti non sono mai stati registrati: restano dentro la materia prima e non si possono misurare.');
+  return out;
+}
+
 function anData(){
   const m=compute(), t=S.targets;
   const isM=scope!=='ytd';
@@ -4441,74 +4793,194 @@ function anActions(d){
 }
 function renderAN(){
   const body=document.getElementById('anBody');
-  const m=compute();
-  renderChips(m,'anChips');
-  const isM=scope!=='ytd';
-  if((!isM&&!m.complete.length)||(isM&&m.months[scope].ricavi===0&&m.months[scope].totCosti===0)){ body.innerHTML='<section><h2>Analisi</h2><div class="sub">Nessun dato nel periodo selezionato: carica i consuntivi nel Conto economico.</div></section>'; killChart('an'); return; }
-  const d=anData(); const {a,t,roS}=d;
-  const exec=(anTexts&&anTexts.executive&&anTexts.executive.length)?anTexts.executive:anExec(d);
-  const az=(anTexts&&anTexts.azioni&&anTexts.azioni.length)?anTexts.azioni:anActions(d);
-  const chiusura=(anTexts&&anTexts.chiusura)?anTexts.chiusura:`Riportando i costi in obiettivo, il risultato passa da ${fmtE(a.ro)} a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?' — da perdita a utile':''}.`;
-  const periodo=d.isM?`${MESI[scope]} ${S.anno}`:`${d.rows[0].mese} – ${d.rows[d.rows.length-1].mese} ${S.anno}`;
-  const NF=(i,n)=>`<div class="sfoot"><span>Planet One · Analisi gestionale F&B</span><span>${i} / ${n}</span></div>`;
-  const N=7;
-  body.innerHTML=`
-  <div class="slide cover">
-    <div class="kicker">Planet One · Consulenza F&B</div>
+  const el=document.getElementById('anChips'); if(el) el.innerHTML='';
+  migrateS();
+  const d=repDati(repPer);
+  const t=d.t, a=d.a;
+
+  /* --- la barra del periodo, sempre visibile --- */
+  const haMese=i=>meseCompleto(d.m.months[i]);
+  const haTrim=q=>[0,1,2].some(k=>haMese(q*3+k));
+  const barra=`<div class="repbar">
+    <span class="t">Periodo</span>
+    <button class="chip ${repPer.tipo==='anno'?'active':''}" data-rper="anno">Anno ${S.anno}</button>
+    ${[0,1,2,3].map(q=>`<button class="chip ${repPer.tipo==='trim'&&repPer.i===q?'active':''}" data-rper="trim.${q}" ${haTrim(q)?'':'disabled'}>${q+1}° trim</button>`).join('')}
+    <span class="sep"></span>
+    ${MESI.map((mm,i)=>`<button class="chip ${repPer.tipo==='mese'&&repPer.i===i?'active':''}" data-rper="mese.${i}" ${haMese(i)?'':'disabled'}>${mm.slice(0,3)}</button>`).join('')}
+    <span class="sep"></span>
+    <button class="chip ${stagionale()?'active':''}" id="repStag" title="nei locali stagionali i mesi di chiusura non entrano nelle medie e non generano allarmi">${stagionale()?'✓ ':''}Locale stagionale</button>
+  </div>
+  ${stagionale()?`<div class="repbar mesiap"><span class="t">Mesi di apertura</span>
+    ${MESI.map((mm,i)=>`<button class="chip ${meseAperto(i)?'active':''}" data-rmese="${i}">${mm.slice(0,3)}</button>`).join('')}</div>`:''}`;
+
+  /* --- niente dati: lo si dice e basta --- */
+  if(!d.completi.length){
+    const mancano=repControlli(d);
+    body.innerHTML=barra+`<section>
+      <div class="sechead"><div><h2>Analisi & presentazione</h2>
+      <div class="sub">Non possiamo fornire l'analisi di ${etichettaPeriodo(repPer)}: non siamo ancora in possesso dei dati necessari.</div></div></div>
+      <div class="sub" style="margin-top:4px">Un mese entra nel report solo quando ha tutte e quattro le gambe: <b>ricavi</b>, <b>materia prima</b>, <b>personale</b> e <b>spese generali</b>.</div>
+      ${mancano.length?`<ul class="bul" style="margin-top:12px">${mancano.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}
+    </section>`;
+    killChart('an'); return;
+  }
+
+  const schede=repDiagnosi(d);
+  const rib=repTarget(d);
+  const piano=repPiano(schede);
+  const controlli=repControlli(d);
+  const forti=schede.filter(x=>x.z===0), buone=schede.filter(x=>x.z===1);
+  const deboli=schede.filter(x=>x.z>=2).sort((x,y)=>(y.euro||0)-(x.euro||0));
+  const roS=a.ricavi*(1-(num(t.ru)+num(t.mp)+num(t.sg))/100);
+  const periodo=etichettaPeriodo(repPer);
+  const mesiDetti=d.completi.map(x=>x.mese).join(', ');
+
+  let n=0; const slides=[];
+  const NF=()=>`<div class="sfoot"><span>Planet One · Analisi gestionale F&B</span><span class="pg"></span></div>`;
+  const S_=(cls,html)=>{ n++; slides.push(`<div class="slide ${cls||''}">${html}${NF()}</div>`); };
+
+  /* 1 — copertina */
+  S_('cover',`<div class="kicker">Planet One · Consulenza F&B</div>
     <h3>${S.cliente}</h3>
     <div class="sub2">Analisi gestionale extracontabile · ${periodo}</div>
-    ${NF(1,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Executive summary</div><h3>Il quadro in cinque punti</h3>
-    <ul class="bul">${exec.map(x=>`<li>${x}</li>`).join('')}</ul>
-    ${NF(2,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Incidenze</div><h3>Dove siamo rispetto agli obiettivi</h3>
-    ${gaugeHTML('Risorse umane','costo del personale su ricavi', a.incRu, a.ru, t.ru, [5,10], 20, a.ricavi)}
-    ${gaugeHTML('Materia prima','food + beverage su ricavi', a.incMp, a.mp, t.mp, [5,10], 20, a.ricavi)}
-    ${gaugeHTML('Spese generali','costi indiretti su ricavi', a.incSg, a.sg, t.sg, [5,10], 20, a.ricavi)}
-    ${NF(3,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Andamento</div><h3>Ricavi, costi e risultato per mese</h3>
+    <div class="sub2" style="font-size:13px;margin-top:14px;color:#8E8B85">${d.completi.length} mes${d.completi.length===1?'e':'i'} nei conti: ${mesiDetti}</div>`);
+
+  /* 2 — il quadro in sintesi */
+  const riga=sc=>`<div class="qrow z${sc.z}">
+      <div class="qn">${sc.area}<span class="verdict ${ZC[sc.z]}">${sc.z===0?'forte':sc.z===1?'buono':sc.z===2?'da migliorare':'urgente'}</span></div>
+      <div class="qv">${fmtP(sc.inc)}<small> obiettivo ${fmtNum(sc.tgt)}%</small></div>
+      <div class="qe">${sc.dpp>0?`+${fmtNum(sc.dpp)} p.p. · ${fmtE(sc.euro)}`:'in obiettivo'}</div>
+    </div>`;
+  S_('',`<div class="kicker">Il quadro in sintesi</div><h3>Dove siamo forti, dove serve intervenire</h3>
+    <div class="quadro">${schede.map(riga).join('')}</div>
+    <div class="qchiusa">
+      ${forti.length?`<p><b>In obiettivo:</b> ${forti.map(x=>x.area.toLowerCase()).join(', ')}.</p>`:''}
+      ${buone.length?`<p><b>Sotto controllo, ma da non perdere di vista:</b> ${buone.map(x=>`${x.area.toLowerCase()} (+${fmtNum(x.dpp)} p.p.)`).join(', ')}.</p>`:''}
+      ${deboli.length
+        ? `<p><b>Dove intervenire per primi:</b> ${deboli[0].area.toLowerCase()} — ${deboli[0].sommario}</p>`
+        : (forti.length===schede.length ? '<p>Tutte le aree sono dentro gli obiettivi concordati: il lavoro ora è tenerle lì.</p>' : '')}
+      <p>Riportando le incidenze in obiettivo il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}.</p>
+    </div>`);
+
+  /* 3 — andamento */
+  let yoy='';
+  if(d.prec){
+    const dr=(d.prec.ora.ricavi-d.prec.prima.ricavi)/d.prec.prima.ricavi;
+    const dro=d.prec.ora.ro-d.prec.prima.ro;
+    yoy=`<div class="yoy">
+      <div class="yt">Stesso periodo dell'anno prima · ${d.prec.n} mes${d.prec.n===1?'e':'i'} in comune (${d.prec.mesi.join(', ')})</div>
+      <table class="yotab">
+        <tr><th></th><th>${num(S.anno)-1}</th><th>${S.anno}</th><th>Differenza</th></tr>
+        <tr><td>Ricavi</td><td>${fmtE(d.prec.prima.ricavi)}</td><td>${fmtE(d.prec.ora.ricavi)}</td><td class="${dr>=0?'su':'giu'}">${dr>=0?'+':'−'}${fmtP(Math.abs(dr))}</td></tr>
+        <tr><td>Personale</td><td>${fmtP(d.prec.prima.incRu)}</td><td>${fmtP(d.prec.ora.incRu)}</td><td class="${d.prec.ora.incRu<=d.prec.prima.incRu?'su':'giu'}">${(d.prec.ora.incRu-d.prec.prima.incRu)>=0?'+':'−'}${fmtNum(Math.abs((d.prec.ora.incRu-d.prec.prima.incRu)*100))} p.p.</td></tr>
+        <tr><td>Materia prima</td><td>${fmtP(d.prec.prima.incMp)}</td><td>${fmtP(d.prec.ora.incMp)}</td><td class="${d.prec.ora.incMp<=d.prec.prima.incMp?'su':'giu'}">${(d.prec.ora.incMp-d.prec.prima.incMp)>=0?'+':'−'}${fmtNum(Math.abs((d.prec.ora.incMp-d.prec.prima.incMp)*100))} p.p.</td></tr>
+        <tr><td>Spese generali</td><td>${fmtP(d.prec.prima.incSg)}</td><td>${fmtP(d.prec.ora.incSg)}</td><td class="${d.prec.ora.incSg<=d.prec.prima.incSg?'su':'giu'}">${(d.prec.ora.incSg-d.prec.prima.incSg)>=0?'+':'−'}${fmtNum(Math.abs((d.prec.ora.incSg-d.prec.prima.incSg)*100))} p.p.</td></tr>
+        <tr class="fine"><td>Risultato</td><td>${fmtE(d.prec.prima.ro)}</td><td>${fmtE(d.prec.ora.ro)}</td><td class="${dro>=0?'su':'giu'}">${dro>=0?'+':'−'}${fmtE(Math.abs(dro))}</td></tr>
+      </table></div>`;
+  }
+  S_('',`<div class="kicker">Andamento</div><h3>Ricavi, costi e risultato nel tempo</h3>
     <div class="chartbox"><canvas id="chAn"></canvas></div>
-    ${NF(4,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Business unit</div><h3>Food vs Beverage</h3>
-    <div class="legend"><span><i style="background:var(--food)"></i>Food ${fmtP(a.ricaviFood/(a.ricaviFood+a.ricaviBev))}</span><span><i style="background:var(--bev)"></i>Beverage ${fmtP(a.ricaviBev/(a.ricaviFood+a.ricaviBev))}</span></div>
-    <div class="splitbar"><div class="f" style="width:${(a.ricaviFood/(a.ricaviFood+a.ricaviBev)*100)}%"></div><div class="bv" style="flex:1"></div></div>
+    ${yoy || `<div class="sub" style="margin-top:12px">Nessun dato dell'anno precedente per questo periodo: il confronto anno su anno comparirà appena li avremo caricati.</div>`}`);
+
+  /* 4 — incidenze */
+  let boxRib='';
+  if(rib.ribilancio){
+    const q=rib.ribilancio;
+    boxRib=`<div class="ribox">
+      <div class="rt">Obiettivo realistico per i prossimi mesi</div>
+      <p>Un'area sfonda di più di cinque punti: chiedere tutto a lei sola non è un piano, è un auspicio. Il recupero si spalma — ${q.quota.filter(x=>x.chiedo>0).map(x=>`<b>${fmtNum(x.chiedo)} punti</b> da ${x.n.toLowerCase()}`).join(', ')}.</p>
+      <p>Sono <b>${fmtNum(q.puntiTot)} punti</b> in tutto, pari a <b>${fmtE(q.euro)}</b> sul periodo: un passo che si può davvero fare, invece di un numero che resta sulla carta.</p>
+    </div>`;
+  }
+  S_('',`<div class="kicker">Incidenze</div><h3>Dove siamo rispetto agli obiettivi</h3>
+    ${gaugeHTML('Risorse umane','costo del personale su ricavi', a.incRu, a.ru, num(t.ru), [5,10], 20, a.ricavi)}
+    ${gaugeHTML('Materia prima','food + beverage su ricavi', a.incMp, a.mp, num(t.mp), [5,10], 20, a.ricavi)}
+    ${gaugeHTML('Spese generali','costi indiretti su ricavi', a.incSg, a.sg, num(t.sg), [5,10], 20, a.ricavi)}
+    ${boxRib}`);
+
+  /* 5 — business unit */
+  const totR=a.ricaviFood+a.ricaviBev;
+  const prodTxt=(v)=>{ const sc=scalaProd(v); return sc?`${fmtE(v)}/h · ${sc.t}`:'—'; };
+  S_('',`<div class="kicker">Business unit</div><h3>Food e Beverage, separati</h3>
+    <div class="legend"><span><i style="background:var(--food)"></i>Food ${fmtP(a.ricaviFood/totR)}</span><span><i style="background:var(--bev)"></i>Beverage ${fmtP(a.ricaviBev/totR)}</span></div>
+    <div class="splitbar"><div class="f" style="width:${(a.ricaviFood/totR*100)}%"></div><div class="bv" style="flex:1"></div></div>
     <div class="bu">
       ${buCard('Food', a.ricaviFood, a.mpFood, a.ruFood, a.sgFood, t)}
       ${buCard('Beverage', a.ricaviBev, a.mpBev, a.ruBev, a.sgBev, t)}
     </div>
-    ${NF(5,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Piano d'azione</div><h3>Le priorità di intervento</h3>
-    ${az.map((x,i)=>`<div class="azione"><div class="at">${i+1}. ${x.t}</div><div class="ax">${x.x}</div></div>`).join('')}
-    ${NF(6,N)}
-  </div>
-  <div class="slide">
-    <div class="kicker">Conclusioni</div><h3>Il valore del percorso</h3>
-    <div class="bigclose">${chiusura}</div>
-    <div class="savestate" style="margin-top:auto">Prossimo passo: piano operativo condiviso e verifica mensile degli obiettivi con Planet One.</div>
-    ${NF(7,N)}
-  </div>`;
+    ${d.ot.fonte?`<div class="produ">
+      <div><span>Produttività oraria complessiva</span><b>${prodTxt(d.prod)}</b></div>
+      <div><span>Food</span><b>${prodTxt(d.prodF)}</b></div>
+      <div><span>Beverage</span><b>${prodTxt(d.prodB)}</b></div>
+      <div class="fonte">ore prese da ${d.ot.fonte}: ${fmtNum(d.ot.ore)} a settimana</div>
+    </div>`:''}`);
+
+  /* 6..n — le diagnosi, una scheda per area che ha qualcosa da dire */
+  schede.filter(sc=>sc.diag.length).sort((x,y)=>(y.euro||0)-(x.euro||0)).forEach(sc=>{
+    S_('',`<div class="kicker">Diagnosi · ${sc.area}</div><h3>${sc.dpp>0?'Cosa dicono i numeri':'Area in obiettivo'}</h3>
+      <div class="dsom verdict ${ZC[sc.z]}">${sc.sommario}</div>
+      <div class="dtesto">${sc.diag.map(x=>`<p>${x}</p>`).join('')}</div>
+      ${sc.ver.length?`<div class="dver"><div class="vt">Da verificare prima di decidere</div><ul>${sc.ver.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}`);
+  });
+
+  /* cure */
+  const curaHtml=(c,i)=>`<div class="azione">
+      <div class="at">${i+1}. ${c.t}<span class="vel ${c.v}">${c.vel.t}</span>${num(c.e)?`<span class="eu">${fmtE(c.e)}</span>`:''}</div>
+      <div class="ax">${c.x}</div></div>`;
+  if(piano.fase1.length) S_('',`<div class="kicker">Cure · Fase 1</div><h3>Quello che si può fare subito</h3>
+    <div class="sub" style="margin-bottom:6px">Un'azione immediata vale tre volte una lenta: meglio mille euro recuperati questo mese che tremila fra sei. Le cifre sono stime di ordine di grandezza, non impegni.</div>
+    ${piano.fase1.slice(0,5).map(curaHtml).join('')}`);
+  if(piano.fase2.length) S_('',`<div class="kicker">Cure · Fase 2</div><h3>Quello che si programma</h3>
+    <div class="sub" style="margin-bottom:6px">Non meno importante: solo più lento a dare frutto. Si avvia adesso e si misura nei mesi.</div>
+    ${piano.fase2.slice(0,5).map(curaHtml).join('')}`);
+
+  /* crescita in leva */
+  const L=S.leve, f=(1+num(L.cop)/100)*(1+num(L.cli)/100)*(1+num(L.vis)/100);
+  const ricN=a.ricavi*f, mpN=a.ricavi*f*(isFinite(a.incMp)?a.incMp:0);
+  const roN=ricN-mpN-a.ru-a.sg;
+  S_('',`<div class="kicker">Crescita in leva</div><h3>Tre spinte piccole valgono più di un salto</h3>
+    <div class="sub" style="margin-bottom:14px">Non serve stravolgere nulla: muovere insieme coperto medio, numero di clienti e frequenza di ritorno moltiplica, non somma. Muovi i cursori per vedere cosa cambia.</div>
+    <div class="leve">
+      ${[['cop','Coperto medio'],['cli','Clienti'],['vis','Visite per cliente']].map(([k,et])=>`
+        <label><span>${et}</span>
+          <input type="range" min="0" max="30" step="1" data-leva="${k}" value="${num(L[k])}">
+          <b>+${fmtNum(num(L[k]))}%</b></label>`).join('')}
+    </div>
+    <div class="levares">
+      <div><span>Ricavi</span><b>${fmtE(a.ricavi)} → ${fmtE(ricN)}</b><i>+${fmtP(f-1)}</i></div>
+      <div><span>Risultato</span><b>${fmtE(a.ro)} → ${fmtE(roN)}</b><i>${roN-a.ro>=0?'+':'−'}${fmtE(Math.abs(roN-a.ro))}</i></div>
+    </div>
+    <div class="sub" style="margin-top:12px">Il conto tiene la materia prima proporzionale ai ricavi e lascia fermi personale e spese generali: è l'ipotesi prudente di chi cresce senza aggiungere struttura. Se per crescere servono ore in più, il guadagno va ridotto di conseguenza.</div>`);
+
+  /* conclusione */
+  S_('',`<div class="kicker">Conclusioni</div><h3>Il valore del percorso</h3>
+    <div class="bigclose">Riportando i costi in obiettivo il risultato passa da ${fmtE(a.ro)} a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?' — da perdita a utile':''}.</div>
+    <div class="savestate" style="margin-top:auto">Prossimo passo: piano operativo condiviso e verifica mensile degli obiettivi con Planet One.</div>`);
+
+  const avvisi = controlli.length ? `<div class="repctrl">
+      <div class="ct">Prima di leggere i numeri</div>
+      <ul>${controlli.map(x=>`<li>${x}</li>`).join('')}</ul>
+      <div class="cn2">Questo riquadro resta a schermo e non finisce nella presentazione stampata.</div>
+    </div>` : '';
+
+  body.innerHTML=barra+avvisi+slides.join('');
+  /* la numerazione delle pagine, una volta sola alla fine */
+  body.querySelectorAll('.slide .pg').forEach((x,i)=>{ x.textContent=(i+1)+' / '+n; });
+
   killChart('an');
-  const chRows=d.m.complete.length?d.m.complete:d.rows;
-  const hlAn=i=>(d.isM&&chRows[i]&&chRows[i].i===scope);
-  charts.an=new Chart(document.getElementById('chAn'),{
+  const chRows=d.completi.length>1?d.completi:d.m.complete;
+  const hl=i=>(repPer.tipo==='mese' && chRows[i] && chRows[i].i===repPer.i);
+  const cv=document.getElementById('chAn');
+  if(cv) charts.an=new Chart(cv,{
     data:{labels:chRows.map(x=>x.mese.slice(0,3)),datasets:[
-      {type:'bar',label:'Ricavi',data:chRows.map(x=>x.ricavi),backgroundColor:chRows.map((x,i)=>hlAn(i)?'#F07F1F':'#2F3337'),borderRadius:6,order:2},
-      {type:'bar',label:'Costi totali',data:chRows.map(x=>x.totCosti),backgroundColor:chRows.map((x,i)=>hlAn(i)?'#DCC48F':'#C9C4B8'),borderRadius:6,order:3},
-      {type:'line',label:'Reddito operativo',data:chRows.map(x=>x.ro),borderColor:'#C0392B',backgroundColor:'#C0392B',borderWidth:2.5,pointRadius:chRows.map((x,i)=>hlAn(i)?6:4),tension:.3,order:1}
+      {type:'bar',label:'Ricavi',data:chRows.map(x=>x.ricavi),backgroundColor:chRows.map((x,i)=>hl(i)?'#F07F1F':'#2F3337'),borderRadius:6,order:2},
+      {type:'bar',label:'Costi totali',data:chRows.map(x=>x.totCosti),backgroundColor:chRows.map((x,i)=>hl(i)?'#DCC48F':'#C9C4B8'),borderRadius:6,order:3},
+      {type:'line',label:'Risultato',data:chRows.map(x=>x.ro),borderColor:'#C0392B',backgroundColor:'#C0392B',borderWidth:2.5,pointRadius:chRows.map((x,i)=>hl(i)?6:4),tension:.3,order:1}
     ]},
     options:chartOpts()
   });
 }
+
 async function anWithAI(){
   const d=anData(); const {a,t}=d;
   toast('Genero i commenti con l\'AI…');
@@ -5279,6 +5751,12 @@ document.addEventListener('click',async e=>{
   if(b.id==='ceClearAll'){ ceClearAllFlow(); return; }
   if(b.id==='anPptx'){ exportPPTX(); return; }
   if(b.id==='anAI'){ anWithAI(); return; }
+  const rp=b.closest&&b.closest('[data-rper]');
+  if(rp){ const [tipo,i]=rp.dataset.rper.split('.');
+    repPer={tipo, i:i===undefined?null:+i}; renderAN(); return; }
+  if(b.id==='repStag'){ migrateS(); S.stag.on=!S.stag.on; saveState(); renderAN(); return; }
+  const rm=b.closest&&b.closest('[data-rmese]');
+  if(rm){ migrateS(); const i=+rm.dataset.rmese; S.stag.mesi[i]=!S.stag.mesi[i]; saveState(); renderAN(); return; }
   if(b.id==='anPrint'){ printSlides(); return; }
   if(b.id==='btnReset'){ resetFlow(); return; }
 });
@@ -6894,6 +7372,8 @@ document.addEventListener('input', e=>{
   }
   if(el.id==='regLiberi'){ regole().liberi=Math.max(0,Math.min(6,num(el.value))); saveState(); }
   if(el.id==='regTetto'){ regole().maxOreGiorno=Math.max(0,Math.min(16,num(el.value))); saveState(); }
+  if(el.dataset && el.dataset.leva){ migrateS();
+    S.leve[el.dataset.leva]=num(el.value); saveState(); renderAN(); }
   if(el.dataset && el.dataset.rt!==undefined){
     const [rep,sv,t,i,c]=el.dataset.rt.split('.');
     const R=regole(); if(R.turni[rep]&&R.turni[rep][sv]&&R.turni[rep][sv][t][+i]){
