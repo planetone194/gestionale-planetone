@@ -78,6 +78,23 @@
   #nav button.active{background:var(--scuro-2);color:#fff;font-weight:700;border-left-color:var(--brass);border-radius:0 8px 8px 0;}
   #nav .sep{height:1px;background:#3A3A3A;margin:8px 8px;}
   #nav .grp{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:#8C8A85;font-weight:700;padding:14px 12px 4px;}
+  /* le cinque macro categorie: testata che si apre e si chiude, corpo dentro */
+  #nav .gh{display:flex;align-items:center;justify-content:space-between;gap:6px;cursor:pointer;user-select:none;
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#C9C6C0;font-weight:700;
+    padding:10px 12px;margin-top:5px;border-radius:8px;}
+  #nav .gh:hover{background:var(--scuro-2);color:#fff;}
+  #nav .gh .ca{font-size:9px;color:#8C8A85;transition:transform .15s ease;}
+  #nav .gh.open .ca{transform:rotate(180deg);}
+  #nav .gh.qui{color:var(--brass);}
+  #nav .gb{display:none;flex-direction:column;gap:2px;padding:2px 0 6px;}
+  #nav .gb.open{display:flex;}
+  #nav .gb .grp{padding:10px 12px 3px;}
+  #nav .gb button{font-size:13.5px;}
+  /* le voci non ancora portate dentro: spente, con un pallino vuoto a destra */
+  #nav .gb button.soon{color:#8C8A85;position:relative;padding-right:26px;}
+  #nav .gb button.soon::after{content:'';position:absolute;right:11px;top:50%;transform:translateY(-50%);
+    width:6px;height:6px;border-radius:50%;border:1px solid #57544F;}
+  #nav .gb button.soon.active::after{border-color:var(--brass);}
   .side-foot{margin-top:auto;padding:12px 10px 0;border-top:1px solid #3A3A3A;}
   .side-foot .ver{color:#8C8A85;font-size:11px;display:block;margin-bottom:3px;}
   .side-foot .ver b{color:var(--brass);font-family:var(--num);font-weight:600;letter-spacing:.3px;}
@@ -104,6 +121,8 @@
     .app{flex-direction:column;}
     .side{width:100%;height:auto;position:static;flex-direction:column;padding:12px 14px;border-right:none;border-bottom:1px solid var(--line);}
     #nav .grp{display:none;}
+    #nav .gh{width:100%;margin-top:3px;}
+    #nav .gb.open{flex-direction:row;flex-wrap:wrap;}
     #nav{flex-direction:row;flex-wrap:wrap;gap:2px;}
     #nav button{border-left:none;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;padding:8px 11px;}
     #nav button.active{border-left:none;border-bottom-color:var(--brass);}
@@ -132,6 +151,11 @@
   section h2{font-family:var(--num);font-weight:600;font-size:17.5px;margin-bottom:3px;letter-spacing:-.4px;}
   section .sub{color:var(--ink2);font-size:13px;margin-bottom:16px;}
   .sechead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  /* il riquadro delle pagine non ancora portate dentro */
+  .soonbox{margin-top:14px;padding:18px 20px;border:1px dashed var(--line);border-radius:12px;background:#FBF9F5;}
+  .soonbox .st{font-family:'Fraunces',serif;font-size:17px;color:var(--ink);margin-bottom:8px;}
+  .soonbox p{margin:0 0 8px;max-width:62ch;line-height:1.55;}
+  .soonbox p:last-child{margin-bottom:0;}
 
   /* gauges */
   .strip{margin-bottom:30px;} .strip:last-child{margin-bottom:0}
@@ -1031,28 +1055,72 @@
   <nav id="nav">
     <button data-page="home">Clienti</button>
     <div class="sep"></div>
-    <button data-page="dash" class="active">Cruscotto</button>
-    <div class="grp">Caricamento dati</div>
-    <button data-page="ce">1 · Conto economico</button>
-    <button data-page="ru">2 · Risorse umane</button>
-    <button data-page="sg">3 · Spese generali</button>
-    <button data-page="cn">4 · Costi nascosti</button>
-    <div class="grp">Analisi &amp; controllo</div>
-    <button data-page="cf">Confronto tra periodi</button>
-    <button data-page="pi">Pianificazione turni</button>
-    <button data-page="tu">Analisi dei turni</button>
-    <button data-page="si">Simulazione</button>
-    <button data-page="ob">Obiettivi</button>
-    <button data-page="pr">Produttività HR</button>
-    <button data-page="ceagg">CE aggregato</button>
-    <div class="grp">Report cliente</div>
-    <button data-page="an">Analisi &amp; presentazione</button>
-    <button data-page="me">Metodo</button>
-    <div class="grp">Archivio</div>
-    <button data-page="ver">Versioni precedenti</button>
+
+    <div class="gh" data-g="cru">Cruscotto<span class="ca">▼</span></div>
+    <div class="gb" data-gb="cru">
+      <button data-page="dash" class="active">Quadro del cliente</button>
+      <div class="grp">Caricamento dati</div>
+      <button data-page="ce">1 · Conto economico</button>
+      <button data-page="ru">2 · Risorse umane</button>
+      <button data-page="sg">3 · Spese generali</button>
+      <button data-page="cn">4 · Costi nascosti</button>
+      <div class="grp">Analisi &amp; controllo</div>
+      <button data-page="cf">Confronto tra periodi</button>
+      <button data-page="pi">Pianificazione turni</button>
+      <button data-page="tu">Analisi dei turni</button>
+      <button data-page="si">Simulazione</button>
+      <button data-page="pr">Produttività HR</button>
+      <button data-page="ceagg">CE aggregato</button>
+      <div class="grp">Report cliente</div>
+      <button data-page="an">Analisi &amp; presentazione</button>
+      <button data-page="me">Metodo</button>
+      <div class="grp">Archivio</div>
+      <button data-page="ver">Versioni precedenti</button>
+    </div>
+
+    <div class="gh" data-g="ven">Analisi del venduto<span class="ca">▼</span></div>
+    <div class="gb" data-gb="ven">
+      <button data-page="vdash" class="soon" title="in arrivo">Colpo d'occhio sul venduto</button>
+      <button data-page="vmens" class="soon" title="in arrivo">Venduto mensile per prodotto</button>
+      <button data-page="vriep" class="soon" title="in arrivo">Riepilogo venduto totale</button>
+      <button data-page="vcassa" class="soon" title="in arrivo">Risultati di cassa</button>
+      <button data-page="vprec" class="soon" title="in arrivo">Comparazione anno precedente</button>
+      <button data-page="vlist" class="soon" title="in arrivo">Incasso reale contro listino</button>
+      <button data-page="vprio" class="soon" title="in arrivo">Priorità prodotto e categoria</button>
+      <button data-page="vtrend" class="soon" title="in arrivo">Andamento nel tempo</button>
+    </div>
+
+    <div class="gh" data-g="men">Menu engineering<span class="ca">▼</span></div>
+    <div class="gb" data-gb="men">
+      <button data-page="mprof" class="soon" title="in arrivo">Menu Profits · listino e costi</button>
+      <button data-page="mwhat" class="soon" title="in arrivo">Simulatore prezzi · what-if</button>
+      <button data-page="mcore" class="soon" title="in arrivo">Core business generale</button>
+      <button data-page="mcores" class="soon" title="in arrivo">Core business con schede costo</button>
+      <button data-page="mfocus" class="soon" title="in arrivo">Prodotti focus</button>
+      <button data-page="mbuild" class="soon" title="in arrivo">Menu builder</button>
+      <button data-page="msugg" class="soon" title="in arrivo">Suggerimenti</button>
+    </div>
+
+    <div class="gh" data-g="obi">Obiettivi<span class="ca">▼</span></div>
+    <div class="gb" data-gb="obi">
+      <button data-page="ob">Obiettivi Planet One</button>
+      <button data-page="obmese" class="soon" title="in arrivo">Obiettivi del mese</button>
+      <button data-page="obbep" class="soon" title="in arrivo">Punto di pareggio</button>
+      <button data-page="obinc" class="soon" title="in arrivo">Incentivi</button>
+    </div>
+
+    <div class="gh" data-g="ric">Ricette e fornitori<span class="ca">▼</span></div>
+    <div class="gb" data-gb="ric">
+      <button data-page="ring" class="soon" title="in arrivo">Ingredienti e prezzi d'acquisto</button>
+      <button data-page="rforn" class="soon" title="in arrivo">Fornitori</button>
+      <button data-page="rprep" class="soon" title="in arrivo">Preparazioni e guarnizioni</button>
+      <button data-page="rric" class="soon" title="in arrivo">Ricette e schede costo</button>
+      <button data-page="rteam" class="soon" title="in arrivo">Ricettario per il team</button>
+      <button data-page="rall" class="soon" title="in arrivo">Allergeni</button>
+    </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v92</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v93</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1253,6 +1321,7 @@
   <div class="page" id="page-me"><div id="meBody"></div></div>
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
+  <div class="page" id="page-soon"><div id="soonBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
   <div class="page" id="page-an">
@@ -7789,13 +7858,120 @@ document.getElementById('pdfNext').addEventListener('click',()=>{ if(pdfDoc&&pdf
 document.getElementById('pdfZoomIn').addEventListener('click',()=>{ pdfZoom=Math.min(pdfZoom+.25,3); drawPdf(); });
 document.getElementById('pdfZoomOut').addEventListener('click',()=>{ pdfZoom=Math.max(pdfZoom-.25,.5); drawPdf(); });
 document.getElementById('pdfClose').addEventListener('click',()=>{ document.getElementById('pdfViewer').hidden=true; pdfDoc=null; });
+
+/* ================= le pagine che arrivano da Menu Profits =================
+   Il lavoro di Cristina si porta dentro un pezzo alla volta. Finché un pezzo
+   non c'è, la sua voce nel menu esiste lo stesso e racconta cosa ci sarà: così
+   la mappa dell'app è quella definitiva da subito, e si vede a colpo d'occhio
+   cosa manca ancora. */
+const SOON={
+  vdash :{t:"Colpo d'occhio sul venduto", g:'Analisi del venduto',
+          d:"Quanto ha venduto il locale nel periodo, diviso per famiglia e categoria, e quanta parte di quel venduto sappiamo costare davvero perché ha una scheda costo."},
+  vmens :{t:'Venduto mensile per prodotto', g:'Analisi del venduto',
+          d:"Il venduto di cassa prodotto per prodotto, mese per mese: è il dato da cui nasce tutto il resto."},
+  vriep :{t:'Riepilogo venduto totale', g:'Analisi del venduto',
+          d:"Il totale del periodo per famiglia e categoria, con incasso, pezzi e incidenza della materia prima."},
+  vcassa:{t:'Risultati di cassa', g:'Analisi del venduto',
+          d:"Incasso, pezzi e coperti dalla cassa, con la quadratura fra il totale di cassa e la somma dei prodotti venduti."},
+  vprec :{t:'Comparazione anno precedente', g:'Analisi del venduto',
+          d:"Lo stesso mese dell'anno prima accanto a quello di quest'anno: incasso, pezzi, coperto medio."},
+  vlist :{t:'Incasso reale contro listino', g:'Analisi del venduto',
+          d:"Quanto è entrato davvero rispetto ai prezzi di listino: la differenza sono sconti, omaggi ed errori di battuta."},
+  vprio :{t:'Priorità prodotto e categoria', g:'Analisi del venduto',
+          d:"Gli indici MPI e CPI: quali prodotti e quali categorie meritano la spinta, quali vanno rivisti e quali tolti."},
+  vtrend:{t:'Andamento nel tempo', g:'Analisi del venduto',
+          d:"Come si muovono nel tempo i prodotti e le categorie, stagionalità compresa."},
+  mprof :{t:'Menu Profits · listino e costi', g:'Menu engineering',
+          d:"Il listino con, accanto a ogni prodotto, il costo della materia prima dalla scheda, il margine e l'incidenza."},
+  mwhat :{t:'Simulatore prezzi · what-if', g:'Menu engineering',
+          d:"Cosa succede al margine se cambio un prezzo, una dose o un fornitore, prima di cambiarlo davvero."},
+  mcore :{t:'Core business generale', g:'Menu engineering',
+          d:"I prodotti che fanno il grosso del venduto: pochi, e vanno presidiati uno per uno."},
+  mcores:{t:'Core business con schede costo', g:'Menu engineering',
+          d:"Lo stesso core business, limitato ai prodotti di cui conosciamo il costo vero."},
+  mfocus:{t:'Prodotti focus', g:'Menu engineering',
+          d:"I prodotti su cui concentrare la spinta del mese, con l'effetto atteso sul margine."},
+  mbuild:{t:'Menu builder', g:'Menu engineering',
+          d:"La costruzione del menu: categorie, ordine dei prodotti, cosa entra e cosa esce."},
+  msugg :{t:'Suggerimenti', g:'Menu engineering',
+          d:"Le azioni in attesa, ordinate per quanto valgono: prezzo da ritoccare, scheda da rifare, prodotto da togliere."},
+  obmese:{t:'Obiettivi del mese', g:'Obiettivi',
+          d:"L'obiettivo di incasso e di margine del mese, e dove siamo rispetto a quello."},
+  obbep :{t:'Punto di pareggio', g:'Obiettivi',
+          d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
+  obinc :{t:'Incentivi', g:'Obiettivi',
+          d:"Il piano incentivi per la squadra, legato agli obiettivi e ai prodotti focus."},
+  ring  :{t:"Ingredienti e prezzi d'acquisto", g:'Ricette e fornitori',
+          d:"Il database degli ingredienti con il prezzo d'acquisto, l'unità di misura e il fornitore: è la base di ogni scheda costo."},
+  rforn :{t:'Fornitori', g:'Ricette e fornitori',
+          d:"I fornitori con i loro listini, da cui le schede ricetta pescano i prezzi."},
+  rprep :{t:'Preparazioni e guarnizioni', g:'Ricette e fornitori',
+          d:"Le preparazioni home made e le guarnizioni: hanno un costo loro, calcolato dagli ingredienti, e rientrano nelle ricette."},
+  rric  :{t:'Ricette e schede costo', g:'Ricette e fornitori',
+          d:"La scheda costo di ogni prodotto: ingredienti, dosi, costo della materia prima, prezzo di vendita e margine."},
+  rteam :{t:'Ricettario per il team', g:'Ricette e fornitori',
+          d:"Le stesse ricette, stampabili per la squadra: dosi, procedimento, bicchiere e guarnizione, senza i costi."},
+  rall  :{t:'Allergeni', g:'Ricette e fornitori',
+          d:"Gli allergeni per prodotto secondo il Reg. 1169/2011, pronti da stampare e allegare al menu."}
+};
+function renderSOON(k){
+  const x=SOON[k]||{t:'In arrivo', g:'', d:''};
+  document.getElementById('soonBody').innerHTML=`
+    <section>
+      <div class="sechead"><h2>${x.t}</h2><span class="note">${x.g}</span></div>
+      <div class="soonbox">
+        <div class="st">Questa pagina non c'è ancora</div>
+        <p>${x.d}</p>
+        <p class="note">Arriva da Menu Profits, il lavoro di Cristina, e viene portata qui dentro
+        un pezzo alla volta. Fino ad allora la voce resta nel menu per tenere la mappa dell'app
+        completa.</p>
+      </div>
+    </section>`;
+}
+
+/* le macro categorie si aprono e si chiudono, e l'app se lo ricorda */
+function navApri(g, apri){
+  const h=document.querySelector(`#nav .gh[data-g="${g}"]`), b=document.querySelector(`#nav .gb[data-gb="${g}"]`);
+  if(!h||!b) return;
+  h.classList.toggle('open', apri); b.classList.toggle('open', apri);
+}
+function navStato(){
+  try{ return JSON.parse(localStorage.getItem('p1:nav')||'null') || {cru:true}; }
+  catch(e){ return {cru:true}; }
+}
+function navSalva(st){ try{ localStorage.setItem('p1:nav', JSON.stringify(st)); }catch(e){} }
+function navInit(){
+  const st=navStato();
+  document.querySelectorAll('#nav .gh').forEach(h=>{
+    const g=h.dataset.g;
+    navApri(g, !!st[g]);
+    h.addEventListener('click',()=>{
+      const s2=navStato(); s2[g]=!s2[g]; navSalva(s2); navApri(g, s2[g]);
+    });
+  });
+}
+/* la categoria che contiene la pagina aperta si apre da sola e si accende */
+function navSegna(p){
+  document.querySelectorAll('#nav .gb').forEach(b=>{
+    const dentro=!!b.querySelector(`button[data-page="${p}"]`);
+    const h=document.querySelector(`#nav .gh[data-g="${b.dataset.gb}"]`);
+    if(h) h.classList.toggle('qui', dentro);
+    if(dentro && !b.classList.contains('open')){
+      const st=navStato(); st[b.dataset.gb]=true; navSalva(st); navApri(b.dataset.gb, true);
+    }
+  });
+}
+
 function gotoPage(p){
   if(typeof closeImport==='function') closeImport();   // i riquadri tornano al loro posto
   current=p;
   /* nell'elenco clienti non si sta dentro nessun cliente: nome e interruttore Merch non hanno senso */
   document.body.classList.toggle('is-home', p==='home');
   document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));
-  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+p));
+  navSegna(p);
+  const vista = SOON[p] ? 'soon' : p;
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+vista));
+  if(SOON[p]) return renderSOON(p);
   PAGES[p]();
 }
 /* ---------- backup: esporta/importa tutti i clienti ---------- */
@@ -8862,6 +9038,7 @@ document.addEventListener('visibilitychange', async ()=>{
   }
 });
 (async ()=>{
+  navInit();
   await cloudAvvio();
   await loadClients();
   sOwner=CLIENTS.activeId;
