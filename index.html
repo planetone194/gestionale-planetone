@@ -420,17 +420,50 @@
   .tutab td.lbl{text-align:left;font-family:var(--font);font-size:12.5px;padding:2px 10px 2px 8px;width:260px;}
   /* nome e reparto affiancati: il nome occupa una volta e mezza abbondante lo spazio del reparto */
   .tutab .pbox{display:flex;gap:6px;align-items:center;}
+  /* la maniglia per riordinare: compare passando sopra la riga */
+  .tutab .grip{cursor:grab;color:#C9C4B8;font-size:12px;line-height:1;letter-spacing:-2px;
+    user-select:none;opacity:0;transition:opacity .12s;flex:0 0 auto;width:10px;}
+  .tutab tr:hover .grip{opacity:1;}
+  .tutab .grip:active{cursor:grabbing;}
+  .tutab td.lbl.sopra{box-shadow:inset 0 3px 0 -1px var(--brass);}
+  .tutab td.lbl.sotto{box-shadow:inset 0 -3px 0 -1px var(--brass);}
+  .tutab tr.trascino td{opacity:.4;}
   .tutab .pbox input.nome{flex:1.6 1 0;min-width:0;}
   .tutab .pbox select{flex:1 1 0;min-width:0;margin-left:0;}
   .tutab td.lbl .role{color:var(--ink2);font-size:11px;}
   .tutab td.srv{font-size:9px;letter-spacing:.6px;color:#A8A49B;font-weight:700;width:18px;padding:0 1px;}
   .tutab tr.pranzo td.gg, .tutab tr.pranzo td.srv{border-bottom:none;}
-  .tutab td.gg{white-space:nowrap;padding:1px 2px;}
+  /* dove finisce una persona e dove comincia la successiva: riga marcata sotto la cena,
+     e una riga su due con il fondo appena diverso */
+  .tutab tr.cena td{border-bottom:1.5px solid #D9D5CC;}
+  .tutab tr.pranzo.pari td, .tutab tr.cena.pari td{background:#FBFAF8;}
+  .tutab tr.pranzo:hover td, .tutab tr.cena:hover td{background:#F4F6F4;}
+  /* e dove finisce un giorno: una linea verticale fra le colonne */
+  .tutab td.gg, .tutab th.gg{border-left:1px solid #EAE7E1;}
+  .tutab td.gg:first-of-type, .tutab th.gg:first-of-type{border-left:1.5px solid var(--line);}
+  .tutab td.gg{white-space:nowrap;padding:1px 2px;position:relative;}
+  /* i pulsantini di copia e incolla, nascosti finché non ci passi sopra */
+  .tutab .ggtools{position:absolute;top:-1px;right:1px;display:none;gap:2px;z-index:2;}
+  .tutab td.gg:hover .ggtools{display:flex;}
+  .tutab .ggb{border:1px solid var(--line);background:#fff;border-radius:4px;width:17px;height:15px;
+    line-height:1;font-size:9px;color:var(--ink2);cursor:pointer;padding:0;}
+  .tutab .ggb:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
+  .tutab .ggb.inc:hover{background:var(--brass);border-color:var(--brass);}
   .tutab input.nome{text-align:left;font-family:var(--font);font-size:12.5px;padding:4px 7px;}
   .tutab select{border:1px solid #E7E4DE;border-radius:5px;background:#F7F6F3;font:inherit;font-size:11.5px;
     color:var(--ink2);padding:4px 3px;cursor:pointer;}
   .tutab select:hover{border-color:var(--line);}
   .tutab tr.somma.sub td{background:#EFEDE9;}
+  .ordsw.frecce button{font-size:15px;padding:4px 11px;line-height:1.1;}
+  .ordsw.frecce button[disabled]{opacity:.3;cursor:default;}
+  .ordsw.frecce button[disabled]:hover{background:#fff;color:var(--ink2);}
+  .appbar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:#FBF6EC;border:1px solid #EADFC6;
+    border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:13px;}
+  .appbar .t{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:var(--ink2);}
+  .appbar b{font-family:var(--num);}
+  .appbar .da{color:var(--ink2);font-size:12.5px;}
+  .appbar .sep{width:1px;height:18px;background:#EADFC6;margin:0 3px;}
+  .appbar .btn{padding:4px 9px;}
   .minibtn{border:1px solid var(--line);background:#fff;border-radius:6px;width:22px;height:22px;line-height:1;
     font-size:13px;color:var(--ink2);cursor:pointer;padding:0;}
   .minibtn:hover{background:var(--brand);color:#fff;border-color:var(--brand);}
@@ -720,7 +753,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v75</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v76</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1209,6 +1242,7 @@ async function switchClient(id){
   else{ S=freshState(); S.cliente=(CLIENTS.list.find(c=>c.id===id)||{}).nome||'Nuovo cliente'; }
   renderClientSelect(); renderMerchSw(); renderAnni(); renderAll(); renderDash();
   document.getElementById('savestate').textContent='cliente: '+S.cliente;
+  appunti=null; storiaAzzera();
   snapGiornaliero(id);                                // fotografia del giorno, in sottofondo
 }
 /* ---------------- controllo di sicurezza sul nome ----------------
@@ -1316,7 +1350,7 @@ async function cambiaAnno(nuovo){
   const dati=S.storico[nuovo]||annoVuoto();
   delete S.storico[nuovo];                          // l'anno aperto non sta anche nello storico
   ANNO_CAMPI.forEach(k=>S[k]=dati[k]);
-  S.anno=nuovo; migrateS(); scope='ytd';
+  S.anno=nuovo; migrateS(); scope='ytd'; appunti=null; storiaAzzera();
   await saveState(); renderAnni(); renderAll(); renderDash();
   toast('Anno '+nuovo+': '+(compute().complete.length||'nessun')+' mese consuntivato');
 }
@@ -2314,6 +2348,14 @@ function grigliaTurni(elenco, d, dove){
     const v=r.g[g][i];
     return `<input data-tu="${r.id}.${g}.${i}" value="${v||''}" placeholder="—" class="${v?'on':''}" inputmode="numeric">`;
   };
+  /* i due pulsantini che compaiono passandoci sopra: copia il giorno, incollalo */
+  const attrezzi=(r,g)=>{
+    const pieno=r.g[g].some(x=>x);
+    return `<span class="ggtools">`
+      + (pieno?`<button class="ggb" data-tucopy="${r.id}.${g}" data-dove="${dove}" title="copia questo giorno" tabindex="-1">⧉</button>`:'')
+      + (appunti?`<button class="ggb inc" data-tupaste="${r.id}.${g}" data-dove="${dove}" title="incolla ${appuntiTesto(appunti.ore)}" tabindex="-1">⤓</button>`:'')
+      + `</span>`;
+  };
   /* le ore e il costo di un gruppo di righe, giorno per giorno */
   const sommaDi=(righe)=>{
     const ore=Array.from({length:7},()=>[0,0]), eur=Array.from({length:7},()=>[0,0]);
@@ -2337,7 +2379,7 @@ function grigliaTurni(elenco, d, dove){
     `<td class="num">${fmtNum(sm.ore.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))||'—'}${pz(sm.paxSett[j==null?2:j])}</td><td colspan="3"></td>
      <td class="num">${fmtE(sm.eur.reduce((a,x)=>a+(j==null?x[0]+x[1]:x[j]),0))}</td><td></td></tr>`;
 
-  let righe='';
+  let righe='', nPers=0;
   gruppi.forEach(rep=>{
     const pp=elenco.filter(r=>r.reparto===rep);
     righe+=`<tr class="rep"><td colspan="14">${rep}</td>
@@ -2346,20 +2388,22 @@ function grigliaTurni(elenco, d, dove){
       const o=oreSettimana(r), co=costoOrario(r);
       const contr=num(r.c), diff=o.tot-contr;
       const clDiff = !contr ? '' : (diff>0.01?'piu':(diff<-0.01?'meno':''));
-      righe+=`<tr class="pranzo">
-        <td class="lbl" rowspan="2"><div class="pbox">
+      const zeb = (nPers++ % 2) ? ' pari' : '';
+      righe+=`<tr class="pranzo${zeb}">
+        <td class="lbl" rowspan="2" data-tudrop="${r.id}" data-dove="${dove}"><div class="pbox">
+          <span class="grip" draggable="true" data-tugrip="${r.id}" data-dove="${dove}" title="trascina per spostare la persona">⠿</span>
           <input data-tun="${r.id}" class="nome" value="${(r.nome||'').replace(/"/g,'&quot;')}" placeholder="nome e cognome">
           <select data-tur="${r.id}" title="reparto">${TU_REP.concat(TU_REP.includes(r.reparto)?[]:[r.reparto]).map(x=>`<option ${x===r.reparto?'selected':''}>${x}</option>`).join('')}</select>
         </div></td>
         <td class="srv">P</td>
-        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,0)}${cellaOra(r,g,1)}</td>`).join('')}
+        ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,0)}${cellaOra(r,g,1)}${attrezzi(r,g)}</td>`).join('')}
         <td class="num" rowspan="2" title="ore della settimana tipo">${o.tot?fmtNum(o.tot):'—'}</td>
         <td rowspan="2"><input data-tuc="${r.id}" class="wide" value="${contr||''}" placeholder="—" inputmode="numeric" title="ore a contratto"></td>
         <td class="num ${clDiff}" rowspan="2">${contr?(diff>=0?'+':'−')+fmtNum(Math.abs(diff)):'—'}</td>
         <td rowspan="2"><input data-tuo="${r.id}" class="wide" value="${r.o!=null&&r.o!==''?r.o:''}" placeholder="${num(S.turni.base)?fmtNum(num(S.turni.base)):'—'}" inputmode="decimal" title="costo orario di questa persona; vuoto = quello di base"></td>
         <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td>
         <td rowspan="2"><button class="minibtn del" data-tudel="${r.id}" data-dove="${dove}" title="togli questa persona">✕</button></td></tr>
-      <tr class="cena">
+      <tr class="cena${zeb}">
         <td class="srv">C</td>
         ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,2)}${cellaOra(r,g,3)}</td>`).join('')}</tr>`;
     });
@@ -2375,8 +2419,18 @@ function grigliaTurni(elenco, d, dove){
       <div class="improw">${TU_REP.map(r=>`<button class="btn small tpl" data-tuadd="${r}" data-dove="${dove}" type="button">+ ${r}</button>`).join(' ')}
       ${(!dove&&S.ru.length)?`<button class="btn small tpl" id="tuDaRu" type="button">⤓ Prendi i nomi dall'organico</button>`:''}</div>`;
   }
-  return `<div style="overflow-x:auto"><table class="tutab">
-      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th>${g}</th>`).join('')}
+  const barra = appunti ? `<div class="appbar">
+      <span class="t">Giorno copiato</span>
+      <b>${appuntiTesto(appunti.ore)}</b>
+      <span class="da">da ${appunti.da}</span>
+      <span class="sep"></span>
+      <span class="t">incolla su</span>
+      ${GIORNI.map((g,i)=>`<button class="btn small tpl" data-tuinc="${i}" data-dove="${dove}" type="button">${g.toLowerCase()}</button>`).join('')}
+      <button class="btn small tpl" data-tuinc="tutti" data-dove="${dove}" type="button">tutti i giorni</button>
+      <button class="btn small tpl" id="appVia" type="button">✕</button>
+    </div>` : '';
+  return barra+`<div style="overflow-x:auto"><table class="tutab">
+      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th class="gg">${g}</th>`).join('')}
         <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
         <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
       ${righe}
@@ -2404,7 +2458,8 @@ function renderTU(){
 
   h+=`<section>
     <div class="sechead"><div><h2>Settimana tipo</h2>
-      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.</div></div></div>`;
+      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.</div></div>
+      ${barraFrecce()}</div>`;
   h+=grigliaTurni(S.turni.righe, d, '');
   h+=`<div class="improw" style="margin-top:12px;align-items:center">
       <span class="cl" style="font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2)">Costo orario di base</span>
@@ -2557,6 +2612,7 @@ function renderTU(){
   }
   body.innerHTML=h;
   renderChips(d.m,'tuChips');
+  frecce();
   const fi=document.getElementById('incFileInput');
   if(fi) fi.addEventListener('change', e=>{ if(e.target.files[0]) importIncassi(e.target.files[0]); e.target.value=''; });
   const iv=document.getElementById('incIva');
@@ -2629,7 +2685,8 @@ function renderSIM(){
   };
   h+=`<section>
     <div class="sechead"><div><h2>Cosa spegniamo</h2>
-      <div class="sub">Ogni casella è un servizio, con le sue ore e il margine che porta oggi. Cliccala per chiuderla.</div></div></div>
+      <div class="sub">Ogni casella è un servizio, con le sue ore e il margine che porta oggi. Cliccala per chiuderla.</div></div>
+      ${barraFrecce()}</div>
     <div class="simgrid">
       <div class="h v"></div>${GIORNI.map(g=>`<div class="h">${g}</div>`).join('')}
       <div class="h v">Pranzo</div>${GIORNI.map((_,g)=>sw(g,0)).join('')}
@@ -2677,7 +2734,7 @@ function renderSIM(){
 
   if(!chiusi.length && !suoi){
     body.innerHTML=h+`<section><div class="tuvuoto">Non hai ancora cambiato niente: spegni un servizio qui sopra, oppure prova turni diversi, e il confronto compare sotto.</div></section>`;
-    renderChips(vero.m,'siChips'); simLega(); return;
+    renderChips(vero.m,'siChips'); frecce(); simLega(); return;
   }
 
   /* --- la frase --- */
@@ -2772,12 +2829,13 @@ function renderSIM(){
 
   body.innerHTML=h;
   renderChips(vero.m,'siChips');
+  frecce();
   simLega();
 }
 function simLega(){
   const cp=document.getElementById('simTurniCopia');
   if(cp) cp.addEventListener('click', async ()=>{
-    migrateS();
+    migrateS(); storiaPrima();
     S.sim.righe=S.turni.righe.map(r=>({id:newId(), nome:r.nome, reparto:r.reparto, c:num(r.c),
       o:r.o!=null?r.o:null, g:r.g.map(x=>x.slice())}));
     await saveState(); renderSIM();
@@ -2786,7 +2844,7 @@ function simLega(){
   const vi=document.getElementById('simTurniVia');
   if(vi) vi.addEventListener('click', async ()=>{
     if(await uiConfirm('Buttare via i turni dello scenario e tornare a quelli veri?\n\nLe modifiche fatte qui dentro si perdono; i servizi spenti restano.')){
-      S.sim.righe=null; await saveState(); renderSIM();
+      storiaPrima(); S.sim.righe=null; await saveState(); storiaSegna(); renderSIM();
     }
   });
   const r=document.getElementById('simRec');
@@ -2963,6 +3021,76 @@ function cfVociSG(anno, mesi){
   });
   return out;
 }
+/* ---------------- copiare un giorno di turni ----------------
+   Un blocco è l'intera giornata di una persona: pranzo inizio-fine e cena
+   inizio-fine. Si copia una volta e si incolla dove serve, invece di
+   riscrivere quattro orari per ogni giorno uguale. */
+/* ---------------- annulla e rifai ----------------
+   Si tiene da parte una fotografia di turni e scenario dopo ogni pausa nella
+   digitazione: le frecce camminano su quelle, non sul singolo carattere. */
+let storia=[], storiaPos=-1, storiaTimer=null;
+const statoTurni=()=>JSON.stringify({t:S.turni, s:S.sim});
+function storiaAzzera(){ migrateS(); storia=[statoTurni()]; storiaPos=0; frecce(); }
+function storiaPrima(){
+  clearTimeout(storiaTimer);
+  if(!storia.length) return storiaAzzera();
+  const ora=statoTurni();
+  if(ora===storia[storiaPos]) return;
+  storia=storia.slice(0, storiaPos+1);
+  storia.push(ora);
+  if(storia.length>40) storia.shift();
+  storiaPos=storia.length-1;
+  frecce();
+}
+function storiaSegna(){
+  clearTimeout(storiaTimer);
+  storiaTimer=setTimeout(()=>{
+    if(!storia.length) return storiaAzzera();
+    const ora=statoTurni();
+    if(ora===storia[storiaPos]) return;
+    storia=storia.slice(0, storiaPos+1);
+    storia.push(ora);
+    if(storia.length>40) storia.shift();
+    storiaPos=storia.length-1;
+    frecce();
+  }, 800);
+}
+async function storiaVai(d){
+  clearTimeout(storiaTimer);
+  const p=storiaPos+d;
+  if(p<0 || p>=storia.length) return;
+  storiaPos=p;
+  const o=JSON.parse(storia[p]);
+  S.turni=o.t; S.sim=o.s;
+  await saveState();
+  if(current==='tu') renderTU(); else if(current==='si') renderSIM();
+  toast(d<0?'↶ Annullato':'↷ Rifatto');
+}
+function frecce(){
+  document.querySelectorAll('[data-storia]').forEach(b=>{
+    const d=+b.dataset.storia;
+    b.disabled = (storiaPos+d<0) || (storiaPos+d>=storia.length);
+  });
+}
+const barraFrecce=()=>`<span class="ordsw frecce">
+    <button type="button" data-storia="-1" title="annulla l'ultima modifica">↶</button>
+    <button type="button" data-storia="1" title="rifai">↷</button></span>`;
+
+let appunti=null;          // {ore:[p1,p2,c1,c2], da:'Gabriele · martedì'}
+function appuntiTesto(v){
+  const f=(a,b)=> (a||b) ? ((a||'—')+'–'+(b||'—')) : '—';
+  return f(v[0],v[1])+' / '+f(v[2],v[3]);
+}
+/* gli orari dentro un testo qualunque: così si incolla anche da Excel o da una chat */
+function oreDaTesto(t){
+  const testo=String(t).trim();
+  if(/,/.test(testo) && !/:/.test(testo)) return null;      // "15,30" è un numero, non due orari
+  const pezzi=testo.split(/[^\d:.]+/).filter(Boolean);
+  if(pezzi.length<2 || pezzi.length>4) return null;
+  const ore=pezzi.map(oraTesto);
+  return ore.every(Boolean) ? ore : null;
+}
+
 /* ---------------- la cascata del margine ----------------
    Si parte dalla colonna di sinistra, ogni gradino aggiunge o toglie, l'ultima
    colonna è il punto d'arrivo. Disegnata a mano in SVG: niente libreria da
@@ -3811,17 +3939,17 @@ document.addEventListener('input',e=>{
     const pulita=oraTesto(el.value);
     t.g[+g][+i] = el.value.trim()==='' ? '' : (pulita||el.value.trim());
     el.classList.toggle('on', !!t.g[+g][+i]);
-    saveState(); tuPartial(); return;
+    saveState(); storiaSegna(); tuPartial(); return;
   }
-  if(el.dataset.tun!==undefined){ const t=turnoDi(el.dataset.tun); if(t){ t.nome=el.value; saveState(); } return; }
-  if(el.dataset.tuc!==undefined){ const t=turnoDi(el.dataset.tuc); if(t){ t.c=num(el.value); saveState(); tuPartial(); } return; }
+  if(el.dataset.tun!==undefined){ const t=turnoDi(el.dataset.tun); if(t){ t.nome=el.value; saveState(); storiaSegna(); } return; }
+  if(el.dataset.tuc!==undefined){ const t=turnoDi(el.dataset.tuc); if(t){ t.c=num(el.value); saveState(); storiaSegna(); tuPartial(); } return; }
   if(el.dataset.tuo!==undefined){
     const t=turnoDi(el.dataset.tuo); if(!t) return;
     t.o = el.value.trim()==='' ? null : parseIt(el.value);
-    saveState(); tuPartial(); return;
+    saveState(); storiaSegna(); tuPartial(); return;
   }
-  if(el.id==='simRec'){ S.sim.recupero=Math.max(0,Math.min(100,parseIt(el.value))); saveState(); tuPartial(); return; }
-  if(el.id==='tuBase'){ S.turni.base=parseIt(el.value); saveState(); tuPartial(); return; }
+  if(el.id==='simRec'){ S.sim.recupero=Math.max(0,Math.min(100,parseIt(el.value))); saveState(); storiaSegna(); tuPartial(); return; }
+  if(el.id==='tuBase'){ S.turni.base=parseIt(el.value); saveState(); storiaSegna(); tuPartial(); return; }
   if(el.dataset.cesplit!==undefined){
     const i=+el.dataset.cesplit;
     S.salesSplit[i]=el.value===''?null:num(el.value);
@@ -3945,26 +4073,59 @@ document.addEventListener('click',async e=>{
   const cp=e.target.closest('[data-cfper]'); if(cp){ e.preventDefault(); cfPer=cp.dataset.cfper; renderCF(); return; }
   const iz=e.target.closest('[data-incz]'); if(iz){ incZeri=iz.dataset.incz==='1'; renderTU(); return; }
   const sm=e.target.closest('[data-sim]');
-  if(sm){ migrateS(); const k=sm.dataset.sim;
+  if(sm){ migrateS(); storiaPrima(); const k=sm.dataset.sim;
     if(S.sim.chiusi[k]) delete S.sim.chiusi[k]; else S.sim.chiusi[k]=true;
-    await saveState(); renderSIM(); return;
+    await saveState(); storiaSegna(); renderSIM(); return;
   }
   const st=e.target.closest('[data-simtutti]');
-  if(st){ migrateS(); const j=+st.dataset.simtutti;
+  if(st){ migrateS(); storiaPrima(); const j=+st.dataset.simtutti;
     const d=tuData();
     const tutti=[0,1,2,3,4,5,6].filter(g=>d.celle[g][j].aperto || S.sim.chiusi[g+'-'+j]);
     const giaTutti=tutti.length>0 && tutti.every(g=>S.sim.chiusi[g+'-'+j]);
     tutti.forEach(g=>{ if(giaTutti) delete S.sim.chiusi[g+'-'+j]; else S.sim.chiusi[g+'-'+j]=true; });
-    await saveState(); renderSIM(); return;
+    await saveState(); storiaSegna(); renderSIM(); return;
   }
-  if(e.target.id==='simReset'){ migrateS(); S.sim.chiusi={}; await saveState(); renderSIM(); return; }
+  if(e.target.id==='simReset'){ migrateS(); storiaPrima(); S.sim.chiusi={}; await saveState(); storiaSegna(); renderSIM(); return; }
+  const cop=e.target.closest('[data-tucopy]');
+  if(cop){ const [id,g]=cop.dataset.tucopy.split('.'); const r=turnoDi(id); if(!r) return;
+    appunti={ore:r.g[+g].slice(), da:(r.nome||'senza nome')+' · '+['lunedì','martedì','mercoledì','giovedì','venerdì','sabato','domenica'][+g]};
+    if(current==='tu') renderTU(); else renderSIM();
+    toast('⧉ Giorno copiato: '+appuntiTesto(appunti.ore)+'. Ora scegli dove incollarlo.');
+    return;
+  }
+  const inc=e.target.closest('[data-tupaste]');
+  if(inc){ if(!appunti) return;
+    const [id,g]=inc.dataset.tupaste.split('.'); const r=turnoDi(id); if(!r) return;
+    storiaPrima();
+    r.g[+g]=appunti.ore.slice();
+    await saveState(); storiaSegna();
+    if(current==='tu') renderTU(); else renderSIM();
+    return;
+  }
+  const su=e.target.closest('[data-tuinc]');
+  if(su){ if(!appunti) return;
+    const sim=su.dataset.dove==='sim';
+    const arr = sim ? (S.sim.righe||[]) : S.turni.righe;
+    const r = arr.find(x=>(x.nome||'senza nome')===appunti.da.split(' · ')[0]) || null;
+    if(!r){ toast('La persona da cui avevi copiato non è più in griglia.', true); return; }
+    storiaPrima();
+    const quali = su.dataset.tuinc==='tutti' ? [0,1,2,3,4,5,6] : [+su.dataset.tuinc];
+    quali.forEach(g=>{ r.g[g]=appunti.ore.slice(); });
+    await saveState(); storiaSegna();
+    if(sim) renderSIM(); else renderTU();
+    toast('✓ Incollato su '+(quali.length===7?'tutti i giorni':GIORNI[quali[0]].toLowerCase())+'.');
+    return;
+  }
+  if(e.target.id==='appVia'){ appunti=null; if(current==='tu') renderTU(); else renderSIM(); return; }
+  const fr=e.target.closest('[data-storia]');
+  if(fr){ await storiaVai(+fr.dataset.storia); return; }
   const ta=e.target.closest('[data-tuadd]');
-  if(ta){ migrateS();
+  if(ta){ migrateS(); storiaPrima();
     const sim=ta.dataset.dove==='sim';
     const arr = sim ? S.sim.righe : S.turni.righe;
     if(!Array.isArray(arr)) return;
     arr.push({id:newId(), nome:'', reparto:ta.dataset.tuadd, c:0, o:null, g:Array.from({length:7},()=>['','','',''])});
-    await saveState(); if(sim) renderSIM(); else renderTU();
+    await saveState(); storiaSegna(); if(sim) renderSIM(); else renderTU();
     const ult=document.querySelector('[data-tun="'+arr[arr.length-1].id+'"]');
     if(ult) ult.focus();
     return;
@@ -3972,10 +4133,11 @@ document.addEventListener('click',async e=>{
   const td=e.target.closest('[data-tudel]');
   if(td){ const r=turnoDi(td.dataset.tudel); if(!r) return;
     const sim=td.dataset.dove==='sim';
+    storiaPrima();
     if(await uiConfirm('Togliere '+(r.nome||'questa riga')+' dalla griglia'+(sim?' dello scenario':' dei turni')+'?'+(sim?'':'\n\nL\'organico e le paghe non si toccano.'))){
       if(sim) S.sim.righe=S.sim.righe.filter(x=>x.id!==r.id);
       else S.turni.righe=S.turni.righe.filter(x=>x.id!==r.id);
-      await saveState(); if(sim) renderSIM(); else renderTU();
+      await saveState(); storiaSegna(); if(sim) renderSIM(); else renderTU();
     }
     return;
   }
@@ -5550,6 +5712,68 @@ function setMerchMode(m){
       : m==='escl'?'Merchandising escluso: resti sui numeri della gestione corrente.'
       : 'Merchandising isolato: vedi solo ricavi e spese del merchandising.');
 }
+/* ---------------- riordinare le persone trascinandole ----------------
+   Si prende la maniglia e si lascia cadere sopra o sotto un'altra persona.
+   Se la si lascia su un reparto diverso, la persona cambia anche reparto. */
+let trascinato=null;
+document.addEventListener('dragstart', e=>{
+  const g=e.target.closest && e.target.closest('[data-tugrip]');
+  if(!g) return;
+  trascinato={id:g.dataset.tugrip, dove:g.dataset.dove||''};
+  try{ e.dataTransfer.setData('text/plain', trascinato.id); e.dataTransfer.effectAllowed='move'; }catch(x){}
+  const tr=g.closest('tr'); if(tr) tr.classList.add('trascino');
+});
+document.addEventListener('dragend', ()=>{
+  trascinato=null;
+  document.querySelectorAll('.trascino').forEach(x=>x.classList.remove('trascino'));
+  document.querySelectorAll('.sopra,.sotto').forEach(x=>x.classList.remove('sopra','sotto'));
+});
+document.addEventListener('dragover', e=>{
+  if(!trascinato) return;
+  const td=e.target.closest && e.target.closest('[data-tudrop]');
+  if(!td || td.dataset.tudrop===trascinato.id || (td.dataset.dove||'')!==trascinato.dove) return;
+  e.preventDefault();
+  const r=td.getBoundingClientRect();
+  const sopra = e.clientY < r.top + r.height/2;
+  document.querySelectorAll('.sopra,.sotto').forEach(x=>x.classList.remove('sopra','sotto'));
+  td.classList.add(sopra?'sopra':'sotto');
+});
+document.addEventListener('drop', async e=>{
+  if(!trascinato) return;
+  const td=e.target.closest && e.target.closest('[data-tudrop]');
+  if(!td || td.dataset.tudrop===trascinato.id) return;
+  e.preventDefault();
+  await spostaPersona(trascinato.id, td.dataset.tudrop, td.classList.contains('sopra'), trascinato.dove);
+});
+async function spostaPersona(idDa, idA, sopra, dove){
+  migrateS(); storiaPrima();
+  const arr = dove==='sim' ? (S.sim.righe||[]) : S.turni.righe;
+  const i=arr.findIndex(x=>x.id===idDa), j=arr.findIndex(x=>x.id===idA);
+  if(i<0||j<0||i===j) return;
+  const [mosso]=arr.splice(i,1);
+  mosso.reparto=arr[j>i?j-1:j].reparto;               // cadendo in un altro reparto, ci si trasferisce
+  let k=arr.findIndex(x=>x.id===idA);
+  arr.splice(sopra?k:k+1, 0, mosso);
+  await saveState(); storiaSegna();
+  if(dove==='sim') renderSIM(); else renderTU();
+}
+
+/* incollare "11:00 - 15:00 / 18:00 - 23:00" dentro una casella riempie tutto il giorno */
+document.addEventListener('paste', async e=>{
+  const el=e.target;
+  if(!el || !el.dataset || el.dataset.tu===undefined) return;
+  const testo=(e.clipboardData||window.clipboardData).getData('text')||'';
+  const ore=oreDaTesto(testo);
+  if(!ore) return;                                  // un orario solo: lo incolla il browser
+  e.preventDefault();
+  const [id,g]=el.dataset.tu.split('.');
+  const t=turnoDi(id); if(!t) return;
+  storiaPrima();
+  for(let i=0;i<4;i++) t.g[+g][i]= ore[i]||'';
+  await saveState(); storiaSegna();
+  if(current==='tu') renderTU(); else if(current==='si') renderSIM();
+  toast('✓ Giorno compilato da quello che hai incollato: '+appuntiTesto(t.g[+g])+'.');
+});
 document.addEventListener('change', e=>{
   const el=e.target;
   if(el && el.dataset && el.dataset.tu!==undefined){
@@ -5883,6 +6107,7 @@ document.addEventListener('visibilitychange', async ()=>{
   await loadClients();
   sOwner=CLIENTS.activeId;
   snapGiornaliero(CLIENTS.activeId);
+  storiaAzzera();
   const rec=await recoverClients();
   const seeded=await ensureSeedBarcollo();
   const raw=await stGet('planetone-fb:'+CLIENTS.activeId);
