@@ -873,6 +873,15 @@
   .dver{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);}
   .dver .vt{font-size:10px;text-transform:uppercase;letter-spacing:1.4px;font-weight:700;color:var(--ink2);margin-bottom:6px;}
   .dver ul{margin:0 0 0 18px;font-size:14px;line-height:1.55;}
+  .episodio{background:#FBF3DC;border:1px solid #E8D9AC;border-radius:10px;padding:10px 15px;
+    font-size:14px;line-height:1.5;color:#7A5E0C;margin-bottom:12px;}
+  .dcause{margin-top:16px;}
+  .dcause .ca{padding:10px 0;border-bottom:1px dashed var(--line);}
+  .dcause .ca:last-child{border-bottom:none;}
+  .dcause .cat{font-weight:600;font-size:15.5px;color:var(--brand);}
+  .dcause .cax{font-size:14.5px;line-height:1.55;margin-top:2px;}
+  .produ.nope b{color:var(--ink2);font-style:italic;font-family:var(--font);font-size:14px;}
+  .produ.nope .fonte{max-width:60%;text-align:right;}
   /* le cure */
   .slide .azione .vel{font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:700;
     border-radius:20px;padding:2px 9px;margin-left:10px;vertical-align:2px;}
@@ -988,7 +997,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v89</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v90</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1196,6 +1205,7 @@
       <button class="btn small" id="anPptx">Esporta in PowerPoint (.pptx)</button>
       <button class="btn small" id="anAI">Rigenera commenti con AI</button>
       <button class="btn small" id="anPrint">Stampa / PDF presentazione</button>
+      <button class="btn small" id="anUno">Riepilogo di una pagina</button>
       <span class="savestate">La presentazione si genera automaticamente dai dati caricati; i commenti AI sono opzionali.</span>
     </div>
     <div id="anBody"></div>
@@ -1329,7 +1339,7 @@ function freshState(){
     cliente:'Nuovo cliente', anno:new Date().getFullYear(),
     targets:{ru:34, mp:28, sg:18, cn:2, ro:20, ltRicavi:'', ltUtile:20, prodOra:60},
     sgSplit:{mode:'incidenze', foodPct:50},
-    mpSchede:{food:'', bev:''},
+    mpSchede:{food:'', bev:'', agg:''},   // % da schede ricetta e data dell'ultimo aggiornamento
     stag:{on:false, mesi:Array(12).fill(true)},   // locale stagionale: quali mesi è aperto
     leve:{cop:10, cli:10, vis:10},                // crescita in leva: coperto medio, clienti, visite
     salesSplit:Array(12).fill(null),
@@ -1433,7 +1443,8 @@ function migrateS(){
     SG_DEFAULT.filter(([g])=>g===SG_MERCH).forEach(([g,n])=>S.sg.push({id:newId(), gruppo:g, nome:n, m:zeros()}));
   }
   if(!S.sgSplit) S.sgSplit={mode:'incidenze',foodPct:50};
-  if(!S.mpSchede) S.mpSchede={food:'',bev:''};
+  if(!S.mpSchede) S.mpSchede={food:'',bev:'',agg:''};
+  if(S.mpSchede.agg===undefined) S.mpSchede.agg='';
   if(!S.stag||typeof S.stag!=='object') S.stag={on:false, mesi:Array(12).fill(true)};
   if(!Array.isArray(S.stag.mesi)||S.stag.mesi.length!==12) S.stag.mesi=Array(12).fill(true);
   S.stag.on=!!S.stag.on;
@@ -1876,6 +1887,9 @@ function mpsCard(nome, mp, ric, key){
     <div class="val" style="font-size:16px">${isFinite(incB)?fmtP(incB):'—'} <span style="color:var(--ink2);font-weight:400;font-size:12px">da bilancio</span></div>
     <div class="note" style="margin-top:6px">da schede costo:
       <input type="number" class="mpsin" data-mps="${key}" min="0" max="100" step="0.5" value="${S.mpSchede&&S.mpSchede[key]!==''?S.mpSchede[key]:''}" placeholder="—"> %
+    </div>
+    <div class="note" style="margin-top:4px;font-size:11.5px">aggiornate il
+      <input type="date" class="mpsin" data-mpsagg="1" value="${(S.mpSchede&&S.mpSchede.agg)||''}" title="quando hai rifatto i conti delle schede: se sono vecchie il confronto con il bilancio non regge" style="width:132px">
     </div>
     <div class="note mpsout" id="mps-${key}" style="margin-top:6px;font-weight:600;${bad?'color:var(--bad)':''}">
       ${has?`Δ ${dpp>=0?'+':''}${dpp.toFixed(1)} p.p. · dispersione ${fmtE(disp)}${bad?' ⚠️':''}`:'inserisci la % teorica'}
@@ -4659,163 +4673,355 @@ function repTarget(d){
   return {aree, ribilancio:{quota, puntiTot, euro:puntiTot/100*a.ricavi}};
 }
 
+
+/* ---------------- i costi che capitano una volta l'anno ----------------
+   L'acqua che arriva tutta ad aprile, l'IMU, il commercialista a saldo: voci
+   che in un mese valgono il dieci per cento dei ricavi e fanno sembrare
+   disastroso un mese normale. Si riconoscono perché compaiono una o due volte
+   in tutto l'anno, e il report le mette da parte prima di giudicare. */
+function sgNonRicorrenti(d){
+  const annoCompleti=compute().complete;
+  if(annoCompleti.length<4) return {voci:[], tot:0};   // con pochi mesi non si distingue
+  const voci=[];
+  (S.sg||[]).forEach(c=>{
+    const quante=annoCompleti.filter(r=>num(c.m[r.i])>0).length;
+    if(quante===0 || quante>2) return;
+    const nelPeriodo=d.completi.reduce((a,r)=>a+num(c.m[r.i]),0);
+    if(nelPeriodo>0) voci.push({nome:c.nome, gruppo:c.gruppo, euro:nelPeriodo, quante});
+  });
+  voci.sort((x,y)=>y.euro-x.euro);
+  return {voci, tot:voci.reduce((a,x)=>a+x.euro,0)};
+}
+
+/* ---------------- le ore reggono? ----------------
+   La produttività è fatturato diviso ore: se le ore sono sbagliate il numero è
+   sbagliato, e metà della diagnosi sul personale con lui. Il controllo è il
+   costo orario che ne esce: se è fuori da ogni logica, le ore non quadrano
+   con le paghe e la produttività non si dichiara. */
+function oreAttendibili(d){
+  if(!d.ot.fonte || !(d.oreTot>0)) return {ok:false, perche:'senza ore caricate'};
+  const implicito=d.a.ru/d.oreTot;
+  const base=num(S.turni&&S.turni.base);
+  if(!(implicito>0)) return {ok:false, perche:'senza ore caricate'};
+  if(implicito<9 || implicito>32)
+    return {ok:false, implicito, perche:`dalle ore e dalle paghe esce un costo orario di ${fmtE(implicito)}/h, che non è un costo orario possibile`};
+  if(base>0 && Math.abs(implicito-base)/base>0.4)
+    return {ok:false, implicito, base,
+            perche:`dalle paghe esce un costo orario di ${fmtE(implicito)}/h contro i ${fmtE(base)}/h impostati nei turni: le ore in griglia non sono quelle davvero lavorate`};
+  return {ok:true, implicito};
+}
+
+/* ---------------- la dispersione delle incidenze fra i servizi ----------------
+   La media del mese può essere accettabile mentre il pranzo del lunedì sta al
+   60%: è il caso in cui non si taglia l'organico, si ribilanciano le ore. */
+function squilibrioServizi(){
+  try{
+    const t=tuData();
+    const aperti=[];
+    for(let g=0;g<7;g++) for(const j of [0,1]){
+      const c=t.celle[g][j];
+      if(c && c.aperto && isFinite(c.incRu) && c.ric>0) aperti.push({g, j, inc:c.incRu});
+    }
+    if(aperti.length<4) return null;
+    aperti.sort((x,y)=>y.inc-x.inc);
+    const peggio=aperti[0], meglio=aperti[aperti.length-1];
+    const dpp=(peggio.inc-meglio.inc)*100;
+    if(dpp<15) return null;
+    const nome=x=>GIORNI[x.g].toLowerCase()+' a '+(x.j?'cena':'pranzo');
+    return {dpp, peggio:{et:nome(peggio), inc:peggio.inc}, meglio:{et:nome(meglio), inc:meglio.inc}};
+  }catch(e){ return null; }
+}
+
+/* ---------------- l'organico segue il fatturato? ----------------
+   Se nei mesi magri l'incidenza peggiora mentre le ore restano ferme,
+   l'organico è tarato sull'alta stagione. */
+function organicoRigido(){
+  const c=compute().complete.filter(x=>x.ricavi>0 && x.ru>0);
+  if(c.length<4) return null;
+  const ord=c.slice().sort((x,y)=>x.ricavi-y.ricavi);
+  const magro=ord[0], grasso=ord[ord.length-1];
+  const dpp=(magro.ru/magro.ricavi - grasso.ru/grasso.ricavi)*100;
+  if(dpp<5) return null;
+  return {dpp, magro:{mese:magro.mese, inc:magro.ru/magro.ricavi}, grasso:{mese:grasso.mese, inc:grasso.ru/grasso.ricavi}};
+}
+
+/* ---------------- entrate e uscite dall'organico ---------------- */
+function turnoverOrganico(){
+  const c=compute().complete.map(x=>x.i);
+  if(c.length<4) return null;
+  let cambi=0;
+  (S.ru||[]).forEach(pz=>{
+    const presenze=c.map(i=>num(pz.m[i])>0?1:0);
+    for(let k=1;k<presenze.length;k++) if(presenze[k]!==presenze[k-1]) cambi++;
+  });
+  return cambi>=3 ? {cambi} : null;
+}
+
+/* ---------------- la materia prima balla da un mese all'altro? ----------------
+   Succede quando si registrano gli acquisti e non i consumi: senza inventario
+   un acquisto grosso finisce tutto su un mese solo. */
+function mpBallerina(){
+  const c=compute().complete.filter(x=>x.ricavi>0);
+  if(c.length<4) return null;
+  const inc=c.map(x=>x.mp/x.ricavi);
+  const max=Math.max(...inc), min=Math.min(...inc);
+  const dpp=(max-min)*100;
+  if(dpp<8) return null;
+  return {dpp, max, min};
+}
+
+/* ---------------- le commissioni che crescono col fatturato ---------------- */
+function vociCommissioni(d){
+  const re=/commission|pos\b|delivery|deliveroo|glovo|just ?eat|thefork|the fork/i;
+  let tot=0; const nomi=[];
+  (S.sg||[]).forEach(c=>{
+    if(!re.test(c.nome||'')) return;
+    const v=d.completi.reduce((a,r)=>a+num(c.m[r.i]),0);
+    if(v>0){ tot+=v; nomi.push(c.nome); }
+  });
+  return tot>0 ? {tot, nomi, inc:tot/d.a.ricavi} : null;
+}
+
 /* ---------------- le diagnosi ----------------
    Ogni scheda: cosa dicono i numeri, le cause in ordine, cosa verificare, le cure. */
 const VEL={subito:{m:3, t:'subito', d:'effetto dentro il mese'},
            medio:{m:1.5, t:'1–3 mesi', d:'effetto in uno-tre mesi'},
            lento:{m:1, t:'oltre 3 mesi', d:'effetto oltre i tre mesi'}};
 
-function repDiagnosi(d, annoD){
+function repDiagnosi(d, livelli){
   const {a,t}=d, out=[];
+  const annoD = (livelli && livelli.length>1) ? livelli[livelli.length-1].d : null;
+  const trimD = (livelli && livelli.length>2) ? livelli[1].d : null;
   const extra=(inc,tgt)=>(inc-tgt/100)*a.ricavi;
   /* la frase che colloca il periodo dentro l'anno */
   const contesto=(inc, nome)=>{
-    if(!annoD || annoD===d) return null;
+    if(!annoD) return null;
     const c=confrontoLivelli(inc, annoD.a['inc'+nome]);
     if(!c) return null;
     const annoTxt=fmtP(annoD.a['inc'+nome]);
     return c.v==='linea'
       ? `Sull'anno l'incidenza è ${annoTxt}: questo periodo è <b>in linea</b>, quindi non è un episodio — è il modo in cui il locale funziona.`
       : c.v==='peggio'
-        ? `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>. Vale la pena capire cosa ha di diverso prima di cambiare la struttura.`
-        : `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>, quindi il problema, dove c'è, è più marcato negli altri mesi.`;
+        ? `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>.`
+        : `Sull'anno l'incidenza è ${annoTxt}: questo periodo sta <b>${c.t}</b>, quindi dove c'è un problema è più marcato negli altri mesi.`;
   };
+  /* Un allarme non scatta sul mese da solo: un mese storto capita a tutti.
+     Perché diventi un allarme lo deve confermare il trimestre o l'anno. */
+  const conferma=(k, tgt, steps)=>{
+    if(!annoD) return {conf:true, solo:false};
+    const za=zone(annoD.a[k], tgt, steps||[5,10]);
+    const zt=trimD?zone(trimD.a[k], tgt, steps||[5,10]):0;
+    return {conf: (za>=2 || zt>=2), solo:false};
+  };
+  const C=(tt,xx,cure)=>({t:tt, x:xx, cure:cure||[]});
 
-  /* ---- personale ---- */
+  /* ======== personale ======== */
   if(isFinite(a.incRu)){
-    const dpp=a.incRu*100-num(t.ru), e=extra(a.incRu,num(t.ru));
-    const sc=scalaProd(d.prod);
-    const costoOra = isFinite(d.prod) ? a.incRu*d.prod : NaN;
-    const diag=[], cure=[], ver=[];
-    if(dpp>0){
-      /* la matrice: incidenza = costo orario ÷ produttività */
-      if(sc && sc.z<=1 && dpp>0){
-        diag.push(`La produttività oraria è <b>${sc.t}</b> (${fmtE(d.prod)}/h): l'ora lavorata rende. Se l'incidenza resta alta, il problema non è quanto si incassa ma <b>quanto costa quell'ora</b> — costo orario medio intorno a ${fmtE(costoOra)}/h. Si guardano inquadramenti, straordinari, maggiorazioni di notturni e festivi, e il numero di figure di responsabilità.`);
-        ver.push('Verificare il costo orario medio reale sulle buste paga, separando ordinario, straordinario e maggiorazioni.');
-        ver.push('Controllare quante figure di responsabilità ci sono sullo stesso turno.');
-      }else if(sc && sc.z>=2){
-        diag.push(`La produttività oraria è <b>${sc.t}</b> (${fmtE(d.prod)}/h): entrano pochi euro per ogni ora lavorata. Il costo orario medio è di circa ${fmtE(costoOra)}/h, quindi il peso non viene dalle paghe ma dal <b>numero di ore messe in campo rispetto a quello che si incassa</b>.`);
-        ver.push('Confrontare le ore servizio per servizio con gli incassi medi in Analisi dei turni: le ore stanno dove c\'è l\'incasso?');
-      }
-      if(dpp>10){
-        diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo del ${fmtNum(num(t.ru))}%: oltre i dieci punti non è una questione di sfumature, c'è <b>extracosto da tagliare</b> per ${fmtE(e)} sul periodo.`);
-      }else{
-        diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
-      }
-      const cx=contesto(a.incRu,'Ru'); if(cx) diag.push(cx);
-      if(isFinite(d.prodF)&&isFinite(d.prodB)){
-        const basso = d.prodF<d.prodB ? 'Food' : 'Beverage';
-        const vb = d.prodF<d.prodB ? d.prodF : d.prodB;
-        diag.push(`Fra le due business unit la più lenta è <b>${basso}</b>, a ${fmtE(vb)}/h contro ${fmtE(Math.max(d.prodF,d.prodB))}/h dell'altra.`);
-      }
-      cure.push({t:'Ingressi scaglionati', v:'subito', e:e*0.25,
-        x:'Non far entrare tutti insieme: spostare gli ingressi sul momento in cui il servizio parte davvero. Due o tre ore al giorno recuperate pesano molto sul mese, e non si vedono in sala.'});
-      cure.push({t:'Chiudere i servizi che non reggono', v:'subito', e:e*0.3,
-        x:'In <i>Analisi dei turni</i> si vede il costo del personale di ogni pranzo e di ogni cena contro l\'incasso medio di quella fascia. In <i>Simulazione</i> si prova a spegnere i servizi in perdita e si legge l\'effetto su settimana, mese e anno prima di decidere.'});
-      cure.push({t:'Upselling e cross-selling in sala', v:'medio', e:a.ricavi*0.03,
-        x:'Alzare il coperto medio è l\'altra metà del recupero: percorso di vendita per la sala, suggerimenti codificati sui piatti e sui drink a margine alto, obiettivo di vendita per turno.'});
-      cure.push({t:'Piatti smart e spinta sui dolci', v:'medio', e:a.ricavi*0.015,
-        x:'Inserire in carta piatti a marginalità alta e preparazione semplice, e lavorare il dessert come vendita a sé: è la voce che più spesso si perde per strada a fine servizio.'});
-      cure.push({t:'Fonti di reddito aggiuntive', v:'medio', e:null,
-        x:'Canali che si pagano solo quando portano lavoro — TheFork, Deliveroo e simili — per riempire le fasce vuote senza aggiungere costi fissi.'});
+    const tgt=num(t.ru), dpp=a.incRu*100-tgt, e=extra(a.incRu,tgt);
+    const z=zone(a.incRu,tgt,[5,10]);
+    const ore=oreAttendibili(d);
+    const sc=ore.ok?scalaProd(d.prod):null;
+    const costoOra=ore.ok?ore.implicito:NaN;
+    const diag=[], ver=[], cause=[];
+    if(!ore.ok && d.ot.fonte){
+      ver.push(`Le ore e le paghe non si parlano: ${ore.perche}. Finché non quadrano la produttività oraria non si può dichiarare, e con lei metà della lettura sul personale.`);
     }
-    out.push({area:'Risorse umane', k:'ru', inc:a.incRu, tgt:num(t.ru), dpp, euro:e,
-      z:zone(a.incRu,num(t.ru),[5,10]),
-      sommario: dpp>0
-        ? `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(num(t.ru))}%: ${fmtE(e)} di extracosto sul periodo.`
-        : `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(num(t.ru))}%: area in obiettivo.`,
-      prod:d.prod, prodScala:sc, costoOra, diag, ver, cure});
+    if(dpp>0){
+      if(sc) diag.push(`La produttività oraria è <b>${sc.t}</b>: ${fmtE(d.prod)} di fatturato per ogni ora lavorata, con un costo orario medio di ${fmtE(costoOra)}/h.`);
+      diag.push(dpp>10
+        ? `Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo del ${fmtNum(tgt)}%: oltre i dieci punti non è una questione di sfumature, c'è <b>extracosto da tagliare</b> per ${fmtE(e)} sul periodo.`
+        : `Lo scostamento è di <b>${puntiTxt(dpp)}</b> sopra l'obiettivo: siamo nella zona in cui la causa è <b>mista</b>. Si recupera tagliando un po' di ore e insieme alzando il coperto medio, non facendo solo una delle due cose.`);
+      const cx=contesto(a.incRu,'Ru'); if(cx) diag.push(cx);
+
+      /* --- le cause, una per una --- */
+      if(sc && sc.z<=1){
+        cause.push(C('L\'ora rende, ma costa troppo',
+          `La produttività è ${sc.t} (${fmtE(d.prod)}/h): il locale incassa bene per ogni ora lavorata. Se l'incidenza resta alta, il peso non viene dal numero di ore ma da quanto costa ciascuna, ${fmtE(costoOra)}/h.`,
+          [{t:'Inquadramenti e figure di responsabilità', v:'medio', e:e*0.3,
+            x:'Verificare i livelli contrattuali rispetto al ruolo effettivo e quante figure di responsabilità si sovrappongono sullo stesso turno: due responsabili insieme costano come tre operativi.'},
+           {t:'Straordinari pianificati, non subiti', v:'subito', e:e*0.25,
+            x:'Lo straordinario non programmato è la voce che gonfia il costo orario senza che nessuno se ne accorga: si prevede sui picchi noti e si copre con l\'organizzazione, non a fine servizio.'},
+           {t:'Maggiorazioni di notturni e festivi', v:'medio', e:e*0.15,
+            x:'Controllare come sono distribuiti i turni che fanno scattare le maggiorazioni: spesso bastano piccoli spostamenti di orario per ridurle senza togliere copertura.'}]));
+        ver.push('Verificare sulle buste paga il costo orario medio reale, separando ordinario, straordinario e maggiorazioni.');
+      }
+      if(sc && sc.z>=2){
+        cause.push(C('Troppe ore per quello che entra',
+          `La produttività è ${sc.t} (${fmtE(d.prod)}/h). Il costo orario medio è ${fmtE(costoOra)}/h, quindi il problema non sono le paghe: sono le ore messe in campo rispetto all'incasso.`,
+          [{t:'Ingressi scaglionati', v:'subito', e:e*0.3,
+            x:'Non far entrare tutti insieme: spostare gli ingressi sul momento in cui il servizio parte davvero. Due o tre ore al giorno recuperate pesano molto sul mese e non si vedono in sala.'},
+           {t:'Chiudere i servizi che non reggono', v:'subito', e:e*0.3,
+            x:'In Analisi dei turni si legge il costo del personale di ogni pranzo e di ogni cena contro l\'incasso medio di quella fascia; in Simulazione si prova a spegnere i servizi in perdita e si vede l\'effetto su settimana, mese e anno prima di decidere.'}]));
+      }
+      const sq=squilibrioServizi();
+      if(sq) cause.push(C('Le ore stanno dove non c\'è l\'incasso',
+        `La media nasconde la differenza: ${sq.peggio.et} pesa il ${fmtP(sq.peggio.inc)} di personale, ${sq.meglio.et} il ${fmtP(sq.meglio.inc)}. Sono ${puntiTxt(sq.dpp)} di distanza fra due servizi dello stesso locale.`,
+        [{t:'Ribilanciare le ore fra i servizi', v:'subito', e:e*0.25,
+          x:`Togliere ore da ${sq.peggio.et} e, dove serve, rinforzare ${sq.meglio.et}. Non è un taglio di organico: è spostare le stesse persone dove il lavoro c'è.`}]));
+      const og=organicoRigido();
+      if(og) cause.push(C('Organico tarato sui mesi pieni',
+        `A ${og.magro.mese} l'incidenza è ${fmtP(og.magro.inc)}, a ${og.grasso.mese} ${fmtP(og.grasso.inc)}: ${puntiTxt(og.dpp)} di differenza. Le ore restano ferme mentre il fatturato cambia, quindi nei mesi magri si paga a vuoto.`,
+        [{t:'Far seguire le ore al calendario', v:'medio', e:e*0.2,
+          x:'Part-time verticale, contratti stagionali, monte ore che si gonfia e si sgonfia con la domanda invece di restare piatto tutto l\'anno.'}]));
+      const tu=turnoverOrganico();
+      if(tu) cause.push(C('Entrate e uscite frequenti',
+        `Nell'anno si contano ${tu.cambi} cambi nell'organico. Ogni sostituzione costa fra 500 e 1.500 € fra ricerca, inserimento e le prime settimane a mezzo regime — e quel costo non si vede da nessuna parte, se non qui dentro.`,
+        [{t:'Percorso di inserimento standard', v:'medio', e:null,
+          x:'Una procedura scritta di affiancamento accorcia le settimane di rodaggio; condizioni e turni prevedibili riducono le uscite. È la cura più lenta e quella che rende di più nel tempo.'}]));
+      /* le leve sul fatturato valgono sempre nella zona mista */
+      if(dpp<=10) cause.push(C('Il denominatore: si incassa poco per coperto',
+        'Nella zona mista metà del recupero non sta nel taglio ma nella vendita: con lo stesso organico e un coperto medio più alto l\'incidenza rientra da sola.',
+        [{t:'Upselling e cross-selling in sala', v:'medio', e:a.ricavi*0.03,
+          x:'Percorso di vendita per la sala, suggerimenti codificati sui piatti e sui drink a margine alto, obiettivo di vendita per turno.'},
+         {t:'Piatti smart e spinta sui dolci', v:'medio', e:a.ricavi*0.015,
+          x:'Piatti a marginalità alta e preparazione semplice in carta, e il dessert lavorato come vendita a sé: è la voce che più spesso si perde a fine servizio.'},
+         {t:'Fonti di reddito aggiuntive', v:'medio', e:null,
+          x:'Canali che si pagano solo quando portano lavoro — TheFork, Deliveroo e simili — per riempire le fasce vuote senza aggiungere costi fissi.'}]));
+    }
+    const cf=conferma('incRu',tgt);
+    out.push({area:'Risorse umane', k:'ru', inc:a.incRu, tgt, dpp, euro:e, z,
+      episodio: (z>=2 && !cf.conf && d.per && d.per.tipo==='mese'),
+      sommario: dpp>0 ? `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(tgt)}%: ${fmtE(e)} di extracosto sul periodo.`
+                      : `${fmtP(a.incRu)} contro un obiettivo del ${fmtNum(tgt)}%: area in obiettivo.`,
+      prod: ore.ok?d.prod:NaN, prodScala:sc, costoOra, oreOk:ore, diag, ver, cause,
+      cure: cause.reduce((acc,c)=>acc.concat(c.cure),[])});
   }
 
-  /* ---- materia prima ---- */
+  /* ======== materia prima ======== */
   if(isFinite(a.incMp)){
-    const dpp=a.incMp*100-num(t.mp), e=extra(a.incMp,num(t.mp));
-    const diag=[], cure=[], ver=[];
+    const tgt=num(t.mp), dpp=a.incMp*100-tgt, e=extra(a.incMp,tgt);
+    const z=zone(a.incMp,tgt,[5,10]);
+    const diag=[], ver=[], cause=[];
     const incF=a.ricaviFood>0?a.mpFood/a.ricaviFood:NaN;
     const incB=a.ricaviBev>0?a.mpBev/a.ricaviBev:NaN;
     if(isFinite(incF)) diag.push(`Food al <b>${fmtP(incF)}</b> (riferimento 32%), Beverage al <b>${isFinite(incB)?fmtP(incB):'—'}</b> (riferimento 24%).`);
-    /* il metodo del delta: ideale da schede contro reale di bilancio */
+    /* il metodo del delta */
     const delta=[];
     if(d.idealeF!=null && isFinite(incF)) delta.push({n:'Food', id:d.idealeF, re:incF, d:(incF-d.idealeF)*100});
     if(d.idealeB!=null && isFinite(incB)) delta.push({n:'Beverage', id:d.idealeB, re:incB, d:(incB-d.idealeB)*100});
+    /* le schede vecchie mentono: il delta non si legge */
+    const agg=(S.mpSchede&&S.mpSchede.agg)||'';
+    let vecchie=false;
+    if(agg){ const g=(Date.now()-new Date(agg+'T12:00:00').getTime())/86400000; vecchie=g>183; }
     if(delta.length){
       const dove=x=> x.d>4 ? 'dispersione certa' : x.d>2 ? 'zona migliorabile' : 'divario fisiologico';
       diag.push('Il confronto fra le schede ricetta e il bilancio: '
         + delta.map(x=>`<b>${x.n}</b> ${fmtP(x.id)} sulle schede contro ${fmtP(x.re)} reale, <b>${puntiTxt(x.d)}</b> di divario — ${dove(x)}`).join('; ') + '.');
+    }
+    const cx=contesto(a.incMp,'Mp'); if(cx) diag.push(cx);
+    if(dpp>0 || delta.some(x=>x.d>2)){
       const grosso=delta.filter(x=>x.d>4), medio=delta.filter(x=>x.d>2&&x.d<=4), piccolo=delta.filter(x=>x.d<=2);
-      if(grosso.length) diag.push(`Su ${grosso.map(x=>x.n.toLowerCase()).join(' e ')} un divario di quella misura non si spiega con il pricing: è <b>dispersione</b> — sprechi, omaggi non registrati, errori di dosaggio, scarti, ammanchi. È lì che sta il recupero, non nei listini.`);
-      if(medio.length)  diag.push(`Su ${medio.map(x=>x.n.toLowerCase()).join(' e ')} il divario è nella fascia migliorabile: un po' di dispersione c'è, ma non è la causa principale.`);
-      if(piccolo.length) diag.push(`Su ${piccolo.map(x=>x.n.toLowerCase()).join(' e ')} il divario è fisiologico, quindi la dispersione <b>non è il problema</b>: se l'incidenza resta alta è perché è alto il food cost teorico stesso — pricing, dosaggi previsti o prezzi di acquisto.`);
-      grosso.forEach(x=>ver.push(`${x.n}: inventario di reparto e confronto fra consumo teorico e consumo reale su tre o quattro referenze pesanti.`));
+      if(grosso.length) cause.push(C('Dispersione',
+        `Su ${grosso.map(x=>x.n.toLowerCase()).join(' e ')} il divario fra schede e bilancio è di ${grosso.map(x=>puntiTxt(x.d)).join(' e ')}: una differenza così non si spiega con il pricing. È prodotto che esce e non viene venduto — sprechi, scarti, omaggi non registrati, errori di dosaggio, rotture, scadenze, ammanchi.`,
+        [{t:'Inventario di reparto sulle referenze pesanti', v:'subito', e:e*0.3,
+          x:'Prendere tre o quattro referenze che pesano e confrontare il consumo teorico con quello reale. È il modo più rapido per capire dove se ne va il prodotto, e di solito bastano poche voci a spiegare quasi tutto il divario.'},
+         {t:'Registrare omaggi, autoconsumi e rotture', v:'subito', e:null,
+          x:'Non è un costo in più: è un costo che oggi c\'è e non si vede. Registrarlo lo porta nei Costi nascosti, dove si misura e si contiene.'},
+         {t:'Etichette, rotazione FIFO e scadenze', v:'subito', e:e*0.15,
+          x:'Etichettatura leggibile e aggiornata, primo entrato primo uscito, e un controllo di quello che sta per scadere: buona parte dello spreco nasce da prodotto dimenticato, non da porzioni generose.'}]));
+      if(medio.length) cause.push(C('Dosaggio e porzioni',
+        `Su ${medio.map(x=>x.n.toLowerCase()).join(' e ')} il divario è nella fascia migliorabile: le porzioni reali non coincidono con quelle delle schede, ma la dispersione non è la causa principale.`,
+        [{t:'Pesare le porzioni reali', v:'subito', e:e*0.25,
+          x:'Dieci piatti e dieci drink pesati e confrontati con la scheda dicono in mezza giornata dove la grammatura è scappata.'},
+         {t:'Jigger al bar e pour test', v:'subito', e:e*0.15,
+          x:'Dosatori obbligatori sui cocktail e prove di versata periodiche con lo staff: sul beverage è l\'intervento con il rapporto costo-risultato migliore.'}]));
+      if(piccolo.length && dpp>0) cause.push(C('Pricing e prezzi di acquisto',
+        `Su ${piccolo.map(x=>x.n.toLowerCase()).join(' e ')} il divario fra schede e bilancio è fisiologico: il prodotto non si disperde. Se l'incidenza è comunque alta è perché è alto il food cost teorico stesso — cioè come sono costruiti i prezzi, o quanto si paga la merce.`,
+        [{t:'Audit delle fatture contro il listino', v:'subito', e:e*0.2,
+          x:'Controllare che i prezzi applicati in fattura siano quelli concordati: i piccoli aumenti sulle referenze ad alto volume passano inosservati e si mangiano il margine.'},
+         {t:'Referenze pesanti rimesse a gara', v:'medio', e:e*0.25,
+          x:'Riaprire il confronto sui fornitori delle voci che pesano, portando in trattativa i volumi reali, e consolidare gli ordini per alzare gli sconti quantità.'},
+         {t:'Revisione dei prezzi di vendita', v:'medio', e:e*0.25,
+          x:'Rivedere i prezzi dove il margine non regge e spostare la spinta sui piatti e sui drink che rendono. Qui si innesta il menu engineering vero e proprio.'}]));
+      if(!delta.length) ver.push('Compilare la «% da schede ricetta» nel Conto economico: senza il food cost ideale non si distingue la dispersione dal pricing, e sono due cure diverse.');
+      if(vecchie) ver.push(`Le schede ricetta risultano aggiornate al ${agg.split('-').reverse().join('/')}: con più di sei mesi sulle spalle il confronto con il bilancio non regge, perché i prezzi di acquisto nel frattempo sono cambiati. Rifarle è il primo passo.`);
+      const mb=mpBallerina();
+      if(mb) cause.push(C('Si registrano gli acquisti, non i consumi',
+        `L'incidenza della materia prima balla di ${puntiTxt(mb.dpp)} da un mese all'altro, fra il ${fmtP(mb.min)} e il ${fmtP(mb.max)}. Oscillazioni così non vengono dalla cucina: vengono dagli acquisti grossi che cadono tutti su un mese, mentre il prodotto si consuma nei successivi.`,
+        [{t:'Inventario di fine mese', v:'medio', e:null,
+          x:'Senza rimanenze stiamo misurando quello che è entrato, non quello che è stato usato. Un inventario anche sommario a fine mese rende confrontabili i mesi fra loro e rende attendibile tutto il resto.'}]));
     }
-    if(!delta.length) ver.push('Compilare la «% da schede ricetta» nel Conto economico: senza il food cost ideale non si può dire se il problema è dispersione o pricing, e sono due cure diverse.');
-    if(dpp>0){
-      diag.push(`Lo scostamento complessivo è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)} sul periodo. La materia prima sopra obiettivo è extracosto: qui non c'è zona grigia.`);
-      const cxm=contesto(a.incMp,'Mp'); if(cxm) diag.push(cxm);
-      cure.push({t:'Listini e condizioni di acquisto', v:'medio', e:e*0.3,
-        x:'Rimettere a gara le referenze più pesanti, verificare i prezzi effettivamente applicati in fattura contro il listino concordato, consolidare gli ordini per alzare gli sconti quantità.'});
-      cure.push({t:'Dosi e grammature', v:'subito', e:e*0.25,
-        x:'Pesare le porzioni reali contro le schede su una decina di piatti e drink, dotare il bar di dosatori, formare chi esegue. È la cura più veloce quando il divario fra ideale e reale è grosso.'});
-      cure.push({t:'Registrare omaggi, autoconsumi e rotture', v:'subito', e:null,
-        x:'Non è un costo in più: è un costo che oggi c\'è e non si vede. Registrarlo lo porta nei Costi nascosti, dove si può misurare e contenere.'});
-      cure.push({t:'Pricing e revisione della carta', v:'medio', e:e*0.25,
-        x:'Rivedere i prezzi dove il margine non regge e spostare la spinta sui piatti e sui drink che rendono. Qui si innesta il menu engineering vero e proprio.'});
-    }
-    out.push({area:'Materia prima', k:'mp', inc:a.incMp, tgt:num(t.mp), dpp, euro:e,
-      z:zone(a.incMp,num(t.mp),[5,10]),
-      sommario: dpp>0
-        ? `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(num(t.mp))}%: ${fmtE(e)} di extracosto sul periodo.`
-        : `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(num(t.mp))}%: area in obiettivo.`,
-      diag, ver, cure});
+    const cf=conferma('incMp',tgt);
+    out.push({area:'Materia prima', k:'mp', inc:a.incMp, tgt, dpp, euro:e, z,
+      episodio: (z>=2 && !cf.conf && d.per && d.per.tipo==='mese'),
+      sommario: dpp>0 ? `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(tgt)}%: ${fmtE(e)} di extracosto sul periodo.`
+                      : `${fmtP(a.incMp)} contro un obiettivo del ${fmtNum(tgt)}%: area in obiettivo.`,
+      diag, ver, cause, cure: cause.reduce((acc,c)=>acc.concat(c.cure),[])});
   }
 
-  /* ---- spese generali ---- */
+  /* ======== spese generali ======== */
   if(isFinite(a.incSg)){
-    const dpp=a.incSg*100-num(t.sg), e=extra(a.incSg,num(t.sg));
-    const diag=[], cure=[], ver=[];
+    const tgt=num(t.sg), dpp=a.incSg*100-tgt, e=extra(a.incSg,tgt);
+    const z=zone(a.incSg,tgt,[5,10]);
+    const diag=[], ver=[], cause=[];
     const gr={};
     (S.sg||[]).forEach(c=>{ const v=d.completi.reduce((x,r)=>x+num(c.m[r.i]),0);
       if(v>0) gr[c.gruppo]=(gr[c.gruppo]||0)+v; });
     const top=Object.entries(gr).sort((x,y)=>y[1]-x[1]).slice(0,3);
     if(top.length) diag.push('I gruppi che pesano di più sono '+top.map(([g,v])=>`<b>${g}</b> (${fmtE(v)}, ${fmtP(v/a.ricavi)} dei ricavi)`).join(', ')+'.');
-    if(dpp>0){
-      const cxs=contesto(a.incSg,'Sg'); if(cxs) diag.push(cxs);
-      diag.push(`Lo scostamento è di <b>${puntiTxt(dpp)}</b>, pari a ${fmtE(e)}. Le voci di spesa generale sono poche e in buona parte rigide: vanno guardate una per una per capire se c'è davvero qualcosa da tagliare. Dove non c'è, la strada non è il taglio ma <b>alzare il fatturato</b> finché l'incidenza rientra.`);
-      cure.push({t:'Passare le voci una per una', v:'subito', e:e*0.15,
-        x:'Mettere in fila le voci dalla più pesante e, per ognuna, decidere: si rinegozia, si elimina, o è un vincolo. Spesso un terzo della lista non è mai stato riguardato da anni.'});
-      cure.push({t:'Rinegoziare utenze e contratti ricorrenti', v:'medio', e:e*0.2,
-        x:'Energia, gas, software, noleggi, servizi periodici: sono i contratti dove la rinegoziazione dà risultato senza toccare il servizio.'});
-      cure.push({t:'Diluire sul fatturato', v:'medio', e:null,
-        x:'Sulle voci rigide — affitto in testa — l\'incidenza scende solo aumentando il denominatore. Qui la leva è il piano di crescita, non il taglio.'});
+    /* i costi che capitano una volta l'anno non devono falsare il giudizio */
+    const nr=sgNonRicorrenti(d);
+    let incPulita=a.incSg, dppPulito=dpp;
+    if(nr.tot>0){
+      incPulita=(a.sg-nr.tot)/a.ricavi; dppPulito=incPulita*100-tgt;
+      diag.push(`Attenzione a come si legge il periodo: ${fmtE(nr.tot)} vengono da voci che nell'anno compaiono una o due volte — ${nr.voci.slice(0,3).map(v=>`${v.nome} ${fmtE(v.euro)}`).join(', ')}. Non sono spesa corrente: al netto, l'incidenza è <b>${fmtP(incPulita)}</b> invece di ${fmtP(a.incSg)}.`);
     }
-    out.push({area:'Spese generali', k:'sg', inc:a.incSg, tgt:num(t.sg), dpp, euro:e,
-      z:zone(a.incSg,num(t.sg),[5,10]),
-      sommario: dpp>0
-        ? `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(num(t.sg))}%: ${fmtE(e)} di extracosto sul periodo.`
-        : `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(num(t.sg))}%: area in obiettivo.`,
-      diag, ver, cure});
+    const cx=contesto(a.incSg,'Sg'); if(cx) diag.push(cx);
+    if(dppPulito>0){
+      const ePulito=(incPulita-tgt/100)*a.ricavi;
+      diag.push(`Al netto del non ricorrente restano <b>${puntiTxt(dppPulito)}</b> sopra l'obiettivo, cioè ${fmtE(ePulito)}: un <b>costo che oggi il fatturato non sostiene</b>. Le voci di spesa generale sono poche e in buona parte rigide, quindi vanno guardate una per una: dove non c'è niente da tagliare, la strada non è il taglio ma alzare il fatturato finché l'incidenza rientra.`);
+      const rigide=top.filter(([g])=>/struttura|affitt|banche|tasse|imposte/i.test(g));
+      if(rigide.length) cause.push(C('Voci rigide che pesano',
+        `${rigide.map(([g,v])=>`${g} vale ${fmtE(v)}, il ${fmtP(v/a.ricavi)} dei ricavi`).join('; ')}. Sono costi che non si comprimono in un mese: su questi l'incidenza scende solo se cresce il denominatore.`,
+        [{t:'Diluire sul fatturato', v:'medio', e:null,
+          x:`Per portare in linea questa quota servirebbero circa ${fmtE(Math.max(0,(a.sg/(tgt/100))-a.ricavi))} di ricavi in più a parità di spesa. È un obiettivo di crescita, non un taglio: va messo nel piano commerciale.`},
+         {t:'Rinegoziare alla scadenza', v:'lento', e:ePulito*0.2,
+          x:'Affitto e contratti pluriennali si toccano quando scadono: segnare le date e arrivare preparati, con i numeri in mano.'}]));
+      cause.push(C('Contratti ricorrenti mai rivisti',
+        'Energia, gas, software, noleggi, servizi periodici: sono le voci dove la rinegoziazione dà risultato senza toccare il servizio, e quasi sempre sono ferme da anni.',
+        [{t:'Passare le voci una per una', v:'subito', e:ePulito*0.15,
+          x:'Mettere in fila le voci dalla più pesante e, per ognuna, decidere: si rinegozia, si elimina, o è un vincolo. Spesso un terzo della lista non è mai stato riguardato.'},
+         {t:'Rinegoziazione mirata su utenze e noleggi', v:'medio', e:ePulito*0.2,
+          x:'Partire dalle tre voci più pesanti fra quelle comprimibili: sotto quella soglia il tempo speso vale più del risparmio.'}]));
+      const cm=vociCommissioni(d);
+      if(cm) cause.push(C('Commissioni che crescono con il fatturato',
+        `${cm.nomi.slice(0,3).join(', ')} valgono ${fmtE(cm.tot)}, il ${fmtP(cm.inc)} dei ricavi. Sono costi variabili travestiti da spese generali: più si vende, più salgono, quindi non rientrano crescendo.`,
+        [{t:'Rinegoziare le condizioni', v:'medio', e:cm.tot*0.15,
+          x:'Le commissioni su incassi e canali si trattano sui volumi: con i numeri di un anno in mano si ottiene quasi sempre qualcosa. Dove possibile, spingere i mezzi di pagamento meno cari.'}]));
+    }
+    if(nr.tot>0 && dppPulito<=0)
+      diag.push('Al netto delle voci non ricorrenti l\'area è in obiettivo: non c\'è nulla da correggere, serviva solo leggere il periodo per quello che è.');
+    const cf=conferma('incSg',tgt);
+    out.push({area:'Spese generali', k:'sg', inc:a.incSg, tgt, dpp, euro:Math.max(0,(incPulita-tgt/100)*a.ricavi), z,
+      episodio: (z>=2 && !cf.conf && d.per && d.per.tipo==='mese'),
+      nonRic:nr,
+      sommario: dppPulito>0
+        ? `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(tgt)}%${nr.tot>0?`, ${fmtP(incPulita)} al netto del non ricorrente`:''}.`
+        : `${fmtP(a.incSg)} contro un obiettivo del ${fmtNum(tgt)}%${nr.tot>0?`, ${fmtP(incPulita)} al netto del non ricorrente`:''}: area in obiettivo.`,
+      diag, ver, cause, cure: cause.reduce((acc,c)=>acc.concat(c.cure),[])});
   }
 
-  /* ---- costi nascosti ---- */
+  /* ======== costi nascosti ======== */
   {
-    const dpp=(a.incCn||0)*100-num(t.cn);
-    const diag=[], cure=[], ver=[];
+    const tgt=num(t.cn), dpp=(a.incCn||0)*100-tgt;
+    const diag=[], ver=[], cause=[];
     if(a.cn>0){
-      diag.push(`Sono stati intercettati <b>${fmtE(a.cn)}</b> di costi nascosti, pari al ${fmtP(a.incCn)} del venduto contro una soglia del ${fmtNum(num(t.cn))}%.`);
-      diag.push('Vale la pena ricordare come si legge: se il food cost da schede è il 28%, in Conto economico ci si aspetta di trovare il 30%. Quel due per cento è il costo nascosto fisiologico; quello che eccede è recuperabile.');
+      diag.push(`Sono stati intercettati <b>${fmtE(a.cn)}</b>, pari al ${fmtP(a.incCn)} del venduto contro una soglia del ${fmtNum(tgt)}%.`);
+      diag.push('Come si legge: se il food cost da schede è il 28%, in Conto economico ci si aspetta di trovare il 30%. Quel due per cento è fisiologico; quello che eccede è <b>margine non intercettato</b>, non una spesa in più.');
+      if(dpp>0) cause.push(C('Oltre la soglia fisiologica',
+        `Il ${fmtP(a.incCn)} supera il ${fmtNum(tgt)}% di riferimento: ci sono ${fmtE(a.cn-tgt/100*a.ricavi)} che si possono riportare a margine.`,
+        [{t:'Procedura su autoconsumi e omaggi', v:'subito', e:(a.cn-tgt/100*a.ricavi),
+          x:'Registrazione sistematica di pasti e bevande del personale, omaggi e customer care, rotture e scadenze. Una volta misurati si fissa il tetto e lo si presidia mese per mese.'}]));
     }else{
-      diag.push('Nessun costo nascosto registrato nel periodo. Non significa che non ci siano: autoconsumi, omaggi, prodotti scaduti e dispersioni esistono in ogni locale, e finché non si registrano restano dentro la materia prima senza poter essere misurati.');
+      diag.push('Nessun costo nascosto registrato nel periodo. Non significa che non ci siano: autoconsumi, omaggi, prodotti scaduti e dispersioni esistono in ogni locale, e finché non si registrano restano dentro la materia prima senza poter essere misurati — e senza poter essere ridotti.');
       ver.push('Introdurre la registrazione quotidiana di autoconsumi, omaggi, rotture e prodotti scaduti, anche solo su un foglio in cucina e uno al bar.');
     }
-    if(dpp>0) cure.push({t:'Procedura su autoconsumi e omaggi', v:'subito', e:(a.cn-num(t.cn)/100*a.ricavi),
-      x:'Registrazione sistematica di pasti e bevande del personale, omaggi e customer care, rotture e scadenze. Una volta misurati si fissa il tetto e lo si presidia mese per mese.'});
-    out.push({area:'Costi nascosti', k:'cn', inc:a.incCn||0, tgt:num(t.cn), dpp,
-      euro: dpp>0 ? (a.cn-num(t.cn)/100*a.ricavi) : 0,
-      z:zone(a.incCn||0,num(t.cn),[1,2]),
-      sommario: a.cn>0
-        ? `${fmtE(a.cn)} intercettati, ${fmtP(a.incCn)} del venduto (soglia ${fmtNum(num(t.cn))}%).`
-        : 'Nessun costo nascosto registrato nel periodo.',
-      diag, ver, cure});
+    out.push({area:'Costi nascosti', k:'cn', inc:a.incCn||0, tgt, dpp,
+      euro: dpp>0 ? (a.cn-tgt/100*a.ricavi) : 0,
+      z:zone(a.incCn||0,tgt,[1,2]), episodio:false,
+      sommario: a.cn>0 ? `${fmtE(a.cn)} intercettati, ${fmtP(a.incCn)} del venduto (soglia ${fmtNum(tgt)}%).`
+                       : 'Nessun costo nascosto registrato nel periodo.',
+      diag, ver, cause, cure: cause.reduce((acc,c)=>acc.concat(c.cure),[])});
   }
   return out;
 }
@@ -4823,7 +5029,9 @@ function repDiagnosi(d, annoD){
 /* il piano d'azione: le cure di tutte le aree, ordinate per impatto pesato sulla velocità */
 function repPiano(schede){
   const tutte=[];
-  schede.forEach(sc=>(sc.cure||[]).forEach(c=>{
+  /* un mese storto non confermato da trimestre e anno non genera un piano:
+     si verifica, non si smonta il locale */
+  schede.filter(sc=>!sc.episodio).forEach(sc=>(sc.cure||[]).forEach(c=>{
     const v=VEL[c.v]||VEL.medio;
     tutte.push({...c, area:sc.area, vel:v, peso:(num(c.e)||0)*v.m});
   }));
@@ -4927,7 +5135,7 @@ function renderAN(){
     killChart('an'); return;
   }
 
-  const schede=repDiagnosi(d, (annoLiv && annoLiv.d!==d) ? annoLiv.d : null);
+  const schede=repDiagnosi(d, livelli);
   const rib=repTarget(d);
   const piano=repPiano(schede);
   const controlli=repControlli(d);
@@ -5048,18 +5256,25 @@ function renderAN(){
       ${buCard('Food', a.ricaviFood, a.mpFood, a.ruFood, a.sgFood, t)}
       ${buCard('Beverage', a.ricaviBev, a.mpBev, a.ruBev, a.sgBev, t)}
     </div>
-    ${d.ot.fonte?`<div class="produ">
-      <div><span>Produttività oraria complessiva</span><b>${prodTxt(d.prod)}</b></div>
-      <div><span>Food</span><b>${prodTxt(d.prodF)}</b></div>
-      <div><span>Beverage</span><b>${prodTxt(d.prodB)}</b></div>
-      <div class="fonte">ore prese da ${d.ot.fonte}: ${fmtNum(d.ot.ore)} a settimana</div>
-    </div>`:''}`);
+    ${(()=>{ const ore=oreAttendibili(d);
+      if(ore.ok) return `<div class="produ">
+        <div><span>Produttività oraria complessiva</span><b>${prodTxt(d.prod)}</b></div>
+        <div><span>Food</span><b>${prodTxt(d.prodF)}</b></div>
+        <div><span>Beverage</span><b>${prodTxt(d.prodB)}</b></div>
+        <div class="fonte">ore prese da ${d.ot.fonte}: ${fmtNum(d.ot.ore)} a settimana</div>
+      </div>`;
+      return `<div class="produ nope"><div><span>Produttività oraria</span><b>non calcolabile</b></div>
+        <div class="fonte">${d.ot.fonte?ore.perche:'non ci sono ore caricate né in Analisi dei turni né nell\'organico'}</div></div>`;
+    })()}`);
 
   /* 6..n — le diagnosi, una scheda per area che ha qualcosa da dire */
   schede.filter(sc=>sc.diag.length).sort((x,y)=>(y.euro||0)-(x.euro||0)).forEach(sc=>{
     S_('',`<div class="kicker">Diagnosi · ${sc.area}</div><h3>${sc.dpp>0?'Cosa dicono i numeri':'Area in obiettivo'}</h3>
       <div class="dsom verdict ${ZC[sc.z]}">${sc.sommario}</div>
+      ${sc.episodio?`<div class="episodio">Il mese è fuori obiettivo ma <b>né il trimestre né l'anno lo confermano</b>: lo trattiamo come un episodio da verificare, non come un allarme. Le cure di quest'area restano fuori dal piano finché non si ripete.</div>`:''}
       <div class="dtesto">${sc.diag.map(x=>`<p>${x}</p>`).join('')}</div>
+      ${(sc.cause&&sc.cause.length)?`<div class="dcause"><div class="vt">Cause probabili</div>
+        ${sc.cause.map(c=>`<div class="ca"><div class="cat">${c.t}</div><div class="cax">${c.x}</div></div>`).join('')}</div>`:''}
       ${sc.ver.length?`<div class="dver"><div class="vt">Da verificare prima di decidere</div><ul>${sc.ver.map(x=>`<li>${x}</li>`).join('')}</ul></div>`:''}`);
   });
 
@@ -5240,6 +5455,94 @@ async function exportPPTX(){
     toast('✓ PowerPoint scaricato ('+fname+'): aprilo e personalizzalo liberamente.');
   }catch(e){ toast('Export PowerPoint non riuscito: '+e.message, true); }
 }
+/* ---------------- il foglio unico per il titolare ----------------
+   Le quattordici slide sono per la riunione. Il giorno dopo il titolare è in
+   servizio e guarda il telefono: qui ci sta una pagina sola, con il risultato,
+   la scala e le tre cose da fare. Verticale, perché si legge dal telefono. */
+function stampaUnaPagina(){
+  migrateS();
+  if(repPer.tipo==='mese' && repPer.i===null){ const u=ultimoCompleto(); repPer = u===null?{tipo:'anno',i:null}:{tipo:'mese',i:u}; }
+  const livelli=repLivelli(repPer);
+  if(!livelli.length){ toast('Non ci sono ancora mesi completi da riassumere.', true); return; }
+  const d=livelli[0].d, t=d.t, a=d.a;
+  const schede=repDiagnosi(d, livelli);
+  const piano=repPiano(schede);
+  const roS=a.ricavi*(1-(num(t.ru)+num(t.mp)+num(t.sg))/100);
+  const aree=[{n:'Personale',k:'incRu',tgt:num(t.ru)},{n:'Materia prima',k:'incMp',tgt:num(t.mp)},
+              {n:'Spese generali',k:'incSg',tgt:num(t.sg)},{n:'Costi nascosti',k:'incCn',tgt:num(t.cn),st:[1,2]}];
+  const cel=(x,ar)=>{ const v=x.d.a[ar.k];
+    if(!isFinite(v)) return '<td>—</td>';
+    const z=zone(v,ar.tgt,ar.st||[5,10]);
+    return `<td><span class="p ${ZC[z]}">${fmtP(v)}</span></td>`; };
+  const tre=piano.fase1.slice(0,3).concat(piano.fase2.slice(0,Math.max(0,3-piano.fase1.length))).slice(0,3);
+  const html=`<!doctype html><html lang="it"><head><meta charset="utf-8">
+<title>${S.cliente||'Planet One'} · ${etichettaPeriodo(repPer)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+ @page{size:A4 portrait;margin:0}
+ *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{font:13.5px/1.5 Inter,-apple-system,Helvetica,Arial,sans-serif;color:#1B2A3A;margin:0;background:#fff}
+ .pag{width:210mm;height:297mm;padding:15mm 16mm 12mm;display:flex;flex-direction:column}
+ .top{background:#1B2A3A;color:#fff;border-radius:12px;padding:15px 20px;margin-bottom:16px}
+ .top .m{font:700 9px/1 Inter;letter-spacing:3px;color:#F07F1F;margin-bottom:6px}
+ .top h1{font:600 24px/1.15 Fraunces,Georgia,serif;margin:0 0 3px}
+ .top .s{font-size:12px;color:#A9B4BF}
+ .num3{display:flex;gap:10px;margin-bottom:16px}
+ .num3 > div{flex:1;border:1px solid #E4E1DA;border-radius:11px;padding:11px 13px}
+ .num3 span{font:700 9px/1 Inter;letter-spacing:1.4px;text-transform:uppercase;color:#5D6B79}
+ .num3 b{display:block;font:500 21px/1.1 'IBM Plex Mono',monospace;margin-top:7px;letter-spacing:-.5px}
+ .num3 i{display:block;font-style:normal;font-size:11px;color:#5D6B79;margin-top:4px}
+ .num3 .pos b{color:#2E7D4F} .num3 .neg b{color:#C0392B}
+ h2{font:700 9.5px/1 Inter;letter-spacing:1.8px;text-transform:uppercase;color:#5D6B79;margin:0 0 9px;
+   padding-bottom:6px;border-bottom:1px solid #E4E1DA}
+ table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:18px}
+ th{font:700 9px/1 Inter;letter-spacing:1.2px;text-transform:uppercase;color:#5D6B79;
+   text-align:center;padding:5px 6px;border-bottom:1.5px solid #1B2A3A}
+ th:first-child{text-align:left}
+ td{padding:8px 6px;text-align:center;border-bottom:1px dashed #E4E1DA}
+ td:first-child{text-align:left;font-weight:600}
+ td .p{display:inline-block;border-radius:20px;padding:2px 10px;font-family:'IBM Plex Mono',monospace;font-size:12.5px}
+ .v-ok{background:#EAF4EE;color:#2E7D4F} .v-warn{background:#FBF3DC;color:#8a6a0c}
+ .v-hot{background:#F4E2D8;color:#B4501A} .v-bad{background:#F7E4E1;color:#C0392B}
+ .az{padding:11px 0;border-bottom:1px dashed #E4E1DA}
+ .az:last-child{border-bottom:none}
+ .az .t{font-weight:600;font-size:14.5px}
+ .az .t .v{font:700 9px/1 Inter;letter-spacing:1px;text-transform:uppercase;background:#EAF4EE;color:#2E7D4F;
+   border-radius:20px;padding:2px 8px;margin-left:8px;vertical-align:2px}
+ .az .x{font-size:12.5px;color:#3C4A58;margin-top:3px;line-height:1.5}
+ .rec{margin-top:auto;background:#FBF6EC;border:1px solid #EADFC6;border-radius:12px;padding:14px 18px}
+ .rec .t{font:700 9px/1 Inter;letter-spacing:1.5px;text-transform:uppercase;color:#8A6A0C;margin-bottom:6px}
+ .rec .b{font:600 17px/1.35 Fraunces,Georgia,serif}
+ .pie{margin-top:10px;font-size:10px;color:#8A8680;display:flex;justify-content:space-between}
+ @media screen{ body{background:#55585C;padding:18px} .pag{margin:0 auto;background:#fff;box-shadow:0 2px 14px rgba(0,0,0,.25)} }
+</style></head><body><div class="pag">
+ <div class="top"><div class="m">PLANET ONE</div>
+   <h1>${S.cliente||''}</h1>
+   <div class="s">${etichettaPeriodo(repPer)} · analisi gestionale extracontabile</div></div>
+ <div class="num3">
+   <div><span>Ricavi</span><b>${fmtE(a.ricavi)}</b><i>${d.completi.length} mes${d.completi.length===1?'e':'i'} nei conti</i></div>
+   <div class="${a.ro>=0?'pos':'neg'}"><span>Risultato</span><b>${fmtE(a.ro)}</b><i>${fmtP(a.ro/a.ricavi)} sui ricavi</i></div>
+   <div><span>Obiettivo utile</span><b>${fmtNum(num(t.ro))}%</b><i>${fmtE(a.ricavi*num(t.ro)/100)} sul periodo</i></div>
+ </div>
+ <h2>Le incidenze, da vicino e da lontano</h2>
+ <table>
+   <tr><th></th>${livelli.map(x=>`<th>${x.breve}</th>`).join('')}</tr>
+   ${aree.map(ar=>`<tr><td>${ar.n}</td>${livelli.map(x=>cel(x,ar)).join('')}</tr>`).join('')}
+ </table>
+ <h2>Le tre cose da fare per prime</h2>
+ ${tre.length?tre.map((c,i)=>`<div class="az"><div class="t">${i+1}. ${c.t}<span class="v">${c.vel.t}</span></div><div class="x">${String(c.x).replace(/<[^>]+>/g,'')}</div></div>`).join('')
+   :'<div class="az"><div class="t">Tutte le aree sono in obiettivo</div><div class="x">Il lavoro ora è tenerle lì: monitoraggio mensile e presidio delle procedure in essere.</div></div>'}
+ <div class="rec"><div class="t">Recupero potenziale</div>
+   <div class="b">Riportando le incidenze in obiettivo il risultato passa da ${fmtE(a.ro)} a ${fmtE(roS)}: ${fmtE(roS-a.ro)} in più sul periodo.</div></div>
+ <div class="pie"><span>Planet One · Gestionale F&amp;B</span><span>${new Date().toLocaleDateString('it-IT')}</span></div>
+</div></body></html>`;
+  const w=window.open('','_blank');
+  if(!w){ toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito.', true); return; }
+  w.document.write(html); w.document.close();
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 900);
+}
+
 function printSlides(){
   /* La presentazione si stampa in una finestra sua: niente barra laterale, niente
      comandi, nessun margine dell'applicazione — solo le pagine, in orizzontale.
@@ -5563,6 +5866,7 @@ document.getElementById('nav').addEventListener('click',e=>{
 document.addEventListener('input',e=>{
   const el=e.target;
   if(el.id==='clientName'){ S.cliente=el.value; saveState(); return; }
+  if(el.dataset && el.dataset.mpsagg!==undefined){ migrateS(); S.mpSchede.agg=el.value; saveState(); return; }
   if(el.dataset.t){
     if(el.readOnly) return;                       // l'utile obiettivo si ricava, non si scrive
     S.targets[el.dataset.t]= el.classList.contains('euroin') ? parseIt(el.value) : num(el.value);
@@ -5965,6 +6269,7 @@ document.addEventListener('click',async e=>{
   const rm=b.closest&&b.closest('[data-rmese]');
   if(rm){ migrateS(); const i=+rm.dataset.rmese; S.stag.mesi[i]=!S.stag.mesi[i]; saveState(); renderAN(); return; }
   if(b.id==='anPrint'){ printSlides(); return; }
+  if(b.id==='anUno'){ stampaUnaPagina(); return; }
   if(b.id==='btnReset'){ resetFlow(); return; }
 });
 
