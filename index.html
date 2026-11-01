@@ -487,13 +487,16 @@
   .tutab .pax{font-weight:400;font-size:10px;color:var(--ink2);margin-left:5px;}
   .tutab .pax::before{content:'·';margin-right:4px;color:#C9C4B8;}
   .tutab td.piu{color:var(--bad);} .tutab td.meno{color:var(--ink2);}
-  .tutab tr.rep td{background:#EDEBE7;color:var(--brand);font-weight:600;font-size:10.5px;
-    text-transform:uppercase;letter-spacing:1px;text-align:left;padding:5px 8px;}
+  /* ogni reparto porta la sua intestazione, così i giorni si leggono anche
+     quando si è in fondo alla griglia e non si vede più quella in cima */
+  .tutab tr.rep th{background:#EDEBE7;border-bottom:2px solid var(--ink);padding:5px 8px;}
+  .tutab tr.rep th.lbl{color:var(--brand);font-size:10.5px;letter-spacing:1px;}
+  .tutab tr.rep th.piubox{padding:2px 4px;}
   .tutab tr.somma td{background:#F6F4EF;font-weight:600;border-top:1px solid var(--line);}
   .tutab tr.somma.gran td{border-top:1.5px solid var(--brand);}
   /* un filo di bianco prima di ogni reparto e prima dei totali generali,
      così le sezioni si staccano a colpo d'occhio */
-  .tutab tr.rep.stacco td{border-top:10px solid var(--card);}
+  .tutab tr.rep.stacco th{border-top:10px solid var(--card);}
   .tutab tr.somma.gran.stacco td{border-top:10px solid var(--card);box-shadow:inset 0 1.5px 0 var(--brand);}
   .srvtab{width:100%;border-collapse:collapse;font-size:12.5px;}
   .srvtab th{font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink2);font-weight:600;
@@ -762,7 +765,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v79</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v80</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2379,7 +2382,7 @@ function grigliaTurni(elenco, d, dove){
   };
   /* il numero di persone sta accanto alle ore, piccolo e leggero: si legge se lo cerchi */
   const pz=(n)=>n?`<span class="pax" title="${n} ${n===1?'persona':'persone'} in turno">${n}</span>`:'';
-  const rigaSomma=(et,sm,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl" colspan="2">${et}</td>`+
+  const rigaSomma=(et,sm,j,cl)=>`<tr class="somma ${cl||''}"><td class="lbl">${et}</td>`+
     GIORNI.map((_,g)=>{
       const o = j==null ? sm.ore[g][0]+sm.ore[g][1] : sm.ore[g][j];
       const n = j==null ? Math.max(sm.pax[g][0], sm.pax[g][1]) : sm.pax[g][j];
@@ -2391,8 +2394,11 @@ function grigliaTurni(elenco, d, dove){
   let righe='', nPers=0;
   gruppi.forEach((rep,gi)=>{
     const pp=elenco.filter(r=>r.reparto===rep);
-    righe+=`<tr class="rep${gi?' stacco':''}"><td colspan="14">${rep}</td>
-      <td style="background:#EDEBE7;text-align:center"><button class="minibtn" data-tuadd="${rep}" data-dove="${dove}" title="aggiungi una persona in ${rep}">+</button></td></tr>`;
+    righe+=`<tr class="rep${gi?' stacco':''}">
+      <th class="lbl">${rep}</th>${GIORNI.map(g=>`<th class="gg">${g}</th>`).join('')}
+      <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
+      <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th>
+      <th class="piubox"><button class="minibtn" data-tuadd="${rep}" data-dove="${dove}" title="aggiungi una persona in ${rep}">+</button></th></tr>`;
     pp.forEach(r=>{
       const o=oreSettimana(r), co=costoOrario(r);
       const contr=num(r.c), diff=o.tot-contr;
@@ -2404,7 +2410,6 @@ function grigliaTurni(elenco, d, dove){
           <input data-tun="${r.id}" class="nome" value="${(r.nome||'').replace(/"/g,'&quot;')}" placeholder="nome e cognome">
           <select data-tur="${r.id}" title="reparto">${TU_REP.concat(TU_REP.includes(r.reparto)?[]:[r.reparto]).map(x=>`<option ${x===r.reparto?'selected':''}>${x}</option>`).join('')}</select>
         </div></td>
-        <td class="srv">P</td>
         ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,0)}${cellaOra(r,g,1)}${attrezzi(r,g)}</td>`).join('')}
         <td class="num" rowspan="2" title="ore della settimana tipo">${o.tot?fmtNum(o.tot):'—'}</td>
         <td rowspan="2"><input data-tuc="${r.id}" class="wide" value="${contr||''}" placeholder="—" inputmode="numeric" title="ore a contratto"></td>
@@ -2413,7 +2418,6 @@ function grigliaTurni(elenco, d, dove){
         <td class="num" rowspan="2">${o.tot&&co.v?fmtE(o.tot*co.v):'—'}</td>
         <td rowspan="2"><button class="minibtn del" data-tudel="${r.id}" data-dove="${dove}" title="togli questa persona">✕</button></td></tr>
       <tr class="cena${zeb}">
-        <td class="srv">C</td>
         ${GIORNI.map((_,g)=>`<td class="gg">${cellaOra(r,g,2)}${cellaOra(r,g,3)}</td>`).join('')}</tr>`;
     });
     if(pp.length>1){
@@ -2439,9 +2443,6 @@ function grigliaTurni(elenco, d, dove){
       <button class="btn small tpl" id="appVia" type="button">✕</button>
     </div>` : '';
   return barra+`<div style="overflow-x:auto"><table class="tutab">
-      <tr><th class="lbl">Persona</th><th></th>${GIORNI.map(g=>`<th class="gg">${g}</th>`).join('')}
-        <th title="ore della settimana tipo">Ore</th><th>Contratto</th><th>Diff.</th>
-        <th title="costo orario di questa persona">€/h</th><th>Costo sett.</th><th></th></tr>
       ${righe}
       ${rigaSomma('Ore totali pranzo', tutte, 0, 'gran stacco')}
       ${rigaSomma('Ore totali cena', tutte, 1)}
@@ -2468,7 +2469,7 @@ function renderTU(){
 
   h+=`<section>
     <div class="sechead"><div><h2>Settimana tipo</h2>
-      <div class="sub">Per ogni persona due righe: <b>P</b> è il pranzo, <b>C</b> è la cena. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.<br>Fra una casella e l'altra ci si muove da tastiera: <b>Tab</b> va avanti, <b>Maiusc+Tab</b> indietro, le <b>frecce ↑ ↓</b> e <b>Invio</b> passano dal pranzo alla cena e alla persona sotto.</div></div>
+      <div class="sub">Per ogni persona due righe: sopra il <b>pranzo</b>, sotto la <b>cena</b>. In ogni casella l'ora di inizio e quella di fine — 18, 18:30, 18.30 e 1830 vanno bene uguale. Un turno oltre la mezzanotte si conta da solo: dalle 18 alle 2 sono otto ore, e se all'uso di Excel scrivi 26 al posto di 2 lo capisco lo stesso.<br>Passando sopra una giornata compaiono due pulsantini: <b>⧉</b> copia tutto il blocco, <b>⤓</b> lo incolla. Puoi anche incollare degli orari presi da un foglio o da un messaggio dentro una casella qualsiasi del giorno. Per riordinare le persone prendile dalla maniglia <b>⠿</b> a sinistra del nome e trascinale.<br>Fra una casella e l'altra ci si muove da tastiera: <b>Tab</b> va avanti, <b>Maiusc+Tab</b> indietro, le <b>frecce ↑ ↓</b> e <b>Invio</b> passano dal pranzo alla cena e alla persona sotto.</div></div>
       ${barraFrecce()}</div>`;
   h+=grigliaTurni(S.turni.righe, d, '');
   h+=`<div class="improw" style="margin-top:12px;align-items:center">
