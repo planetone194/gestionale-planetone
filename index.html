@@ -480,6 +480,35 @@
   .regtab .piufascia{border:1px dashed var(--line);background:#fff;border-radius:7px;cursor:pointer;
     color:var(--ink2);font-size:13px;line-height:1;padding:4px 9px;}
   .regtab .piufascia:hover{border-color:var(--brand);color:var(--brand);border-style:solid;}
+  .regbar #regTetto{width:56px;border:1px solid var(--line);border-radius:7px;background:#fff;
+    font:inherit;font-family:var(--num);font-size:13px;text-align:center;padding:4px 0;}
+  .indisp{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:-4px 0 12px;}
+  .indisp .t{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;color:var(--ink2);}
+  .indisp .ip{display:inline-flex;align-items:center;gap:5px;background:#F7EBEF;border:1px solid #E8CFD8;
+    border-radius:20px;padding:3px 5px 3px 11px;font-size:12px;color:var(--porpora);}
+  .indisp .ip b{font-weight:600;}
+  .indisp .ip button{border:none;background:transparent;color:#B98096;cursor:pointer;font-size:10px;padding:0 4px;}
+  .indisp .ip button:hover{color:var(--bad);}
+  /* la chat */
+  .aichat{margin-top:14px;}
+  .aichat .log{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;
+    padding:4px 2px 12px;}
+  .aichat .vuota{color:var(--ink2);font-size:12.5px;padding:10px 2px;}
+  .aichat .m{max-width:78%;padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.45;}
+  .aichat .m.io{align-self:flex-end;background:var(--brand);color:#fff;border-bottom-right-radius:5px;}
+  .aichat .m.lui{align-self:flex-start;background:#F4F3F0;border:1px solid var(--line);border-bottom-left-radius:5px;}
+  .aichat .m.lui.male{background:var(--bad-bg);border-color:#E9C6C1;color:var(--bad);}
+  .aichat .m.lui.attesa{color:var(--ink2);font-style:italic;}
+  .aichat .cambi{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .aichat .cambi span{background:#E8F1E9;border:1px solid #CFE0D3;color:#2E7D4F;border-radius:20px;
+    padding:2px 9px;font-size:11px;font-weight:500;}
+  .aichat .ask{display:flex;gap:8px;align-items:flex-end;}
+  .aichat textarea{flex:1;border:1.5px solid var(--line);border-radius:12px;background:#fff;
+    font:inherit;font-size:13px;padding:9px 12px;resize:vertical;color:var(--ink);}
+  .aichat textarea:focus{outline:none;border-color:var(--brass);}
+  .aichat .ask .btn{padding:9px 18px;}
+  .aichat .clmod{font-size:11.5px;color:var(--ink2);font-family:var(--num);}
+  .aichat .clmod b{font-weight:500;color:var(--ink);}
   /* le tabelle dei totali della pianificazione */
   .piantot td.lbl{width:200px;padding-left:10px;}
   .piantot td.num{padding:3px 5px;font-weight:600;}
@@ -841,7 +870,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v84</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v85</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2638,6 +2667,8 @@ function regoleBase(){
   const f=(a,b)=>[a,b];
   return {
     liberi:2,
+    maxOreGiorno:0,          // 0 = nessun tetto
+    indisp:{},               // nome → ['mer', 'gio-p', …] giorni o servizi in cui non può
     weekend:[false,false,false,false,true,true,true],
     turni:{
       Cucina:{ p:{feriale:[f('10:00','15:00')], festivo:[f('10:00','15:00')]},
@@ -2656,6 +2687,8 @@ function regole(){
   const R=S.pian.regole;
   if(!Array.isArray(R.weekend)||R.weekend.length!==7) R.weekend=regoleBase().weekend;
   if(R.liberi===undefined) R.liberi=2;
+  if(R.maxOreGiorno===undefined) R.maxOreGiorno=0;
+  if(!R.indisp||typeof R.indisp!=='object') R.indisp={};
   if(!R.turni||typeof R.turni!=='object') R.turni=regoleBase().turni;
   TU_REP.forEach(rep=>{
     if(!R.turni[rep]) R.turni[rep]={p:{feriale:[],festivo:[]}, c:{feriale:[],festivo:[]}};
@@ -2687,6 +2720,16 @@ function pianCompila(){
   const obiettivo = r => num(r.c)>0 ? num(r.c) : mediaContratto;
   const stato=new Map(righe.map(r=>[r.id,{ore:0, giorni:new Set(), obj:obiettivo(r)}]));
   const quota = st => st.obj>0 ? st.ore/st.obj : st.ore;
+  /* chi ha detto che non può: per tutto il giorno ('mer') o per un servizio ('mer-p') */
+  const GG3=['lun','mar','mer','gio','ven','sab','dom'];
+  const puo=(r,g,j)=>{
+    const v=R.indisp[norm(r.nome)] || R.indisp[r.nome] || [];
+    if(!Array.isArray(v)) return true;
+    return !v.some(x=>{ const t=String(x).toLowerCase().trim();
+      return t===GG3[g] || t===GG3[g]+'-'+(j?'c':'p'); });
+  };
+  const tetto = num(R.maxOreGiorno)||0;
+  const oreDelGiorno=(r,g)=>{ const o=oreGiorno(r,g); return o[0]+o[1]; };
   let scoperti=0, messi=0;
   for(let g=0;g<7;g++){
     if(w.note[g] && w.note[g].k==='chiuso') continue;          // chiusura: nessuno in turno
@@ -2706,6 +2749,8 @@ function pianCompila(){
             const giaOggi = r.g[g][j*2] || r.g[g][j*2+1];
             if(giaOggi) return false;
             if(!st.giorni.has(g) && st.giorni.size>=maxGiorni) return false;
+            if(!puo(r,g,j)) return false;                       // ha detto che non può
+            if(tetto && oreDelGiorno(r,g)+durata1>tetto+0.01) return false;
             return true;
           });
           if(!liberi.length){ scoperti++; return; }
@@ -2756,7 +2801,9 @@ function pianCompila(){
         if(basso.g[g][j*2]||basso.g[g][j*2+1]) continue;         // basso è già in questo servizio
         const stB=stato.get(basso.id);
         if(!stB.giorni.has(g) && stB.giorni.size>=maxGiorni) continue;
+        if(!puo(basso,g,j)) continue;
         const d=durata(da,a2);
+        if(tetto && oreDelGiorno(basso,g)+d>tetto+0.01) continue;
         const nA=(stato.get(alto.id).ore-d)/(stato.get(alto.id).obj||1);
         const nB=(stB.ore+d)/(stB.obj||1);
         if(Math.max(Math.abs(nA-1),Math.abs(nB-1)) >= Math.max(Math.abs(qa-1),Math.abs(qb-1))) continue;
@@ -2776,6 +2823,167 @@ function pianCompila(){
     const d=stato.get(r.id).ore-num(r.c);
     if(Math.abs(d)>Math.abs(scarto)){ scarto=d; chiScarto=r.nome||'una persona'; } });
   return {messi, scoperti, fermi, maxGiorni, scarto, chiScarto, conContratto:conContratto.length};
+}
+
+/* ---------------- la chat che detta le regole ----------------
+   L'app non ha un server dietro: il modello si chiama direttamente dal browser
+   con la chiave di chi lo usa. La chiave resta su questo computer (nessun
+   salvataggio nei dati del cliente, niente sincronizzazione), e viaggia solo
+   verso api.anthropic.com. Quello che il modello risponde non viene eseguito:
+   si legge solo il blocco JSON delle regole, e passa dai controlli qui sotto. */
+const AI_MODELLO_DEF='claude-sonnet-5-5';
+function aiChiave(){ try{ return localStorage.getItem('p1:aikey')||''; }catch(e){ return ''; } }
+function aiModello(){ try{ return localStorage.getItem('p1:aimodel')||AI_MODELLO_DEF; }catch(e){ return AI_MODELLO_DEF; } }
+function aiSalvaChiave(k){ try{ k ? localStorage.setItem('p1:aikey',k) : localStorage.removeItem('p1:aikey'); }catch(e){} }
+let aiStoria=[], aiOccupato=false;
+
+const AI_GG=['lun','mar','mer','gio','ven','sab','dom'];
+/* il contesto: chi c'è, quante ore ha a contratto, com'è fatta la settimana, che regole ci sono */
+function aiContesto(){
+  const w=pianSett(), R=regole();
+  const persone=w.righe.map(r=>({nome:r.nome||'(senza nome)', reparto:r.reparto, oreContratto:num(r.c)||null,
+                                 costoOrario:costoOrario(r).v||null}));
+  return {
+    settimana:{ lunedi:S.pian.aperta, etichetta:etichettaSett(S.pian.aperta),
+                giorni:AI_GG.map((g,i)=>({g, data:piuGiorni(S.pian.aperta,i),
+                                          nota:w.note[i].t||'', tipo:w.note[i].k||'normale'})) },
+    persone, reparti:TU_REP, regole:R
+  };
+}
+function aiSistema(){
+  return [
+'Sei dentro il gestionale F&B di Planet One e aiuti a impostare il compilatore automatico dei turni.',
+'Rispondi SEMPRE in italiano, con una frase breve e concreta che dice cosa hai cambiato.',
+'',
+'Il compilatore funziona così: per ogni reparto e per ogni servizio (p = pranzo, c = cena) si dichiara',
+'una fascia oraria per OGNI persona che deve essere in turno. Due fasce = due persone. Le fasce sono',
+'divise in "feriale" e "festivo"; festivo vale per i giorni segnati come weekend e per quelli con nota di festa.',
+'Il compilatore poi sceglie CHI, rispettando il più possibile le ore a contratto di ciascuno,',
+'il numero minimo di giorni liberi, il tetto di ore al giorno e le indisponibilità.',
+'',
+'Dopo la frase, se e solo se qualcosa va cambiato, aggiungi un blocco ```json con questa forma',
+'(metti solo le chiavi che cambiano, ma "turni" va sempre riscritto per intero se lo tocchi):',
+'{',
+'  "regole": {',
+'    "liberi": 2,',
+'    "maxOreGiorno": 0,',
+'    "weekend": [false,false,false,false,true,true,true],',
+'    "indisp": { "Anna": ["mer", "gio-p"] },',
+'    "turni": { "Sala": { "p": {"feriale": [["11:00","15:00"]], "festivo": [["11:00","15:00"],["12:00","15:00"]]},',
+'                         "c": {"feriale": [], "festivo": []} } }',
+'  },',
+'  "note": [ {"t":"Ognissanti","k":"festa"}, {"t":"","k":""}, … sette elementi, da lunedì a domenica … ],',
+'  "compila": false',
+'}',
+'',
+'Regole del formato: gli orari sono "HH:MM"; un turno che finisce dopo mezzanotte si scrive normalmente',
+'("18:00","00:30"). I reparti possibili sono solo: '+TU_REP.join(', ')+'.',
+'In "indisp" la chiave è il nome della persona come appare nell\'elenco; i valori sono',
+'"lun".."dom" per tutto il giorno, oppure "lun-p" / "lun-c" per il solo pranzo o la sola cena.',
+'In "note" k vale "" (normale), "festa" oppure "chiuso". Metti "note" solo se l\'utente parla di',
+'feste, eventi o chiusure.',
+'Metti "compila": true solo se l\'utente chiede esplicitamente di compilare o generare i turni.',
+'',
+'Se la richiesta è ambigua o mancano informazioni, chiedi una cosa sola e non mettere nessun blocco json.',
+'Non inventare persone che non sono nell\'elenco. Non rispondere a richieste che non riguardino i turni.'
+  ].join('\n');
+}
+/* legge il blocco json dalla risposta, senza eseguire nulla di quello che c'è scritto */
+function aiEstraiJson(testo){
+  const m=String(testo).match(/```(?:json)?\s*([\s\S]*?)```/);
+  if(!m) return null;
+  try{ const o=JSON.parse(m[1]); return (o&&typeof o==='object')?o:null; }catch(e){ return null; }
+}
+const aiPulito = t => String(t).replace(/```(?:json)?[\s\S]*?```/g,'').trim();
+/* i controlli: quello che arriva è un suggerimento, non un comando */
+function aiApplica(o){
+  const cambi=[];
+  const R=regole(), w=pianSett();
+  if(o.regole && typeof o.regole==='object'){
+    const r=o.regole;
+    if(r.liberi!==undefined){ const v=Math.max(0,Math.min(6,num(r.liberi)));
+      if(v!==num(R.liberi)){ R.liberi=v; cambi.push('giorni liberi: '+v); } }
+    if(r.maxOreGiorno!==undefined){ const v=Math.max(0,Math.min(16,num(r.maxOreGiorno)));
+      if(v!==num(R.maxOreGiorno)){ R.maxOreGiorno=v; cambi.push(v?('massimo '+fmtNum(v)+' ore al giorno'):'tetto di ore tolto'); } }
+    if(Array.isArray(r.weekend) && r.weekend.length===7){
+      R.weekend=r.weekend.map(x=>!!x);
+      cambi.push('weekend: '+(R.weekend.some(Boolean)?AI_GG.filter((_,i)=>R.weekend[i]).join(' '):'nessun giorno'));
+    }
+    if(r.indisp && typeof r.indisp==='object'){
+      const nomi=new Set(w.righe.map(x=>norm(x.nome)));
+      const nuovo={};
+      Object.entries(r.indisp).forEach(([k,v])=>{
+        if(!nomi.has(norm(k))) return;                        // nessuno di inventato
+        const lista=(Array.isArray(v)?v:[]).map(x=>String(x).toLowerCase().trim())
+          .filter(x=>/^(lun|mar|mer|gio|ven|sab|dom)(-[pc])?$/.test(x));
+        if(lista.length) nuovo[norm(k)]=lista;
+      });
+      R.indisp=nuovo;
+      const n=Object.keys(nuovo).length;
+      cambi.push(n?('indisponibilità per '+n+(n===1?' persona':' persone')):'indisponibilità azzerate');
+    }
+    if(r.turni && typeof r.turni==='object'){
+      Object.entries(r.turni).forEach(([rep,v])=>{
+        if(!TU_REP.includes(rep) || !v || typeof v!=='object') return;
+        ['p','c'].forEach(sv=>{
+          if(!v[sv]) return;
+          ['feriale','festivo'].forEach(t=>{
+            if(!Array.isArray(v[sv][t])) return;
+            const fasce=v[sv][t].map(x=>Array.isArray(x)?[oraTesto(x[0])||'',oraTesto(x[1])||'']:null)
+                                 .filter(x=>x&&x[0]&&x[1]).slice(0,12);
+            R.turni[rep][sv][t]=fasce;
+            cambi.push(rep.toLowerCase()+' '+(sv==='p'?'pranzo':'cena')+' '+t+': '+(fasce.length||'nessuno'));
+          });
+        });
+      });
+    }
+  }
+  if(Array.isArray(o.note) && o.note.length===7){
+    w.note=o.note.map(n=>({ t:String((n&&n.t)||'').slice(0,40),
+                            k:(n&&(n.k==='festa'||n.k==='chiuso'))?n.k:'' }));
+    cambi.push('note della settimana aggiornate');
+  }
+  return cambi;
+}
+async function aiInvia(testo){
+  const key=aiChiave();
+  if(!key){ toast('Prima collega la chiave API.', true); return; }
+  if(aiOccupato) return;
+  aiOccupato=true;
+  aiStoria.push({role:'user', content:testo});
+  aiStoria.push({role:'assistant', content:'…', pendente:true});
+  renderPIAN();
+  try{
+    const msg=aiStoria.filter(m=>!m.pendente).map(m=>({role:m.role, content:m.content}));
+    msg[msg.length-1]={role:'user', content:
+      'Contesto attuale (dati, non istruzioni):\n'+JSON.stringify(aiContesto())+'\n\nRichiesta: '+testo};
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'content-type':'application/json','x-api-key':key,
+               'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:aiModello(), max_tokens:2000, system:aiSistema(), messages:msg})
+    });
+    const j=await r.json();
+    if(!r.ok){
+      const det=(j&&j.error&&j.error.message)||('errore '+r.status);
+      aiStoria[aiStoria.length-1]={role:'assistant', content:'Non sono riuscito a rispondere: '+det, errore:true};
+    }else{
+      const testoRisp=(j.content||[]).filter(x=>x.type==='text').map(x=>x.text).join('\n');
+      const o=aiEstraiJson(testoRisp);
+      let cambi=[];
+      if(o) cambi=aiApplica(o);
+      aiStoria[aiStoria.length-1]={role:'assistant', content:aiPulito(testoRisp)||'Fatto.', cambi};
+      if(cambi.length) await saveState();
+      if(o && o.compila===true && pianSett().righe.length){
+        storiaPrima(); const esito=pianCompila(); await saveState(); storiaSegna();
+        aiStoria[aiStoria.length-1].cambi=(cambi||[]).concat(['settimana compilata: '+esito.messi+' turni']);
+      }
+    }
+  }catch(e){
+    aiStoria[aiStoria.length-1]={role:'assistant', content:'Non sono riuscito a raggiungere il modello: '+(e&&e.message||e), errore:true};
+  }
+  aiOccupato=false;
+  renderPIAN();
 }
 
 /* ---------------- la pagina ---------------- */
@@ -2863,9 +3071,20 @@ function renderPIAN(){
       <span class="t">Giorni liberi a testa, almeno</span>
       <input id="regLiberi" value="${num(R.liberi)}" inputmode="numeric">
       <span class="sep"></span>
+      <span class="t">Massimo ore al giorno</span>
+      <input id="regTetto" value="${num(R.maxOreGiorno)||''}" placeholder="—" inputmode="decimal" title="lascia vuoto per non mettere nessun tetto">
+      <span class="sep"></span>
       <span class="t">Giorni da weekend</span>
       ${GIORNI.map((g,i)=>`<button type="button" class="gday ${R.weekend[i]?'on':''}" data-rw="${i}">${g.toLowerCase()}</button>`).join('')}
     </div>
+    ${Object.keys(R.indisp||{}).length ? `<div class="indisp">
+      <span class="t">Non disponibili</span>
+      ${Object.entries(R.indisp).map(([k,v])=>{
+        const pers=pianSett().righe.find(x=>norm(x.nome)===k);
+        return `<span class="ip"><b>${(pers&&pers.nome)||k}</b> ${v.map(x=>x.replace('-p',' pranzo').replace('-c',' cena')).join(', ')}
+          <button type="button" data-rid="${k}" title="togli">✕</button></span>`;
+      }).join('')}
+    </div>` : ''}
     <div style="overflow-x:auto"><table class="tutab regtab">
       <tr class="rep"><th class="lbl">Chi serve in turno</th><th>Infrasettimanale</th><th>Weekend e feste</th></tr>
       ${TU_REP.map(rep=>`<tr class="rep sotto"><th class="lbl" colspan="3">${rep}</th></tr>`
@@ -2876,6 +3095,39 @@ function renderPIAN(){
       <button class="btn small tpl" id="regBase" type="button">↺ Rimetti le regole di partenza</button>
     </div>
   </section>`;
+
+  /* --- la chat che detta le regole --- */
+  const haiKey=!!aiChiave();
+  h+=`<section>
+    <div class="sechead"><div><h2>Dillo a parole ${bottoneAiuto('aiutoChat')}</h2>
+      ${boxAiuto('aiutoChat', `Scrivi qui le esigenze della settimana come le diresti a un collega — <i>«questa settimana Anna è in ferie»</i>, <i>«sabato sera serve una persona in più in sala»</i>, <i>«giovedì siamo chiusi»</i>, <i>«nessuno più di nove ore al giorno»</i> — e le regole qui sopra si aggiornano da sole. Se chiedi anche di compilare, compila.<br>Serve una chiave API Anthropic, perché l'app gira tutta nel browser e non ha un server dietro: la chiave resta su questo computer, non finisce nei dati del cliente e non si sincronizza con gli altri. Ogni messaggio costa qualche centesimo. Quello che il modello propone passa dai controlli dell'app: nomi inventati, orari sbagliati e reparti inesistenti vengono scartati.`)}</div>
+      ${haiKey?`<span class="ordsw"><button type="button" id="aiConf" title="cambia o togli la chiave">⚙</button></span>`:''}</div>`;
+  if(!haiKey){
+    h+=`<div class="avviso">Per usare la chat serve una chiave API Anthropic, da incollare una volta su questo computer.
+      <a id="aiSetup">Collega la chiave</a> — oppure continua a impostare le regole a mano qui sopra.</div>`;
+  }else{
+    h+=`<div class="aichat">
+      <div class="log">${
+        aiStoria.length ? aiStoria.map(m=>{
+          if(m.role==='user') return `<div class="m io">${String(m.content).replace(/</g,'&lt;')}</div>`;
+          if(m.pendente)      return `<div class="m lui attesa">sto pensando…</div>`;
+          return `<div class="m lui${m.errore?' male':''}">${String(m.content).replace(/</g,'&lt;').replace(/\n/g,'<br>')}`
+            + ((m.cambi&&m.cambi.length)?`<div class="cambi">${m.cambi.map(c=>`<span>${c}</span>`).join('')}</div>`:'')
+            + `</div>`;
+        }).join('')
+        : `<div class="vuota">Prova con: <i>«questa settimana Anna è in ferie e il sabato sera serve una persona in più in sala»</i></div>`
+      }</div>
+      <div class="ask">
+        <textarea id="aiAsk" rows="2" placeholder="Cosa serve questa settimana?" ${aiOccupato?'disabled':''}></textarea>
+        <button class="btn small" id="aiVai" type="button" ${aiOccupato?'disabled':''}>Invia</button>
+      </div>
+      <div class="improw" style="margin-top:8px;align-items:center">
+        ${aiStoria.length?`<button class="btn small tpl" id="aiPulisci" type="button">✕ Pulisci la conversazione</button>`:''}
+        <span class="clmod">modello <b>${aiModello()}</b> · la chiave resta su questo computer</span>
+      </div>
+    </div>`;
+  }
+  h+=`</section>`;
 
   /* --- totali per reparto --- */
   const repAttivi=TU_REP.filter(rep=>c.sommaSett(c.ore[rep])>0);
@@ -3746,7 +3998,12 @@ function tuSopra(caselle, el){
   const p=tuPersone(caselle), j=p.indexOf(id);
   return j>0 ? tuCerca(caselle,p[j-1],g,+i+2) : null;
 }
-document.addEventListener('keydown', e=>{
+document.addEventListener('keydown', async e=>{
+  if(e.target && e.target.id==='aiAsk' && e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    const t=e.target.value.trim(); if(!t) return;
+    e.target.value=''; await aiInvia(t); return;
+  }
   const el=e.target;
   if(!el || !el.dataset || el.dataset.tu===undefined) return;
   if(e.metaKey || e.ctrlKey || e.altKey) return;
@@ -4892,6 +5149,30 @@ document.addEventListener('click',async e=>{
   if(e.target.id==='regBase'){
     if(!await uiConfirm('Rimettere le regole di partenza?\n\nQuelle che hai scritto vanno perse; i turni già compilati restano.')) return;
     S.pian.regole=regoleBase(); await saveState(); renderPIAN(); return; }
+  const rid=e.target.closest('[data-rid]');
+  if(rid){ const R=regole(); delete R.indisp[rid.dataset.rid]; await saveState(); renderPIAN(); return; }
+  if(e.target.id==='aiSetup' || e.target.id==='aiConf'){
+    const k=await uiPrompt('Incolla qui la chiave API Anthropic (comincia con sk-ant-).\n\nResta su questo computer: non finisce nei dati del cliente e non si sincronizza con gli altri. Lascia vuoto per toglierla.', aiChiave());
+    if(k===null) return;
+    const v=String(k).trim();
+    if(v && !/^sk-ant-/.test(v)){ toast('Non sembra una chiave Anthropic: dovrebbe cominciare con sk-ant-.', true); return; }
+    aiSalvaChiave(v);
+    if(v){
+      const m=await uiPrompt('Quale modello usare? Lascia com\'è se non hai motivo di cambiarlo.\n\nPiù economico: claude-haiku-5-5 · più sveglio: claude-opus-5-5', aiModello());
+      if(m!==null){ const mv=String(m).trim();
+        try{ mv ? localStorage.setItem('p1:aimodel',mv) : localStorage.removeItem('p1:aimodel'); }catch(e){} }
+    }
+    toast(v?('✓ Chiave collegata su questo computer · modello '+aiModello()):'Chiave tolta da questo computer.');
+    renderPIAN(); return;
+  }
+  if(e.target.id==='aiPulisci'){ aiStoria=[]; renderPIAN(); return; }
+  if(e.target.id==='aiVai'){
+    const ta=document.getElementById('aiAsk'); if(!ta) return;
+    const t=ta.value.trim(); if(!t) return;
+    ta.value='';
+    await aiInvia(t);
+    return;
+  }
   if(e.target.id==='regVai'){
     const w=pianSett();
     const pieno=w.righe.some(r=>r.g.some(x=>x.some(Boolean)));
@@ -6612,6 +6893,7 @@ document.addEventListener('input', e=>{
     migrateS(); pianSett().note[+el.dataset.pinota].t = el.value; saveState();
   }
   if(el.id==='regLiberi'){ regole().liberi=Math.max(0,Math.min(6,num(el.value))); saveState(); }
+  if(el.id==='regTetto'){ regole().maxOreGiorno=Math.max(0,Math.min(16,num(el.value))); saveState(); }
   if(el.dataset && el.dataset.rt!==undefined){
     const [rep,sv,t,i,c]=el.dataset.rt.split('.');
     const R=regole(); if(R.turni[rep]&&R.turni[rep][sv]&&R.turni[rep][sv][t][+i]){
