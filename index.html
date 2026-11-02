@@ -191,6 +191,17 @@
   .prepdet .tot{font-family:var(--num);font-weight:600;}
   .prepdet .azioni{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
   .prepdet .avviso{font-size:12px;color:var(--hot);margin-top:8px;}
+  /* schede costo: il semaforo dell'incidenza, come nel cruscotto */
+  td.inc{font-family:var(--num);text-align:right;padding:6px 9px;white-space:nowrap;font-weight:600;}
+  td.inc.v{color:var(--ok);background:var(--ok-bg);}
+  td.inc.g{color:#8A6A00;background:var(--warn-bg);}
+  td.inc.a{color:var(--hot);background:var(--hot-bg);}
+  td.inc.r{color:var(--bad);background:var(--bad-bg);}
+  td.inc.n{color:var(--ink2);background:#F6F5F1;font-weight:400;}
+  .stato{font-size:10px;text-transform:uppercase;letter-spacing:.7px;padding:2px 6px;border-radius:5px;white-space:nowrap;}
+  .stato.certo{background:var(--ok-bg);color:var(--ok);}
+  .stato.presunto{background:var(--warn-bg);color:#8A6A00;}
+  .stato.manca{background:var(--bad-bg);color:var(--bad);}
   /* importazione dall'archivio */
   .impbox{border:1px solid var(--brass);border-radius:12px;padding:18px 20px;background:#FFFCF7;margin-top:14px;}
   .impbox .st{font-family:'Fraunces',serif;font-size:18px;margin-bottom:4px;}
@@ -1162,13 +1173,13 @@
       <button data-page="ring">Ingredienti e prezzi d'acquisto</button>
       <button data-page="rforn">Fornitori</button>
       <button data-page="rprep">Preparazioni e guarnizioni</button>
-      <button data-page="rric" class="soon" title="in arrivo">Ricette e schede costo</button>
+      <button data-page="rric">Ricette e schede costo</button>
       <button data-page="rteam" class="soon" title="in arrivo">Ricettario per il team</button>
       <button data-page="rall" class="soon" title="in arrivo">Allergeni</button>
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v95</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v96</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1373,6 +1384,7 @@
   <div class="page" id="page-ring"><div id="ringBody"></div></div>
   <div class="page" id="page-rforn"><div id="rfornBody"></div></div>
   <div class="page" id="page-rprep"><div id="rprepBody"></div></div>
+  <div class="page" id="page-rric"><div id="rricBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
   <div class="page" id="page-an">
@@ -6571,7 +6583,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -6593,6 +6605,25 @@ document.addEventListener('input',e=>{
     mpSalva();
     if(current==='rprep'){ prepRicalcola(); return renderPREP(); }
     ingPartial(id); return;
+  }
+  if(el.dataset && el.dataset.ric!==undefined){
+    const pz=el.dataset.ric.split('|');
+    const pr=PRO && PRO.prod.find(y=>y.id===pz[0]); if(!pr) return;
+    if(pz[1]==='cn'){ pr.ric=pr.ric||{ing:[],co:[],cn:0}; pr.ric.cn=Math.max(0,numIt(el.value))/100; }
+    else{
+      const lista=pr.ric && pr.ric[pz[1]]; const r=lista && lista[+pz[2]]; if(!r) return;
+      if(pz[3]==='e') r.e=el.value;
+      else if(pz[3]==='sc') r.sc=Math.max(0, Math.min(300, numIt(el.value)))/100;
+      else r.q=numIt(el.value);
+    }
+    proSalva();
+    clearTimeout(window.__ricT);
+    window.__ricT=setTimeout(()=>{
+      const a=document.activeElement, k=a&&a.dataset?a.dataset.ric:null, c=a&&a.selectionStart;
+      renderRIC().then(()=>{ if(k){ const e2=document.querySelector(`[data-ric="${k}"]`);
+        if(e2){ e2.focus(); try{ e2.setSelectionRange(c,c); }catch(_){} } } });
+    }, 700);
+    return;
   }
   if(el.dataset && el.dataset.prep!==undefined){
     const [id,i,campo]=el.dataset.prep.split('|');
@@ -7981,8 +8012,6 @@ const SOON={
           d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
   obinc :{t:'Incentivi', g:'Obiettivi',
           d:"Il piano incentivi per la squadra, legato agli obiettivi e ai prodotti focus."},
-  rric  :{t:'Ricette e schede costo', g:'Ricette e fornitori',
-          d:"La scheda costo di ogni prodotto: ingredienti, dosi, costo della materia prima, prezzo di vendita e margine."},
   rteam :{t:'Ricettario per il team', g:'Ricette e fornitori',
           d:"Le stesse ricette, stampabili per la squadra: dosi, procedimento, bicchiere e guarnizione, senza i costi."},
   rall  :{t:'Allergeni', g:'Ricette e fornitori',
@@ -8076,10 +8105,11 @@ async function mpCarica(){
   if(!MP || typeof MP!=='object') MP=MP_VUOTO();
   if(!Array.isArray(MP.forn)) MP.forn=[];
   if(!Array.isArray(MP.ing))  MP.ing=[];
-  mpOwner=cid;
+  mpOwner=cid; mpScaduto();
   return MP;
 }
 function mpSalva(){
+  mpScaduto();
   const cid=mpOwner; if(!cid) return;
   clearTimeout(mpTimer);
   segnaStato('dirty','modifiche non salvate…');
@@ -8385,6 +8415,25 @@ function fornCambia(nome, campo, valore){
 }
 
 document.addEventListener('click', async e=>{
+  const rgo=e.target.closest('[data-ricgo]');
+  if(rgo && !e.target.closest('input,select,button')){
+    ricAperta = ricAperta===rgo.dataset.ricgo ? null : rgo.dataset.ricgo;
+    return renderRIC();
+  }
+  if(e.target.closest('[data-ricchiudi]')){ ricAperta=null; return renderRIC(); }
+  const rr=e.target.closest('[data-ricrow]');
+  if(rr){ const [id,dove]=rr.dataset.ricrow.split('|');
+    const pr=PRO.prod.find(y=>y.id===id);
+    if(pr){ pr.ric=pr.ric||{ing:[],co:[],cn:0};
+      (pr.ric[dove]=pr.ric[dove]||[]).push({e:'',q:0,sc:0}); proSalva(); await renderRIC();
+      const campi=document.querySelectorAll(`.prepdet [data-ric^="${id}|${dove}"][data-ric$="|e"]`);
+      if(campi.length) campi[campi.length-1].focus(); }
+    return; }
+  const rd=e.target.closest('[data-ricdel]');
+  if(rd){ const [id,dove,i]=rd.dataset.ricdel.split('|');
+    const pr=PRO.prod.find(y=>y.id===id);
+    if(pr&&pr.ric&&pr.ric[dove]){ pr.ric[dove].splice(+i,1); proSalva(); renderRIC(); }
+    return; }
   const go=e.target.closest('[data-prepgo]');
   if(go && !e.target.closest('input,select,button')){
     prepAperta = prepAperta===go.dataset.prepgo ? null : go.dataset.prepgo;
@@ -8415,12 +8464,30 @@ document.addEventListener('click', async e=>{
    prezzo non lo fa un fornitore, lo fanno gli ingredienti che ci vanno dentro.
    Quindi quando cambia il prezzo di una materia prima, il costo della
    preparazione cambia da solo, e con lui quello di ogni ricetta che la usa. */
-const ingDi = et => MP ? MP.ing.find(y=>norm(y.e)===norm(et)) : null;
+/* con milleduecento voci e seicento prodotti, cercare l'ingrediente scorrendo
+   l'elenco ogni volta vuol dire milioni di confronti: si tiene un indice. */
+let mpIdx=null, uCache=null;
+function mpScaduto(){ mpIdx=null; uCache=null; }
+function mpIndice(){
+  if(mpIdx) return mpIdx;
+  mpIdx=new Map();
+  (MP?MP.ing:[]).forEach(x=>{ const k=norm(x.e); if(k && !mpIdx.has(k)) mpIdx.set(k,x); });
+  return mpIdx;
+}
+const ingDi = et => MP ? (mpIndice().get(norm(et))||null) : null;
 const isPrep = x => !!(x && Array.isArray(x.prep) && x.prep.length);
 
 /* costo di un'unità (cl, gr o pz) di un ingrediente, preparazione compresa.
    `visti` ferma i giri chiusi: una preparazione che, di rimbalzo, usa sé stessa. */
 function ingUnitaDi(et, visti){
+  if(!visti){
+    if(!uCache) uCache=new Map();
+    const k=norm(et);
+    if(uCache.has(k)) return uCache.get(k);
+    const v=ingUnitaDi(et, new Set());
+    uCache.set(k, v);
+    return v;
+  }
   const x=ingDi(et);
   if(!x) return null;
   if(isPrep(x)){
@@ -8457,6 +8524,7 @@ function prepRicalcola(){
   if(!MP) return 0;
   let cambiate=0;
   for(let giro=0; giro<6; giro++){          // le preparazioni annidate si assestano in pochi giri
+    uCache=null;
     let mosso=0;
     MP.ing.forEach(x=>{
       if(!isPrep(x)) return;
@@ -8467,6 +8535,7 @@ function prepRicalcola(){
     cambiate+=mosso;
     if(!mosso) break;
   }
+  uCache=null;
   if(cambiate) mpSalva();
   return cambiate;
 }
@@ -8709,6 +8778,8 @@ async function archImporta(){
       const pacco={v:1, da:v.nome, quando:new Date().toISOString(),
         ricette:c.ricette||{}, products:c.products||{}, cassaVenduto:c.cassaVenduto||{},
         menuCategories:c.menuCategories||[], catSegmento:c.catSegmento||{},
+        sidePerCategoria:c.sidePerCategoria||{}, sottoFamiglie:c.sottoFamiglie||[],
+        aliquotaIVA:c.aliquotaIVA||null,
         gruppiCassa:c.gruppiCassa||{}, dizionarioCassa:c.dizionarioCassa||{},
         targetIncidenza:c.targetIncidenza||{}, incassi:c['incassi'+(c.annoCorrente||2026)]||{},
         bilancioMP:c.bilancioMP||{}, allergeni:c.allergeni||{}, focus:c.focus||{}, bep:c.bep||{}};
@@ -8732,7 +8803,262 @@ async function mpLeggiDi(cid){
 }
 async function mpScriviDi(cid, dati){
   await stSet('planetone-mp:'+cid+':ing', JSON.stringify(dati));
-  if(cid===mpOwner) MP=dati;
+  if(cid===mpOwner){ MP=dati; mpScaduto(); }
+}
+
+
+/* ================= il listino e le schede costo =================
+   Un prodotto del menu tiene insieme tre cose: quanto si vende (il prezzo),
+   quanto costa (la scheda ricetta) e quanto se n'è venduto (il venduto di
+   cassa, mese per mese). Stanno in un archivio loro, separato dagli
+   ingredienti, perché cambiano con ritmi diversi.
+     planetone-mp:<cliente>:pro
+   La prima volta nasce da quello che l'importazione ha messo da parte. */
+let PRO=null, proOwner=null, proTimer=null;
+const PRO_VUOTO = ()=>({v:1, anno:new Date().getFullYear(), iva:0.1, seg:{}, side:{}, target:{}, prod:[], cassa:{}});
+
+function proDaGrezzo(g){
+  const d=PRO_VUOTO();
+  d.seg    = g.catSegmento||{};
+  if(g.aliquotaIVA) d.iva=numIt(g.aliquotaIVA);
+  d.side   = g.sidePerCategoria||{};
+  d.target = g.targetIncidenza||{};
+  d.cassa  = g.cassaVenduto||{};
+  const ric=g.ricette||{};
+  d.prod=Object.entries(g.products||{}).map(([row,v])=>{
+    const r=ric[row];
+    return {
+      id:'p'+row, n:v.name||'', cat:v.categoria||'', stato:v.costoStato||'',
+      cassa:{cod:v.codCassa||'', nomi:v.nomiCassa||[], gr:v.gruppoCassa||'', cat:v.categoriaCassa||''},
+      pv: numIt(v.listinoNuovoIvaEscl)||numIt(v.listinoPartenzaIvaEscl)||0,
+      pvi:numIt(v.listinoNuovoIvaIncl)||numIt(v.listinoPartenzaIvaIncl)||0,
+      pvp:numIt(v.listinoPartenzaIvaEscl)||0,
+      mesi:(v.monthly||[]).map(m=>({pz:numIt(m.pz), inc:numIt(m.incassoIvaIncl)})),
+      presunto: numIt(v.costoPresuntoManuale)||0,
+      ric: r ? {
+        ing:(r.ingredienti||[]).map(i=>({e:i.etichetta||'', q:numIt(i.qta), sc:numIt(i.scarto)})),
+        co:(r.completamento||[]).map(i=>({e:i.etichetta||'', q:numIt(i.qta), sc:numIt(i.scarto)})),
+        cn:numIt(r.costiNascosti), cat:r.categoriaSchedaCosto||'', nota:r.notaScheda||''
+      } : null
+    };
+  });
+  return d;
+}
+async function proCarica(){
+  const cid=sOwner;
+  if(PRO && proOwner===cid) return PRO;
+  let raw=null; try{ raw=await stGet('planetone-mp:'+cid+':pro'); }catch(e){}
+  if(raw){ try{ PRO=JSON.parse(raw); }catch(e){ PRO=PRO_VUOTO(); } }
+  else{
+    /* non c'è ancora: si costruisce una volta sola da quello che l'importazione
+       aveva messo da parte, e da lì in poi vive per conto suo */
+    let g=null; try{ g=await stGet('planetone-mp:'+cid+':grezzo'); }catch(e){}
+    if(g){ try{ PRO=proDaGrezzo(JSON.parse(g)); }catch(e){ PRO=PRO_VUOTO(); } }
+    else PRO=PRO_VUOTO();
+    proOwner=cid;
+    if(PRO.prod.length) await stSet('planetone-mp:'+cid+':pro', JSON.stringify(PRO));
+  }
+  if(!PRO||typeof PRO!=='object') PRO=PRO_VUOTO();
+  if(!Array.isArray(PRO.prod)) PRO.prod=[];
+  ['seg','side','target','cassa'].forEach(k=>{ if(!PRO[k]||typeof PRO[k]!=='object') PRO[k]={}; });
+  proOwner=cid;
+  return PRO;
+}
+function proSalva(){
+  const cid=proOwner; if(!cid) return;
+  clearTimeout(proTimer);
+  segnaStato('dirty','modifiche non salvate…');
+  proTimer=setTimeout(async ()=>{
+    const ok=await stSet('planetone-mp:'+cid+':pro', JSON.stringify(PRO));
+    const hh=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    segnaStato(ok?'ok':'ko', ok ? 'salvataggio automatico ✓ '+hh : 'dati in sessione (salvataggio non disponibile)');
+  }, 600);
+}
+
+/* il costo di un prodotto: materia prima dalla scheda, più il contorno fisso
+   che la sua categoria si porta dietro (ghiaccio, bicchiere, guarnizione) */
+function ricCosto(pr){
+  const r=pr.ric;
+  const side=numIt((PRO.side||{})[pr.cat]);
+  if(!r || !((r.ing||[]).length+(r.co||[]).length)) return null;
+  let t=0;
+  for(const x of (r.ing||[]).concat(r.co||[])){
+    const u=ingUnitaDi(x.e);
+    if(u==null) return null;                      // manca un prezzo: niente costo inventato
+    t += u*numIt(x.q)*(1+Math.max(0,numIt(x.sc)));
+  }
+  const mp=t*(1+Math.max(0,numIt(r.cn)));
+  return {mp, side, tot:mp+side};
+}
+function ricMancanti(pr){
+  const r=pr.ric; if(!r) return [];
+  return (r.ing||[]).concat(r.co||[]).filter(x=>ingUnitaDi(x.e)==null).map(x=>x.e);
+}
+/* il semaforo: verde in obiettivo, poi giallo, arancio, rosso — come il cruscotto */
+function incClasse(inc, tgt){
+  if(inc==null||!isFinite(inc)) return 'n';
+  const t = tgt>0 ? tgt : 0.30;
+  const pp=(inc-t)*100;
+  return pp<=0 ? 'v' : pp<=5 ? 'g' : pp<=10 ? 'a' : 'r';
+}
+
+/* ---------------- pagina: ricette e schede costo ---------------- */
+let ricQ='', ricCat='', ricSolo='', ricAperta=null, ricLim=120;
+async function renderRIC(){
+  await mpCarica(); await proCarica();
+  const body=document.getElementById('rricBody');
+  const P=PRO.prod;
+
+  const conScheda=P.filter(x=>x.ric && ((x.ric.ing||[]).length+(x.ric.co||[]).length));
+  const senza=P.length-conScheda.length;
+  const rotte=conScheda.filter(x=>ricCosto(x)==null);
+  /* incidenza media sul venduto vero dell'anno — non sui prezzi di listino:
+     quello che è entrato in cassa, scorporato dell'IVA, contro quello che
+     quella roba è costata. È il food cost che finisce nel report. */
+  const ivaDi = x => (x.pvi>0 && x.pv>0) ? (x.pvi/x.pv-1) : numIt(PRO.iva)||0.1;
+  let ricEuro=0, mpEuro=0, pzTot=0;
+  P.forEach(x=>{
+    const c=ricCosto(x); if(!c) return;
+    const pz=(x.mesi||[]).reduce((t,m)=>t+numIt(m.pz),0);
+    const inc=(x.mesi||[]).reduce((t,m)=>t+numIt(m.inc),0);
+    if(!pz && !inc) return;
+    ricEuro += inc/(1+ivaDi(x)); mpEuro += pz*c.tot; pzTot+=pz;
+  });
+  const incMedia = ricEuro>0 ? mpEuro/ricEuro : null;
+
+  const cats=[...new Set(P.map(x=>x.cat).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'it'));
+  const q=norm(ricQ);
+  const viste=P.filter(x=>{
+    if(ricCat && x.cat!==ricCat) return false;
+    if(ricSolo==='senza' && x.ric && ((x.ric.ing||[]).length+(x.ric.co||[]).length)) return false;
+    if(ricSolo==='rotte' && ricCosto(x)!=null) return false;
+    if(q && !(norm(x.n).includes(q)||norm(x.cat).includes(q))) return false;
+    return true;
+  });
+  const mostra=viste.slice(0, ricLim);
+
+  const kpi=`<div class="kpis">
+    <div class="kpi"><div class="lbl">Prodotti a listino</div><div class="val">${fmtNum(P.length)}</div>
+      <div class="note">${cats.length} categorie</div></div>
+    <div class="kpi"><div class="lbl">Con scheda costo</div><div class="val">${fmtNum(conScheda.length)}</div>
+      <div class="note">${senza? fmtNum(senza)+' ancora senza scheda' : 'tutte compilate'}</div></div>
+    <div class="kpi"><div class="lbl">Schede senza costo</div><div class="val ${rotte.length?'neg':''}">${fmtNum(rotte.length)}</div>
+      <div class="note">${rotte.length? 'manca il prezzo di un ingrediente' : 'tutte calcolabili'}</div></div>
+    <div class="kpi"><div class="lbl">Incidenza materia prima</div><div class="val">${incMedia==null?'—':fmtP(incMedia)}</div>
+      <div class="note">${incMedia==null? 'serve il venduto' : 'su '+fmtE(ricEuro)+' di venduto con scheda costo'}</div></div>
+  </div>`;
+
+  const righe=mostra.map(x=>{
+    const c=ricCosto(x), inc = c && x.pv>0 ? c.tot/x.pv : null;
+    const tgt=numIt((PRO.target||{})[x.cat]);
+    const apr=ricAperta===x.id;
+    const nIng=x.ric ? (x.ric.ing||[]).length+(x.ric.co||[]).length : 0;
+    return `<tr class="${apr?'apri':''}" data-ricgo="${x.id}" style="cursor:pointer">
+      <td class="et" style="padding:6px 9px"><b>${escH(x.n)}</b></td>
+      <td class="ca" style="padding:6px 9px;font-size:11.5px;color:var(--ink2)">${escH(x.cat)}</td>
+      <td style="padding:6px 9px;font-size:11.5px;color:var(--ink2)">${escH((PRO.seg||{})[x.cat]||'')}</td>
+      <td class="calc">${x.pv>0? fmtEu2(x.pv) : '—'}</td>
+      <td class="calc">${nIng? fmtNum(nIng) : '<span class="stato manca">nessuna scheda</span>'}</td>
+      <td class="calc">${c? fmtEu2(c.mp) : '—'}</td>
+      <td class="calc">${c&&c.side? fmtEu2(c.side) : '—'}</td>
+      <td class="calc">${c? fmtEu2(c.tot) : '—'}</td>
+      <td class="calc">${c&&x.pv>0? fmtEu2(x.pv-c.tot) : '—'}</td>
+      <td class="inc ${incClasse(inc,tgt)}">${inc==null? '—' : fmtP(inc)}</td>
+      <td class="calc" style="font-family:inherit;font-size:11px;color:var(--ink2)">${tgt>0? fmtP(tgt) : '—'}</td>
+      <td class="az">${apr?'▴':'▾'}</td>
+    </tr>`;
+  }).join('');
+
+  const ap=ricAperta ? P.find(x=>x.id===ricAperta) : null;
+
+  body.innerHTML=`<section>
+    <div class="sechead"><h2>Ricette e schede costo</h2>
+      <span class="note">prezzi IVA esclusa · incidenza sul prezzo di vendita</span></div>
+    ${kpi}
+    <div class="mpbar">
+      <input class="cerca" id="ricQ" value="${escH(ricQ)}" placeholder="cerca un prodotto o una categoria…">
+      <select id="ricCat"><option value="">tutte le categorie</option>${cats.map(c=>`<option${c===ricCat?' selected':''}>${escH(c)}</option>`).join('')}</select>
+      <select id="ricSolo">
+        <option value="">tutti i prodotti</option>
+        <option value="senza"${ricSolo==='senza'?' selected':''}>solo senza scheda costo</option>
+        <option value="rotte"${ricSolo==='rotte'?' selected':''}>solo schede senza costo</option>
+      </select>
+      <span class="conta">${fmtNum(viste.length)} su ${fmtNum(P.length)}</span>
+    </div>
+    ${P.length===0 ? `<div class="soonbox"><div class="st">Nessun prodotto a listino</div>
+      <p>I prodotti arrivano dall'archivio di Menu Profits: si caricano da
+      <b>Ingredienti e prezzi d'acquisto → Archivio Menu Profits</b>, insieme a ingredienti e ricette.</p></div>`
+    : `<div class="tblwrap"><table class="entry mp" style="min-width:1180px">
+      <thead><tr><th>Prodotto</th><th>Categoria</th><th>Famiglia</th><th>Prezzo<br>IVA escl.</th>
+        <th>Voci in<br>scheda</th><th>Materia<br>prima</th><th>Contorno<br>di categoria</th>
+        <th>Costo<br>totale</th><th>Margine</th><th>Incidenza</th><th>Obiettivo</th><th></th></tr></thead>
+      <tbody>${righe}</tbody></table></div>
+      ${viste.length>mostra.length ? `<div class="mpaltro"><button class="btn ghost small" id="ricPiu">Mostra altri ${fmtNum(Math.min(400, viste.length-mostra.length))}</button></div>`:''}
+      ${ap ? ricDettaglio(ap) : ''}
+      <p class="mpnota">Il contorno di categoria è quello che ogni prodotto di quella categoria si porta
+      dietro senza stare in ricetta: ghiaccio, bicchiere, guarnizione, tovagliolo. L'incidenza si legge
+      contro l'obiettivo della categoria, con gli stessi colori del cruscotto.</p>`}
+  </section>`;
+
+  const on=(id,ev,f)=>{ const e=document.getElementById(id); if(e) e.addEventListener(ev,f); };
+  on('ricQ','input',e=>{ ricQ=e.target.value; ricLim=120; renderRIC().then(()=>{
+    const c=document.getElementById('ricQ'); if(c){ c.focus(); c.setSelectionRange(c.value.length,c.value.length); } }); });
+  on('ricCat','change',e=>{ ricCat=e.target.value; ricLim=120; renderRIC(); });
+  on('ricSolo','change',e=>{ ricSolo=e.target.value; ricLim=120; renderRIC(); });
+  on('ricPiu','click',()=>{ ricLim+=400; renderRIC(); });
+}
+
+function ricDettaglio(pr){
+  const r=pr.ric||{ing:[],co:[],cn:0};
+  const manc=ricMancanti(pr);
+  const linea=(x,i,dove)=>{
+    const u=ingUnitaDi(x.e), sc=Math.max(0,numIt(x.sc));
+    const c = u==null ? null : u*numIt(x.q)*(1+sc);
+    return `<tr>
+      <td class="${u==null?'mancante':''}"><input list="mpIng" data-ric="${pr.id}|${dove}|${i}|e" value="${escH(x.e)}" placeholder="scrivi un ingrediente…"></td>
+      <td class="r"><input data-ric="${pr.id}|${dove}|${i}|q" value="${x.q??''}"></td>
+      <td class="r"><input data-ric="${pr.id}|${dove}|${i}|sc" value="${x.sc? Math.round(numIt(x.sc)*1000)/10 : ''}" placeholder="0"></td>
+      <td class="r">${u==null?'—':fmtE4(u)}</td>
+      <td class="r tot">${c==null?'—':fmtEu2(c)}</td>
+      <td><button class="rowdel" data-ricdel="${pr.id}|${dove}|${i}" title="togli">✕</button></td>
+    </tr>`;
+  };
+  const c=ricCosto(pr);
+  const elenco=MP.ing.map(y=>`<option value="${escH(y.e)}">`).join('');
+  const sez=(tit, dove, righe)=>`
+    <tr><td colspan="6" style="padding-top:10px;font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink2)">${tit}</td></tr>
+    ${righe.length? righe : `<tr><td colspan="6" style="color:var(--ink2);font-size:12px;padding:4px 8px">—</td></tr>`}`;
+  return `<div class="prepdet">
+    <h4>${escH(pr.n)} <span style="font-weight:400;font-size:13px;color:var(--ink2)">· ${escH(pr.cat)}</span></h4>
+    <datalist id="mpIng">${elenco}</datalist>
+    <table><thead><tr><th>Ingrediente</th><th class="r">Quantità</th>
+      <th class="r" title="quanto comprarne in più per via dello scarto">Scarto %</th>
+      <th class="r">Costo unitario</th><th class="r">Costo</th><th></th></tr></thead>
+      <tbody>
+        ${sez('Ingredienti','ing',(r.ing||[]).map((x,i)=>linea(x,i,'ing')).join(''))}
+        ${sez('Completamento — quello che accompagna','co',(r.co||[]).map((x,i)=>linea(x,i,'co')).join(''))}
+      </tbody>
+      <tfoot>
+        <tr><td colspan="4" style="text-align:right;padding-top:8px">Materia prima${numIt(r.cn)>0? ', costi nascosti '+fmtNum(numIt(r.cn)*100)+'% compresi':''}</td>
+            <td class="r tot" style="padding-top:8px">${c?fmtEu2(c.mp):'—'}</td><td></td></tr>
+        ${c&&c.side? `<tr><td colspan="4" style="text-align:right">Contorno di categoria</td><td class="r tot">${fmtEu2(c.side)}</td><td></td></tr>`:''}
+        <tr><td colspan="4" style="text-align:right;font-weight:600">Costo totale</td>
+            <td class="r tot">${c?fmtEu2(c.tot):'—'}</td><td></td></tr>
+        <tr><td colspan="4" style="text-align:right">Prezzo di vendita, IVA esclusa</td>
+            <td class="r tot">${pr.pv>0?fmtEu2(pr.pv):'—'}</td><td></td></tr>
+        <tr><td colspan="4" style="text-align:right;font-weight:600">Margine</td>
+            <td class="r tot">${c&&pr.pv>0?fmtEu2(pr.pv-c.tot):'—'}</td><td></td></tr>
+      </tfoot></table>
+    <div class="azioni">
+      <button class="btn ghost small" data-ricrow="${pr.id}|ing">+ Ingrediente</button>
+      <button class="btn ghost small" data-ricrow="${pr.id}|co">+ Completamento</button>
+      <span class="note">Costi nascosti <input data-ric="${pr.id}|cn" value="${r.cn? Math.round(numIt(r.cn)*1000)/10 : ''}" placeholder="0" style="width:52px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;font-family:var(--num);text-align:right"> %</span>
+      <button class="btn ghost small" data-ricchiudi="1">Chiudi</button>
+    </div>
+    ${r.nota? `<p class="note" style="margin-top:8px">${escH(r.nota)}</p>`:''}
+    ${manc.length? `<div class="avviso">Senza costo perché ${manc.length===1?'manca il prezzo di':'mancano i prezzi di'}
+      <b>${manc.slice(0,4).map(escH).join('</b>, <b>')}</b>${manc.length>4?' e altri '+(manc.length-4):''}.</div>`:''}
+  </div>`;
 }
 
 function gotoPage(p){
