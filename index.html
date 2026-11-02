@@ -175,6 +175,30 @@
   table.entry.mp tr.senza td{background:#FDF4F2;}
   table.entry.mp tr.senza td.calc{background:#F7E4E1;}
   .mpnota{font-size:12px;color:var(--ink2);margin-top:10px;line-height:1.5;max-width:76ch;}
+  /* preparazioni: la riga aperta mostra la sua mini-ricetta */
+  table.entry.mp tr.apri td{background:#FBF6EC;}
+  table.entry.mp tr.apri td.calc{background:#F6EEDE;}
+  .prepdet{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;background:#FBF9F5;padding:16px 18px;}
+  .prepdet h4{margin:0 0 10px;font-family:'Fraunces',serif;font-size:16px;color:var(--ink);font-weight:600;}
+  .prepdet table{border-collapse:collapse;width:100%;max-width:760px;font-size:12.5px;}
+  .prepdet th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);padding:4px 8px;border-bottom:1px solid var(--line);}
+  .prepdet th.r,.prepdet td.r{text-align:right;}
+  .prepdet td{padding:2px 8px;border-bottom:1px solid #EFEDE7;}
+  .prepdet td input{border:none;background:transparent;font:inherit;font-size:12.5px;padding:4px 6px;width:100%;color:var(--ink);}
+  .prepdet td.r input{font-family:var(--num);text-align:right;width:84px;}
+  .prepdet td input:focus{outline:2px solid var(--brass);outline-offset:-2px;background:#fff;}
+  .prepdet td.mancante input{color:var(--bad);}
+  .prepdet .tot{font-family:var(--num);font-weight:600;}
+  .prepdet .azioni{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .prepdet .avviso{font-size:12px;color:var(--hot);margin-top:8px;}
+  /* importazione dall'archivio */
+  .impbox{border:1px solid var(--brass);border-radius:12px;padding:18px 20px;background:#FFFCF7;margin-top:14px;}
+  .impbox .st{font-family:'Fraunces',serif;font-size:18px;margin-bottom:4px;}
+  .impbox table{border-collapse:collapse;width:100%;margin:14px 0;font-size:12.5px;}
+  .impbox th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--ink2);padding:5px 8px;border-bottom:1px solid var(--line);}
+  .impbox td{padding:5px 8px;border-bottom:1px solid #EFEDE7;vertical-align:middle;}
+  .impbox select{padding:5px 7px;border:1px solid var(--line);border-radius:7px;font:inherit;font-size:12.5px;background:#fff;min-width:200px;}
+  .impbox .cosa{color:var(--ink2);font-size:11.5px;}
   .mpaltro{text-align:center;padding:10px;}
   .soonbox{margin-top:14px;padding:18px 20px;border:1px dashed var(--line);border-radius:12px;background:#FBF9F5;}
   .soonbox .st{font-family:'Fraunces',serif;font-size:17px;color:var(--ink);margin-bottom:8px;}
@@ -1137,14 +1161,14 @@
     <div class="gb" data-gb="ric">
       <button data-page="ring">Ingredienti e prezzi d'acquisto</button>
       <button data-page="rforn">Fornitori</button>
-      <button data-page="rprep" class="soon" title="in arrivo">Preparazioni e guarnizioni</button>
+      <button data-page="rprep">Preparazioni e guarnizioni</button>
       <button data-page="rric" class="soon" title="in arrivo">Ricette e schede costo</button>
       <button data-page="rteam" class="soon" title="in arrivo">Ricettario per il team</button>
       <button data-page="rall" class="soon" title="in arrivo">Allergeni</button>
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v94</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v95</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1348,6 +1372,7 @@
   <div class="page" id="page-soon"><div id="soonBody"></div></div>
   <div class="page" id="page-ring"><div id="ringBody"></div></div>
   <div class="page" id="page-rforn"><div id="rfornBody"></div></div>
+  <div class="page" id="page-rprep"><div id="rprepBody"></div></div>
 
   <!-- ============ ANALISI / PRESENTAZIONE ============ -->
   <div class="page" id="page-an">
@@ -6546,7 +6571,7 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -6563,8 +6588,27 @@ document.addEventListener('input',e=>{
   if(el.dataset && el.dataset.ing!==undefined){
     const [id,campo]=el.dataset.ing.split('|');
     const x=MP && MP.ing.find(y=>y.id===id); if(!x) return;
-    x[campo] = ['f','c','e','u','d'].includes(campo) ? el.value : numIt(el.value);
-    mpSalva(); ingPartial(id); return;
+    if(campo==='cnp') x.cn = Math.max(0, numIt(el.value))/100;        // i costi nascosti si scrivono in %
+    else x[campo] = ['f','c','e','u','d'].includes(campo) ? el.value : numIt(el.value);
+    mpSalva();
+    if(current==='rprep'){ prepRicalcola(); return renderPREP(); }
+    ingPartial(id); return;
+  }
+  if(el.dataset && el.dataset.prep!==undefined){
+    const [id,i,campo]=el.dataset.prep.split('|');
+    const x=MP && MP.ing.find(y=>y.id===id); if(!x||!x.prep||!x.prep[+i]) return;
+    const r=x.prep[+i];
+    if(campo==='e') r.e=el.value;
+    else if(campo==='sc') r.sc=Math.max(0, Math.min(300, numIt(el.value)))/100;
+    else r.q=numIt(el.value);
+    prepRicalcola(); mpSalva();
+    clearTimeout(window.__prepT);
+    window.__prepT=setTimeout(()=>{                       // si ridisegna dopo la digitazione, non durante
+      const a=document.activeElement, k=a&&a.dataset?a.dataset.prep:null, p=a&&a.selectionStart;
+      renderPREP().then(()=>{ if(k){ const e2=document.querySelector(`[data-prep="${k}"]`);
+        if(e2){ e2.focus(); try{ e2.setSelectionRange(p,p); }catch(_){} } } });
+    }, 700);
+    return;
   }
   if(el.dataset && el.dataset.forn!==undefined){
     const i=el.dataset.forn.lastIndexOf('|');
@@ -7937,8 +7981,6 @@ const SOON={
           d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
   obinc :{t:'Incentivi', g:'Obiettivi',
           d:"Il piano incentivi per la squadra, legato agli obiettivi e ai prodotti focus."},
-  rprep :{t:'Preparazioni e guarnizioni', g:'Ricette e fornitori',
-          d:"Le preparazioni home made e le guarnizioni: hanno un costo loro, calcolato dagli ingredienti, e rientrano nelle ricette."},
   rric  :{t:'Ricette e schede costo', g:'Ricette e fornitori',
           d:"La scheda costo di ogni prodotto: ingredienti, dosi, costo della materia prima, prezzo di vendita e margine."},
   rteam :{t:'Ricettario per il team', g:'Ricette e fornitori',
@@ -8078,12 +8120,15 @@ async function renderING(){
   await mpCarica();
   const body=document.getElementById('ringBody');
   const forn=fornElenco();
-  const senzaPrezzo=MP.ing.filter(x=>!(ingNetto(x)>0)).length;
-  const vecchi=MP.ing.filter(ingVecchio).length;
-  const senzaData=MP.ing.filter(x=>!x.d).length;
+  const soloIng=MP.ing.filter(x=>!isPrep(x));      // le preparazioni si contano nella loro pagina
+  const nPrep=MP.ing.length-soloIng.length;
+  const senzaPrezzo=soloIng.filter(x=>!(ingNetto(x)>0)).length;
+  const vecchi=soloIng.filter(ingVecchio).length;
+  const senzaData=soloIng.filter(x=>!x.d).length;
 
   const q=norm(ingQ);
   const filtrati=MP.ing.filter(x=>{
+    if(isPrep(x)) return false;                 // le preparazioni stanno nella loro pagina
     if(ingF && norm(x.f)!==norm(ingF)) return false;
     if(ingU && String(x.u||'').toUpperCase()!==ingU) return false;
     if(q && !(norm(x.e).includes(q)||norm(x.f).includes(q)||norm(x.c).includes(q))) return false;
@@ -8092,8 +8137,8 @@ async function renderING(){
   const mostra=filtrati.slice(0, ingLim);
 
   const kpi=`<div class="kpis">
-    <div class="kpi"><div class="lbl">Ingredienti in archivio</div><div class="val">${fmtNum(MP.ing.length)}</div>
-      <div class="note">${MP.ing.length? 'da '+forn.length+' '+(forn.length===1?'fornitore':'fornitori') : 'archivio ancora vuoto'}</div></div>
+    <div class="kpi"><div class="lbl">Ingredienti in archivio</div><div class="val">${fmtNum(soloIng.length)}</div>
+      <div class="note">${soloIng.length? 'da '+forn.length+' '+(forn.length===1?'fornitore':'fornitori')+(nPrep? ' · più '+fmtNum(nPrep)+' preparazioni interne':'') : 'archivio ancora vuoto'}</div></div>
     <div class="kpi"><div class="lbl">Senza prezzo</div><div class="val ${senzaPrezzo?'neg':''}">${fmtNum(senzaPrezzo)}</div>
       <div class="note">${senzaPrezzo? 'finché manca il listino non entrano in nessuna scheda costo' : 'tutti hanno un prezzo'}</div></div>
     <div class="kpi"><div class="lbl">Prezzi più vecchi di un anno</div><div class="val ${vecchi?'neg':''}">${fmtNum(vecchi)}</div>
@@ -8137,13 +8182,15 @@ async function renderING(){
       <select id="ingU"><option value="">tutte le u.m.</option>${UM.map(u=>`<option${ingU===u?' selected':''}>${u}</option>`).join('')}</select>
       <button class="btn ghost small" id="ingGiu">⤓ Scarica Excel</button>
       <button class="btn ghost small" id="ingSu">⤒ Carica Excel</button>
+      <button class="btn ghost small" id="ingArch" title="il file JSON esportato da Menu Profits">⤒ Archivio Menu Profits</button>
       <input type="file" id="ingFile" accept=".xlsx,.xls,.csv" hidden>
-      <span class="conta">${fmtNum(filtrati.length)} su ${fmtNum(MP.ing.length)}</span>
+      <input type="file" id="ingArchFile" accept=".json" hidden>
+      <span class="conta">${fmtNum(filtrati.length)} su ${fmtNum(soloIng.length)}</span>
     </div>
     <datalist id="mpForn">${forn.map(f=>`<option value="${escH(f)}">`).join('')}</datalist>
     <datalist id="mpCat">${cats.map(c=>`<option value="${escH(c)}">`).join('')}</datalist>
-    ${MP.ing.length>0 ? '<p class="mpnota" style="margin:0 0 8px">» la tabella continua a destra: si scorre in orizzontale</p>' : ''}
-    ${MP.ing.length===0 ? `<div class="soonbox"><div class="st">L'archivio è vuoto</div>
+    ${soloIng.length>0 ? '<p class="mpnota" style="margin:0 0 8px">» la tabella continua a destra: si scorre in orizzontale</p>' : ''}
+    ${soloIng.length===0 ? `<div class="soonbox"><div class="st">L'archivio è vuoto</div>
         <p>Aggiungi gli ingredienti uno per uno con <b>+ Ingrediente</b>, oppure carica il file Excel
         del listino: l'app riconosce le colonne dall'intestazione, quindi va bene anche l'export
         di Menu Profits così com'è.</p></div>`
@@ -8175,6 +8222,8 @@ async function renderING(){
   on('ingGiu','click',ingExcelGiu);
   on('ingSu','click',()=>{ const f=document.getElementById('ingFile'); if(f) f.click(); });
   on('ingFile','change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(f) await ingExcelSu(f); });
+  on('ingArch','click',()=>{ const f=document.getElementById('ingArchFile'); if(f) f.click(); });
+  on('ingArchFile','change',async e=>{ const f=e.target.files[0]; e.target.value=''; if(f) await archLeggi(f); });
 }
 
 /* ricalcolo di una riga sola: la tabella non si ridisegna mentre si scrive */
@@ -8336,11 +8385,356 @@ function fornCambia(nome, campo, valore){
 }
 
 document.addEventListener('click', async e=>{
+  const go=e.target.closest('[data-prepgo]');
+  if(go && !e.target.closest('input,select,button')){
+    prepAperta = prepAperta===go.dataset.prepgo ? null : go.dataset.prepgo;
+    return renderPREP();
+  }
+  const ch=e.target.closest('[data-prepchiudi]');
+  if(ch){ prepAperta=null; return renderPREP(); }
+  const pr=e.target.closest('[data-preprow]');
+  if(pr){ const x=MP.ing.find(y=>y.id===pr.dataset.preprow);
+    if(x){ (x.prep=x.prep||[]).push({e:'',q:0,sc:0}); mpSalva(); await renderPREP();
+      const campi=document.querySelectorAll('.prepdet [data-prep$="|e"]');
+      if(campi.length) campi[campi.length-1].focus(); }
+    return; }
+  const pd=e.target.closest('[data-prepdel]');
+  if(pd){ const [id,i]=pd.dataset.prepdel.split('|');
+    const x=MP.ing.find(y=>y.id===id);
+    if(x&&x.prep){ x.prep.splice(+i,1); prepRicalcola(); mpSalva(); renderPREP(); }
+    return; }
   const d=e.target.closest('[data-ingdel]'); if(!d) return;
   const x=MP && MP.ing.find(y=>y.id===d.dataset.ingdel); if(!x) return;
   if(!await uiConfirm('Elimino «'+(x.e||'questo ingrediente')+'»? Se è usato in una scheda ricetta, quella scheda resterà senza il suo costo.')) return;
   MP.ing=MP.ing.filter(y=>y.id!==x.id); mpSalva(); renderING();
 });
+
+/* ================= preparazioni interne =================
+   Una preparazione home made è un ingrediente come gli altri — sta nello stesso
+   archivio, si usa nelle ricette allo stesso modo — con una differenza: il suo
+   prezzo non lo fa un fornitore, lo fanno gli ingredienti che ci vanno dentro.
+   Quindi quando cambia il prezzo di una materia prima, il costo della
+   preparazione cambia da solo, e con lui quello di ogni ricetta che la usa. */
+const ingDi = et => MP ? MP.ing.find(y=>norm(y.e)===norm(et)) : null;
+const isPrep = x => !!(x && Array.isArray(x.prep) && x.prep.length);
+
+/* costo di un'unità (cl, gr o pz) di un ingrediente, preparazione compresa.
+   `visti` ferma i giri chiusi: una preparazione che, di rimbalzo, usa sé stessa. */
+function ingUnitaDi(et, visti){
+  const x=ingDi(et);
+  if(!x) return null;
+  if(isPrep(x)){
+    const tot=prepTotale(x, visti);
+    if(tot==null) return null;
+    return tot/(numIt(x.co)||1);
+  }
+  return ingCostoUnita(x);
+}
+/* costo dell'intero lotto che la preparazione produce */
+function prepTotale(x, visti){
+  visti = visti ? new Set(visti) : new Set();
+  if(visti.has(x.id)) return null;
+  visti.add(x.id);
+  let t=0;
+  for(const r of x.prep){
+    const u=ingUnitaDi(r.e, visti);
+    if(u==null) return null;                 // manca un prezzo: non si inventa
+    /* lo scarto è una maggiorazione sulla quantità: 30% di scarto vuol dire
+       comprarne il 30% in più. È la convenzione di Menu Profits, e i due
+       archivi devono dare lo stesso numero. */
+    const sc=Math.max(0, numIt(r.sc));
+    t += u*numIt(r.q)*(1+sc);
+  }
+  return t*(1+Math.max(0, numIt(x.cn)));
+}
+/* quali righe non hanno un prezzo: è la ragione per cui una preparazione non ha costo */
+function prepMancanti(x){
+  return (x.prep||[]).filter(r=>ingUnitaDi(r.e)==null).map(r=>r.e);
+}
+/* il costo calcolato diventa il "listino" della preparazione, così il resto
+   dell'app la tratta come qualsiasi altro ingrediente */
+function prepRicalcola(){
+  if(!MP) return 0;
+  let cambiate=0;
+  for(let giro=0; giro<6; giro++){          // le preparazioni annidate si assestano in pochi giri
+    let mosso=0;
+    MP.ing.forEach(x=>{
+      if(!isPrep(x)) return;
+      const t=prepTotale(x);
+      if(t==null) return;
+      if(Math.abs((numIt(x.li)||0)-t) > 0.000001){ x.li=t; x.s1=0; x.s2=0; x.se=0; x.ac=0; mosso++; }
+    });
+    cambiate+=mosso;
+    if(!mosso) break;
+  }
+  if(cambiate) mpSalva();
+  return cambiate;
+}
+
+/* ---------------- pagina: preparazioni e guarnizioni ---------------- */
+let prepQ='', prepAperta=null;
+async function renderPREP(){
+  await mpCarica();
+  const body=document.getElementById('rprepBody');
+  const tutte=MP.ing.filter(isPrep);
+  const q=norm(prepQ);
+  const viste=tutte.filter(x=>!q || norm(x.e).includes(q) || norm(x.c).includes(q));
+  const rotte=tutte.filter(x=>prepTotale(x)==null);
+  const annidate=tutte.filter(x=>(x.prep||[]).some(r=>isPrep(ingDi(r.e))));
+
+  const kpi=`<div class="kpis">
+    <div class="kpi"><div class="lbl">Preparazioni</div><div class="val">${fmtNum(tutte.length)}</div>
+      <div class="note">su ${fmtNum(MP.ing.length)} voci in archivio</div></div>
+    <div class="kpi"><div class="lbl">Senza costo</div><div class="val ${rotte.length?'neg':''}">${fmtNum(rotte.length)}</div>
+      <div class="note">${rotte.length? 'manca il prezzo di almeno un ingrediente' : 'tutte calcolate'}</div></div>
+    <div class="kpi"><div class="lbl">Che ne usano un'altra</div><div class="val">${fmtNum(annidate.length)}</div>
+      <div class="note">uno sciroppo dentro un infuso, per dire</div></div>
+    <div class="kpi"><div class="lbl">Costi nascosti medi</div><div class="val">${tutte.length? fmtNum(tutte.reduce((t,x)=>t+numIt(x.cn),0)/tutte.length*100)+'%' : '—'}</div>
+      <div class="note">il margine che si perde fra scarto e dosaggio</div></div>
+  </div>`;
+
+  const righe=viste.map(x=>{
+    const tot=prepTotale(x), co=numIt(x.co)||1;
+    const apr = prepAperta===x.id;
+    return `<tr class="${apr?'apri':''} ${tot==null?'senza':''}" data-prepgo="${x.id}" style="cursor:pointer">
+      <td class="et"><input data-ing="${x.id}|e" value="${escH(x.e)}" onclick="event.stopPropagation()"></td>
+      <td class="ca"><input list="mpCat" data-ing="${x.id}|c" value="${escH(x.c)}" onclick="event.stopPropagation()"></td>
+      <td><select data-ing="${x.id}|u" onclick="event.stopPropagation()">${UM.map(u=>`<option${String(x.u||'').toUpperCase()===u?' selected':''}>${u}</option>`).join('')}</select></td>
+      <td class="n"><input data-ing="${x.id}|co" value="${x.co??''}" onclick="event.stopPropagation()"></td>
+      <td class="calc">${fmtNum((x.prep||[]).length)}</td>
+      <td class="calc ${tot==null?'vuoto':''}">${tot==null?'—':fmtEu2(tot)}</td>
+      <td class="calc ${tot==null?'vuoto':''}">${tot==null?'manca un prezzo':fmtE4(tot/co)}</td>
+      <td class="n"><input data-ing="${x.id}|cnp" value="${x.cn!=null? Math.round(numIt(x.cn)*1000)/10 : ''}" onclick="event.stopPropagation()"></td>
+      <td class="az">${apr?'▴':'▾'}</td>
+    </tr>`;
+  }).join('');
+
+  const ap=prepAperta ? MP.ing.find(x=>x.id===prepAperta) : null;
+
+  body.innerHTML=`<section>
+    <div class="sechead"><h2>Preparazioni e guarnizioni</h2>
+      <span class="note">il costo lo fanno gli ingredienti, non un listino</span></div>
+    ${kpi}
+    <div class="mpbar">
+      <button class="btn small" id="prepAdd">+ Preparazione</button>
+      <input class="cerca" id="prepQ" value="${escH(prepQ)}" placeholder="cerca per nome o categoria…">
+      <button class="btn ghost small" id="prepRic">↻ Ricalcola tutte</button>
+      <span class="conta">${fmtNum(viste.length)} su ${fmtNum(tutte.length)}</span>
+    </div>
+    ${tutte.length===0 ? `<div class="soonbox"><div class="st">Nessuna preparazione</div>
+      <p>Una preparazione è una cosa che si fa in casa e che poi entra nelle ricette: uno sciroppo,
+      una maionese, un infuso, una guarnizione. Si crea con <b>+ Preparazione</b> indicando quanto
+      ne esce dal lotto e cosa ci va dentro; il costo si calcola da solo e si aggiorna quando
+      cambiano i prezzi degli ingredienti.</p></div>`
+    : `<div class="tblwrap"><table class="entry mp" style="min-width:1020px">
+      <thead><tr><th>Preparazione</th><th>Categoria</th><th>U.M.</th><th>Resa<br>del lotto</th>
+        <th>Ingredienti</th><th>Costo<br>del lotto</th><th>Costo<br>per unità</th><th>Costi<br>nascosti %</th><th></th></tr></thead>
+      <tbody>${righe}</tbody></table></div>
+      ${ap ? prepDettaglio(ap) : ''}
+      <p class="mpnota">La resa del lotto è quanto esce dalla preparazione nella sua unità di misura:
+      400 cl di sciroppo, 200 gr di maionese, 1 pz di guarnizione. Il costo per unità è quello che
+      entra nelle ricette. I costi nascosti sono la percentuale che si perde fra scarto, cali di
+      peso e dosaggio — su una preparazione è normale che ci sia.</p>`}
+  </section>`;
+
+  const on=(id,ev,f)=>{ const e=document.getElementById(id); if(e) e.addEventListener(ev,f); };
+  on('prepQ','input',e=>{ prepQ=e.target.value; renderPREP().then(()=>{
+    const c=document.getElementById('prepQ'); if(c){ c.focus(); c.setSelectionRange(c.value.length,c.value.length); } }); });
+  on('prepRic','click',()=>{ const n=prepRicalcola(); renderPREP();
+    toast(n? '✓ Ricalcolate: '+n+' preparazioni hanno cambiato costo.' : '✓ Erano già tutte aggiornate.'); });
+  on('prepAdd','click',()=>{
+    const x={id:newId(), f:'(preparazione interna)', c:'Home Made', e:'', u:'CL', pz:1, co:100,
+             li:0, s1:0, s2:0, se:0, ac:0, d:new Date().toISOString().slice(0,10), prep:[{e:'',q:0,sc:0}], cn:0};
+    MP.ing.unshift(x); prepAperta=x.id; prepQ=''; mpSalva(); renderPREP();
+    setTimeout(()=>{ const i=document.querySelector('table.mp tbody tr:first-child td.et input'); if(i) i.focus(); },30);
+  });
+}
+
+function prepDettaglio(x){
+  const manc=prepMancanti(x);
+  const righe=(x.prep||[]).map((r,i)=>{
+    const u=ingUnitaDi(r.e);
+    const sc=Math.max(0,numIt(r.sc));
+    const c = u==null ? null : u*numIt(r.q)*(1+sc);
+    return `<tr>
+      <td class="${u==null?'mancante':''}"><input list="mpIng" data-prep="${x.id}|${i}|e" value="${escH(r.e)}" placeholder="scrivi un ingrediente…"></td>
+      <td class="r"><input data-prep="${x.id}|${i}|q" value="${r.q??''}"></td>
+      <td class="r"><input data-prep="${x.id}|${i}|sc" value="${r.sc? Math.round(numIt(r.sc)*1000)/10 : ''}" placeholder="0"></td>
+      <td class="r">${u==null?'—':fmtE4(u)}</td>
+      <td class="r tot">${c==null?'—':fmtEu2(c)}</td>
+      <td><button class="rowdel" data-prepdel="${x.id}|${i}" title="togli">✕</button></td>
+    </tr>`;
+  }).join('');
+  const t=prepTotale(x);
+  const elenco=MP.ing.map(y=>`<option value="${escH(y.e)}">`).join('');
+  return `<div class="prepdet">
+    <h4>${escH(x.e)||'Preparazione senza nome'}</h4>
+    <datalist id="mpIng">${elenco}</datalist>
+    <table><thead><tr><th>Ingrediente</th><th class="r">Quantità (${escH(String(x.u||'').toLowerCase())})</th>
+      <th class="r" title="quanto comprarne in più per via dello scarto">Scarto %</th><th class="r">Costo unitario</th><th class="r">Costo</th><th></th></tr></thead>
+      <tbody>${righe}</tbody>
+      <tfoot><tr><td colspan="4" style="text-align:right;padding-top:8px">
+        Costo del lotto${numIt(x.cn)>0? ', costi nascosti compresi':''}</td>
+        <td class="r tot" style="padding-top:8px">${t==null?'—':fmtEu2(t)}</td><td></td></tr></tfoot></table>
+    <div class="azioni">
+      <button class="btn ghost small" data-preprow="${x.id}">+ Ingrediente</button>
+      <button class="btn ghost small" data-prepchiudi="1">Chiudi</button>
+    </div>
+    ${manc.length? `<div class="avviso">Senza costo perché ${manc.length===1?'manca il prezzo di':'mancano i prezzi di'}
+      <b>${manc.slice(0,4).map(escH).join('</b>, <b>')}</b>${manc.length>4?' e altri '+(manc.length-4):''}.
+      ${manc.length===1?'Quella voce non c\'è in archivio o non ha listino.':'Quelle voci non ci sono in archivio o non hanno listino.'}</div>`:''}
+  </div>`;
+}
+
+/* ================= importazione dall'archivio di Menu Profits =================
+   Si legge il file che esporta l'app di Cristina e si porta dentro quello che
+   da noi non c'è. Regola unica, e non si deroga: non si sovrascrive niente.
+   Un ingrediente che c'è già resta com'è, i dati del conto economico non
+   vengono nemmeno sfiorati. */
+let ARCH=null;
+const frazPerc = x => { const n=Math.abs(numIt(x)); return n<=1 ? n*100 : n; };   // 0,16 → 16 %
+
+function archAbbina(nome, liberi){
+  const t = n => norm(n).replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(x=>x.length>2);
+  const mie=t(nome); if(!mie.length) return '';
+  let best=null, p=0;
+  liberi.forEach(c=>{
+    const sue=t(c.nome);
+    const comuni=mie.filter(x=>sue.includes(x)).length;
+    if(!comuni) return;
+    /* più parole in comune è meglio; a parità vince chi ha meno parole in più */
+    const punti=comuni*10 - Math.abs(sue.length-mie.length);
+    if(punti>p){ p=punti; best=c.id; }
+  });
+  return best||'';
+}
+function archVoci(a){
+  return Object.keys(a.clienti||{}).map(nome=>{
+    const c=a.clienti[nome]||{};
+    const forn=c.fornitori||{}, chiavi=Object.keys(forn);
+    const prep=chiavi.filter(k=>Array.isArray(forn[k]._ingredienti));
+    return {nome, ing:chiavi.length-prep.length, prep:prep.length,
+            ric:Object.keys(c.ricette||{}).length, prod:Object.keys(c.products||{}).length, dest:''};
+  }).filter(v=>v.ing+v.prep+v.ric+v.prod>0);
+}
+async function archLeggi(file){
+  let a;
+  try{ a=JSON.parse(await file.text()); }
+  catch(e){ return toast('Non riesco a leggere il file: non è un JSON valido.', true); }
+  if(!a || !a.clienti) return toast('Non sembra un archivio Menu Profits: manca l\'elenco dei clienti.', true);
+  const voci=archVoci(a);
+  if(!voci.length) return toast('L\'archivio non contiene dati da importare.', true);
+  /* abbinamento proposto: i nomi più lunghi scelgono per primi, così
+     «Barcollo Cavana» non si prende il posto di «Al Barcollo» */
+  const liberi=CLIENTS.list.map(c=>({id:c.id, nome:c.nome}));
+  const presi=new Set();
+  [...voci].sort((x,y)=>y.nome.length-x.nome.length).forEach(v=>{
+    const d=archAbbina(v.nome, liberi.filter(c=>!presi.has(c.id)));
+    if(d){ v.dest=d; presi.add(d); }
+  });
+  ARCH={a, voci};
+  renderARCH();
+}
+function renderARCH(){
+  const body=document.getElementById('ringBody');
+  const a=ARCH.a;
+  const quando = a._salvatoIl ? new Date(a._salvatoIl).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+  const opz = d => ['<option value="">— non importare —</option>'].concat(
+    CLIENTS.list.map(c=>`<option value="${escH(c.id)}"${c.id===d?' selected':''}>${escH(c.nome)}</option>`)).join('');
+  body.innerHTML=`<section>
+    <div class="sechead"><h2>Archivio Menu Profits</h2><span class="note">importazione</span></div>
+    <div class="impbox">
+      <div class="st">Controlla gli abbinamenti prima di importare</div>
+      <p class="note">${a._versioneApp? 'Versione '+escH(a._versioneApp)+' · ':''}${a._salvatoDa? 'salvato da '+escH(a._salvatoDa)+' ':''}${quando?'il '+quando:''}</p>
+      <p>I nomi dei clienti non sono gli stessi nelle due app: ho provato a indovinare, ma
+      l'ultima parola è tua. Quello che lasci su «non importare» resta fuori.</p>
+      <table><thead><tr><th>Cliente in Menu Profits</th><th>Cosa contiene</th><th>Va in questo cliente</th></tr></thead>
+      <tbody>${ARCH.voci.map((v,i)=>`<tr>
+        <td><b>${escH(v.nome)}</b></td>
+        <td class="cosa">${[v.ing?fmtNum(v.ing)+' ingredienti':'', v.prep?fmtNum(v.prep)+' preparazioni':'',
+            v.ric?fmtNum(v.ric)+' ricette':'', v.prod?fmtNum(v.prod)+' prodotti a listino':''].filter(Boolean).join(' · ')}</td>
+        <td><select data-arch="${i}">${opz(v.dest)}</select></td></tr>`).join('')}</tbody></table>
+      <p class="note">Ingredienti e preparazioni entrano subito nelle loro pagine. Ricette e venduto
+      vengono messi da parte così come sono: le pagine che li mostrano arrivano nei prossimi giorni,
+      e quando ci sono trovano i dati già dentro — non si ricarica niente due volte.</p>
+      <div class="azioni" style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn" id="archVai">Importa</button>
+        <button class="btn ghost" id="archNo">Annulla</button>
+      </div>
+    </div>
+  </section>`;
+  document.querySelectorAll('[data-arch]').forEach(sel=>sel.addEventListener('change',e=>{
+    ARCH.voci[+e.target.dataset.arch].dest=e.target.value;
+  }));
+  document.getElementById('archNo').addEventListener('click',()=>{ ARCH=null; renderING(); });
+  document.getElementById('archVai').addEventListener('click',archImporta);
+}
+
+function ingDaArchivio(et, v){
+  const prep = Array.isArray(v._ingredienti)
+    ? v._ingredienti.map(i=>({e:i.etichetta||'', q:numIt(i.qta), sc:numIt(i.scarto)}))
+        .concat((v._completamento||[]).map(i=>({e:i.etichetta||'', q:numIt(i.qta), sc:numIt(i.scarto)})))
+    : null;
+  let u=String(v.um||'').toUpperCase().replace(/[^A-Z]/g,'');
+  if(!UM.includes(u)) u='PZ';
+  return {id:newId(), f:v.forn||'', c:v.cat||'', e:et, u,
+    pz:numIt(v.qtaConf)||1, co:numIt(v.grcl)||1, li:numIt(v.prezzoListino),
+    s1:frazPerc(v.sconto1), s2:frazPerc(v.sconto2), se:numIt(v.scontoEuro), ac:numIt(v.accise),
+    d:String(v.dataAggiornamento||'').slice(0,10),
+    ...(prep? {prep, cn:numIt(v._costiNascosti)} : {}),
+    ...(v._nota||v._daCompletare||v._correzione ? {nota: v._nota||v._daCompletare||v._correzione} : {})};
+}
+
+async function archImporta(){
+  const scelte=ARCH.voci.filter(v=>v.dest);
+  if(!scelte.length) return toast('Nessun cliente da importare: scegli almeno un abbinamento.', true);
+  const quali=scelte.map(v=>v.nome+' → '+(CLIENTS.list.find(c=>c.id===v.dest)||{}).nome).join('\n');
+  if(!await uiConfirm('Importo questi clienti?\n\n'+quali+'\n\nNiente viene sovrascritto: quello che c\'è già resta com\'è.')) return;
+  let nuovi=0, saltati=0, grezzi=0;
+  for(const v of scelte){
+    const c=ARCH.a.clienti[v.nome]||{};
+    /* --- ingredienti e preparazioni --- */
+    const dati = v.dest===mpOwner ? MP : await mpLeggiDi(v.dest);
+    const gia=new Set(dati.ing.map(x=>norm(x.e)));
+    Object.entries(c.fornitori||{}).forEach(([et,val])=>{
+      if(!et) return;
+      if(gia.has(norm(et))){ saltati++; return; }      // c'è già: non si tocca
+      dati.ing.push(ingDaArchivio(et, val)); gia.add(norm(et)); nuovi++;
+    });
+    await mpScriviDi(v.dest, dati);
+    /* --- ricette e venduto: messi da parte così come sono, solo se non c'è già niente --- */
+    const chiave='planetone-mp:'+v.dest+':grezzo';
+    const esistente=await stGet(chiave);
+    if(!esistente){
+      const pacco={v:1, da:v.nome, quando:new Date().toISOString(),
+        ricette:c.ricette||{}, products:c.products||{}, cassaVenduto:c.cassaVenduto||{},
+        menuCategories:c.menuCategories||[], catSegmento:c.catSegmento||{},
+        gruppiCassa:c.gruppiCassa||{}, dizionarioCassa:c.dizionarioCassa||{},
+        targetIncidenza:c.targetIncidenza||{}, incassi:c['incassi'+(c.annoCorrente||2026)]||{},
+        bilancioMP:c.bilancioMP||{}, allergeni:c.allergeni||{}, focus:c.focus||{}, bep:c.bep||{}};
+      await stSet(chiave, JSON.stringify(pacco)); grezzi++;
+    }
+  }
+  ARCH=null;
+  if(MP) prepRicalcola();
+  renderING();
+  toast(`✓ ${fmtNum(nuovi)} voci nuove in archivio${saltati? ', '+fmtNum(saltati)+' c\'erano già e non sono state toccate':''}${grezzi? ' · ricette e venduto messi da parte per '+grezzi+' clienti':''}.`);
+}
+
+/* lettura e scrittura dell'archivio di un cliente che non è quello aperto */
+async function mpLeggiDi(cid){
+  let raw=null; try{ raw=await stGet('planetone-mp:'+cid+':ing'); }catch(e){}
+  let d; try{ d = raw ? JSON.parse(raw) : MP_VUOTO(); }catch(e){ d=MP_VUOTO(); }
+  if(!d||typeof d!=='object') d=MP_VUOTO();
+  if(!Array.isArray(d.forn)) d.forn=[];
+  if(!Array.isArray(d.ing))  d.ing=[];
+  return d;
+}
+async function mpScriviDi(cid, dati){
+  await stSet('planetone-mp:'+cid+':ing', JSON.stringify(dati));
+  if(cid===mpOwner) MP=dati;
+}
+
 function gotoPage(p){
   if(typeof closeImport==='function') closeImport();   // i riquadri tornano al loro posto
   current=p;
