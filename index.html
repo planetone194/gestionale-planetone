@@ -1249,7 +1249,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v99</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v100</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2049,6 +2049,7 @@ function suggerimenti(a, t, complete){
       fare.push(`<b>Inserire le incidenze teoriche da schede costo</b>, food e beverage. Senza quel confronto ogni diagnosi su questa riga è un'ipotesi.`);
     } else if(dpp<=2){
       num_.push(`Il confronto fra il costo teorico delle schede e quello di bilancio dà uno scarto di <b>${D(dpp)} punti</b>: sotto i due punti è fisiologico. Vuol dire che <b>non c'è dispersione da cercare</b>: quello che si compra e quello che si vende si parlano.`);
+      num_.push(`Il confronto regge se le schede costo coprono <b>almeno l'80% del venduto</b> e sono state aggiornate negli ultimi sei mesi. Sotto quella soglia il delta è calcolato su mezzo menu e non dice niente.`);
       num_.push(`Se le ricette costano quello che devono costare ma l'incidenza è alta, il problema sta altrove: nei prezzi di acquisto o in quelli di vendita.`);
       vel='subito';
       fare.push(`<b>Controllare le fatture contro il listino concordato</b> sulle referenze più pesanti. È la verifica più veloce e spesso basta da sola.`);
@@ -2073,30 +2074,52 @@ function suggerimenti(a, t, complete){
       euro:exMp, vel, num:num_, fare, link:[{p:'ce',txt:'Apri conto economico'},{p:'cn',txt:'Apri costi nascosti'}]});
   }
 
-  /* --- squilibrio del personale fra business unit --- */
+  /* --- squilibrio del personale fra business unit ---
+     Attenzione all'errore facile: «ribilanciare le ore» ha senso solo se
+     l'unità che dovrebbe riceverle ne ha bisogno. Se quella sta già in
+     obiettivo o sotto, caricarla di ore la peggiorerebbe: le ore in eccesso
+     non sono mal distribuite, sono in eccesso. Allora o si tagliano, o si
+     alza l'incasso dell'unità che le assorbe male. */
   if(a.ricaviFood>0 && a.ricaviBev>0){
     const iF=a.ruFood/a.ricaviFood, iB=a.ruBev/a.ricaviBev;
-    const gap=Math.abs(iF-iB)*100;
+    const gap=Math.abs(iF-iB)*100, tgt=num(t.ru)/100;
     if(gap>15){
       const altoF = iF>iB;
       const nA=altoF?'food':'beverage', nB=altoF?'beverage':'food';
       const rA=altoF?a.ricaviFood:a.ricaviBev, rB=altoF?a.ricaviBev:a.ricaviFood;
-      /* quanto costo del personale spostare per riportare la differenza entro i 15 punti */
-      const x=(Math.abs(iF-iB)-0.15)/(1/rA+1/rB);
+      const ruA=altoF?a.ruFood:a.ruBev, ruB=altoF?a.ruBev:a.ruFood;
+      const iA=altoF?iF:iB, iBB=altoF?iB:iF;
       const mpA=altoF?a.mpFood:a.mpBev;
-      const margA=rA-mpA-(altoF?a.ruFood:a.ruBev);
-      out.push({tit:`Il ${nA} non produce margine quanto il ${nB}`, euro:x, vel:'subito',
+      const margA=rA-mpA-ruA;
+      const assorbe = iBB > tgt;             /* l'altra unità ha davvero bisogno di ore? */
+      const tagl = ruA - rA*tgt;             /* portare l'unità pesante al target del locale */
+      const cres = ruA/tgt - rA;             /* oppure quanto incasso in più servirebbe */
+      const spost = (Math.abs(iF-iB)-0.15)/(1/rA+1/rB);
+      const comuni=[
+        `<b>Prima verificare l'imputazione.</b> Sala e management si ripartiscono sull'incidenza dei ricavi: controllare che il ${nA} non si stia caricando ore che sono di sala. Una parte dello scarto può venire da lì.`,
+        `Da verificare in Analisi dei turni: in quali servizi il ${nA} è presente senza che l'incasso lo giustifichi.`
+      ];
+      out.push({tit: assorbe
+          ? `Il ${nA} assorbe ore che servirebbero al ${nB}`
+          : `Il ${nA} ha ore in eccesso, e il ${nB} non può assorbirle`,
+        euro: assorbe ? spost : tagl, vel:'subito',
         num:[
           `Il ${nA} fa <b>${E(rA)}</b> di ricavi e, tolte materia prima e personale, ne restano <b>${E(margA)}</b> prima delle spese generali.`,
-          `La differenza non è la materia prima: è il personale. Le risorse umane imputate al ${nA} stanno al <b>${P(altoF?iF:iB)}</b>, quelle del ${nB} al <b>${P(altoF?iB:iF)}</b>. Sono <b>${D(gap)} punti</b> di distanza fra due reparti dello stesso locale, contro una soglia di attenzione di 15.`,
-          `Sul totale l'incidenza del personale è al ${P(a.incRu)}: <b>dal quadro generale questo non si vede</b>. Si vede solo scorporando le business unit.`
+          `Le risorse umane imputate al ${nA} stanno al <b>${P(iA)}</b>, quelle del ${nB} al <b>${P(iBB)}</b>: <b>${D(gap)} punti</b> di distanza fra due reparti dello stesso locale, contro una soglia di attenzione di 15.`,
+          assorbe
+            ? `Il ${nB} è anch'esso sopra l'obiettivo del ${fmtNum(t.ru)}%: lì le ore servono davvero, quindi lo squilibrio si chiude spostandole.`
+            : `Ma il ${nB} è già al ${P(iBB)}, <b>sotto l'obiettivo del ${fmtNum(t.ru)}%</b>: sta lavorando bene con le ore che ha. Spostargli le ore del ${nA} lo peggiorerebbe senza che ne abbia bisogno. <b>Quelle ore non sono mal distribuite: sono in eccesso.</b>`,
+          `Sul totale l'incidenza del personale è al ${P(a.incRu)}: dal quadro generale questo non si vede. Si vede solo scorporando le business unit.`
         ],
-        fare:[
-          `<b>Prima verificare l'imputazione.</b> Sala e management si ripartiscono sull'incidenza dei ricavi: controllare che il ${nA} non si stia caricando ore che sono di sala.`,
-          `<b>Ribilanciare le ore, non tagliarle.</b> Riportare la differenza entro i 15 punti del metodo vuol dire spostare circa <b>${E(x)}</b> di costo del personale dal ${nA} al ${nB} sul periodo.`,
-          `<b>Oppure lavorare sul denominatore:</b> con le stesse ore, un +10% di ricavi ${nA} porterebbe l'incidenza dal ${P(altoF?iF:iB)} al ${P((altoF?a.ruFood:a.ruBev)/(rA*1.1))}.`,
-          `Da verificare in Analisi dei turni: in quali servizi il ${nA} è presente senza che l'incasso lo giustifichi.`
-        ],
+        fare: assorbe
+          ? [comuni[0],
+             `<b>Ribilanciare le ore fra i due reparti.</b> Riportare la differenza entro i 15 punti del metodo vuol dire spostare circa <b>${E(spost)}</b> di costo del personale dal ${nA} al ${nB} sul periodo. Non è un taglio: sono le stesse persone dove il lavoro c'è.`,
+             comuni[1]]
+          : [comuni[0],
+             `<b>Se le ore restano in eccesso, vanno ridotte.</b> Portare il ${nA} all'obiettivo del ${fmtNum(t.ru)}% vale <b>${E(tagl)}</b> sul periodo. È il valore pieno dello scarto, non una mossa da fare in una volta: si costruisce su più mesi, fra turni, orari di apertura del reparto e organico.`,
+             `<b>Oppure far rendere di più quelle ore.</b> Con lo stesso organico servirebbero <b>${E(cres)}</b> di ricavi ${nA} in più (un +${D((cres/rA)*100)}%) per portare l'incidenza all'obiettivo. Spesso la via sta nel mezzo: una parte di ore, una parte di incasso.`,
+             `<b>Da non fare: spostare le ore sul ${nB}.</b> Quello sta già sotto obiettivo, e caricarlo peggiorerebbe l'unico reparto che oggi funziona.`,
+             comuni[1]],
         link:[{p:'ru',txt:'Apri risorse umane'},{p:'tu',txt:'Apri analisi dei turni'}]});
     }
   }
