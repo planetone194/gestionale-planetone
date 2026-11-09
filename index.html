@@ -5191,6 +5191,30 @@ function cnProveTot(){ return (S.cnx.prove||[]).reduce((a,r)=>a+num(r.eu),0); }
    e quello che va nei costi nascosti è il suo food cost, non i 10 €. */
 let CNV=null, cnvOwner=null, cnvInCorso=false;
 function cnvReset(){ CNV=null; cnvOwner=null; }
+
+/* Il prezzo di riferimento di un mese non è il listino di oggi: è il prezzo
+   più alto a cui quel prodotto è stato venduto fino a quel mese. Il listino
+   in archivio è uno solo e porta l'ultimo ritocco, quindi usarlo farebbe
+   sembrare scontati tutti i mesi precedenti all'aumento.
+   I prezzi nella ristorazione salgono a scalini: il massimo corrente segue
+   lo scalino da solo. Se invece il prezzo scende e resta sceso per almeno
+   due mesi, è un ribasso di listino e non uno sconto: il riferimento si
+   abbassa. Il primo mese della serie non può mostrare sconti — non ha un
+   prima con cui confrontarsi. */
+function cnvRiferimenti(u){
+  const ref=new Array(u.length).fill(null); let cur=null;
+  for(let i=0;i<u.length;i++){
+    const x=u[i];
+    if(x==null){ ref[i]=cur; continue; }
+    if(cur==null || x>cur*1.005) cur=x;
+    else if(x<cur*0.97){
+      const dopo=[]; for(let j=i+1;j<u.length && dopo.length<2;j++) if(u[j]!=null) dopo.push(u[j]);
+      if(dopo.length && dopo.every(y=>y<cur*0.97)) cur=x;     /* ribasso, non sconto */
+    }
+    ref[i]=cur;
+  }
+  return ref;
+}
 async function cnVenduto(){
   if(CNV && cnvOwner===sOwner) return CNV;
   /* servono tutti e due: i prodotti col venduto e gli ingredienti coi prezzi.
@@ -5202,15 +5226,18 @@ async function cnVenduto(){
   const ivaDi = x => (x.pvi>0 && x.pv>0) ? (x.pvi/x.pv-1) : ivaStd;
   const Z=()=>new Array(12).fill(0);
   const o={ pz:Z(), inc:Z(), incCop:Z(), teor:Z(), scDelta:Z(), scCosto:Z(),
-            bufPeso:0, bufCosto:0, righe:[], sopra:0, nProd:P.length, nSchede:0 };
+            bufPeso:0, bufCosto:0, righe:[], sopra:0, rialzi:0, nProd:P.length, nSchede:0 };
   P.forEach(x=>{
     const c=ricCosto(x);                      /* null = scheda assente o rotta */
     const iva=ivaDi(x);
     const pIncl = x.pvi>0 ? x.pvi : (x.pv>0 ? x.pv*(1+iva) : 0);
     if(c) o.nSchede++;
+    const mesi=(x.mesi||[]).slice(0,12);
+    /* prezzo medio davvero incassato in ogni mese, e il riferimento che ne esce */
+    const uM=mesi.map(m=> numIt(m.pz)>0 ? numIt(m.inc)/numIt(m.pz) : null);
+    const ref=cnvRiferimenti(uM);
     let rDelta=0, rCosto=0, rPz=0;
-    (x.mesi||[]).forEach((m,i)=>{
-      if(i>11) return;
+    mesi.forEach((m,i)=>{
       const pz=numIt(m.pz), inc=numIt(m.inc);
       if(!pz && !inc) return;
       o.pz[i]+=pz; o.inc[i]+=inc;
@@ -5219,15 +5246,17 @@ async function cnVenduto(){
         o.teor[i]+=pz*c.tot;
         o.bufCosto+=pz*c.tot; o.bufPeso+=pz*c.tot*numIt(x.ric&&x.ric.cn);
       }
-      if(pIncl>0 && pz>0){
-        const d=pz*pIncl-inc;
+      const rif=ref[i];
+      if(rif>0 && pz>0){
+        const d=pz*rif-inc;
         if(d>0.5){
-          const quota=d/pIncl;                 /* pezzi equivalenti regalati */
+          const quota=d/rif;                   /* pezzi equivalenti regalati */
           o.scDelta[i]+=d/(1+iva);
           if(c){ o.scCosto[i]+=quota*c.tot; rCosto+=quota*c.tot; }
           rDelta+=d/(1+iva); rPz+=quota;
         } else if(d<-0.5){ o.sopra+=-d; }
       }
+      if(pIncl>0 && pz>0 && rif>0 && rif>pIncl*1.03) o.rialzi++;
     });
     if(rDelta>0) o.righe.push({n:x.n, cat:x.cat, pz:rPz, delta:rDelta, costo:rCosto, haScheda:!!c});
   });
@@ -5396,13 +5425,18 @@ function blocSconti(){
     : '';
   return `${quad}
     <div class="cnxlett" style="margin-bottom:10px">
-      <b>Come si legge.</b> Per ogni prodotto si confronta quello che sarebbe entrato a listino con quello che è
-      entrato davvero: <b>pezzi × prezzo − incasso</b>. Un hamburger da 10 €, dieci pezzi, fanno 100 € attesi; se due
-      vanno a metà prezzo ne entrano 90. Quei <b>10 € di delta valgono un hamburger intero regalato</b>, e nei costi
-      nascosti ci va il suo food cost, non i 10 € di ricavo mancato.
+      <b>Come si legge.</b> Per ogni prodotto si confronta quello che sarebbe entrato al suo prezzo pieno con quello
+      che è entrato davvero: <b>pezzi × prezzo − incasso</b>. Un hamburger da 10 €, dieci pezzi, fanno 100 € attesi;
+      se due vanno a metà prezzo ne entrano 90. Quei <b>10 € di delta valgono un hamburger intero regalato</b>, e nei
+      costi nascosti ci va il suo food cost, non i 10 € di ricavo mancato.
+      <span class="cnxsc"><b>Il prezzo pieno non è il listino di oggi</b>: è il prezzo più alto a cui quel prodotto è
+      stato venduto fino a quel mese. Il listino in archivio è uno solo e porta l'ultimo ritocco — usarlo farebbe
+      sembrare scontati tutti i mesi prima dell'aumento. Se il prezzo scende e resta sceso per due mesi è un ribasso
+      di listino, e il riferimento scende con lui. Il primo mese della serie non può mostrare sconti: non ha un
+      prima con cui confrontarsi.</span>
     </div>
     <div class="cnx4" style="grid-template-columns:repeat(3,1fr)">
-      <div class="cnxc"><div class="l">Delta listino → incassato</div><div class="v">${fmtE(cv.scDelta)}</div>
+      <div class="cnxc"><div class="l">Delta prezzo pieno → incassato</div><div class="v">${fmtE(cv.scDelta)}</div>
         <div class="d">ricavo non entrato ${per}, IVA esclusa</div></div>
       <div class="cnxc"><div class="l">Pezzi equivalenti regalati</div><div class="v">${fmtNum(Math.round(CNV.righe.reduce((a,r)=>a+r.pz,0)))}</div>
         <div class="d">su ${fmtNum(Math.round(cv.pz))} pezzi venduti</div></div>
@@ -5418,7 +5452,8 @@ function blocSconti(){
       <tr class="t"><td>Totale ${per}</td><td class="n"></td><td class="n">${fmtE2(cv.scDelta)}</td><td class="n">${fmtE2(cv.scCosto)}</td></tr>
     </table>
     ${senza?`<div class="cnxnota">${senza} ${senza===1?'prodotto scontato non ha':'prodotti scontati non hanno'} scheda costo: il ricavo mancato si vede, il food cost no. Finché manca la scheda quel costo resta fuori dal totale.</div>`:''}
-    ${CNV.sopra>50?`<div class="cnxnota">Su altri prodotti è entrato <b>${fmtE(CNV.sopra)}</b> più del listino: o i prezzi sono stati alzati e il listino non è aggiornato, o ci sono maggiorazioni. Vale la pena controllarlo prima di fidarsi del totale.</div>`:''}
+    ${CNV.sopra>200?`<div class="cnxnota">Su altri prodotti è entrato <b>${fmtE(CNV.sopra)}</b> più del prezzo di riferimento: maggiorazioni, varianti vendute sotto lo stesso nome, o un ritocco appena avvenuto. Finché resta piccolo è rumore di cassa; se cresce, i nomi in archivio e quelli in cassa non si corrispondono più.</div>`:''}
+    ${CNV.rialzi>0?`<div class="cnxnota">In <b>${fmtNum(CNV.rialzi)}</b> ${CNV.rialzi===1?'caso il prodotto è stato venduto':'casi i prodotti sono stati venduti'} sopra il listino scritto in archivio: il listino va aggiornato, ma il conto qui sopra non ne risente — usa i prezzi veri di cassa.</div>`:''}
     <div class="cnxcalc"><button class="mini" data-cnxapp="scauto">Scrivi negli omaggi dei mesi →</button></div>`;
 }
 
