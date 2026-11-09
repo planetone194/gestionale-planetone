@@ -811,6 +811,47 @@
   @media(max-width:900px){ .areagrid{grid-template-columns:repeat(2,1fr)} .homegrid{grid-template-columns:1fr} }
   .acard.vuota{background:#FAF9F6;border-style:dashed;}
 
+  /* costi nascosti · confronto con le schede */
+  .cnx4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin:12px 0 10px;}
+  .cnxc{background:#FAF9F6;border:1px solid var(--line);border-radius:12px;padding:11px 13px;}
+  .cnxc .l{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink2);font-weight:700;margin-bottom:4px;}
+  .cnxc .v{font-family:var(--num);font-size:20px;font-weight:700;letter-spacing:-.4px;}
+  .cnxc .d{font-size:10.5px;color:var(--ink2);margin-top:4px;line-height:1.42;}
+  .cnxc.buono{background:var(--ok-bg);border-color:#CFE3D7;} .cnxc.buono .v{color:#235F3C;}
+  .cnxc.alto{background:var(--warn-bg);border-color:#EBDCA8;} .cnxc.alto .v{color:#8A6A00;}
+  .cnxlett{font-size:11.5px;color:var(--ink2);line-height:1.55;background:#FAF9F6;border:1px solid var(--line);
+    border-radius:11px;padding:10px 13px;margin-bottom:14px;}
+  .cnxlett b{color:var(--ink);}
+  .cnxsc{display:block;margin-top:7px;font-size:11px;}
+  .cnxh{font-size:14px;font-weight:700;margin:16px 0 2px;}
+  .cnxsub{font-size:11.5px;color:var(--ink2);margin-bottom:8px;line-height:1.5;}
+  .cnxt{border-collapse:collapse;font-size:12.5px;margin-bottom:6px;min-width:420px;}
+  .cnxt.largo{width:100%;}
+  .cnxt th{text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);
+    font-weight:700;padding:0 8px 5px;border-bottom:1.5px solid var(--ink);}
+  .cnxt td{padding:5px 8px;border-bottom:1px solid var(--line);}
+  .cnxt td.n,.cnxt th.n{text-align:right;font-family:var(--num);white-space:nowrap;}
+  .cnxt td.b{font-weight:700;}
+  .cnxt tr.t td{background:#FAF9F6;font-weight:700;border-bottom:none;}
+  .cnxt tr.r td{background:var(--warn-bg);font-weight:700;border-bottom:none;}
+  .cnxnota{font-size:11.5px;color:var(--ink2);line-height:1.5;margin-bottom:6px;}
+  .cnxnota b{color:var(--ink);}
+  .cnxcalc{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;}
+  .cnxcalc label{font-size:11px;color:var(--ink2);display:flex;align-items:center;gap:5px;}
+  .cnxcalc .op{font-family:var(--num);font-size:15px;color:var(--ink2);}
+  .cnxris{font-family:var(--num);font-size:17px;font-weight:700;}
+  .cnxcalc input.num,.cnxt input.num{width:72px;text-align:right;font-family:var(--num);font-size:12.5px;
+    border:1px solid var(--line);border-radius:7px;padding:4px 7px;background:#fff;}
+  .cnxt input.txt{width:100%;min-width:120px;border:1px solid var(--line);border-radius:7px;padding:4px 7px;
+    font-size:12.5px;background:#fff;font-family:inherit;}
+  input.num.s{width:54px;}
+  button.mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 11px;font-size:11.5px;
+    font-weight:600;cursor:pointer;color:var(--ink);font-family:inherit;}
+  button.mini:hover{border-color:var(--brass);color:var(--brass-dk);}
+  button.mini.x{padding:3px 8px;color:var(--ink2);}
+  button.mini.x:hover{border-color:var(--bad);color:var(--bad);}
+  .avviso.ok{background:var(--ok-bg);border-color:#CFE3D7;color:#235F3C;}
+
   /* suggerimenti del mese: il pulsante e il pannello */
   .suggbtn{background:var(--card);border:1.5px solid var(--brass);border-radius:var(--radius);padding:11px 13px;
     display:flex;align-items:center;gap:11px;cursor:pointer;transition:background .12s;}
@@ -830,7 +871,7 @@
     padding-bottom:10px;margin-bottom:2px;}
   #suggmodal .ph h3{font-size:18px;font-weight:700;margin:0;}
   #suggmodal .ph .sub2{font-size:12px;color:var(--ink2);}
-  #suggmodal .ph .x{margin-left:auto;font-size:19px;color:var(--ink2);cursor:pointer;line-height:1;padding:0 4px;}
+  #suggmodal .ph .x{margin-left:12px;font-size:19px;color:var(--ink2);cursor:pointer;line-height:1;padding:0 4px;}
   #suggmodal .ph .x:hover{color:var(--bad);}
   .sg{border-bottom:1px solid var(--line);padding:14px 0 15px;}
   .sg:last-of-type{border-bottom:none;}
@@ -1249,7 +1290,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v100</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v102</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1427,6 +1468,7 @@
         <div class="sub">Autoconsumi, omaggi, rimanenze invendute e dispersioni (dosi, rotture, sprechi): i costi che la contabilità non vede ma che erodono la materia prima. Obiettivo Planet One: sotto il <span id="cnMaxLbl"></span>% del venduto.</div></div>
       </div>
       <div class="livebar" id="cnLive"></div>
+      <div id="cnPlus"></div>
       <div class="tblwrap"><table class="entry" id="cnTable"></table></div>
     </section>
     <section>
@@ -1703,6 +1745,12 @@ function migrateS(){
   }
   if(!S.sgSplit) S.sgSplit={mode:'incidenze',foodPct:50};
   if(!S.mpSchede) S.mpSchede={food:'',bev:'',agg:''};
+  /* i costi nascosti, pezzo per pezzo: copertura delle schede sul venduto,
+     scarto preventivo che il metodo mette dentro le ricette (10%),
+     il compilatore degli autoconsumi, sconti/omaggi e prove menu */
+  if(!S.cnx) S.cnx={cop:'', sc:'10', pasto:'', pers:'', gg:'', bev:'', sconti:[], prove:[]};
+  if(!Array.isArray(S.cnx.sconti)) S.cnx.sconti=[];
+  if(!Array.isArray(S.cnx.prove)) S.cnx.prove=[];
   if(S.mpSchede.agg===undefined) S.mpSchede.agg='';
   if(!S.stag||typeof S.stag!=='object') S.stag={on:false, mesi:Array(12).fill(true)};
   if(!Array.isArray(S.stag.mesi)||S.stag.mesi.length!==12) S.stag.mesi=Array(12).fill(true);
@@ -2176,6 +2224,7 @@ function apriSugg(){
   const per = (scope!=='ytd' && MESI[scope]) ? MESI[scope]+' '+S.anno : 'anno '+S.anno;
   pan.innerHTML = `<div class="ph"><h3>Suggerimenti del mese</h3>
       <div class="sub2">${(S.cliente||'Cliente')} · ${per} · dalle cure del metodo</div>
+      <button class="mini" onclick="stampaSugg()" style="margin-left:auto">Scarica PDF</button>
       <div class="x" onclick="chiudiSugg()">✕</div></div>
     ${SUGG.map((x,i)=>`<div class="sg">
       <div class="sgh"><div class="sgn">${i+1}</div><div class="sgt">${x.tit}</div>
@@ -2190,6 +2239,67 @@ function apriSugg(){
     effetto nel mese vale tre volte una che ne chiede sei. Le aree già in obiettivo non generano suggerimenti.</div>`;
   document.getElementById('suggmodal').classList.add('open');
 }
+/* I suggerimenti in una pagina stampabile: si salva in PDF dal browser e si
+   manda al cliente senza dover aprire l'app. Stessa sostanza del pannello,
+   impaginata per l'A4. */
+function stampaSugg(){
+  if(!SUGG.length) return;
+  const per = (scope!=='ytd' && MESI[scope]) ? MESI[scope]+' '+S.anno : 'anno '+S.anno;
+  const rp = (()=>{ try{ const m=compute(); return recuperoPot(scope==='ytd'?m:{...m}, S.targets); }catch(e){ return null; } })();
+  const oggi = new Date().toLocaleDateString('it-IT',{day:'numeric',month:'long',year:'numeric'});
+  const w=window.open('','_blank'); if(!w){ toast('Il browser ha bloccato la finestra di stampa.', true); return; }
+  w.document.write(`<!doctype html><html lang="it"><head><meta charset="utf-8">
+  <title>Suggerimenti del mese · ${S.cliente||'Cliente'}</title>
+  <style>
+    @page{size:A4;margin:16mm 15mm}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;color:#1B2A3A;font-size:10.5pt;line-height:1.5}
+    .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1B2A3A;padding-bottom:7px;margin-bottom:14px}
+    .top .m{font-size:8.5pt;letter-spacing:2.2px;text-transform:uppercase;font-weight:700;color:#2F3337}
+    .top .m i{color:#F07F1F;font-style:normal}
+    .top .d{font-size:8.5pt;color:#5D6B79}
+    h1{font-size:19pt;font-weight:700;letter-spacing:-.4px;margin-bottom:2px}
+    .sub{font-size:10pt;color:#5D6B79;margin-bottom:14px}
+    .rec{background:#2F3337;color:#fff;border-radius:9px;padding:11px 14px;margin-bottom:16px}
+    .rec .l{font-size:8pt;letter-spacing:1.3px;text-transform:uppercase;color:#F07F1F;font-weight:700}
+    .rec .v{font-size:19pt;font-weight:700;letter-spacing:-.4px}
+    .rec .d{font-size:9pt;color:#C9CBCC;margin-top:3px}
+    .sg{border-top:1px solid #E4E1DA;padding:13px 0 4px;page-break-inside:avoid}
+    .sgh{display:flex;align-items:baseline;gap:9px;margin-bottom:8px}
+    .sgn{width:19px;height:19px;border-radius:50%;background:#F07F1F;color:#fff;font-size:9.5pt;font-weight:700;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .sgt{flex:1;font-size:12.5pt;font-weight:700;line-height:1.25}
+    .vel{font-size:7.5pt;letter-spacing:.9px;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:4px;background:#EAF4EE;color:#2E7D4F}
+    .vel.m{background:#FBF3DC;color:#8A6A00}
+    .eu{font-size:11.5pt;font-weight:700;color:#2E7D4F;white-space:nowrap}
+    .due{display:flex;gap:18px}
+    .due>div{flex:1}
+    .et{font-size:7.5pt;letter-spacing:1.2px;text-transform:uppercase;color:#B95E0C;font-weight:700;margin-bottom:4px}
+    p{font-size:9.5pt;line-height:1.48;margin-bottom:5px}
+    ul{margin:0 0 5px;padding-left:14px}
+    li{font-size:9.5pt;line-height:1.42;margin-bottom:4px}
+    .foot{border-top:1px solid #E4E1DA;margin-top:16px;padding-top:8px;font-size:8pt;color:#5D6B79;line-height:1.5}
+  </style></head><body>
+  <div class="top"><div class="m">Menu<i>Profits</i> · Planet One</div><div class="d">${oggi}</div></div>
+  <h1>Suggerimenti del mese</h1>
+  <div class="sub">${S.cliente||'Cliente'} · ${per}</div>
+  ${rp&&rp.tot>0?`<div class="rec"><div class="l">Recupero potenziale</div><div class="v">${fmtE(rp.tot)}</div>
+    <div class="d">${rp.aree.map(a=>a.n+' '+fmtE(a.e)).join(' · ')}. Le aree già in obiettivo restano dove sono.</div></div>`:''}
+  ${SUGG.map((x,i)=>`<div class="sg">
+    <div class="sgh"><div class="sgn">${i+1}</div><div class="sgt">${x.tit}</div>
+      <span class="vel ${x.vel==='subito'?'':'m'}">${VEL[x.vel].t}</span><span class="eu">+${fmtE(x.euro)}</span></div>
+    <div class="due">
+      <div><div class="et">I numeri</div>${x.num.map(t=>`<p>${t}</p>`).join('')}</div>
+      <div><div class="et">Che cosa fare</div><ul>${x.fare.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+    </div></div>`).join('')}
+  <div class="foot">Ordinati per valore in euro moltiplicato per il coefficiente di velocità: un'azione che dà effetto
+  nel mese vale tre volte una che ne chiede sei. Le aree già in obiettivo non generano suggerimenti.<br>
+  Elaborazione Planet One · bilancio extracontabile, importi IVA esclusa.</div>
+  </body></html>`);
+  w.document.close();
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 350);
+}
+
 function chiudiSugg(){ const m=document.getElementById('suggmodal'); if(m) m.classList.remove('open'); }
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') chiudiSugg(); });
 
@@ -5007,8 +5117,169 @@ function renderCN(){
   h+=`<tr class="sumrow"><td class="lbl">TOTALE COSTI NASCOSTI</td>`+m.months.map(x=>`<td class="tot">${fmtE2(x.cn)}</td>`).join('')+`<td class="tot">${fmtE2(m.cn)}</td></tr>`;
   h+=`<tr class="sumrow"><td class="lbl">Incidenza sul venduto %</td>`+m.months.map(x=>`<td class="tot">${x.ricavi?fmtP(x.cn/x.ricavi):''}</td>`).join('')+`<td class="tot">${fmtP(m.incCn)}</td></tr>`;
   tb.innerHTML=h;
-  cnLive(); cnChart();
+  renderCNplus(); cnLive(); cnChart();
 }
+/* ============================================================
+   COSTI NASCOSTI · il confronto con le schede ricetta
+   Il delta fra la materia prima di bilancio e quella che le ricette
+   prevedono NON è lo scarto totale: dentro le schede il metodo mette già
+   uno scarto preventivo (10% di norma). Quindi:
+       puro    = teorico ÷ (1 + scarto preventivo)
+       scarto effettivo = reale − puro
+   Un locale che esegue le ricette con precisione può stare SOTTO lo scarto
+   previsto: il delta negativo non è un errore, è bravura.
+   ============================================================ */
+function cnConfronto(){
+  const m=compute(), x=S.cnx;
+  const tf=mpsVal('food'), tb=mpsVal('bev');
+  const ricBU=m.ricaviFood+m.ricaviBev;
+  if(tf==null||tb==null||!(ricBU>0)||!(m.ricavi>0)) return null;
+  const teorInc=(tf*m.ricaviFood+tb*m.ricaviBev)/ricBU;
+  const teor=teorInc*m.ricavi;
+  const sc=Math.max(0,num(x.sc))/100;
+  const puro=teor/(1+sc);
+  const reale=m.mp;
+  return {reale, teor, puro, sc,
+    scartoPrev: teor-puro,
+    scartoEff: reale-puro,
+    pctEff: puro>0 ? (reale/puro-1) : null,
+    oltre: reale-teor,
+    incReale: reale/m.ricavi, incTeor: teorInc, incPuro: puro/m.ricavi,
+    cop: num(x.cop)};
+}
+function cnSpiegato(){
+  const tot = n => { const c=S.cn.find(y=>(y.nome||'').toLowerCase().indexOf(n)>=0);
+    return c ? c.m.reduce((a,v)=>a+num(v),0) : 0; };
+  return {auto:tot('autoconsum'), omag:tot('omaggi'), rim:tot('rimanenz'), ghost:tot('ghost')};
+}
+function cnAutoTot(){ const x=S.cnx;
+  return (num(x.pasto)+num(x.bev))*num(x.pers)*num(x.gg); }
+function cnScontiTot(){ return (S.cnx.sconti||[])
+  .reduce((a,r)=>a+num(r.pz)*num(r.fc)*Math.max(0,Math.min(100,num(r.sc)))/100,0); }
+function cnProveTot(){ return (S.cnx.prove||[]).reduce((a,r)=>a+num(r.eu),0); }
+
+function renderCNplus(){
+  const el=document.getElementById('cnPlus'); if(!el) return;
+  const c=cnConfronto(), sp=cnSpiegato(), x=S.cnx;
+  const copOk = c && c.cop>=80;
+  const stato = !c
+    ? `<div class="avviso">Per confrontare la materia prima con le ricette servono le <b>incidenze teoriche da schede costo</b> di food e beverage: si inseriscono nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Finché mancano, qui sotto si possono comunque compilare autoconsumi, sconti e prove.</div>`
+    : (copOk
+      ? `<div class="avviso ok">Le schede costo coprono il <b>${fmtNum(c.cop)}%</b> del venduto: sopra la soglia dell'80%, il confronto è attendibile.</div>`
+      : `<div class="avviso">Le schede costo coprono il <b>${c.cop>0?fmtNum(c.cop)+'%':'—'}</b> del venduto. Sotto l'80% il confronto è calcolato su mezzo menu e non dice niente: prima vanno completate le schede dei prodotti che si vendono.</div>`);
+
+  const conf = !c ? '' : `
+    <div class="cnx4">
+      <div class="cnxc"><div class="l">Dal bilancio</div><div class="v">${fmtE(c.reale)}</div>
+        <div class="d">${fmtP(c.incReale)} dei ricavi · acquisti del periodo</div></div>
+      <div class="cnxc"><div class="l">Dalle ricette, con lo scarto previsto</div><div class="v">${fmtE(c.teor)}</div>
+        <div class="d">${fmtP(c.incTeor)} · dentro c'è il ${fmtNum(x.sc)}% di scarto preventivo</div></div>
+      <div class="cnxc"><div class="l">Costo puro, senza scarto</div><div class="v">${fmtE(c.puro)}</div>
+        <div class="d">${fmtP(c.incPuro)} · quanto costerebbe se non si buttasse niente</div></div>
+      <div class="cnxc ${c.pctEff<=c.sc?'buono':'alto'}"><div class="l">Scarto effettivo</div>
+        <div class="v">${fmtE(c.scartoEff)}</div>
+        <div class="d"><b>${fmtP(c.pctEff)}</b> sul costo puro, contro il <b>${fmtNum(x.sc)}%</b> previsto${
+          c.pctEff<=c.sc ? ' — <b>sotto il previsto</b>: le ricette si eseguono con precisione' : ' — sopra il previsto di '+fmtE(c.oltre)}</div></div>
+    </div>
+    <div class="cnxlett">
+      <b>Come si legge.</b> Le schede del metodo contengono già uno scarto preventivo del ${fmtNum(x.sc)}%: un piatto che
+      di materia prima pura costa 2,00 € va in ricetta a ${fmtNum(2*(1+num(x.sc)/100)).replace('.',',')} €. Quindi il confronto
+      diretto fra bilancio e schede misura solo <i>quanto si sfonda oltre il previsto</i>, non lo scarto totale. Lo scarto vero è
+      la distanza dal <b>costo puro</b>, ed è quello che le voci qui sotto devono spiegare.
+      <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%
+      &nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%</span>
+    </div>`;
+
+  const prove = cnProveTot();
+  const spiegato = sp.auto+sp.omag+sp.rim+Math.max(0,sp.ghost)+prove;
+  const resto = c ? c.scartoEff - spiegato : null;
+  const tab = !c ? '' : `
+    <h3 class="cnxh">Che cosa spiega lo scarto</h3>
+    <table class="cnxt">
+      <tr><td>Autoconsumi del personale</td><td class="n">${fmtE(sp.auto)}</td></tr>
+      <tr><td>Omaggi e sconti</td><td class="n">${fmtE(sp.omag)}</td></tr>
+      <tr><td>Rimanenze invendute</td><td class="n">${fmtE(sp.rim)}</td></tr>
+      <tr><td>Prove menu e dispersioni registrate</td><td class="n">${fmtE(Math.max(0,sp.ghost)+prove)}</td></tr>
+      <tr class="t"><td>Totale spiegato</td><td class="n">${fmtE(spiegato)}</td></tr>
+      <tr class="t"><td>Scarto effettivo</td><td class="n">${fmtE(c.scartoEff)}</td></tr>
+      <tr class="r"><td>Non spiegato — dispersione da indagare</td><td class="n">${fmtE(resto)}</td></tr>
+    </table>
+    <div class="cnxnota">${resto>0
+      ? `Restano <b>${fmtE(resto)}</b> che non hanno un nome: dosi, rotture, scadenze, ammanchi. È lì che si va a guardare.`
+      : `Le voci registrate spiegano tutto lo scarto effettivo. Se il totale le supera, o mancano le rimanenze di fine mese — e allora il bilancio misura quello che è entrato, non quello che è stato consumato — oppure qualche stima è generosa.`}</div>`;
+
+  el.innerHTML = `${stato}${conf}${tab}
+
+  <h3 class="cnxh">Il compilatore degli autoconsumi</h3>
+  <div class="cnxsub">Quasi nessun locale registra i pasti del personale. Invece di lasciare zero, si stima.</div>
+  <div class="cnxcalc">
+    <label>Costo materia prima di un pasto <input class="num" data-cnx="pasto" value="${x.pasto||''}" inputmode="decimal"> €</label>
+    <span class="op">+</span>
+    <label>Bevande a persona <input class="num" data-cnx="bev" value="${x.bev||''}" inputmode="decimal"> €</label>
+    <span class="op">×</span>
+    <label>Persone al giorno <input class="num" data-cnx="pers" value="${x.pers||''}" inputmode="decimal"></label>
+    <span class="op">×</span>
+    <label>Giorni nel mese <input class="num" data-cnx="gg" value="${x.gg||''}" inputmode="decimal"></label>
+    <span class="op">=</span>
+    <b class="cnxris">${fmtE(cnAutoTot())}</b>
+    <button class="mini" data-cnxapp="auto">Scrivi nei mesi con ricavi →</button>
+  </div>
+
+  <h3 class="cnxh">Sconti e omaggi · il food cost della parte regalata</h3>
+  <div class="cnxsub">Quando si sconta, il ricavo scende ma il prodotto costa uguale. La parte di costo che lo sconto non copre più è un costo nascosto: <b>food cost × percentuale di sconto × pezzi</b>. Un omaggio è uno sconto del 100%.</div>
+  <table class="cnxt largo">
+    <tr><th>Prodotto</th><th class="n">Pezzi</th><th class="n">Food cost</th><th class="n">Sconto %</th><th class="n">Costo nascosto</th><th></th></tr>
+    ${(x.sconti||[]).map((r,i)=>`<tr>
+      <td><input class="txt" data-cnxs="${i}.nome" value="${(r.nome||'').replace(/"/g,'&quot;')}" placeholder="prodotto"></td>
+      <td class="n"><input class="num" data-cnxs="${i}.pz" value="${r.pz||''}" inputmode="decimal"></td>
+      <td class="n"><input class="num" data-cnxs="${i}.fc" value="${r.fc||''}" inputmode="decimal"></td>
+      <td class="n"><input class="num" data-cnxs="${i}.sc" value="${r.sc||''}" inputmode="decimal"></td>
+      <td class="n b">${fmtE2(num(r.pz)*num(r.fc)*Math.max(0,Math.min(100,num(r.sc)))/100)}</td>
+      <td class="n"><button class="mini x" data-cnxdel="s.${i}">✕</button></td></tr>`).join('')}
+    <tr class="t"><td>Totale</td><td class="n"></td><td class="n"></td><td class="n"></td><td class="n">${fmtE2(cnScontiTot())}</td><td></td></tr>
+  </table>
+  <div class="cnxcalc">
+    <button class="mini" data-cnxadd="s">+ Aggiungi una riga</button>
+    <button class="mini" data-cnxapp="sconti">Scrivi negli omaggi dei mesi con ricavi →</button>
+  </div>
+
+  <h3 class="cnxh">Prove menu e formazione</h3>
+  <div class="cnxsub">Quello che si consuma per provare un piatto nuovo o per farlo assaggiare allo staff.</div>
+  <table class="cnxt">
+    <tr><th>Data</th><th>Che cosa</th><th class="n">Costo</th><th></th></tr>
+    ${(x.prove||[]).map((r,i)=>`<tr>
+      <td><input class="txt" data-cnxp="${i}.data" value="${r.data||''}" placeholder="gg/mm"></td>
+      <td><input class="txt" data-cnxp="${i}.nome" value="${(r.nome||'').replace(/"/g,'&quot;')}" placeholder="descrizione"></td>
+      <td class="n"><input class="num" data-cnxp="${i}.eu" value="${r.eu||''}" inputmode="decimal"></td>
+      <td class="n"><button class="mini x" data-cnxdel="p.${i}">✕</button></td></tr>`).join('')}
+    <tr class="t"><td>Totale</td><td></td><td class="n">${fmtE2(cnProveTot())}</td><td></td></tr>
+  </table>
+  <div class="cnxcalc"><button class="mini" data-cnxadd="p">+ Aggiungi una prova</button></div>
+  `;
+}
+
+/* «Scrivi nei mesi»: la stima calcolata qui sopra finisce nella riga giusta
+   della tabella, solo nei mesi che hanno ricavi. Non sovrascrive un mese già
+   compilato a mano senza dirlo: chiede conferma una volta sola. */
+async function cnApplica(che){
+  const m=compute();
+  const mesi=m.complete.map(r=>r.i);
+  if(!mesi.length){ toast('Non ci sono mesi con ricavi su cui scrivere.', true); return; }
+  const val = che==='auto' ? cnAutoTot() : cnScontiTot();
+  if(!(val>0)){ toast('Prima compila i campi qui sopra.', true); return; }
+  const chiave = che==='auto' ? 'autoconsum' : 'omaggi';
+  const riga = S.cn.find(c=>(c.nome||'').toLowerCase().indexOf(chiave)>=0);
+  if(!riga){ toast('Riga non trovata nella tabella.', true); return; }
+  const gia = mesi.filter(i=>num(riga.m[i])>0).length;
+  if(gia){
+    const ok = await uiConfirm(`${gia} ${gia===1?'mese ha':'mesi hanno'} già un valore in «${riga.nome}».\n\nVuoi sovrascriverli con ${fmtE2(val)}?`);
+    if(!ok) return;
+  }
+  mesi.forEach(i=>{ riga.m[i]=val; });
+  saveState(); renderCN();
+  toast(`Scritti ${fmtE2(val)} in ${mesi.length} ${mesi.length===1?'mese':'mesi'}.`);
+}
+
 function cnLive(){
   const m=compute(), t=S.targets;
   const byVoce = S.cn.map(c=>({n:c.nome, v:c.m.reduce((a,x)=>a+num(x),0)}));
@@ -7068,6 +7339,12 @@ document.addEventListener('input',e=>{
   if(el.dataset.ru){ const [id,i]=el.dataset.ru.split('.'); const p=S.ru.find(x=>x.id===id); if(p) p.m[+i]=parseIt(el.value); touched='ru'; }
   if(el.dataset.rumk){ const [id,i]=el.dataset.rumk.split('.'); const p=S.ru.find(x=>x.id===id); if(p){ if(!Array.isArray(p.mk)||p.mk.length!==12) p.mk=Array(12).fill(0); p.mk[+i]=parseIt(el.value); } touched='ru'; }
   if(el.dataset.sg){ const [id,i]=el.dataset.sg.split('.'); const c=S.sg.find(x=>x.id===id); if(c) c.m[+i]=parseIt(el.value); touched='sg'; }
+  if(el.dataset.cnx){ S.cnx[el.dataset.cnx]=el.value; saveState(); clearTimeout(window._cnxT);
+    window._cnxT=setTimeout(renderCNplus,500); return; }
+  if(el.dataset.cnxs){ const [i,k]=el.dataset.cnxs.split('.'); (S.cnx.sconti[+i]||{})[k]=el.value; saveState();
+    clearTimeout(window._cnxT); window._cnxT=setTimeout(renderCNplus,500); return; }
+  if(el.dataset.cnxp){ const [i,k]=el.dataset.cnxp.split('.'); (S.cnx.prove[+i]||{})[k]=el.value; saveState();
+    clearTimeout(window._cnxT); window._cnxT=setTimeout(renderCNplus,500); return; }
   if(el.dataset.cn){ const [id,i]=el.dataset.cn.split('.'); const c=S.cn.find(x=>x.id===id); if(c) c.m[+i]=parseIt(el.value); touched='cn'; }
   if(el.dataset.runome){ const p=S.ru.find(x=>x.id===el.dataset.runome); if(p) p.nome=el.value; saveState(); return; }
   if(el.dataset.ruruolo){ const p=S.ru.find(x=>x.id===el.dataset.ruruolo); if(p) p.ruolo=el.value; saveState(); return; }
@@ -7371,6 +7648,13 @@ document.addEventListener('click',async e=>{
   if(im){ openImport(im.dataset.import); return; }
   const oc=e.target.closest('[data-open]');
   if(oc){ switchClient(oc.dataset.open).then(()=>gotoPage('dash')); return; }
+  const ad=e.target.closest('[data-cnxadd]');
+  if(ad){ migrateS(); (ad.dataset.cnxadd==='s'?S.cnx.sconti:S.cnx.prove).push({}); saveState(); renderCNplus(); return; }
+  const de=e.target.closest('[data-cnxdel]');
+  if(de){ const [t,i]=de.dataset.cnxdel.split('.');
+    (t==='s'?S.cnx.sconti:S.cnx.prove).splice(+i,1); saveState(); renderCNplus(); return; }
+  const ap=e.target.closest('[data-cnxapp]');
+  if(ap){ cnApplica(ap.dataset.cnxapp); return; }
   const gc=e.target.closest('[data-goto]');
   if(gc){ gotoPage(gc.dataset.goto); return; }
   const b=e.target.closest('button'); if(!b) return;
