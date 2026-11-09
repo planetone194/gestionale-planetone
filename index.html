@@ -2430,7 +2430,7 @@ function cardCostiNascosti(a){
   return `<div class="acard z${z}" data-goto="cn">
     <div class="al">Costi nascosti<span class="verdict ${ZC[z]}">${dpp<=2?'Fisiologico':dpp<=4?'Da indagare':'Dispersione'}</span></div>
     <div class="av">${dpp>=0?'+':''}${dpp.toFixed(1).replace('.',',')} p.p.</div>
-    <div class="ax">obiettivo ≤ ${fmtNum(S.targets.cn)} p.p. · <b>dentro</b> la materia prima<br>${fmtE(euro)} di scarto fra bilancio e schede costo, che coprono il ${fmtNum(Math.round(c.cop*10)/10)}% del venduto</div>
+    <div class="ax">obiettivo ≤ ${fmtNum(S.targets.cn)} p.p. · <b>dentro</b> la materia prima<br>${fmtE(euro)} di scarto fra bilancio e schede costo · copertura ${fmtNum(Math.round(c.cop*10)/10)}% del venduto</div>
     <div class="go">Apri costi nascosti →</div>
   </div>`;
 }
@@ -5308,7 +5308,7 @@ function renderCNplus(){
         <div class="d">${fmtP(c.incTeor)} dei ricavi · dentro c'è il ${fmtNum(x.sc)}% di scarto preventivo</div></div>
       <div class="cnxc ${c.pctEff<=c.sc?'buono':'alto'}"><div class="l">Scarto effettivo</div>
         <div class="v">${fmtE(c.scartoEff)}</div>
-        <div class="d"><b>${fmtP(c.pctEff)}</b> sul costo puro, contro il <b>${fmtNum(x.sc)}%</b> previsto${
+        <div class="d"><b>${fmtP(c.pctEff)}</b> di scarto reale, contro il <b>${fmtNum(x.sc)}%</b> previsto dalle schede${
           c.pctEff<=c.sc ? ' — <b>sotto il previsto</b>: le ricette si eseguono con precisione' : ' — sopra il previsto di '+fmtE(c.oltre)}</div></div>
     </div>
     <div class="cnxlett">
