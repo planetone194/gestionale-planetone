@@ -836,6 +836,30 @@
   .cnblk .cnxt{margin-bottom:8px;}
   .cnsep{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink2);font-weight:700;
     margin:14px 0 6px;padding-top:11px;border-top:1px dashed var(--line);}
+  /* il confronto in testa: ideale, reale, delta — in punti e in euro */
+  .cnconf{border:1px solid var(--line);border-radius:14px;padding:14px 16px 12px;margin:0 0 14px;background:#fff;}
+  .cnct{width:100%;border-collapse:collapse;}
+  .cnct th{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink2);font-weight:700;
+    padding:0 10px 7px;text-align:right;}
+  .cnct th:first-child{text-align:left;width:92px;}
+  .cnct td{padding:7px 10px;border-top:1px solid var(--line);text-align:right;
+    font-family:var(--num);font-size:21px;font-weight:700;letter-spacing:-.4px;white-space:nowrap;}
+  .cnct td:first-child{text-align:left;font-family:inherit;font-size:11px;font-weight:600;color:var(--ink2);
+    text-transform:uppercase;letter-spacing:1px;}
+  .cnct td.d{color:var(--ok);} .cnct td.d.male{color:var(--hot);} .cnct td.d.bad{color:var(--bad);}
+  .cnverd{margin-top:9px;font-size:11.5px;line-height:1.5;color:var(--ink2);}
+  .cnverd b{color:var(--ink);}
+  /* la barra che scompone lo scarto */
+  .cnbar{display:flex;height:17px;border-radius:9px;overflow:hidden;margin:4px 0 11px;background:var(--line);}
+  .cnbar span{display:block;height:100%;}
+  .cnbar .s1{background:#C9CFD6;} .cnbar .s2{background:var(--ok);} .cnbar .s3{background:var(--warn);}
+  .cnleg{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+  .cnleg .v{border-left:3px solid var(--line);padding:1px 0 1px 9px;}
+  .cnleg .v.s1{border-left-color:#C9CFD6;} .cnleg .v.s2{border-left-color:var(--ok);}
+  .cnleg .v.s3{border-left-color:var(--warn);}
+  .cnleg .t{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink2);font-weight:700;}
+  .cnleg .e{font-family:var(--num);font-size:17px;font-weight:700;letter-spacing:-.3px;margin:2px 0 3px;}
+  .cnleg .n{font-size:10.5px;color:var(--ink2);line-height:1.42;}
   .cnxh{font-size:14px;font-weight:700;margin:16px 0 2px;}
   .cnxsub{font-size:11.5px;color:var(--ink2);margin-bottom:8px;line-height:1.5;}
   .cnxt{border-collapse:collapse;font-size:12.5px;margin-bottom:6px;min-width:420px;}
@@ -1480,6 +1504,7 @@
         <div><h2>Interceptor · costi nascosti</h2>
         <div class="sub">Autoconsumi, omaggi, rimanenze invendute e dispersioni (dosi, rotture, sprechi): i costi che la contabilità non vede ma che erodono la materia prima. Obiettivo Planet One: sotto il <span id="cnMaxLbl"></span>% del venduto.</div></div>
       </div>
+      <div id="cnTop"></div>
       <div class="livebar" id="cnLive"></div>
       <div id="cnPlus"></div>
       <div class="tblwrap"><table class="entry" id="cnTable"></table></div>
@@ -5139,7 +5164,7 @@ function renderCN(){
   h+=`<tr class="sumrow"><td class="lbl">TOTALE COSTI NASCOSTI</td>`+m.months.map(x=>`<td class="tot">${fmtE2(x.cn)}</td>`).join('')+`<td class="tot">${fmtE2(m.cn)}</td></tr>`;
   h+=`<tr class="sumrow"><td class="lbl">Incidenza sul venduto %</td>`+m.months.map(x=>`<td class="tot">${x.ricavi?fmtP(x.cn/x.ricavi):''}</td>`).join('')+`<td class="tot">${fmtP(m.incCn)}</td></tr>`;
   tb.innerHTML=h;
-  renderCNplus(); cnLive(); cnChart();
+  renderCNtop(); renderCNplus(); cnLive(); cnChart();
 }
 /* ============================================================
    COSTI NASCOSTI · il confronto con le schede ricetta
@@ -5288,58 +5313,95 @@ function cnvPeriodo(o){
           cop: S1('inc')>0 ? S1('incCop')/S1('inc')*100 : null};
 }
 
+/* in testa alla pagina: il confronto fra ideale e reale, in punti e in euro.
+   Sta sopra i riquadri dell'Interceptor perché è la domanda che si fa per
+   prima — quanto dovrebbe costare, quanto è costato, di quanto sbagliamo. */
+function renderCNtop(){
+  const el=document.getElementById('cnTop'); if(!el) return;
+  const c=cnConfronto(), x=S.cnx;
+  if(!c){
+    el.innerHTML = (CNV && !CNV.nProd)
+      ? `<div class="avviso">Il confronto fra la materia prima comprata e quella prevista dalle ricette ha bisogno delle <b>schede costo con il venduto</b>: per questo cliente l'archivio dei prodotti non c'è ancora. In alternativa si scrivono a mano le incidenze teoriche nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Intanto qui sotto si possono compilare autoconsumi, sconti e prove.</div>`
+      : `<div class="avviso">Per confrontare la materia prima con le ricette servono le <b>incidenze teoriche da schede costo</b> di food e beverage: si inseriscono nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Finché mancano, qui sotto si possono comunque compilare autoconsumi, sconti e prove.</div>`;
+    return;
+  }
+  const dpp=(c.incReale-c.incTeor)*100;
+  const cls = dpp<=2 ? '' : dpp<=4 ? ' male' : ' bad';
+  const verdetto = dpp<=2
+    ? `<b>Fisiologico.</b> Sotto i due punti non c'è dispersione da cercare: quello che si compra e quello che si vende si parlano. Se l'incidenza resta alta, il problema sta nei prezzi — d'acquisto o di vendita.`
+    : dpp<=4
+      ? `<b>Da indagare.</b> Fra i due e i quattro punti il sospetto è il dosaggio: pesare dieci piatti e dieci drink contro la scheda, jigger al bar.`
+      : `<b>Dispersione.</b> Oltre i quattro punti il divario non si spiega con le porzioni: inventario di reparto sulle referenze pesanti, registrazione di omaggi, autoconsumi e rotture.`;
+  const copOk = c.cop>=80;
+  el.innerHTML = `
+    <div class="cnconf">
+      <table class="cnct">
+        <thead><tr><th></th><th>Ideale · da schede</th><th>Reale · da bilancio</th><th>Delta</th></tr></thead>
+        <tbody>
+          <tr><td>Food cost</td><td>${fmtP(c.incTeor)}</td><td>${fmtP(c.incReale)}</td>
+            <td class="d${cls}">${dpp>=0?'+':''}${dpp.toFixed(1).replace('.',',')} p.p.</td></tr>
+          <tr><td>In euro</td><td>${fmtE(c.teor)}</td><td>${fmtE(c.reale)}</td>
+            <td class="d${cls}">${c.oltre>=0?'+':''}${fmtE(c.oltre)}</td></tr>
+        </tbody>
+      </table>
+      <div class="cnverd">${verdetto}</div>
+    </div>
+    ${copOk
+      ? `<div class="avviso ok">Le schede costo coprono il <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> del venduto: sopra la soglia dell'80%, il confronto è attendibile.${c.fonte==='venduto'?' Il costo teorico è calcolato dai pezzi venduti per il costo di ogni scheda, non digitato.':''}</div>`
+      : `<div class="avviso">Le schede costo coprono il <b>${c.cop>0?fmtNum(Math.round(c.cop*10)/10)+'%':'—'}</b> del venduto. Sotto l'80% il confronto è calcolato su mezzo menu e non dice niente: prima vanno completate le schede dei prodotti che si vendono.</div>`}`;
+}
+
 function renderCNplus(){
   const el=document.getElementById('cnPlus'); if(!el) return;
   const c=cnConfronto(), sp=cnSpiegato(), x=S.cnx;
-  const copOk = c && c.cop>=80;
-  const stato = !c
-    ? (CNV && !CNV.nProd
-       ? `<div class="avviso">Il confronto fra la materia prima comprata e quella prevista dalle ricette ha bisogno delle <b>schede costo con il venduto</b>: per questo cliente l'archivio dei prodotti non c'è ancora. In alternativa si scrivono a mano le incidenze teoriche nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Intanto qui sotto si possono compilare autoconsumi, sconti e prove.</div>`
-       : `<div class="avviso">Per confrontare la materia prima con le ricette servono le <b>incidenze teoriche da schede costo</b> di food e beverage: si inseriscono nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Finché mancano, qui sotto si possono comunque compilare autoconsumi, sconti e prove.</div>`)
-    : (copOk
-      ? `<div class="avviso ok">Le schede costo coprono il <b>${fmtNum(c.cop)}%</b> del venduto: sopra la soglia dell'80%, il confronto è attendibile.${c.fonte==='venduto'?' Il costo teorico è calcolato dai pezzi venduti per il costo di ogni scheda, non digitato.':''}</div>`
-      : `<div class="avviso">Le schede costo coprono il <b>${c.cop>0?fmtNum(c.cop)+'%':'—'}</b> del venduto. Sotto l'80% il confronto è calcolato su mezzo menu e non dice niente: prima vanno completate le schede dei prodotti che si vendono.</div>`);
-
-  const conf = !c ? '' : `
-    <div class="cnx4" style="grid-template-columns:repeat(3,1fr)">
-      <div class="cnxc"><div class="l">Dal bilancio</div><div class="v">${fmtE(c.reale)}</div>
-        <div class="d">${fmtP(c.incReale)} dei ricavi · acquisti del periodo</div></div>
-      <div class="cnxc"><div class="l">Incidenza preventiva da schede ricetta</div><div class="v">${fmtE(c.teor)}</div>
-        <div class="d">${fmtP(c.incTeor)} dei ricavi · dentro c'è il ${fmtNum(x.sc)}% di scarto preventivo</div></div>
-      <div class="cnxc ${c.pctEff<=c.sc?'buono':'alto'}"><div class="l">Scarto effettivo</div>
-        <div class="v">${fmtE(c.scartoEff)}</div>
-        <div class="d"><b>${fmtP(c.pctEff)}</b> di scarto reale, contro il <b>${fmtNum(x.sc)}%</b> previsto dalle schede${
-          c.pctEff<=c.sc ? ' — <b>sotto il previsto</b>: le ricette si eseguono con precisione' : ' — sopra il previsto di '+fmtE(c.oltre)}</div></div>
-    </div>
-    <div class="cnxlett">
-      <b>Come si legge.</b> Le schede del metodo contengono già uno scarto preventivo del ${fmtNum(x.sc)}%: un piatto che
-      di materia prima pura costa 2,00 € va in ricetta a ${fmtNum(2*(1+num(x.sc)/100)).replace('.',',')} €. Quindi il confronto
-      diretto fra bilancio e schede misura solo <i>quanto si sfonda oltre il previsto</i>, non lo scarto totale. Lo scarto vero è
-      la distanza dal <b>costo puro</b>, ed è quello che le voci qui sotto devono spiegare.
-      <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%${
-        CNV&&CNV.buffer!=null?` <span style="color:var(--ink2)">— nelle schede di questo cliente la media vera è <b>${fmtNum(Math.round(CNV.buffer*10)/10)}%</b></span>`:''}
-      ${c.fonte==='venduto'
-        ? `&nbsp;·&nbsp; Copertura delle schede sul venduto <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> <span style="color:var(--ink2)">calcolata dall'archivio</span>`
-        : `&nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%`}</span>
-    </div>`;
-
+  const stato='', conf='';
+  /* la scomposizione dello scarto: una barra, tre pezzi, nessun elenco di zeri */
   const prove = cnProveTot();
   const spiegato = sp.auto+sp.omag+sp.rim+Math.max(0,sp.ghost)+prove;
-  const resto = c ? c.scartoEff - spiegato : null;
-  const tab = !c ? '' : `
-    <h3 class="cnxh">Che cosa spiega lo scarto</h3>
-    <table class="cnxt">
-      <tr><td>Autoconsumi del personale</td><td class="n">${fmtE(sp.auto)}</td></tr>
-      <tr><td>Omaggi e sconti</td><td class="n">${fmtE(sp.omag)}</td></tr>
-      <tr><td>Rimanenze invendute</td><td class="n">${fmtE(sp.rim)}</td></tr>
-      <tr><td>Prove menu e dispersioni registrate</td><td class="n">${fmtE(Math.max(0,sp.ghost)+prove)}</td></tr>
-      <tr class="t"><td>Totale spiegato</td><td class="n">${fmtE(spiegato)}</td></tr>
-      <tr class="t"><td>Scarto effettivo</td><td class="n">${fmtE(c.scartoEff)}</td></tr>
-      <tr class="r"><td>Non spiegato — dispersione da indagare</td><td class="n">${fmtE(resto)}</td></tr>
-    </table>
-    <div class="cnxnota">${resto>0
-      ? `Restano <b>${fmtE(resto)}</b> che non hanno un nome: dosi, rotture, scadenze, ammanchi. È lì che si va a guardare.`
-      : `Le voci registrate spiegano tutto lo scarto effettivo. Se il totale le supera, o mancano le rimanenze di fine mese — e allora il bilancio misura quello che è entrato, non quello che è stato consumato — oppure qualche stima è generosa.`}</div>`;
+  const tab = !c ? '' : (()=>{
+    const prev=Math.max(0,c.scartoPrev), reg=Math.max(0,spiegato);
+    const resto=c.scartoEff-prev-reg;
+    const tot=Math.max(1, prev+reg+Math.max(0,resto));
+    const pc=v=>(v/tot*100).toFixed(1)+'%';
+    const voci=[];
+    if(sp.auto>0) voci.push('autoconsumi '+fmtE(sp.auto));
+    if(sp.omag>0) voci.push('omaggi e sconti '+fmtE(sp.omag));
+    if(sp.rim>0)  voci.push('rimanenze '+fmtE(sp.rim));
+    if(Math.max(0,sp.ghost)+prove>0) voci.push('prove e dispersioni '+fmtE(Math.max(0,sp.ghost)+prove));
+    return `
+    <div class="cnblk">
+      <h3 class="cnxh">Dove va lo scarto<span class="tot">${fmtE(c.scartoEff)}</span></h3>
+      <div class="cnxsub">Lo scarto effettivo è la distanza fra quello che il bilancio ha speso e quello che le
+        ricette costerebbero eseguite alla perfezione. Una parte il metodo la mette in conto, una parte è
+        registrata, il resto non ha ancora un nome.</div>
+      <div class="cnbar">
+        <span class="s1" style="width:${pc(prev)}"></span>
+        <span class="s2" style="width:${pc(reg)}"></span>
+        <span class="s3" style="width:${pc(Math.max(0,resto))}"></span>
+      </div>
+      <div class="cnleg">
+        <div class="v s1"><div class="t">Previsto dalle schede</div><div class="e">${fmtE(prev)}</div>
+          <div class="n">il ${fmtNum(x.sc)}% messo in ricetta, ${pc(prev)} dello scarto</div></div>
+        <div class="v s2"><div class="t">Registrato</div><div class="e">${fmtE(reg)}</div>
+          <div class="n">${voci.length?voci.join(' · '):'nessuna voce registrata: si compilano qui sotto'}</div></div>
+        <div class="v s3"><div class="t">Senza nome</div><div class="e">${fmtE(Math.max(0,resto))}</div>
+          <div class="n">${resto>0
+            ? 'dosi, rotture, scadenze, rimanenze mai contate, ammanchi'
+            : 'le voci registrate coprono tutto: o mancano le rimanenze di fine mese, o qualche stima è generosa'}</div></div>
+      </div>
+      <div class="cnxlett" style="margin:12px 0 0">
+        <b>Come si legge.</b> Le schede del metodo contengono già uno scarto preventivo del ${fmtNum(x.sc)}%: un
+        piatto che di materia prima pura costa 2,00 € va in ricetta a ${fmtNum(2*(1+num(x.sc)/100)).replace('.',',')} €.
+        Per questo il delta qui sopra misura solo <i>quanto si sfonda oltre il previsto</i>: lo scarto totale è questo,
+        e comprende anche la quota messa in conto.
+        <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%${
+          CNV&&CNV.buffer!=null?` <span style="color:var(--ink2)">— nelle schede di questo cliente la media vera è <b>${fmtNum(Math.round(CNV.buffer*10)/10)}%</b></span>`:''}
+        ${c.fonte==='venduto'
+          ? `&nbsp;·&nbsp; Copertura calcolata dall'archivio: <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> del venduto`
+          : `&nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%`}</span>
+      </div>
+    </div>`;
+  })();
 
   el.innerHTML = `${stato}${conf}${tab}
 
@@ -5401,7 +5463,7 @@ function renderCNplus(){
      arriva la pagina si ridisegna da sola con i numeri veri. */
   if((!CNV || cnvOwner!==sOwner) && !cnvInCorso){
     cnvInCorso=true;
-    cnVenduto().then(()=>{ cnvInCorso=false; renderCNplus(); })
+    cnVenduto().then(()=>{ cnvInCorso=false; renderCNtop(); renderCNplus(); })
                .catch(()=>{ cnvInCorso=false; });
   }
 }
