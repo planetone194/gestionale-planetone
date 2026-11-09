@@ -824,6 +824,18 @@
     border-radius:11px;padding:10px 13px;margin-bottom:14px;}
   .cnxlett b{color:var(--ink);}
   .cnxsc{display:block;margin-top:7px;font-size:11px;}
+  /* ogni voce dei costi nascosti è un blocco a sé: autoconsumi, sconti, prove.
+     Senza una cornice si leggono come un unico elenco e ci si perde. */
+  .cnblk{border:1px solid var(--line);border-radius:14px;padding:13px 16px 14px;margin:14px 0;background:#fff;}
+  .cnblk > .cnxh:first-child{margin-top:0;}
+  .cnblk .cnxh{display:flex;align-items:baseline;gap:9px;}
+  .cnblk .cnxh .nm{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;
+    border-radius:50%;background:var(--scuro);color:#fff;font-family:var(--num);font-size:10.5px;
+    font-weight:700;flex:none;align-self:center;}
+  .cnblk .cnxh .tot{margin-left:auto;font-family:var(--num);font-size:14px;font-weight:700;}
+  .cnblk .cnxt{margin-bottom:8px;}
+  .cnsep{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink2);font-weight:700;
+    margin:14px 0 6px;padding-top:11px;border-top:1px dashed var(--line);}
   .cnxh{font-size:14px;font-weight:700;margin:16px 0 2px;}
   .cnxsub{font-size:11.5px;color:var(--ink2);margin-bottom:8px;line-height:1.5;}
   .cnxt{border-collapse:collapse;font-size:12.5px;margin-bottom:6px;min-width:420px;}
@@ -5132,11 +5144,19 @@ function renderCN(){
    ============================================================ */
 function cnConfronto(){
   const m=compute(), x=S.cnx;
-  const tf=mpsVal('food'), tb=mpsVal('bev');
-  const ricBU=m.ricaviFood+m.ricaviBev;
-  if(tf==null||tb==null||!(ricBU>0)||!(m.ricavi>0)) return null;
-  const teorInc=(tf*m.ricaviFood+tb*m.ricaviBev)/ricBU;
-  const teor=teorInc*m.ricavi;
+  if(!(m.ricavi>0)) return null;
+  /* il costo teorico viene dal venduto quando l'archivio c'è — pezzi venduti
+     per costo di scheda, niente da digitare — e dalle incidenze scritte a
+     mano solo quando l'archivio manca o è di un altro anno. */
+  const cv = (CNV && (!CNV.anno || CNV.anno===S.anno)) ? cnvPeriodo(CNV) : null;
+  let teor=null, fonte='';
+  if(cv && cv.teor>0 && cv.cop>0){ teor=cv.teor/(cv.cop/100); fonte='venduto'; }
+  else {
+    const tf=mpsVal('food'), tb=mpsVal('bev'), ricBU=m.ricaviFood+m.ricaviBev;
+    if(tf==null||tb==null||!(ricBU>0)) return null;
+    teor=((tf*m.ricaviFood+tb*m.ricaviBev)/ricBU)*m.ricavi; fonte='schede';
+  }
+  const teorInc=teor/m.ricavi;
   const sc=Math.max(0,num(x.sc))/100;
   const puro=teor/(1+sc);
   const reale=m.mp;
@@ -5144,9 +5164,9 @@ function cnConfronto(){
     scartoPrev: teor-puro,
     scartoEff: reale-puro,
     pctEff: puro>0 ? (reale/puro-1) : null,
-    oltre: reale-teor,
+    oltre: reale-teor, fonte,
     incReale: reale/m.ricavi, incTeor: teorInc, incPuro: puro/m.ricavi,
-    cop: num(x.cop)};
+    cop: fonte==='venduto' ? cv.cop : num(x.cop)};
 }
 function cnSpiegato(){
   const tot = n => { const c=S.cn.find(y=>(y.nome||'').toLowerCase().indexOf(n)>=0);
@@ -5159,14 +5179,82 @@ function cnScontiTot(){ return (S.cnx.sconti||[])
   .reduce((a,r)=>a+num(r.pz)*num(r.fc)*Math.max(0,Math.min(100,num(r.sc)))/100,0); }
 function cnProveTot(){ return (S.cnx.prove||[]).reduce((a,r)=>a+num(r.eu),0); }
 
+/* ============ quello che il venduto di cassa sa già dirci ============
+   L'archivio prodotti tiene insieme prezzo di listino, pezzi venduti,
+   incasso reale e scheda costo. Da lì si ricavano senza digitare niente:
+   il costo teorico del venduto, la copertura delle schede, lo scarto
+   preventivo medio e — il pezzo nuovo — gli sconti.
+
+   Lo sconto si legge come delta fra atteso e incassato. Un hamburger a
+   10 €, dieci pezzi: attesi 100 €. Se due sono andati a metà prezzo ne
+   entrano 90. Quei 10 € di delta valgono un hamburger intero regalato,
+   e quello che va nei costi nascosti è il suo food cost, non i 10 €. */
+let CNV=null, cnvOwner=null, cnvInCorso=false;
+function cnvReset(){ CNV=null; cnvOwner=null; }
+async function cnVenduto(){
+  if(CNV && cnvOwner===sOwner) return CNV;
+  let P=[]; try{ await proCarica(); P=(PRO&&PRO.prod)||[]; }catch(e){ P=[]; }
+  const ivaStd=numIt(PRO&&PRO.iva)||0.1;
+  const ivaDi = x => (x.pvi>0 && x.pv>0) ? (x.pvi/x.pv-1) : ivaStd;
+  const Z=()=>new Array(12).fill(0);
+  const o={ pz:Z(), inc:Z(), incCop:Z(), teor:Z(), scDelta:Z(), scCosto:Z(),
+            bufPeso:0, bufCosto:0, righe:[], sopra:0, nProd:P.length, nSchede:0 };
+  P.forEach(x=>{
+    const c=ricCosto(x);                      /* null = scheda assente o rotta */
+    const iva=ivaDi(x);
+    const pIncl = x.pvi>0 ? x.pvi : (x.pv>0 ? x.pv*(1+iva) : 0);
+    if(c) o.nSchede++;
+    let rDelta=0, rCosto=0, rPz=0;
+    (x.mesi||[]).forEach((m,i)=>{
+      if(i>11) return;
+      const pz=numIt(m.pz), inc=numIt(m.inc);
+      if(!pz && !inc) return;
+      o.pz[i]+=pz; o.inc[i]+=inc;
+      if(c){
+        o.incCop[i]+=inc;
+        o.teor[i]+=pz*c.tot;
+        o.bufCosto+=pz*c.tot; o.bufPeso+=pz*c.tot*numIt(x.ric&&x.ric.cn);
+      }
+      if(pIncl>0 && pz>0){
+        const d=pz*pIncl-inc;
+        if(d>0.5){
+          const quota=d/pIncl;                 /* pezzi equivalenti regalati */
+          o.scDelta[i]+=d/(1+iva);
+          if(c){ o.scCosto[i]+=quota*c.tot; rCosto+=quota*c.tot; }
+          rDelta+=d/(1+iva); rPz+=quota;
+        } else if(d<-0.5){ o.sopra+=-d; }
+      }
+    });
+    if(rDelta>0) o.righe.push({n:x.n, cat:x.cat, pz:rPz, delta:rDelta, costo:rCosto, haScheda:!!c});
+  });
+  o.righe.sort((a,b)=>(b.costo-a.costo)||(b.delta-a.delta));
+  const Sm=a=>a.reduce((t,v)=>t+v,0);
+  o.tot={ pz:Sm(o.pz), inc:Sm(o.inc), incCop:Sm(o.incCop), teor:Sm(o.teor),
+          scDelta:Sm(o.scDelta), scCosto:Sm(o.scCosto) };
+  o.cop   = o.tot.inc>0 ? o.tot.incCop/o.tot.inc*100 : null;
+  o.buffer= o.bufCosto>0 ? o.bufPeso/o.bufCosto*100 : null;
+  o.anno = numIt(PRO&&PRO.anno)||null;
+  CNV=o; cnvOwner=sOwner; return o;
+}
+/* i mesi del periodo scelto, per non mischiare l'anno con il mese singolo */
+function cnvPeriodo(o){
+  const idx = (scope==='ytd') ? [...Array(12).keys()] : [scope];
+  const S1=k=>idx.reduce((t,i)=>t+(o[k][i]||0),0);
+  return {teor:S1('teor'), scDelta:S1('scDelta'), scCosto:S1('scCosto'),
+          inc:S1('inc'), incCop:S1('incCop'), pz:S1('pz'),
+          cop: S1('inc')>0 ? S1('incCop')/S1('inc')*100 : null};
+}
+
 function renderCNplus(){
   const el=document.getElementById('cnPlus'); if(!el) return;
   const c=cnConfronto(), sp=cnSpiegato(), x=S.cnx;
   const copOk = c && c.cop>=80;
   const stato = !c
-    ? `<div class="avviso">Per confrontare la materia prima con le ricette servono le <b>incidenze teoriche da schede costo</b> di food e beverage: si inseriscono nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Finché mancano, qui sotto si possono comunque compilare autoconsumi, sconti e prove.</div>`
+    ? (CNV && !CNV.nProd
+       ? `<div class="avviso">Il confronto fra la materia prima comprata e quella prevista dalle ricette ha bisogno delle <b>schede costo con il venduto</b>: per questo cliente l'archivio dei prodotti non c'è ancora. In alternativa si scrivono a mano le incidenze teoriche nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Intanto qui sotto si possono compilare autoconsumi, sconti e prove.</div>`
+       : `<div class="avviso">Per confrontare la materia prima con le ricette servono le <b>incidenze teoriche da schede costo</b> di food e beverage: si inseriscono nel Quadro del cliente, riquadro «Materia prima · bilancio vs schede costo». Finché mancano, qui sotto si possono comunque compilare autoconsumi, sconti e prove.</div>`)
     : (copOk
-      ? `<div class="avviso ok">Le schede costo coprono il <b>${fmtNum(c.cop)}%</b> del venduto: sopra la soglia dell'80%, il confronto è attendibile.</div>`
+      ? `<div class="avviso ok">Le schede costo coprono il <b>${fmtNum(c.cop)}%</b> del venduto: sopra la soglia dell'80%, il confronto è attendibile.${c.fonte==='venduto'?' Il costo teorico è calcolato dai pezzi venduti per il costo di ogni scheda, non digitato.':''}</div>`
       : `<div class="avviso">Le schede costo coprono il <b>${c.cop>0?fmtNum(c.cop)+'%':'—'}</b> del venduto. Sotto l'80% il confronto è calcolato su mezzo menu e non dice niente: prima vanno completate le schede dei prodotti che si vendono.</div>`);
 
   const conf = !c ? '' : `
@@ -5187,8 +5275,11 @@ function renderCNplus(){
       di materia prima pura costa 2,00 € va in ricetta a ${fmtNum(2*(1+num(x.sc)/100)).replace('.',',')} €. Quindi il confronto
       diretto fra bilancio e schede misura solo <i>quanto si sfonda oltre il previsto</i>, non lo scarto totale. Lo scarto vero è
       la distanza dal <b>costo puro</b>, ed è quello che le voci qui sotto devono spiegare.
-      <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%
-      &nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%</span>
+      <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%${
+        CNV&&CNV.buffer!=null?` <span style="color:var(--ink2)">— nelle schede di questo cliente la media vera è <b>${fmtNum(Math.round(CNV.buffer*10)/10)}%</b></span>`:''}
+      ${c.fonte==='venduto'
+        ? `&nbsp;·&nbsp; Copertura delle schede sul venduto <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> <span style="color:var(--ink2)">calcolata dall'archivio</span>`
+        : `&nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%`}</span>
     </div>`;
 
   const prove = cnProveTot();
@@ -5211,7 +5302,8 @@ function renderCNplus(){
 
   el.innerHTML = `${stato}${conf}${tab}
 
-  <h3 class="cnxh">Il compilatore degli autoconsumi</h3>
+  <div class="cnblk">
+  <h3 class="cnxh"><span class="nm">1</span>Autoconsumi del personale<span class="tot">${fmtE(cnAutoTot())}</span></h3>
   <div class="cnxsub">Quasi nessun locale registra i pasti del personale. Invece di lasciare zero, si stima.</div>
   <div class="cnxcalc">
     <label>Costo materia prima di un pasto <input class="num" data-cnx="pasto" value="${x.pasto||''}" inputmode="decimal"> €</label>
@@ -5225,9 +5317,13 @@ function renderCNplus(){
     <b class="cnxris">${fmtE(cnAutoTot())}</b>
     <button class="mini" data-cnxapp="auto">Scrivi nei mesi con ricavi →</button>
   </div>
+  </div>
 
-  <h3 class="cnxh">Sconti e omaggi · il food cost della parte regalata</h3>
-  <div class="cnxsub">Quando si sconta, il ricavo scende ma il prodotto costa uguale. La parte di costo che lo sconto non copre più è un costo nascosto: <b>food cost × percentuale di sconto × pezzi</b>. Un omaggio è uno sconto del 100%.</div>
+  <div class="cnblk">
+  <h3 class="cnxh"><span class="nm">2</span>Sconti e omaggi<span class="tot">${fmtE(cnScontiAuto()||cnScontiTot())}</span></h3>
+  <div class="cnxsub">Quando si sconta, il ricavo scende ma il prodotto costa uguale. La parte di costo che lo sconto non copre più è un costo nascosto. Un omaggio è uno sconto del 100%.</div>
+  ${blocSconti()}
+  <div class="cnsep">Oppure a mano, prodotto per prodotto</div>
   <table class="cnxt largo">
     <tr><th>Prodotto</th><th class="n">Pezzi</th><th class="n">Food cost</th><th class="n">Sconto %</th><th class="n">Costo nascosto</th><th></th></tr>
     ${(x.sconti||[]).map((r,i)=>`<tr>
@@ -5243,8 +5339,10 @@ function renderCNplus(){
     <button class="mini" data-cnxadd="s">+ Aggiungi una riga</button>
     <button class="mini" data-cnxapp="sconti">Scrivi negli omaggi dei mesi con ricavi →</button>
   </div>
+  </div>
 
-  <h3 class="cnxh">Prove menu e formazione</h3>
+  <div class="cnblk">
+  <h3 class="cnxh"><span class="nm">3</span>Prove menu e formazione<span class="tot">${fmtE(cnProveTot())}</span></h3>
   <div class="cnxsub">Quello che si consuma per provare un piatto nuovo o per farlo assaggiare allo staff.</div>
   <table class="cnxt">
     <tr><th>Data</th><th>Che cosa</th><th class="n">Costo</th><th></th></tr>
@@ -5256,7 +5354,65 @@ function renderCNplus(){
     <tr class="t"><td>Totale</td><td></td><td class="n">${fmtE2(cnProveTot())}</td><td></td></tr>
   </table>
   <div class="cnxcalc"><button class="mini" data-cnxadd="p">+ Aggiungi una prova</button></div>
+  </div>
   `;
+  /* l'archivio dei prodotti vive in IndexedDB: si carica dopo, e quando
+     arriva la pagina si ridisegna da sola con i numeri veri. */
+  if((!CNV || cnvOwner!==sOwner) && !cnvInCorso){
+    cnvInCorso=true;
+    cnVenduto().then(()=>{ cnvInCorso=false; renderCNplus(); })
+               .catch(()=>{ cnvInCorso=false; });
+  }
+}
+
+/* il totale degli sconti letto dalla cassa, se l'archivio c'è */
+function cnScontiAuto(){
+  if(!CNV || (CNV.anno && CNV.anno!==S.anno)) return null;
+  const cv=cnvPeriodo(CNV);
+  return cv.scCosto>0 ? cv.scCosto : null;
+}
+function blocSconti(){
+  if(!CNV){ return `<div class="cnxnota">Sto leggendo l'archivio dei prodotti…</div>`; }
+  if(!CNV.nProd){ return `<div class="avviso">Per calcolare gli sconti da solo servono i prodotti a listino con il venduto di cassa. Per questo cliente l'archivio non c'è: si importa dalla sezione <b>Menu engineering · listino e costi</b>, oppure si compila la tabella qui sotto a mano.</div>`; }
+  if(CNV.anno && CNV.anno!==S.anno){ return `<div class="avviso">L'archivio dei prodotti è dell'anno <b>${CNV.anno}</b>, qui si sta guardando il <b>${S.anno}</b>: il confronto fra listino e incassato non si può fare. Resta la compilazione a mano.</div>`; }
+  const cv=cnvPeriodo(CNV);
+  const per = scope==='ytd' ? 'nell\'anno' : 'a '+MESI[scope].toLowerCase();
+  if(!(cv.scDelta>0)) return `<div class="avviso ok">Fra prezzo di listino e incasso di cassa non c'è differenza ${per}: nessuno sconto da imputare.</div>`;
+  const senza=CNV.righe.filter(r=>!r.haScheda).length;
+  const rr=CNV.righe.slice(0,8);
+  /* quadratura: il venduto dell'archivio deve somigliare ai ricavi caricati,
+     altrimenti stiamo confrontando due periodi diversi */
+  const mm=compute(), vendNetto=cv.inc/(1+(numIt(PRO&&PRO.iva)||0.1));
+  const scost = mm.ricavi>0 ? Math.abs(vendNetto-mm.ricavi)/mm.ricavi : 0;
+  const quad = scost>0.05
+    ? `<div class="avviso">Il venduto dell'archivio vale <b>${fmtE(vendNetto)}</b> ${per}, i ricavi caricati <b>${fmtE(mm.ricavi)}</b>: ${fmtP(scost)} di differenza. Prima di usare questi numeri vale la pena capire da dove viene lo scarto — di solito è un mese caricato da una parte e non dall'altra.</div>`
+    : '';
+  return `${quad}
+    <div class="cnxlett" style="margin-bottom:10px">
+      <b>Come si legge.</b> Per ogni prodotto si confronta quello che sarebbe entrato a listino con quello che è
+      entrato davvero: <b>pezzi × prezzo − incasso</b>. Un hamburger da 10 €, dieci pezzi, fanno 100 € attesi; se due
+      vanno a metà prezzo ne entrano 90. Quei <b>10 € di delta valgono un hamburger intero regalato</b>, e nei costi
+      nascosti ci va il suo food cost, non i 10 € di ricavo mancato.
+    </div>
+    <div class="cnx4" style="grid-template-columns:repeat(3,1fr)">
+      <div class="cnxc"><div class="l">Delta listino → incassato</div><div class="v">${fmtE(cv.scDelta)}</div>
+        <div class="d">ricavo non entrato ${per}, IVA esclusa</div></div>
+      <div class="cnxc"><div class="l">Pezzi equivalenti regalati</div><div class="v">${fmtNum(Math.round(CNV.righe.reduce((a,r)=>a+r.pz,0)))}</div>
+        <div class="d">su ${fmtNum(Math.round(cv.pz))} pezzi venduti</div></div>
+      <div class="cnxc alto"><div class="l">Food cost da imputare</div><div class="v">${fmtE(cv.scCosto)}</div>
+        <div class="d">è questo che entra nei costi nascosti</div></div>
+    </div>
+    <table class="cnxt largo">
+      <tr><th>Prodotto</th><th class="n">Pezzi regalati</th><th class="n">Ricavo mancato</th><th class="n">Costo nascosto</th></tr>
+      ${rr.map(r=>`<tr><td>${r.n||'—'}${r.haScheda?'':' <span style="color:var(--ink2);font-size:11px">· senza scheda</span>'}</td>
+        <td class="n">${fmtNum(Math.round(r.pz*10)/10)}</td><td class="n">${fmtE2(r.delta)}</td>
+        <td class="n b">${r.haScheda?fmtE2(r.costo):'—'}</td></tr>`).join('')}
+      ${CNV.righe.length>8?`<tr><td colspan="4" style="color:var(--ink2);font-size:11.5px">e altri ${CNV.righe.length-8} prodotti</td></tr>`:''}
+      <tr class="t"><td>Totale ${per}</td><td class="n"></td><td class="n">${fmtE2(cv.scDelta)}</td><td class="n">${fmtE2(cv.scCosto)}</td></tr>
+    </table>
+    ${senza?`<div class="cnxnota">${senza} ${senza===1?'prodotto scontato non ha':'prodotti scontati non hanno'} scheda costo: il ricavo mancato si vede, il food cost no. Finché manca la scheda quel costo resta fuori dal totale.</div>`:''}
+    ${CNV.sopra>50?`<div class="cnxnota">Su altri prodotti è entrato <b>${fmtE(CNV.sopra)}</b> più del listino: o i prezzi sono stati alzati e il listino non è aggiornato, o ci sono maggiorazioni. Vale la pena controllarlo prima di fidarsi del totale.</div>`:''}
+    <div class="cnxcalc"><button class="mini" data-cnxapp="scauto">Scrivi negli omaggi dei mesi →</button></div>`;
 }
 
 /* «Scrivi nei mesi»: la stima calcolata qui sopra finisce nella riga giusta
@@ -5266,6 +5422,24 @@ async function cnApplica(che){
   const m=compute();
   const mesi=m.complete.map(r=>r.i);
   if(!mesi.length){ toast('Non ci sono mesi con ricavi su cui scrivere.', true); return; }
+  /* gli sconti letti dalla cassa hanno un valore diverso per ogni mese:
+     si scrive quello vero del mese, non una media spalmata. */
+  if(che==='scauto'){
+    if(!CNV || !(cnvPeriodo(CNV).scCosto>0)){ toast('Non c\'è niente da scrivere.', true); return; }
+    const riga0 = S.cn.find(c=>(c.nome||'').toLowerCase().indexOf('omaggi')>=0);
+    if(!riga0){ toast('Riga «omaggi» non trovata nella tabella.', true); return; }
+    const quali = mesi.filter(i=>CNV.scCosto[i]>0);
+    if(!quali.length){ toast('Negli mesi con ricavi non risultano sconti.', true); return; }
+    const gia0 = quali.filter(i=>num(riga0.m[i])>0).length;
+    if(gia0){
+      const ok = await uiConfirm(`${gia0} ${gia0===1?'mese ha':'mesi hanno'} già un valore in «${riga0.nome}».\n\nVuoi sostituirli con gli sconti calcolati dalla cassa?`);
+      if(!ok) return;
+    }
+    let tot=0; quali.forEach(i=>{ riga0.m[i]=Math.round(CNV.scCosto[i]*100)/100; tot+=CNV.scCosto[i]; });
+    saveState(); renderCN();
+    toast(`Scritti ${fmtE2(tot)} in ${quali.length} ${quali.length===1?'mese':'mesi'}.`);
+    return;
+  }
   const val = che==='auto' ? cnAutoTot() : cnScontiTot();
   if(!(val>0)){ toast('Prima compila i campi qui sopra.', true); return; }
   const chiave = che==='auto' ? 'autoconsum' : 'omaggi';
