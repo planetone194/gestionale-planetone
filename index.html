@@ -5362,7 +5362,8 @@ function renderCNplus(){
     const prev=Math.max(0,c.scartoPrev), reg=Math.max(0,spiegato);
     const resto=c.scartoEff-prev-reg;
     const tot=Math.max(1, prev+reg+Math.max(0,resto));
-    const pc=v=>(v/tot*100).toFixed(1)+'%';
+    const pc=v=>Math.round(v/tot*100)+'%';
+    const pcw=v=>(v/tot*100).toFixed(1)+'%';
     const voci=[];
     if(sp.auto>0) voci.push('autoconsumi '+fmtE(sp.auto));
     if(sp.omag>0) voci.push('omaggi e sconti '+fmtE(sp.omag));
@@ -5375,9 +5376,9 @@ function renderCNplus(){
         ricette costerebbero eseguite alla perfezione. Una parte il metodo la mette in conto, una parte è
         registrata, il resto non ha ancora un nome.</div>
       <div class="cnbar">
-        <span class="s1" style="width:${pc(prev)}"></span>
-        <span class="s2" style="width:${pc(reg)}"></span>
-        <span class="s3" style="width:${pc(Math.max(0,resto))}"></span>
+        <span class="s1" style="width:${pcw(prev)}"></span>
+        <span class="s2" style="width:${pcw(reg)}"></span>
+        <span class="s3" style="width:${pcw(Math.max(0,resto))}"></span>
       </div>
       <div class="cnleg">
         <div class="v s1"><div class="t">Previsto dalle schede</div><div class="e">${fmtE(prev)}</div>
@@ -5389,15 +5390,12 @@ function renderCNplus(){
             ? 'dosi, rotture, scadenze, rimanenze mai contate, ammanchi'
             : 'le voci registrate coprono tutto: o mancano le rimanenze di fine mese, o qualche stima è generosa'}</div></div>
       </div>
-      <div class="cnxlett" style="margin:12px 0 0">
-        <b>Come si legge.</b> Le schede del metodo contengono già uno scarto preventivo del ${fmtNum(x.sc)}%: un
-        piatto che di materia prima pura costa 2,00 € va in ricetta a ${fmtNum(2*(1+num(x.sc)/100)).replace('.',',')} €.
-        Per questo il delta qui sopra misura solo <i>quanto si sfonda oltre il previsto</i>: lo scarto totale è questo,
-        e comprende anche la quota messa in conto.
+      <div class="cnxnota" style="margin-top:10px">Il delta in testa misura solo quanto si sfonda <i>oltre</i> il
+        previsto; questo è lo scarto totale, quota messa in conto compresa.
         <span class="cnxsc">Scarto preventivo nelle schede <input class="num s" data-cnx="sc" value="${x.sc||''}" inputmode="decimal">%${
-          CNV&&CNV.buffer!=null?` <span style="color:var(--ink2)">— nelle schede di questo cliente la media vera è <b>${fmtNum(Math.round(CNV.buffer*10)/10)}%</b></span>`:''}
+          CNV&&CNV.buffer!=null?` <span style="color:var(--ink2)">— la media vera di questo cliente è <b>${fmtNum(Math.round(CNV.buffer*10)/10)}%</b></span>`:''}
         ${c.fonte==='venduto'
-          ? `&nbsp;·&nbsp; Copertura calcolata dall'archivio: <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> del venduto`
+          ? `&nbsp;·&nbsp; copertura <b>${fmtNum(Math.round(c.cop*10)/10)}%</b> del venduto, calcolata dall'archivio`
           : `&nbsp;·&nbsp; Copertura delle schede sul venduto <input class="num s" data-cnx="cop" value="${x.cop||''}" inputmode="decimal">%`}</span>
       </div>
     </div>`;
@@ -5426,6 +5424,8 @@ function renderCNplus(){
   <h3 class="cnxh"><span class="nm">2</span>Sconti e omaggi<span class="tot">${fmtE(cnScontiAuto()||cnScontiTot())}</span></h3>
   <div class="cnxsub">Quando si sconta, il ricavo scende ma il prodotto costa uguale. La parte di costo che lo sconto non copre più è un costo nascosto. Un omaggio è uno sconto del 100%.</div>
   ${blocSconti()}
+  ${(cnScontiAuto()!=null && !(x.sconti||[]).length) ? `
+  <div class="cnxcalc" style="margin-top:9px"><button class="mini" data-cnxadd="s">+ Aggiungi uno sconto a mano</button></div>` : `
   <div class="cnsep">Oppure a mano, prodotto per prodotto</div>
   <table class="cnxt largo">
     <tr><th>Prodotto</th><th class="n">Pezzi</th><th class="n">Food cost</th><th class="n">Sconto %</th><th class="n">Costo nascosto</th><th></th></tr>
@@ -5441,6 +5441,7 @@ function renderCNplus(){
   <div class="cnxcalc">
     <button class="mini" data-cnxadd="s">+ Aggiungi una riga</button>
     <button class="mini" data-cnxapp="sconti">Scrivi negli omaggi dei mesi con ricavi →</button>
+  </div>`}
   </div>
   </div>
 
@@ -5493,17 +5494,10 @@ function blocSconti(){
     ? `<div class="avviso">Il venduto dell'archivio vale <b>${fmtE(vendNetto)}</b> ${per}, i ricavi caricati <b>${fmtE(mm.ricavi)}</b>: ${fmtP(scost)} di differenza. Prima di usare questi numeri vale la pena capire da dove viene lo scarto — di solito è un mese caricato da una parte e non dall'altra.</div>`
     : '';
   return `${quad}
-    <div class="cnxlett" style="margin-bottom:10px">
-      <b>Come si legge.</b> Per ogni prodotto si confronta quello che sarebbe entrato al suo prezzo pieno con quello
-      che è entrato davvero: <b>pezzi × prezzo − incasso</b>. Un hamburger da 10 €, dieci pezzi, fanno 100 € attesi;
-      se due vanno a metà prezzo ne entrano 90. Quei <b>10 € di delta valgono un hamburger intero regalato</b>, e nei
-      costi nascosti ci va il suo food cost, non i 10 € di ricavo mancato.
-      <span class="cnxsc"><b>Il prezzo pieno non è il listino di oggi</b>: è il prezzo più alto a cui quel prodotto è
-      stato venduto fino a quel mese. Il listino in archivio è uno solo e porta l'ultimo ritocco — usarlo farebbe
-      sembrare scontati tutti i mesi prima dell'aumento. Se il prezzo scende e resta sceso per due mesi è un ribasso
-      di listino, e il riferimento scende con lui. Il primo mese della serie non può mostrare sconti: non ha un
-      prima con cui confrontarsi.</span>
-    </div>
+    <div class="cnxnota" style="margin-bottom:9px">Per ogni prodotto: <b>pezzi × prezzo pieno − incasso</b>. Il delta
+      vale tanti pezzi regalati, e nei costi nascosti entra il loro food cost, non il ricavo mancato. Il prezzo pieno
+      non è il listino di oggi ma <b>il più alto a cui quel prodotto è stato venduto fino a quel mese</b>, così un
+      ritocco di prezzo non fa sembrare scontati i mesi prima.</div>
     <div class="cnx4" style="grid-template-columns:repeat(3,1fr)">
       <div class="cnxc"><div class="l">Delta prezzo pieno → incassato</div><div class="v">${fmtE(cv.scDelta)}</div>
         <div class="d">ricavo non entrato ${per}, IVA esclusa</div></div>
@@ -5512,14 +5506,6 @@ function blocSconti(){
       <div class="cnxc alto"><div class="l">Food cost da imputare</div><div class="v">${fmtE(cv.scCosto)}</div>
         <div class="d">è questo che entra nei costi nascosti</div></div>
     </div>
-    <table class="cnxt largo">
-      <tr><th>Prodotto</th><th class="n">Pezzi regalati</th><th class="n">Ricavo mancato</th><th class="n">Costo nascosto</th></tr>
-      ${rr.map(r=>`<tr><td>${r.n||'—'}${r.haScheda?'':' <span style="color:var(--ink2);font-size:11px">· senza scheda</span>'}</td>
-        <td class="n">${fmtNum(Math.round(r.pz*10)/10)}</td><td class="n">${fmtE2(r.delta)}</td>
-        <td class="n b">${r.haScheda?fmtE2(r.costo):'—'}</td></tr>`).join('')}
-      ${CNV.righe.length>8?`<tr><td colspan="4" style="color:var(--ink2);font-size:11.5px">e altri ${CNV.righe.length-8} prodotti</td></tr>`:''}
-      <tr class="t"><td>Totale ${per}</td><td class="n"></td><td class="n">${fmtE2(cv.scDelta)}</td><td class="n">${fmtE2(cv.scCosto)}</td></tr>
-    </table>
     ${senza?`<div class="cnxnota">${senza} ${senza===1?'prodotto scontato non ha':'prodotti scontati non hanno'} scheda costo: il ricavo mancato si vede, il food cost no. Finché manca la scheda quel costo resta fuori dal totale.</div>`:''}
     ${CNV.sopra>200?`<div class="cnxnota">Su altri prodotti è entrato <b>${fmtE(CNV.sopra)}</b> più del prezzo di riferimento: maggiorazioni, varianti vendute sotto lo stesso nome, o un ritocco appena avvenuto. Finché resta piccolo è rumore di cassa; se cresce, i nomi in archivio e quelli in cassa non si corrispondono più.</div>`:''}
     ${CNV.rialzi>0?`<div class="cnxnota">In <b>${fmtNum(CNV.rialzi)}</b> ${CNV.rialzi===1?'caso il prodotto è stato venduto':'casi i prodotti sono stati venduti'} sopra il listino scritto in archivio: il listino va aggiornato, ma il conto qui sopra non ne risente — usa i prezzi veri di cassa.</div>`:''}
