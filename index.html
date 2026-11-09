@@ -2098,10 +2098,10 @@ function suggerimenti(a, t, complete){
   if(exMp > 0){
     const exF = a.mpFood - a.ricaviFood*num(t.mp)/100;
     const exB = a.mpBev  - a.ricaviBev *num(t.mp)/100;
-    const tf=mpsVal('food'), tb=mpsVal('bev');
-    const ricBU=a.ricaviFood+a.ricaviBev;
-    const teor = (tf!=null&&tb!=null&&ricBU>0) ? (tf*a.ricaviFood+tb*a.ricaviBev)/ricBU : null;
-    const dpp = teor!=null ? (a.mp/a.ricavi - teor)*100 : null;
+    /* lo scarto contro le schede: dal venduto se l'archivio c'è, altrimenti
+       dalle incidenze scritte a mano — è la stessa fonte della pagina 4 */
+    const cc=cnConfronto();
+    const dpp = cc ? (cc.incReale-cc.incTeor)*100 : null;
     const num_=[], fare=[];
     num_.push(`Materia prima al <b>${P(a.mp/a.ricavi)}</b> contro un obiettivo del ${fmtNum(t.mp)}%. Dei ${E(exMp)} di extracosto, <b>${E(Math.max(0,exF))} vengono dal food</b> — che sta al ${P(a.mpFood/a.ricaviFood)} — e ${E(Math.max(0,exB))} dal beverage, al ${P(a.mpBev/a.ricaviBev)}.`);
     let vel='medio';
@@ -2415,21 +2415,22 @@ function quadroMese(m, t, isM){
    Per questo non hanno una riga fra le incidenze — si sommerebbero due volte —
    ma una card che dice di quanto il bilancio si discosta dalle schede. */
 function cardCostiNascosti(a){
-  const tf=mpsVal('food'), tb=mpsVal('bev');
-  const ric=a.ricaviFood+a.ricaviBev;
-  const ok = tf!=null && tb!=null && ric>0 && a.ricavi>0;
-  if(!ok) return `<div class="acard vuota" data-goto="cn">
+  /* stessa fonte della pagina 4: il costo teorico viene dal venduto quando
+     l'archivio c'è, dalle incidenze scritte a mano quando manca. */
+  const c = (a && a.ricavi>0) ? cnConfronto() : null;
+  if(!c) return `<div class="acard vuota" data-goto="cn">
     <div class="al">Costi nascosti</div>
     <div class="av" style="color:var(--ink2)">—</div>
-    <div class="ax">non calcolabili: servono le incidenze da schede costo di food e beverage</div>
+    <div class="ax">${CNV && !CNV.nProd
+      ? 'servono le schede costo col venduto: l\'archivio prodotti non è ancora stato importato'
+      : 'non ancora calcolabili: servono le schede costo, oppure le incidenze teoriche a mano'}</div>
     <div class="go">Apri costi nascosti →</div></div>`;
-  const teor=(tf*a.ricaviFood+tb*a.ricaviBev)/ric;
-  const dpp=(a.mp/a.ricavi - teor)*100, euro=(a.mp/a.ricavi - teor)*a.ricavi;
+  const dpp=(c.incReale-c.incTeor)*100, euro=c.oltre;
   const z = dpp<=2 ? 0 : dpp<=4 ? 2 : 3;
   return `<div class="acard z${z}" data-goto="cn">
     <div class="al">Costi nascosti<span class="verdict ${ZC[z]}">${dpp<=2?'Fisiologico':dpp<=4?'Da indagare':'Dispersione'}</span></div>
     <div class="av">${dpp>=0?'+':''}${dpp.toFixed(1).replace('.',',')} p.p.</div>
-    <div class="ax">obiettivo ≤ ${fmtNum(S.targets.cn)} p.p. · <b>dentro</b> la materia prima<br>${fmtE(euro)} di scarto fra bilancio e schede costo</div>
+    <div class="ax">obiettivo ≤ ${fmtNum(S.targets.cn)} p.p. · <b>dentro</b> la materia prima<br>${fmtE(euro)} di scarto fra bilancio e schede costo, che coprono il ${fmtNum(Math.round(c.cop*10)/10)}% del venduto</div>
     <div class="go">Apri costi nascosti →</div>
   </div>`;
 }
@@ -2709,6 +2710,14 @@ function renderDash(){
   const m=compute(), t=S.targets;
   document.getElementById('clientName').value=S.cliente;
   renderChips(m,'viewChips');
+  /* l'archivio dei prodotti arriva da IndexedDB: quando è pronto la pagina
+     si ridisegna, così la card dei costi nascosti mostra il numero vero */
+  if((!CNV || cnvOwner!==sOwner) && !cnvInCorso){
+    cnvInCorso=true;
+    cnVenduto().then(()=>{ cnvInCorso=false;
+      if(document.getElementById('page-dash')?.classList.contains('active')) renderDash();
+    }).catch(()=>{ cnvInCorso=false; });
+  }
   const isM = scope!=='ytd';
   const rows = isM ? [m.months[scope]] : m.complete;
   const a = sumRows(rows, isM?0:m.orphanCosts);
@@ -5292,13 +5301,11 @@ function renderCNplus(){
       : `<div class="avviso">Le schede costo coprono il <b>${c.cop>0?fmtNum(c.cop)+'%':'—'}</b> del venduto. Sotto l'80% il confronto è calcolato su mezzo menu e non dice niente: prima vanno completate le schede dei prodotti che si vendono.</div>`);
 
   const conf = !c ? '' : `
-    <div class="cnx4">
+    <div class="cnx4" style="grid-template-columns:repeat(3,1fr)">
       <div class="cnxc"><div class="l">Dal bilancio</div><div class="v">${fmtE(c.reale)}</div>
         <div class="d">${fmtP(c.incReale)} dei ricavi · acquisti del periodo</div></div>
-      <div class="cnxc"><div class="l">Dalle ricette, con lo scarto previsto</div><div class="v">${fmtE(c.teor)}</div>
-        <div class="d">${fmtP(c.incTeor)} · dentro c'è il ${fmtNum(x.sc)}% di scarto preventivo</div></div>
-      <div class="cnxc"><div class="l">Costo puro, senza scarto</div><div class="v">${fmtE(c.puro)}</div>
-        <div class="d">${fmtP(c.incPuro)} · quanto costerebbe se non si buttasse niente</div></div>
+      <div class="cnxc"><div class="l">Incidenza preventiva da schede ricetta</div><div class="v">${fmtE(c.teor)}</div>
+        <div class="d">${fmtP(c.incTeor)} dei ricavi · dentro c'è il ${fmtNum(x.sc)}% di scarto preventivo</div></div>
       <div class="cnxc ${c.pctEff<=c.sc?'buono':'alto'}"><div class="l">Scarto effettivo</div>
         <div class="v">${fmtE(c.scartoEff)}</div>
         <div class="d"><b>${fmtP(c.pctEff)}</b> sul costo puro, contro il <b>${fmtNum(x.sc)}%</b> previsto${
