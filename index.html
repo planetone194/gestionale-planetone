@@ -5193,7 +5193,11 @@ let CNV=null, cnvOwner=null, cnvInCorso=false;
 function cnvReset(){ CNV=null; cnvOwner=null; }
 async function cnVenduto(){
   if(CNV && cnvOwner===sOwner) return CNV;
-  let P=[]; try{ await proCarica(); P=(PRO&&PRO.prod)||[]; }catch(e){ P=[]; }
+  /* servono tutti e due: i prodotti col venduto e gli ingredienti coi prezzi.
+     Senza i secondi nessuna scheda ha un costo, e tutto uscirebbe a zero. */
+  let P=[], errore='';
+  try{ await mpCarica(); await proCarica(); P=(PRO&&PRO.prod)||[]; }
+  catch(e){ P=[]; errore=String(e&&e.message||e); }
   const ivaStd=numIt(PRO&&PRO.iva)||0.1;
   const ivaDi = x => (x.pvi>0 && x.pv>0) ? (x.pvi/x.pv-1) : ivaStd;
   const Z=()=>new Array(12).fill(0);
@@ -5234,6 +5238,7 @@ async function cnVenduto(){
   o.cop   = o.tot.inc>0 ? o.tot.incCop/o.tot.inc*100 : null;
   o.buffer= o.bufCosto>0 ? o.bufPeso/o.bufCosto*100 : null;
   o.anno = numIt(PRO&&PRO.anno)||null;
+  o.errore = errore;
   CNV=o; cnvOwner=sOwner; return o;
 }
 /* i mesi del periodo scelto, per non mischiare l'anno con il mese singolo */
@@ -5373,7 +5378,9 @@ function cnScontiAuto(){
 }
 function blocSconti(){
   if(!CNV){ return `<div class="cnxnota">Sto leggendo l'archivio dei prodotti…</div>`; }
+  if(CNV.errore){ return `<div class="avviso">Non sono riuscito a leggere l'archivio dei prodotti: <b>${escH(CNV.errore)}</b>. Riprova a ricaricare la pagina; intanto la tabella qui sotto si compila a mano.</div>`; }
   if(!CNV.nProd){ return `<div class="avviso">Per calcolare gli sconti da solo servono i prodotti a listino con il venduto di cassa. Per questo cliente l'archivio non c'è: si importa dalla sezione <b>Menu engineering · listino e costi</b>, oppure si compila la tabella qui sotto a mano.</div>`; }
+  if(!CNV.nSchede){ return `<div class="avviso">I ${fmtNum(CNV.nProd)} prodotti a listino ci sono, ma <b>nessuna scheda costo arriva a un costo</b>: di solito manca il prezzo di qualche ingrediente, e senza quello la scheda non vale. Si controlla in <b>Ricette e schede costo</b>, filtro «schede rotte».</div>`; }
   if(CNV.anno && CNV.anno!==S.anno){ return `<div class="avviso">L'archivio dei prodotti è dell'anno <b>${CNV.anno}</b>, qui si sta guardando il <b>${S.anno}</b>: il confronto fra listino e incassato non si può fare. Resta la compilazione a mano.</div>`; }
   const cv=cnvPeriodo(CNV);
   const per = scope==='ytd' ? 'nell\'anno' : 'a '+MESI[scope].toLowerCase();
