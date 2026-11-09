@@ -1180,7 +1180,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v97</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v98</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1897,14 +1897,32 @@ function compute(){
   const orphanCosts = orphan.reduce((a,m)=>a+m.totCosti,0);
   const ro = ricavi-ru-mp-sg-orphanCosts;
   const t = S.targets;
-  const roSaving = ricavi*(t.ro/100);
+  const roSaving = ricavi*(num(t.ro)/100);   /* l'utile al target: riferimento, non il recupero */
   return { months, complete, orphan, ricavi, ru, mp, sg, cn, ro, orphanCosts,
     ricaviFood, ricaviBev, mpFood, mpBev, ruFood, ruBev,
     merchMode:M, merchData:hasMerchData(),
     ricaviCore:Sm('ricaviCore'), ricaviMerch:Sm('ricaviMerch'),
     costiCore:Sm('costiCore'), costiMerch:Sm('costiMerch'),
     incRu:ru/ricavi, incMp:mp/ricavi, incSg:sg/ricavi, incCn:cn/ricavi,
-    roSaving, recupero: roSaving-ro };
+    roSaving, recupero: recuperoPot({ricavi, ru, mp, sg, ro}, t).tot };
+}
+
+/* ---------------- recupero potenziale ----------------
+   Si sommano SOLO le aree sopra obiettivo. Le aree già in obiettivo non si
+   toccano: non si chiede a un locale virtuoso di peggiorare un'area per
+   arrivare esattamente al target di utile. Il target di utile è il minimo,
+   non il tetto — confermato da Marco il 9 novembre 2026, Metodo cap. 6 di
+   «Cruscotti e indicatori».
+   Fino alla v97 si calcolava ricavi×target_utile − ro, che compensava la
+   virtù con lo spreco: su Al Barcollo dava 3.415 € invece di 17.803 €. */
+function recuperoPot(a, t){
+  if(!a || !(a.ricavi>0)) return {ru:0, mp:0, sg:0, tot:0, ro:(a?a.ro:0), aree:[]};
+  const q = (v, tg) => Math.max(0, num(v) - a.ricavi*(num(tg)/100));
+  const ru=q(a.ru,t.ru), mp=q(a.mp,t.mp), sg=q(a.sg,t.sg);
+  const tot=ru+mp+sg;
+  const aree=[{n:'risorse umane',e:ru},{n:'materia prima',e:mp},{n:'spese generali',e:sg}]
+    .filter(x=>x.e>0).sort((x,y)=>y.e-x.e);
+  return {ru, mp, sg, tot, ro:a.ro+tot, aree};
 }
 
 /* ---------------- semafori ---------------- */
@@ -2195,7 +2213,8 @@ function dashGauges(a, t, isM, ricaviNote){
     [ gaTick(TM(0),'BE'), gaTick(TM(utile),'O') ],
     colM
   );
-  const recupero = a.ricavi*(utile/100)-a.ro;
+  const rp = recuperoPot(a, t);
+  const recupero = rp.tot;
   return `<div class="gaugegrid">
     <div class="gaugecard">
       <div class="ghead">Fatturato${isM?' · '+MESI[scope]:''}</div>
@@ -2211,12 +2230,14 @@ function dashGauges(a, t, isM, ricaviNote){
       <div class="gnote"><span class="verdict ${roPct<0?'v-bad':roPct<utile?'v-warn':'v-ok'}">${fmtP(a.ro/a.ricavi)} sui ricavi</span></div>
       <div class="gnote small">
         ${a.ro<0 ? `mancano <b>${fmtE(-a.ro)}</b> al pareggio` : `<b>${fmtE(a.ro)}</b> sopra il pareggio`}<br>
-        ${recupero>0 ? `mancano <b>${fmtE(recupero)}</b> all'obiettivo del ${utile}%` : `<b>${fmtE(-recupero)}</b> oltre l'obiettivo del ${utile}%`}
+        ${recupero>0 ? `con le aree sopra obiettivo rientrate sarebbe <b>${fmtE(rp.ro)}</b> (${fmtP(rp.ro/a.ricavi)})` : `tutte le aree sono in obiettivo`}
       </div>
     </div>
     <div class="gaugeside">
       <div class="kpi"><div class="lbl">Costi nascosti intercettati</div><div class="val">${fmtE(a.cn)}</div><div class="note">${fmtP(a.incCn)} del venduto · max ${t.cn}% — sono già dentro la materia prima</div></div>
-      <div class="kpi highlight"><div class="lbl">${recupero>0?'Recupero potenziale':'Oltre l\'obiettivo'}</div><div class="val">${fmtE(Math.abs(recupero))}</div><div class="note">${recupero>0?`portando l'utile all'obiettivo del ${utile}%${isM?' nel mese':''}`:`utile già sopra l'obiettivo del ${utile}%${isM?' nel mese':''}`}</div></div>
+      <div class="kpi highlight"><div class="lbl">${recupero>0?'Recupero potenziale':'Tutte le aree in obiettivo'}</div><div class="val">${recupero>0?fmtE(recupero):'—'}</div><div class="note">${recupero>0
+        ? `${rp.aree.map(x=>`${x.n} <b>${fmtE(x.e)}</b>`).join(' · ')}${isM?' nel mese':''}. Le aree già in obiettivo restano dove sono.`
+        : `niente da recuperare sui costi${isM?' nel mese':''}: la leva è la crescita dei ricavi`}</div></div>
     </div>
   </div>`;
 }
@@ -2288,7 +2309,7 @@ function renderDash(){
     } else if(a.ricavi>0){ ricaviNote='primo mese consuntivato'; }
     else { ricaviNote='nessun ricavo caricato'; roNote='solo costi nel mese'; }
   }
-  const recupero = a.ricavi>0 ? a.ricavi*(t.ro/100)-a.ro : null;
+  const recupero = a.ricavi>0 ? recuperoPot(a,t).tot : null;
 
   dashBody.innerHTML=`
   ${merchBoxHTML(m, isM)}
@@ -4724,7 +4745,7 @@ function renderOB(){
   const isM = scope!=='ytd';
   const rows = isM ? [m.months[scope]] : m.complete;
   const a = sumRows(rows, isM?0:m.orphanCosts);
-  const roS = a.ricavi*(1-(t.ru+t.mp+t.sg)/100);
+  const roS = recuperoPot(a,t).ro;
   const delta = roS-a.ro;
   const cross = a.ro<0&&roS>0;
   const periodo = isM ? `${MESI[scope]} ${S.anno}` : `${m.complete[0].mese} – ${m.complete[m.complete.length-1].mese} ${S.anno}`;
@@ -5709,7 +5730,7 @@ function anData(){
     {n:'Materia prima', e:(a.incMp-t.mp/100)*a.ricavi, inc:a.incMp, t:t.mp},
     {n:'Spese generali', e:(a.incSg-t.sg/100)*a.ricavi, inc:a.incSg, t:t.sg}
   ].filter(x=>isFinite(x.e)).sort((x,y)=>y.e-x.e);
-  const roS=a.ricavi*(1-(t.ru+t.mp+t.sg)/100);
+  const roS=recuperoPot(a,t).ro;
   return {m,a,t,dev,roS,rows,isM};
 }
 function anExec(d){
@@ -5723,7 +5744,7 @@ function anExec(d){
   out.push(`Reddito operativo ${a.ro<0?'negativo per':'di'} ${fmtE(Math.abs(a.ro))} (${fmtP(a.ro/a.ricavi)} sui ricavi), contro un obiettivo del ${t.ro}%.`);
   if(dev[0]&&dev[0].e>0) out.push(`Criticità principale: ${dev[0].n.toLowerCase()} al ${fmtP(dev[0].inc)} contro un target del ${dev[0].t}%, per un extracosto di ${fmtE(dev[0].e)}.`);
   if(a.cn>0) out.push(`L'Interceptor ha individuato ${fmtE(a.cn)} di costi nascosti (${fmtP(a.incCn)} del venduto, soglia ${t.cn}%).`);
-  out.push(`Riportando le incidenze in obiettivo il reddito operativo salirebbe a ${fmtE(roS)} (${fmtP(roS/a.ricavi)}): un recupero di ${fmtE(roS-a.ro)}.`);
+  out.push(`Riportando in obiettivo le sole aree che sfondano il reddito operativo salirebbe a ${fmtE(roS)} (${fmtP(roS/a.ricavi)}): un recupero di ${fmtE(roS-a.ro)}. Le aree già in obiettivo restano dove sono.`);
   return out;
 }
 function anActions(d){
@@ -5788,7 +5809,7 @@ function renderAN(){
   const controlli=repControlli(d);
   const forti=schede.filter(x=>x.z===0), buone=schede.filter(x=>x.z===1);
   const deboli=schede.filter(x=>x.z>=2).sort((x,y)=>(y.euro||0)-(x.euro||0));
-  const roS=a.ricavi*(1-(num(t.ru)+num(t.mp)+num(t.sg))/100);
+  const roS=recuperoPot(a,t).ro;
   const periodo=etichettaPeriodo(repPer);
   const mesiDetti=d.completi.map(x=>x.mese).join(', ');
 
@@ -5859,7 +5880,7 @@ function renderAN(){
       ${deboli.length
         ? `<p><b>Dove intervenire per primi:</b> ${deboli[0].area.toLowerCase()} — ${deboli[0].sommario}</p>`
         : (forti.length===schede.length ? '<p>Tutte le aree sono dentro gli obiettivi concordati: il lavoro ora è tenerle lì.</p>' : '')}
-      <p>Riportando le incidenze in obiettivo il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}.</p>
+      <p>Riportando in obiettivo le sole aree che sfondano il risultato passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(roS)}</b>: un recupero di <b>${fmtE(roS-a.ro)}</b>${a.ro<0&&roS>0?', da perdita a utile':''}. Dove siamo già in obiettivo non si chiede nulla.</p>
     </div>`);
 
   /* 4 — andamento */
@@ -6139,7 +6160,7 @@ function stampaUnaPagina(){
   const d=livelli[0].d, t=d.t, a=d.a;
   const schede=repDiagnosi(d, livelli);
   const piano=repPiano(schede);
-  const roS=a.ricavi*(1-(num(t.ru)+num(t.mp)+num(t.sg))/100);
+  const roS=recuperoPot(a,t).ro;
   const aree=[{n:'Personale',k:'incRu',tgt:num(t.ru)},{n:'Materia prima',k:'incMp',tgt:num(t.mp)},
               {n:'Spese generali',k:'incSg',tgt:num(t.sg)},{n:'Costi nascosti',k:'incCn',tgt:num(t.cn),st:[1,2]}];
   const cel=(x,ar)=>{ const v=x.d.a[ar.k];
