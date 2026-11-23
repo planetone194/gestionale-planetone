@@ -348,6 +348,7 @@
   table.entry.chk tr.spenta td.lbl{color:var(--ink2);font-weight:400;}
   .chkopt,.chkven{display:block;font-size:9px;letter-spacing:.6px;font-weight:600;text-transform:uppercase;margin-top:3px;}
   .chkopt{color:var(--ink2);} .chkven{color:#8355F7;}
+  section.demobox{border-color:var(--brass);background:#FDF8F2;}
   .chkrow{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);}
   .chkrow:first-of-type{border-top:none;}
   .chkrow .s{flex:none;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
@@ -1703,7 +1704,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v124</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v125</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -8923,6 +8924,271 @@ function prPartial(){
 function prRefresh(){ if(current==='pr') renderPR(); }
 /* due voci di menu, una pagina sola: cambia solo che cosa si guarda */
 const ALIAS={rica:'ce', mkt:'sg'};
+
+/* ================= IL LOCALE DIMOSTRATIVO =================
+   Serve a vedere tutte le pagine piene senza toccare un cliente vero: fornitori,
+   ingredienti con listino, preparazioni, ricette, menu e venduto di cassa.
+   Non inventa i ricavi: li legge dal conto economico già caricato e ci
+   costruisce sopra un venduto che torna, mese per mese, euro su euro.
+   Si accende solo sui clienti che hanno TEST o DEMO nel nome. */
+const demoOk = () => /\b(test|demo)\b/i.test(S.cliente||'');
+
+/* --- i fornitori: nome, partita iva finta, referente --- */
+const DEMO_FORN=[
+  ['Metro Italia','IT04 Metro','Banco ritiro','ordini@demo.metro.it','Luca Pini'],
+  ['Ortofrutta Da Bruno','IT05 Bruno','348 000 1122','bruno@demo.it','Bruno Sartori'],
+  ['Macelleria Zanetti','IT06 Zanetti','340 000 3344','zanetti@demo.it','Gigi Zanetti'],
+  ['Caseificio Valsana','IT07 Valsana','0438 000111','ordini@demo.valsana.it','Elena Dal Bo'],
+  ['Cantina Colli Trevigiani','IT08 Colli','0423 000222','cantina@demo.it','Paolo Moro'],
+  ['Birrificio Lambrate','IT09 Lambrate','02 000333','beer@demo.it','Sara Conti'],
+  ['Torrefazione Trieste','IT10 Caffe','040 000444','caffe@demo.it','Marta Rossi'],
+  ['Distribuzione Beverage Nord','IT11 Beverage','045 000555','bev@demo.it','Andrea Villa']
+];
+/* etichetta, fornitore, unità, listino della confezione, pezzi, contiene, categoria */
+const DEMO_ING=[
+  ['Farina 00','Metro Italia','GR',11.40,10,1000,'Dispensa'],
+  ['Uova fresche','Metro Italia','PZ',9.60,1,60,'Dispensa'],
+  ['Olio extravergine','Metro Italia','CL',38.00,6,500,'Dispensa'],
+  ['Burro','Caseificio Valsana','GR',7.20,1,1000,'Latticini'],
+  ['Panna fresca','Caseificio Valsana','CL',3.10,1,100,'Latticini'],
+  ['Parmigiano 24 mesi','Caseificio Valsana','GR',19.80,1,1000,'Latticini'],
+  ['Mozzarella di bufala','Caseificio Valsana','GR',12.90,1,1000,'Latticini'],
+  ['Stracciatella','Caseificio Valsana','GR',14.50,1,1000,'Latticini'],
+  ['Guanciale','Macelleria Zanetti','GR',16.80,1,1000,'Carne'],
+  ['Prosciutto crudo 18 mesi','Macelleria Zanetti','GR',24.50,1,1000,'Carne'],
+  ['Manzo - controfiletto','Macelleria Zanetti','GR',27.40,1,1000,'Carne'],
+  ['Manzo - macinato','Macelleria Zanetti','GR',11.90,1,1000,'Carne'],
+  ['Petto di pollo','Macelleria Zanetti','GR',9.80,1,1000,'Carne'],
+  ['Salmone affumicato','Metro Italia','GR',31.00,1,1000,'Pesce'],
+  ['Baccalà mantecato','Metro Italia','GR',22.00,1,1000,'Pesce'],
+  ['Pomodori pelati','Metro Italia','GR',13.20,6,2500,'Dispensa'],
+  ['Pomodorini','Ortofrutta Da Bruno','GR',4.20,1,1000,'Ortofrutta'],
+  ['Insalata mista','Ortofrutta Da Bruno','GR',5.60,1,1000,'Ortofrutta'],
+  ['Patate','Ortofrutta Da Bruno','GR',1.35,1,1000,'Ortofrutta'],
+  ['Zucchine','Ortofrutta Da Bruno','GR',2.40,1,1000,'Ortofrutta'],
+  ['Radicchio tardivo','Ortofrutta Da Bruno','GR',6.80,1,1000,'Ortofrutta'],
+  ['Funghi porcini','Ortofrutta Da Bruno','GR',18.50,1,1000,'Ortofrutta'],
+  ['Basilico','Ortofrutta Da Bruno','GR',2.80,1,100,'Ortofrutta'],
+  ['Limoni','Ortofrutta Da Bruno','PZ',0.85,1,1,'Ortofrutta'],
+  ['Arance','Ortofrutta Da Bruno','PZ',0.70,1,1,'Ortofrutta'],
+  ['Pane','Metro Italia','GR',3.10,1,1000,'Dispensa'],
+  ['Pasta secca','Metro Italia','GR',1.45,1,1000,'Dispensa'],
+  ['Riso carnaroli','Metro Italia','GR',3.90,1,1000,'Dispensa'],
+  ['Zucchero','Metro Italia','GR',1.10,1,1000,'Dispensa'],
+  ['Cacao amaro','Metro Italia','GR',12.40,1,1000,'Dispensa'],
+  ['Mascarpone','Caseificio Valsana','GR',8.90,1,1000,'Latticini'],
+  ['Savoiardi','Metro Italia','GR',6.20,1,1000,'Dispensa'],
+  ['Gelato artigianale','Metro Italia','GR',9.40,1,1000,'Dispensa'],
+  ['Caffè in grani','Torrefazione Trieste','GR',21.50,1,1000,'Caffetteria'],
+  ['Latte fresco','Caseificio Valsana','CL',1.35,1,100,'Latticini'],
+  ['Prosecco DOC','Cantina Colli Trevigiani','CL',4.90,6,75,'Vini'],
+  ['Pinot grigio','Cantina Colli Trevigiani','CL',5.40,6,75,'Vini'],
+  ['Cabernet riserva','Cantina Colli Trevigiani','CL',8.70,6,75,'Vini'],
+  ['Raboso','Cantina Colli Trevigiani','CL',6.30,6,75,'Vini'],
+  ['Birra artigianale chiara','Birrificio Lambrate','CL',2.60,1,33,'Birre'],
+  ['Birra alla spina','Birrificio Lambrate','CL',78.00,1,2000,'Birre'],
+  ['Aperitivo bitter','Distribuzione Beverage Nord','CL',13.90,1,100,'Spirits'],
+  ['Gin','Distribuzione Beverage Nord','CL',18.40,1,70,'Spirits'],
+  ['Vermouth rosso','Distribuzione Beverage Nord','CL',9.80,1,100,'Spirits'],
+  ['Rum chiaro','Distribuzione Beverage Nord','CL',16.20,1,70,'Spirits'],
+  ['Acqua tonica','Distribuzione Beverage Nord','CL',0.62,1,20,'Soft'],
+  ['Soda','Distribuzione Beverage Nord','CL',0.48,1,20,'Soft'],
+  ['Cola','Distribuzione Beverage Nord','CL',0.58,1,20,'Soft'],
+  ['Succo di frutta','Distribuzione Beverage Nord','CL',0.74,1,20,'Soft'],
+  ['Acqua minerale','Metro Italia','PZ',0.32,1,1,'Soft'],
+  ['Menta fresca','Ortofrutta Da Bruno','GR',3.40,1,100,'Ortofrutta'],
+  ['Lime','Ortofrutta Da Bruno','PZ',0.55,1,1,'Ortofrutta']
+];
+/* le preparazioni: resa, scarto di lavorazione, e che cosa ci va dentro */
+const DEMO_PREP=[
+  ['Ragù di manzo','GR',4000,0.03,[['Manzo - macinato',2500,0],['Pomodori pelati',2000,0],['Olio extravergine',15,0]]],
+  ['Pesto di basilico','GR',900,0.05,[['Basilico',300,0.1],['Parmigiano 24 mesi',200,0],['Olio extravergine',45,0]]],
+  ['Sciroppo di zucchero','CL',100,0,[['Zucchero',1000,0]]],
+  ['Battuto per sugo','GR',1200,0.08,[['Zucchine',600,0.15],['Pomodorini',600,0.1],['Olio extravergine',8,0]]]
+];
+/* nome, categoria, prezzo al pubblico IVA inclusa, peso di vendita, stagionalità,
+   ricetta: [etichetta, quantità, scarto] */
+const DEMO_PROD=[
+  ['Tagliere dell\'Ottocento','Antipasti',16.00,70,'inv',[['Prosciutto crudo 18 mesi',70,0.05],['Parmigiano 24 mesi',60,0],['Pane',80,0]]],
+  ['Burrata e pomodorini','Antipasti',12.00,55,'est',[['Stracciatella',120,0],['Pomodorini',90,0.1],['Olio extravergine',1.5,0],['Basilico',3,0]]],
+  ['Baccalà mantecato e crostini','Antipasti',11.00,40,'inv',[['Baccalà mantecato',110,0],['Pane',60,0]]],
+  ['Salmone marinato in casa','Antipasti',13.50,32,'',[['Salmone affumicato',90,0.08],['Limoni',0.3,0],['Olio extravergine',1,0]]],
+  ['Carpaccio di manzo','Antipasti',14.00,28,'',[['Manzo - controfiletto',110,0.06],['Parmigiano 24 mesi',25,0],['Olio extravergine',1.5,0]]],
+  ['Tagliatelle al ragù','Primi',13.00,92,'inv',[['Ragù di manzo',160,0],['Farina 00',90,0],['Uova fresche',1,0],['Parmigiano 24 mesi',15,0]]],
+  ['Spaghetti alla carbonara','Primi',13.00,86,'',[['Pasta secca',110,0],['Guanciale',55,0.05],['Uova fresche',1.2,0],['Parmigiano 24 mesi',30,0]]],
+  ['Trofie al pesto','Primi',12.00,48,'est',[['Pasta secca',110,0],['Pesto di basilico',55,0],['Patate',40,0.15]]],
+  ['Risotto ai funghi','Primi',15.00,44,'inv',[['Riso carnaroli',90,0],['Funghi porcini',70,0.12],['Burro',20,0],['Parmigiano 24 mesi',25,0]]],
+  ['Pasta del giorno','Primi',11.50,62,'',[['Pasta secca',110,0],['Battuto per sugo',120,0],['Parmigiano 24 mesi',15,0]]],
+  ['Controfiletto alla griglia','Secondi',24.00,46,'',[['Manzo - controfiletto',280,0.08],['Olio extravergine',1.5,0]]],
+  ['Pollo alle erbe','Secondi',16.00,38,'',[['Petto di pollo',240,0.06],['Olio extravergine',1.5,0]]],
+  ['Polpette della casa','Secondi',14.00,34,'inv',[['Manzo - macinato',180,0.05],['Pomodori pelati',120,0],['Pane',30,0]]],
+  ['Filetto di salmone','Secondi',19.00,26,'',[['Salmone affumicato',180,0.08],['Limoni',0.4,0]]],
+  ['Patate al forno','Contorni',5.00,96,'',[['Patate',260,0.18],['Olio extravergine',1.5,0]]],
+  ['Insalata mista','Contorni',5.50,58,'est',[['Insalata mista',130,0.2],['Pomodorini',50,0.1],['Olio extravergine',1,0]]],
+  ['Radicchio alla piastra','Contorni',6.00,30,'inv',[['Radicchio tardivo',180,0.15],['Olio extravergine',1.5,0]]],
+  ['Verdure grigliate','Contorni',6.50,34,'est',[['Zucchine',200,0.15],['Olio extravergine',2,0]]],
+  ['Tiramisù','Dolci',6.50,74,'',[['Mascarpone',90,0],['Savoiardi',40,0],['Uova fresche',0.8,0],['Caffè in grani',8,0],['Cacao amaro',4,0]]],
+  ['Gelato artigianale','Dolci',5.50,52,'est',[['Gelato artigianale',120,0]]],
+  ['Torta della nonna','Dolci',6.00,36,'inv',[['Farina 00',80,0],['Burro',45,0],['Uova fresche',1,0],['Zucchero',50,0]]],
+  ['Caffè espresso','Caffetteria',1.50,640,'',[['Caffè in grani',7,0]]],
+  ['Cappuccino','Caffetteria',1.80,290,'inv',[['Caffè in grani',7,0],['Latte fresco',12,0]]],
+  ['Caffè corretto','Caffetteria',2.50,96,'inv',[['Caffè in grani',7,0],['Rum chiaro',1.5,0]]],
+  ['Amaro della casa','Caffetteria',4.50,110,'',[['Vermouth rosso',4,0]]],
+  ['Prosecco al calice','Vini al calice',4.50,420,'est',[['Prosecco DOC',12.5,0]]],
+  ['Bianco al calice','Vini al calice',5.00,240,'est',[['Pinot grigio',12.5,0]]],
+  ['Rosso al calice','Vini al calice',5.00,210,'inv',[['Raboso',12.5,0]]],
+  ['Prosecco in bottiglia','Vini in bottiglia',22.00,64,'est',[['Prosecco DOC',75,0]]],
+  ['Pinot grigio in bottiglia','Vini in bottiglia',24.00,48,'est',[['Pinot grigio',75,0]]],
+  ['Cabernet riserva','Vini in bottiglia',32.00,34,'inv',[['Cabernet riserva',75,0]]],
+  ['Birra alla spina media','Birre',5.00,340,'est',[['Birra alla spina',40,0.06]]],
+  ['Birra alla spina piccola','Birre',3.50,260,'est',[['Birra alla spina',20,0.06]]],
+  ['Birra artigianale 33 cl','Birre',6.00,150,'',[['Birra artigianale chiara',33,0]]],
+  ['Spritz','Cocktail',7.00,480,'est',[['Aperitivo bitter',6,0],['Prosecco DOC',9,0],['Soda',3,0],['Arance',0.2,0]]],
+  ['Negroni','Cocktail',9.00,120,'inv',[['Gin',3,0],['Vermouth rosso',3,0],['Aperitivo bitter',3,0],['Arance',0.15,0]]],
+  ['Gin tonic','Cocktail',9.00,165,'est',[['Gin',4.5,0],['Acqua tonica',15,0],['Limoni',0.2,0]]],
+  ['Mojito','Cocktail',9.00,105,'est',[['Rum chiaro',4.5,0],['Sciroppo di zucchero',2,0],['Lime',0.5,0],['Menta fresca',6,0],['Soda',6,0]]],
+  ['Americano','Cocktail',7.50,58,'',[['Vermouth rosso',4,0],['Aperitivo bitter',4,0],['Soda',6,0],['Arance',0.15,0]]],
+  ['Acqua minerale','Soft drink',2.50,880,'',[['Acqua minerale',1,0]]],
+  ['Bibita in bottiglia','Soft drink',3.50,310,'est',[['Cola',20,0]]],
+  ['Succo di frutta','Soft drink',3.50,140,'',[['Succo di frutta',20,0]]],
+  ['Analcolico','Soft drink',5.00,86,'est',[['Succo di frutta',10,0],['Acqua tonica',10,0],['Arance',0.2,0]]]
+];
+const DEMO_SEG={Antipasti:'Food',Primi:'Food',Secondi:'Food',Contorni:'Food',Dolci:'Food',
+  Caffetteria:'Beverage','Vini al calice':'Beverage','Vini in bottiglia':'Beverage',
+  Birre:'Beverage',Cocktail:'Beverage','Soft drink':'Beverage'};
+/* l'obiettivo di incidenza di ogni categoria: è il bersaglio, non la realtà */
+const DEMO_TGT={Antipasti:28,Primi:24,Secondi:35,Contorni:21,Dolci:23,
+  Caffetteria:12,'Vini al calice':25,'Vini in bottiglia':32,Birre:24,Cocktail:18,'Soft drink':15};
+/* dove sta davvero questo locale: la cucina sopra obiettivo quasi ovunque —
+   è la storia che racconta il suo food cost al 35,6% — e il bar quasi in riga.
+   Senza questa distanza il menu engineering non avrebbe niente da dire. */
+const DEMO_REALE={Antipasti:33,Primi:30,Secondi:41,Contorni:26,Dolci:27,
+  Caffetteria:14,'Vini al calice':26,'Vini in bottiglia':33,Birre:29,Cocktail:20,'Soft drink':17};
+/* il contorno fisso che ogni categoria si porta dietro: ghiaccio, bicchiere, guarnizione */
+const DEMO_SIDE={Cocktail:0.28,'Vini al calice':0.05,Birre:0.04,'Soft drink':0.06,Caffetteria:0.03};
+/* la stagionalità: moltiplicatore mese per mese, estivo e invernale */
+const DEMO_STAG={
+  est:[.72,.74,.86,1.00,1.16,1.26,1.30,1.22,1.10,.92,.78,.74],
+  inv:[1.24,1.22,1.12,1.00,.88,.78,.70,.72,.90,1.08,1.20,1.26],
+  '' :[1,1,1,1,1,1,1,1,1,1,1,1]
+};
+
+async function demoGenera(){
+  if(!demoOk()){ toast('Il generatore si accende solo sui clienti con TEST o DEMO nel nome.'); return; }
+  const m=compute();
+  const mesi=m.months.map((x,i)=>({i, rf:num(x.rf), rb:num(x.rb)})).filter(x=>x.rf+x.rb>0);
+  if(!mesi.length){ toast('Prima servono i ricavi: il venduto si costruisce su quelli.'); return; }
+  await mpCarica(); await proCarica();
+
+  /* --- 1 · fornitori e ingredienti --- */
+  MP.forn = DEMO_FORN.map(([n,piva,tel,mail,ref])=>({n,piva,tel,mail,ref}));
+  const oggi=new Date().toISOString().slice(0,10);
+  MP.ing = DEMO_ING.map(([e,f,u,li,pz,co,c])=>({id:newId(), e,f,u,li,pz,co,c, s1:0,s2:0,se:0,ac:0, d:oggi}));
+  DEMO_PREP.forEach(([e,u,co,cn,righe])=>{
+    MP.ing.push({id:newId(), e, f:'', u, c:'Preparazioni', li:0,pz:1,co, s1:0,s2:0,se:0,ac:0, d:oggi,
+      cn, prep:righe.map(([et,q,sc])=>({e:et, q, sc}))});
+  });
+  uCache=null;
+
+  /* --- 2 · il menu --- */
+  PRO.iva=0.1; PRO.seg={...DEMO_SEG}; PRO.target={...DEMO_TGT}; PRO.side={...DEMO_SIDE};
+  PRO.prod = DEMO_PROD.map(([n,cat,pvi,peso,stag,ric],k)=>({
+    id:'demo'+k, n, cat, stato:'', cassa:{cod:'D'+(100+k), nomi:[n], gr:cat, cat},
+    pv:+(pvi/1.1).toFixed(4), pvi, pvp:+(pvi/1.1).toFixed(4),
+    mesi:Array.from({length:12},()=>({pz:0,inc:0})), presunto:0,
+    _peso:peso, _stag:stag,
+    ric:{ing:ric.map(([e,q,sc])=>({e,q,sc})), co:[], cn:0, cat, nota:''}
+  }));
+
+  /* --- 3 · il venduto, che torna con i ricavi mese per mese ---
+     i pezzi nascono dal peso di vendita e dalla stagionalità; l'incasso si
+     riallinea all'euro sul conto economico, e il piccolo scarto fra listino
+     e cassa resta dentro come sconti e omaggi: è quello che la pagina
+     «Incasso contro listino» serve a misurare. */
+  const SCONTO=0.975;
+  ['Food','Beverage'].forEach(seg=>{
+    const lista=PRO.prod.filter(p=>DEMO_SEG[p.cat]===seg);
+    mesi.forEach(({i,rf,rb})=>{
+      const netto = seg==='Food' ? rf : rb;
+      if(!(netto>0)) return;
+      const pesi=lista.map(p=>p._peso*DEMO_STAG[p._stag||''][i]);
+      const tot=pesi.reduce((a,b)=>a+b,0)||1;
+      /* i pezzi: la quota di incasso del prodotto divisa per il suo prezzo netto,
+         gonfiata dello sconto perché a listino il venduto vale un po' di più */
+      lista.forEach((p,k)=>{
+        const quota=netto/SCONTO*pesi[k]/tot;
+        p.mesi[i].pz = Math.max(0, Math.round(quota/(p.pv||1)));
+      });
+      /* l'incasso: si riscala una volta sola perché il totale del mese torni esatto */
+      const lordo=lista.reduce((a,p)=>a+p.mesi[i].pz*p.pvi, 0);
+      const k = lordo>0 ? (netto*(1+PRO.iva))/lordo : 0;
+      lista.forEach(p=>{ p.mesi[i].inc = +(p.mesi[i].pz*p.pvi*k).toFixed(2); });
+    });
+  });
+
+  /* --- 4 · taratura delle dosi ---
+     I listini dei fornitori restano quelli veri: un chilo di controfiletto
+     costa quello che costa. Quello che si tara sono le DOSI, prodotto per
+     prodotto, perché ciascuno atterri sull'obiettivo della sua categoria —
+     con un po' di scarto, altrimenti il menu engineering non avrebbe niente
+     da dire. Poi un ritocco di reparto porta il totale dove deve stare:
+     un paio di punti sotto il bilancio, e quella distanza è la dispersione
+     che la pagina dei costi nascosti misura. */
+  const a=sumRows(m.complete, m.orphanCosts);
+  const incBil=(c,r)=> r>0 ? c/r : null;
+  const voluto={
+    Food:     (incBil(a.mpFood, a.ricaviFood) ?? 0.355) - 0.025,
+    Beverage: (incBil(a.mpBev,  a.ricaviBev ) ?? 0.235) - 0.015
+  };
+  /* scarto riproducibile: nessun caso, sempre lo stesso menu a ogni rigenerazione */
+  const scarto = k => 0.80 + ((k*37)%23)/23*0.42;      /* 0,80 – 1,22 */
+  const scalaRicetta=(p,f)=>{
+    f=Math.max(0.35, Math.min(3, f));
+    (p.ric.ing||[]).forEach(r=>{ r.q=+(r.q*f).toFixed(3); });
+  };
+  const incProd=p=>{ const c=ricCosto(p); return (c==null||!p.pv) ? null : c.tot/p.pv; };
+  const incSeg=seg=>{
+    let costo=0, ricavo=0;
+    PRO.prod.filter(x=>DEMO_SEG[x.cat]===seg).forEach(p=>{
+      const c=ricCosto(p); if(c==null) return;
+      const pz=p.mesi.reduce((x,y)=>x+num(y.pz),0);
+      const inc=p.mesi.reduce((x,y)=>x+num(y.inc),0);
+      costo+=pz*c.tot; ricavo+=inc/(1+PRO.iva);
+    });
+    return ricavo>0 ? costo/ricavo : null;
+  };
+  /* a · ogni prodotto sul bersaglio della sua categoria */
+  for(let giro=0; giro<3; giro++){
+    uCache=null;
+    PRO.prod.forEach((p,k)=>{
+      const ora=incProd(p); if(ora==null||!(ora>0)) return;
+      const bersaglio=(DEMO_REALE[p.cat]||25)/100*scarto(k);
+      scalaRicetta(p, bersaglio/ora);
+    });
+  }
+  /* b · il totale di reparto dove deve stare */
+  for(let giro=0; giro<4; giro++){
+    uCache=null;
+    const ora={Food:incSeg('Food'), Beverage:incSeg('Beverage')};
+    if(!ora.Food||!ora.Beverage) break;
+    const f={Food:voluto.Food/ora.Food, Beverage:voluto.Beverage/ora.Beverage};
+    if(Math.abs(f.Food-1)<0.004 && Math.abs(f.Beverage-1)<0.004) break;
+    PRO.prod.forEach(p=>scalaRicetta(p, f[DEMO_SEG[p.cat]]||1));
+  }
+  uCache=null;
+  /* l'incidenza teorica da schede, quella che il cruscotto confronta col bilancio */
+  migrateS();
+  const tf=incSeg('Food'), tb=incSeg('Beverage');
+  if(tf) S.mpSchede.food=+(tf*100).toFixed(1);
+  if(tb) S.mpSchede.bev =+(tb*100).toFixed(1);
+
+  PRO.prod.forEach(p=>{ delete p._peso; delete p._stag; });
+  mpSalva(); proSalva(); saveState();
+  CNV=null;
+  toast(`✓ Locale dimostrativo pronto: ${MP.forn.length} fornitori, ${MP.ing.length} ingredienti, ${PRO.prod.length} prodotti a menu e il venduto di ${mesi.length} mesi.`);
+  gotoPage(current);
+}
+
 /* ================== CHECKLIST DEI DATI DA CARICARE ==================
    Una pagina sola che risponde alla domanda che si fa a ogni cliente nuovo e
    a ogni mese nuovo: che cosa mi manca? Mese per mese per quello che è
@@ -9059,6 +9325,15 @@ async function renderCHK(){
     </div>`).join('')}
   </section>
 
+  ${demoOk() ? `<section class="demobox">
+    <div class="sechead"><div><h2>Locale dimostrativo</h2>
+      <div class="sub">Questo cliente ha <b>TEST</b> o <b>DEMO</b> nel nome, quindi si può riempire di dati finti:
+      fornitori, ingredienti con listino, preparazioni, ricette, menu e venduto di cassa.
+      I ricavi non si toccano — il venduto viene costruito su quelli, mese per mese.</div></div></div>
+    <div class="tbltools"><button class="btn small" id="demoGen">Genera prodotti, ricette e venduto</button>
+    <span class="savestate">Rigenerabile: rifà tutto da capo, sovrascrivendo l'archivio prodotti di questo cliente.</span></div>
+  </section>` : ''}
+
   <section>
     <div class="sechead"><div><h2>Che cosa chiedere al cliente</h2>
       <div class="sub">Solo quello che manca davvero, nell'ordine in cui serve.</div></div></div>
@@ -9068,6 +9343,10 @@ async function renderCHK(){
          <span class="savestate">Da incollare in una mail o in un messaggio al titolare.</span></div>`
       : `<div class="sub">Non manca niente di essenziale: il cruscotto è completo e l'analisi sul venduto ha quello che le serve.</div>`}
   </section>`;
+  const g=document.getElementById('demoGen');
+  if(g) g.onclick=()=>{ g.disabled=true; g.textContent='Genero…';
+    demoGenera().catch(e=>toast('Non sono riuscito a generare: '+(e&&e.message||e)))
+      .finally(()=>{ renderCHK(); }); };
   const b=document.getElementById('chkCopia');
   if(b) b.onclick=()=>{
     const txt=`${S.cliente} · dati mancanti per ${S.anno}\n\n`+manca.map(x=>'· '+x).join('\n');
