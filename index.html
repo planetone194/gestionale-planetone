@@ -46,7 +46,7 @@
   .logo .p1{font-family:'Fraunces',serif;font-weight:700;font-size:24px;letter-spacing:.5px;color:var(--brand);}
   .logo .sub{font-size:10.5px;text-transform:uppercase;letter-spacing:2.5px;color:var(--brass);font-weight:600;}
   .clientline h1{font-family:var(--num);font-weight:600;font-size:25px;line-height:1.15;letter-spacing:-.8px;}
-  .clientline h1 input{font:inherit;color:inherit;border:none;background:transparent;border-bottom:1px dashed transparent;max-width:340px;}
+  .clientline h1 input{font:inherit;color:inherit;border:none;background:transparent;border-bottom:1px dashed transparent;max-width:560px;}
   .clientline h1 input:hover,.clientline h1 input:focus{border-bottom-color:var(--brass);outline:none;}
   .clientline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   body.is-home .clientline{display:none;}   /* elenco clienti: nessun cliente aperto */
@@ -424,8 +424,10 @@
   .mbtns{display:flex;justify-content:flex-end;gap:8px;}
 
   /* riepilogo per area (cruscotto) */
-  .areagrid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
-  .acard{border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;background:#fff;transition:border-color .15s, transform .15s, box-shadow .15s;}
+  /* sei aree: tre e tre. Larghe abbastanza da non mandare a capo le note,
+     basse abbastanza da stare nella stessa schermata dei cruscotti. */
+  .areagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+  .acard{border:1px solid var(--line);border-radius:12px;padding:11px 15px;cursor:pointer;background:#fff;transition:border-color .15s, transform .15s, box-shadow .15s;}
   .acard:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 6px 16px rgba(27,42,58,.08);}
   .acard .al{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2);font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .acard .al .verdict{margin-left:0;letter-spacing:.2px;text-transform:none;font-size:10.5px;}
@@ -436,9 +438,9 @@
   .acard.z3{border-color:#E7B3AC;} .acard.z3 .al{color:var(--bad);}
   .acard.z0:hover{border-color:var(--ok);} .acard.z1:hover{border-color:var(--warn);}
   .acard.z2:hover{border-color:var(--hot);} .acard.z3:hover{border-color:var(--bad);}
-  .acard .av{font-family:var(--num);font-size:19px;font-weight:600;margin-top:4px;}
-  .acard .ax{font-size:12px;color:var(--ink2);margin-top:3px;line-height:1.45;}
-  .acard .go{font-size:11.5px;color:var(--brand);font-weight:600;margin-top:8px;}
+  .acard .av{font-family:var(--num);font-size:19px;font-weight:600;margin-top:2px;line-height:1.2;}
+  .acard .ax{font-size:12px;color:var(--ink2);margin-top:2px;line-height:1.35;}
+  .acard .go{font-size:11.5px;color:var(--brand);font-weight:600;margin-top:6px;}
 
   /* schermata scelta cliente */
   .homegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
@@ -972,7 +974,8 @@
   html.litepg header{border-bottom:1px solid #2A2A2A;padding-bottom:12px;margin-bottom:16px;}
   html.litepg h1 input{color:#fff;background:transparent;max-width:none;}
   html.litepg .litewrap .ltt{display:none;}   /* il nome è già in testa alla pagina */
-  html.litepg .topbtns,html.litepg .merchsw,html.litepg .annosw,html.litepg #btnRename,
+  html.litepg .topbtns,html.litepg .merchsw,html.litepg .merchexp,html.litepg .merchpan,
+  html.litepg .annosw,html.litepg #btnRename,
   html.litepg #viewChips,html.litepg .alerts,html.litepg #period{display:none!important;}
 
   /* elenco clienti in modalita lite: schede scure, niente bottoni di servizio */
@@ -1002,6 +1005,16 @@
   #litePage{display:none;}
   html.litealt #litePage{display:block;}
   html.litealt .page{display:none!important;}
+  .lphead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+  .lphead .lpht{min-width:0;}
+  /* food o beverage: lo stesso numero da un altro punto di vista */
+  .lpbu{display:inline-flex;flex:none;background:#1B1B1B;border:1px solid #303030;border-radius:999px;padding:3px;margin-top:2px;}
+  .lpbu button{border:none;background:none;color:#8F8F8F;font-family:inherit;font-size:11.5px;
+    font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;}
+  .lpbu button:hover{color:#E4E4E4;}
+  .lpbu button.on{background:#333;color:#fff;}
+  .lpbu button.on[data-lbu="food"]{background:var(--food);color:#fff;}
+  .lpbu button.on[data-lbu="bev"]{background:var(--bev);color:#fff;}
   .lp h2{font-family:var(--num);font-size:21px;font-weight:700;color:#fff;margin:0 0 3px;letter-spacing:-.5px;}
   .lp .lpsub{font-size:12.5px;color:#8F8F8F;margin:0 0 16px;line-height:1.45;}
   .lpc{background:#1B1B1B;border:1px solid #303030;border-radius:16px;padding:15px 16px;margin-bottom:11px;}
@@ -1026,6 +1039,22 @@
   .lpvuoto{text-align:center;color:#8F8F8F;font-size:13.5px;padding:34px 12px;line-height:1.65;}
   .lpvuoto b{color:#D8D8D8;}
   .lpvuoto .ico{display:block;font-size:26px;margin-bottom:12px;opacity:.55;}
+  /* la scelta del periodo nell'analisi: anno o mese, come in pro */
+  .lpper{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;}
+  .lpch{background:#1B1B1B;border:1px solid #303030;color:#A8A8A8;border-radius:999px;
+    padding:6px 13px;font:inherit;font-size:12.5px;cursor:pointer;}
+  .lpch:hover{border-color:#4A4A4A;color:#E4E4E4;}
+  .lpch.on{background:var(--brass);border-color:var(--brass);color:#1A1A1A;font-weight:600;}
+  /* i blocchi di testo: la diagnosi raccontata, non messa in tabella */
+  .lptx p{font-size:13.5px;color:#C4C4C4;line-height:1.62;margin:0 0 11px;}
+  .lptx p:last-child{margin-bottom:0;}
+  .lptx b{color:#fff;font-weight:600;}
+  /* un'azione del piano */
+  .lpaz{border-left:2px solid var(--brass);padding:2px 0 2px 13px;margin:0 0 15px;}
+  .lpaz .t{font-size:13.5px;font-weight:600;color:#fff;line-height:1.35;}
+  .lpaz .m{font-size:11px;color:var(--brass);margin-top:3px;letter-spacing:.3px;}
+  .lpaz .x{font-size:12.5px;color:#9A9A9A;line-height:1.55;margin-top:5px;}
+  .lpaz .x b{color:#D8D8D8;}
   .lptesto{font-size:14px;color:#C8C8C8;line-height:1.65;}
   .lptesto b{color:#fff;}
   .litewrap{color:#fff;margin-bottom:18px;}
@@ -1070,7 +1099,19 @@
   /* l'interruttore fra le due modalità: due segmenti, si vede sempre dove si è */
   /* la riga degli interruttori: sta nel flusso sopra la testata, cosi' non
      copre mai i bottoni sotto. Altezza e raggi identici a quelli della testata. */
-  .toolsrow{display:flex;justify-content:flex-end;align-items:center;gap:9px;margin:0 0 12px;}
+  .toolsrow{display:flex;justify-content:flex-end;align-items:center;gap:9px;margin:0 0 9px;flex-wrap:wrap;}
+  .toolsrow.two{margin:0 0 14px;}
+  /* il dettaglio merchandising non occupa più mezza pagina: è un pannello
+     che si apre da qui e si richiude, così sotto restano i cruscotti,
+     i consigli e le aree di costo tutti nella prima schermata */
+  .merchexp{height:36px;box-sizing:border-box;border:1.5px solid var(--porpora);background:#fff;
+    color:var(--porpora);border-radius:9px;padding:0 11px;font:inherit;font-size:15px;line-height:1;
+    cursor:pointer;transition:transform .15s;}
+  .merchexp:hover{background:var(--porpora-bg);}
+  .merchexp.on{background:var(--porpora);color:#fff;transform:rotate(180deg);}
+  .merchexp.vuoto{display:none;}
+  .merchpan{margin:0 0 14px;}
+  .merchpan .merchbox{margin-bottom:0;}
   .modesw{display:inline-flex;align-items:center;gap:6px;height:36px;box-sizing:border-box;
     background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:0 5px 0 12px;}
   .modesw .ml{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2);font-weight:700;}
@@ -1176,7 +1217,8 @@
   /* sul telefono esiste una sola esperienza: lite. L'interruttore sparisce. */
   html.mobi .toolsrow{display:none;}
   html.mobi:not(.mob) .vistabtn{display:none;}
-  html.mob .toolsrow{position:fixed;top:12px;right:14px;z-index:70;margin:0;}
+  html.mob .toolsrow:not(.two){position:fixed;top:12px;right:14px;z-index:70;margin:0;}
+  html.mobi .toolsrow.two,html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
   html.mob .modesw{display:inline-flex;}
   html.mobi .topbtns,html.mobi .merchsw,html.mobi .annosw,html.mobi #btnRename,
   html.mobi #viewChips,html.mobi #period{display:none!important;}
@@ -1485,7 +1527,7 @@
     .bu{grid-template-columns:1fr}
     .clientline h1{font-size:22px}
   }
-  @media print{ nav,.side,.topbtns,.tbltools{display:none} body{background:#fff} section,.kpi{border-color:#ccc} .page{display:block} }
+  @media print{ nav,.side,.topbtns,.toolsrow,.merchpan,.tbltools{display:none} body{background:#fff} section,.kpi{border-color:#ccc} .page{display:block} }
 </style>
 </head>
 <body>
@@ -1631,7 +1673,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v121</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v122</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1640,25 +1682,13 @@
       <button type="button" data-mode="lite">Lite</button>
       <button type="button" data-mode="pro">Pro</button></div>
     <button class="vistabtn" id="vistabtn" onclick="toggleVista()">📱 Vista mobile</button>
+    <span class="merchsw" id="merchSw" title="il merchandising entra nei conti, ne resta fuori, oppure si guarda da solo">
+      <span class="ml">Merch</span>
+      <button type="button" data-merch="incl">Acceso</button><button type="button" data-merch="escl">Spento</button><button type="button" data-merch="solo">Isolato</button>
+    </span>
+    <button class="merchexp" id="merchExp" onclick="merchPan()" title="dettaglio: gli stessi conti con e senza merchandising">⌄</button>
   </div>
-  <header>
-    <div>
-      <div class="clientline">
-        <h1><input id="clientName" title="Nome cliente — clicca per modificare" placeholder="Nome cliente"></h1>
-        <button class="namepen" id="btnRename" title="Rinomina il cliente">✎</button>
-        <span class="merchsw" id="merchSw" title="il merchandising entra nei conti, ne resta fuori, oppure si guarda da solo">
-          <span class="ml">Merch</span>
-          <button type="button" data-merch="incl">Acceso</button><button type="button" data-merch="escl">Spento</button><button type="button" data-merch="solo">Isolato</button>
-        </span>
-        <span class="annosw cli" title="anno di lavoro del cliente">
-          <span class="al">Anno</span>
-          <select id="annoSel"></select>
-          <button type="button" id="btnNuovoAnno" title="aggiungi un altro anno a questo cliente">+</button>
-        </span>
-        <div class="period" id="period"></div>
-        <div class="perbar"><button class="perbtn" id="perbtn" onclick="apriPeriodo()">Periodo</button></div>
-      </div>
-    </div>
+  <div class="toolsrow two">
     <div class="topbtns">
       <select id="clientSelect" class="clientsel cli" title="cambia cliente"></select>
       <button class="btn ghost" id="btnNewClient">+ Cliente</button>
@@ -1669,6 +1699,22 @@
       <button class="btn ghost ico cli" id="btnReset" title="Azzera dati — svuota il cliente corrente">↺</button>
       <button class="btn cli" onclick="window.print()">Stampa report</button>
       <button class="btn savemini" data-save="mini" title="Salva ora (Ctrl/Cmd + S)" aria-label="Salva ora">💾</button>
+    </div>
+  </div>
+  <div class="merchpan" id="merchPanBox" hidden></div>
+  <header>
+    <div>
+      <div class="clientline">
+        <h1><input id="clientName" title="Nome cliente — clicca per modificare" placeholder="Nome cliente"></h1>
+        <button class="namepen" id="btnRename" title="Rinomina il cliente">✎</button>
+        <span class="annosw cli" title="anno di lavoro del cliente">
+          <span class="al">Anno</span>
+          <select id="annoSel"></select>
+          <button type="button" id="btnNuovoAnno" title="aggiungi un altro anno a questo cliente">+</button>
+        </span>
+        <div class="period" id="period"></div>
+        <div class="perbar"><button class="perbtn" id="perbtn" onclick="apriPeriodo()">Periodo</button></div>
+      </div>
     </div>
   </header>
 
@@ -2689,7 +2735,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') chiudiSugg(); });
    Pro: il gestionale completo. L'interruttore ricorda la scelta. */
 const LITE_PAG=['dash','home'];     /* queste due hanno gia' la loro veste lite */
 /* 'an' resta com'e': e' il report da stampare, e in lite non ha senso riscriverlo */
-const LITE_CHIARE=['an'];
+const LITE_CHIARE=[];          /* nessuna pagina resta in chiaro: l'analisi ha la sua veste lite */
 function liteAttiva(){
   const h=document.documentElement;
   return h.classList.contains('lite') || h.classList.contains('mobi');
@@ -3213,7 +3259,42 @@ function lpRow(nome, sotto, valore, quota, stato){
   return `<div class="lprow"><div class="n">${nome}${sotto?`<small>${sotto}</small>`:''}</div>
     <div class="v">${valore}</div>${quota!=null?`<div class="p ${stato||''}">${quota}</div>`:''}</div>`;
 }
-function lpTesta(titolo, sotto){ return `<h2>${titolo}</h2><div class="lpsub">${sotto}</div>`; }
+function lpTesta(titolo, sotto, conBU){
+  return `<div class="lphead"><div class="lpht"><h2>${titolo}</h2><div class="lpsub">${sotto}</div></div>
+    ${conBU?lpBUsw():''}</div>`;
+}
+/* ---- food o beverage, con un bottone ----
+   Sul telefono non si cambia una tabella: si cambia il punto di vista. Lo
+   stesso numero letto su tutto il locale, sulla sola cucina o sul solo bar. */
+let liteBU='tot';
+function lpBUsw(){
+  return `<div class="lpbu">
+    <button type="button" data-lbu="tot"  class="${liteBU==='tot'?'on':''}">Tutto</button>
+    <button type="button" data-lbu="food" class="${liteBU==='food'?'on':''}">Food</button>
+    <button type="button" data-lbu="bev"  class="${liteBU==='bev'?'on':''}">Bev</button>
+  </div>`;
+}
+/* la quota di cucina: è quella con cui il motore ripartisce le spese generali,
+   e con cui qui ripartiamo anche il marketing. */
+function lpQuotaF(a){
+  const tot=num(a.sgFood)+num(a.sgBev);
+  if(tot>0) return a.sgFood/tot;
+  const r=num(a.ricaviFood)+num(a.ricaviBev);
+  return r>0 ? a.ricaviFood/r : .5;
+}
+/* lo stesso aggregato, ristretto a una business unit */
+function lpBUa(a){
+  if(liteBU==='tot') return {...a, bu:'tot', et:''};
+  const f = liteBU==='food', q=lpQuotaF(a);
+  const ric = f ? a.ricaviFood : a.ricaviBev;
+  const quota = f ? q : 1-q;
+  const b={...a, bu:liteBU, et: f?'Food':'Beverage', quota,
+    ricavi:ric, mp:f?a.mpFood:a.mpBev, ru:f?a.ruFood:a.ruBev,
+    sg:f?a.sgFood:a.sgBev, mk:num(a.mk)*quota};
+  b.incMp=b.mp/ric; b.incRu=b.ru/ric; b.incSg=b.sg/ric; b.incMk=b.mk/ric;
+  return b;
+}
+const lpBUsot = (b, per) => b.bu==='tot' ? per : `${b.et} · ${per}`;
 function lpChiusura(dove){
   return `<div class="lpnota">Questi numeri si modificano dal computer, in <b>${dove}</b>.
     Sul telefono la pagina resta in sola lettura.</div>`;
@@ -3228,8 +3309,7 @@ const LP_PC = {
   ring:['Ingredienti e prezzi d\'acquisto','è un archivio di centinaia di righe'],
   rforn:['Fornitori','è un archivio da compilare'],
   rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese'],
-  rric:['Ricette e schede costo','si costruiscono le schede riga per riga'],
-  an:['Analisi e presentazione','è il report da stampare per il cliente']
+  rric:['Ricette e schede costo','si costruiscono le schede riga per riga']
 };
 function lpSoloPC(pagina){
   const v=LP_PC[pagina]||['Questa pagina',''];
@@ -3244,25 +3324,28 @@ function lpSoloPC(pagina){
 
 /* ---------- 1 - conto economico ---------- */
 function liteCE(){
-  const {m,t,a,isM,per}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Materia prima',per)}
-    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const {m,t,a:a0,per}=lpAgg(), a=lpBUa(a0);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per), true)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const incMp=a.incMp*100;
-  const fc = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
-  const bc = a.ricaviBev>0  ? a.mpBev /a.ricaviBev*100  : null;
-  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>o.x.ricavi>0).map(o=>{
-    const inc=o.x.mp/o.x.ricavi*100;
-    return lpRow(MESI[o.i], null, fmtE(o.x.ricavi),
-      Math.round(inc)+'%', lpStato(inc, t.mp));
+  const fc = a0.ricaviFood>0 ? a0.mpFood/a0.ricaviFood*100 : null;
+  const bc = a0.ricaviBev>0  ? a0.mpBev /a0.ricaviBev*100  : null;
+  /* mese per mese: l'incasso e la materia prima della sola unità scelta */
+  const RIC = x => a.bu==='food'?x.rf : a.bu==='bev'?x.rb : x.ricavi;
+  const MP  = x => a.bu==='food'?x.mf : a.bu==='bev'?x.mb : x.mp;
+  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>RIC(o.x)>0).map(o=>{
+    const inc=MP(o.x)/RIC(o.x)*100;
+    return lpRow(MESI[o.i], null, fmtE(RIC(o.x)), Math.round(inc)+'%', lpStato(inc, t.mp));
   }).join('');
-  return `<div class="lp">${lpTesta('Materia prima', per)}
-    ${lpCard('Materia prima', Math.round(incMp)+'<small> € ogni 100</small>',
+  return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per), true)}
+    ${lpCard(a.bu==='tot'?'Materia prima':'Materia prima · '+a.et,
+      Math.round(incMp)+'<small> € ogni 100</small>',
       `${fmtE(a.mp)} · l'obiettivo è ${fmtNum(t.mp)}` +
-      (fc!=null&&bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
+      (a.bu==='tot' && fc!=null && bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
       lpStato(incMp, t.mp))}
-    ${lpCard('Food e beverage',
+    ${a.bu==='tot' ? lpCard('Food e beverage',
       (fc!=null?Math.round(fc):'—')+'<small> e </small>'+(bc!=null?Math.round(bc):'—'),
-      `€ ogni 100 del proprio incasso · food <b>${fmtE(a.mpFood)}</b>, beverage <b>${fmtE(a.mpBev)}</b>`)}
+      `€ ogni 100 del proprio incasso · food <b>${fmtE(a0.mpFood)}</b>, beverage <b>${fmtE(a0.mpBev)}</b>`) : ''}
     <div class="lpsez">Mese per mese · incasso e materia prima</div>
     ${mesi}
     ${lpChiusura('Materia prima')}</div>`;
@@ -3270,18 +3353,22 @@ function liteCE(){
 
 /* ---------- 1a - i ricavi, da soli ---------- */
 function liteRicavi(){
-  const {m,a,per}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Ricavi',per)}
-    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
-  const qF = a.ricavi>0 ? a.ricaviFood/(a.ricaviFood+a.ricaviBev) : 0;
-  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>o.x.ricavi>0)
-    .map(o=>lpRow(MESI[o.i], null, fmtE(o.x.ricavi),
-      o.x.rf+o.x.rb>0 ? Math.round(o.x.rf/(o.x.rf+o.x.rb)*100)+'% food' : null)).join('');
-  return `<div class="lp">${lpTesta('Ricavi', per)}
-    ${lpCard('Incasso del periodo', fmtE(a.ricavi),
-      `media <b>${fmtE(a.ricavi/(a.n||1))}</b> al mese su ${a.n} ${a.n===1?'mese':'mesi'}`)}
-    ${lpCard('Food', fmtE(a.ricaviFood), `${Math.round(qF*100)} € ogni 100 di incasso`)}
-    ${lpCard('Beverage', fmtE(a.ricaviBev), `${Math.round((1-qF)*100)} € ogni 100 di incasso`)}
+  const {m,a:a0,per}=lpAgg(), a=lpBUa(a0);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per), true)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
+  const tot=a0.ricaviFood+a0.ricaviBev;
+  const qF = tot>0 ? a0.ricaviFood/tot : 0;
+  const RIC = x => a.bu==='food'?x.rf : a.bu==='bev'?x.rb : x.ricavi;
+  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>RIC(o.x)>0)
+    .map(o=>lpRow(MESI[o.i], null, fmtE(RIC(o.x)),
+      a.bu!=='tot' ? null
+        : (o.x.rf+o.x.rb>0 ? Math.round(o.x.rf/(o.x.rf+o.x.rb)*100)+'% food' : null))).join('');
+  return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per), true)}
+    ${lpCard(a.bu==='tot'?'Incasso del periodo':'Incasso '+a.et, fmtE(a.ricavi),
+      `media <b>${fmtE(a.ricavi/(a0.n||1))}</b> al mese su ${a0.n} ${a0.n===1?'mese':'mesi'}` +
+      (a.bu==='tot' ? '' : ` · <b>${Math.round((a.bu==='food'?qF:1-qF)*100)}</b> € ogni 100 di incasso totale`))}
+    ${a.bu!=='bev' ? lpCard('Food', fmtE(a0.ricaviFood), `${Math.round(qF*100)} € ogni 100 di incasso`) : ''}
+    ${a.bu!=='food'? lpCard('Beverage', fmtE(a0.ricaviBev), `${Math.round((1-qF)*100)} € ogni 100 di incasso`) : ''}
     <div class="lpsez">Mese per mese</div>
     ${mesi}
     ${lpChiusura('Ricavi')}</div>`;
@@ -3289,14 +3376,15 @@ function liteRicavi(){
 
 /* ---------- 3a - marketing: una fascia, non un tetto ---------- */
 function liteMKT(){
-  const {t,a,per,idx}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Marketing',per)}
-    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const {t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per), true)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
+  const q = a.bu==='tot' ? 1 : a.quota;
   const inc=a.incMk*100, z=mktZona(inc, t.mk);
   const cls = z===0?'ok' : z>=3?'bad':'warn';
   const voci=[];
   (S.sg||[]).filter(isMktSG).forEach(c=>{
-    const v=idx.reduce((x,i)=>x+num(c.m[i]),0);
+    const v=idx.reduce((x,i)=>x+num(c.m[i]),0)*q;
     if(Math.abs(v)>0.005) voci.push({n:c.nome, v});
   });
   voci.sort((x,y)=>y.v-x.v);
@@ -3307,34 +3395,45 @@ function liteMKT(){
       ? (inc<0.5 ? `${fmtE(a.mk)} · il locale non si sta facendo vedere`
                  : `${fmtE(a.mk)} · sotto il centro di <b>${fmtE(a.ricavi*t.mk/100-a.mk)}</b>`)
       : `${fmtE(a.mk)} · sopra il centro di <b>${fmtE(a.mk-a.ricavi*t.mk/100)}</b>`;
-  return `<div class="lp">${lpTesta('Marketing', per)}
-    ${lpCard('Quanto si fa vedere', Math.round(inc)+'<small> € ogni 100</small>', nota, cls)}
+  return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per), true)}
+    ${lpCard(a.bu==='tot'?'Quanto si fa vedere':'Quanto si fa vedere · '+a.et,
+      Math.round(inc)+'<small> € ogni 100</small>', nota, cls)}
     ${righe?`<div class="lpsez">Dove vanno</div>${righe}`
            :'<div class="lpvuoto">Nessuna spesa di marketing riconosciuta nel periodo.<br>O il locale non ne fa, o è dentro un\'altra voce.</div>'}
+    ${a.bu==='tot' ? '' : `<div class="lpnota">Le spese di marketing non nascono divise fra cucina e bar:
+      qui sono ripartite con la stessa quota delle spese generali, <b>${Math.round(q*100)}%</b> su ${a.et.toLowerCase()}.</div>`}
     <div class="lpnota">Questa è l'unica area in cui spendere poco non è una buona notizia:
       la soglia è il <b>centro di una fascia</b>, non un tetto.</div></div>`;
 }
 
 /* ---------- 2 - risorse umane ---------- */
 function liteRU(){
-  const {m,t,a,per,idx}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Risorse umane',per)}
-    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const {m,t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per), true)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const M=merchMode();
+  const rTot=a0.ricaviFood+a0.ricaviBev, shareF = rTot>0 ? a0.ricaviFood/rTot : .5;
+  /* la stessa regola del motore: la cucina è food, il bar è beverage,
+     sala e management si dividono per quanto incassa ciascun reparto */
+  const peso = r => a.bu==='tot' ? 1
+    : a.bu==='food' ? (r==='Cucina'?1 : r==='Bar'?0 : shareF)
+                    : (r==='Cucina'?0 : r==='Bar'?1 : 1-shareF);
   const val=(pers)=>idx.reduce((s,i)=>s+mPick(num(pers.m[i]), pers.mk?num(pers.mk[i]):0, M), 0);
   const rep={}; let persone=0;
   (S.ru||[]).forEach(pers=>{
     const v=val(pers); if(!v) return;
-    persone++; const r=pers.reparto||'Altro';
-    rep[r]=(rep[r]||0)+v;
+    const r=pers.reparto||'Altro', p=peso(r);
+    if(p>0) persone++;
+    if(p>0) rep[r]=(rep[r]||0)+v*p;
   });
   const incRu=a.incRu*100;
-  const iF = a.ricaviFood>0 ? a.ruFood/a.ricaviFood*100 : null;
-  const iB = a.ricaviBev>0  ? a.ruBev /a.ricaviBev*100  : null;
+  const iF = a0.ricaviFood>0 ? a0.ruFood/a0.ricaviFood*100 : null;
+  const iB = a0.ricaviBev>0  ? a0.ruBev /a0.ricaviBev*100  : null;
+  const tr=Object.values(rep).reduce((x,v)=>x+v,0)||1;
   const righe=Object.entries(rep).sort((x,y)=>y[1]-x[1]).map(([nome,v])=>
-    lpRow(nome, null, fmtE(v), Math.round(v/a.ru*100)+'%')).join('');
+    lpRow(nome, null, fmtE(v), Math.round(v/tr*100)+'%')).join('');
   let bu='';
-  if(iF!=null && iB!=null){
+  if(a.bu==='tot' && iF!=null && iB!=null){
     const gap=Math.abs(iF-iB);
     bu = lpCard('Cucina e bar',
       `${Math.round(iF)}<small> contro </small>${Math.round(iB)}`,
@@ -3343,36 +3442,43 @@ function liteRU(){
         : `<b>${Math.round(gap)} punti</b> di distanza, sopra la soglia di 15 — e sul totale non si vede.`),
       gap<=15?'ok':gap>20?'bad':'warn');
   }
-  return `<div class="lp">${lpTesta('Risorse umane', per)}
-    ${lpCard('Costo del personale', Math.round(incRu)+'<small> € ogni 100</small>',
-      `${fmtE(a.ru)} · l'obiettivo è ${fmtNum(t.ru)} · <b>${persone}</b> person${persone===1?'a':'e'}`,
+  return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per), true)}
+    ${lpCard(a.bu==='tot'?'Costo del personale':'Costo del personale · '+a.et,
+      Math.round(incRu)+'<small> € ogni 100</small>',
+      `${fmtE(a.ru)} · l'obiettivo è ${fmtNum(t.ru)}` +
+      (a.bu==='tot' ? ` · <b>${persone}</b> person${persone===1?'a':'e'}` : ''),
       lpStato(incRu, t.ru))}
     ${bu}
     <div class="lpsez">Per reparto</div>
     ${righe||'<div class="lpvuoto">Nessuna persona caricata in questo periodo.</div>'}
-    ${lpChiusura('2 · Risorse umane')}</div>`;
+    ${a.bu==='tot' ? '' : `<div class="lpnota">Cucina e bar vanno interi sulla propria unità;
+      sala e management si dividono per quanto incassa ciascuna, qui <b>${Math.round((a.bu==='food'?shareF:1-shareF)*100)}%</b>.</div>`}
+    ${lpChiusura('Risorse umane')}</div>`;
 }
 
 /* ---------- 3 - spese generali ---------- */
 function liteSG(){
-  const {t,a,per,idx}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Spese generali',per)}
-    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const {t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per), true)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
+  const q = a.bu==='tot' ? 1 : a.quota;
   const voci=[], incSg=a.incSg*100;
   let unaTantum=0;
   (S.sg||[]).filter(c=>areaSG(c)!=='mkt').forEach(c=>{
-    const v=idx.reduce((s,i)=>s+num(c.m[i]),0);
+    const v=idx.reduce((s,i)=>s+num(c.m[i]),0)*q;
     if(Math.abs(v)<0.005) return;
     const presenze=(c.m||[]).filter(x=>num(x)>0).length;   /* su tutto l'anno */
     if(presenze<=2) unaTantum+=v;
     voci.push({nome:c.nome, gruppo:c.gruppo, v, raro:presenze<=2});
   });
   voci.sort((x,y)=>y.v-x.v);
+  const tot=voci.reduce((x,v)=>x+v.v,0)||1;
   const ricorrenti=a.sg-unaTantum;
   const righe=voci.slice(0,10).map(x=>lpRow(x.nome, x.raro?'una o due volte l\'anno':x.gruppo,
-    fmtE(x.v), Math.round(x.v/a.sg*100)+'%')).join('');
-  return `<div class="lp">${lpTesta('Spese generali', per)}
-    ${lpCard('Spese generali', Math.round(incSg)+'<small> € ogni 100</small>',
+    fmtE(x.v), Math.round(x.v/tot*100)+'%')).join('');
+  return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per), true)}
+    ${lpCard(a.bu==='tot'?'Spese generali':'Spese generali · '+a.et,
+      Math.round(incSg)+'<small> € ogni 100</small>',
       `${fmtE(a.sg)} · l'obiettivo è ${fmtNum(t.sg)}`, lpStato(incSg, t.sg))}
     ${unaTantum>0 ? lpCard('Tolte le voci che compaiono una o due volte',
       (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100</small>',
@@ -3380,7 +3486,9 @@ function liteSG(){
       lpStato(ricorrenti/a.ricavi*100, t.sg)) : ''}
     <div class="lpsez">Le voci che pesano di più</div>
     ${righe}
-    ${lpChiusura('3 · Spese generali')}</div>`;
+    ${a.bu==='tot' ? '' : `<div class="lpnota">Le spese generali non nascono divise fra cucina e bar:
+      sono ripartite con la quota del motore, <b>${Math.round(q*100)}%</b> su ${a.et.toLowerCase()}.</div>`}
+    ${lpChiusura('Spese generali')}</div>`;
 }
 
 /* ---------- 4 - costi nascosti ---------- */
@@ -3474,7 +3582,136 @@ async function liteME(){
     ${cap||'<div class="lpvuoto">Il testo del metodo non è ancora stato caricato.</div>'}</div>`;
 }
 
-const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME};
+/* ---------- analisi e presentazione, in lite ----------
+   In pro è un mazzo di slide da stampare per il cliente. Qui è la stessa
+   diagnosi letta dall'alto, nell'ordine in cui la si racconta a voce: che
+   periodo stiamo guardando, i numeri che contano, com'è andata a parole,
+   dove si perde e che cosa fare. Si sceglie anno o mese, esattamente come
+   in pro, perché è la prima domanda che fa chi apre questa pagina. */
+function anRidisegna(){
+  if(document.documentElement.classList.contains('litealt')) liteRender('an');
+  else renderAN();
+}
+function liteAN(){
+  migrateS();
+  /* alla prima apertura si parte dall'ultimo mese chiuso: è il report che si fa davvero */
+  if(repPer.tipo==='mese' && repPer.i===null){
+    const u=ultimoCompleto(); repPer = u===null?{tipo:'anno',i:null}:{tipo:'mese',i:u};
+  }
+  const m0=compute();
+  const haMese=i=>meseAperto(i)&&meseCompleto(m0.months[i]);
+  const barra=`<div class="lpper">
+    <button class="lpch ${repPer.tipo==='anno'?'on':''}" data-rper="anno">Anno ${S.anno}</button>
+    ${MESI.map((mm,i)=>haMese(i)
+      ? `<button class="lpch ${repPer.tipo==='mese'&&repPer.i===i?'on':''}" data-rper="mese.${i}">${mm.slice(0,3)}</button>`
+      : '').join('')}
+  </div>`;
+  const periodo=etichettaPeriodo(repPer);
+  const d=repDati(repPer);
+  if(!d.completi.length){
+    return `<div class="lp">${lpTesta('Analisi e presentazione', periodo)}${barra}
+      <div class="lpvuoto">Per ${periodo.toLowerCase()} non ci sono ancora i dati.<br><br>
+        Un mese entra nel report solo quando ha tutte e quattro le gambe:
+        <b>ricavi</b>, <b>materia prima</b>, <b>personale</b> e <b>spese generali</b>.</div></div>`;
+  }
+  const livelli=repLivelli(repPer);
+  const t=d.t, a=d.a;
+  const schede=repDiagnosi(d, livelli);
+  const piano=repPiano(schede);
+  const racconto=raccontoPeriodo(d, livelli);
+  const deboli=schede.filter(x=>x.z>=2).sort((x,y)=>(y.euro||0)-(x.euro||0));
+  const forti=schede.filter(x=>x.z===0);
+  const rec=recuperoPot(a,t);
+  const roInc=a.ricavi>0 ? a.ro/a.ricavi*100 : NaN;
+
+  /* --- i numeri che si dicono per primi --- */
+  const testa = lpCard('Incasso del periodo', fmtE(a.ricavi),
+      `${d.completi.length} ${d.completi.length===1?'mese nei conti':'mesi nei conti'}: ${d.completi.map(x=>x.mese).join(', ')}`)
+    + lpCard('Utile operativo', fmtE(a.ro),
+      isFinite(roInc) ? `${Math.round(roInc)} € ogni 100 di incasso · l'obiettivo è ${fmtNum(t.ro)}` : '',
+      isFinite(roInc) ? (roInc>=num(t.ro) ? 'ok' : roInc>=num(t.ro)-5 ? 'warn' : 'bad') : '');
+
+  /* --- le aree, una riga per ciascuna, col suo semaforo --- */
+  const aree=[
+    ['Risorse umane', a.incRu, num(t.ru), a.ru],
+    ['Materia prima', a.incMp, num(t.mp), a.mp],
+    ['Spese generali', a.incSg, num(t.sg), a.sg],
+    ['Marketing',      a.incMk, num(t.mk), a.mk],
+    ['Costi nascosti', a.incCn, num(t.cn), a.cn]
+  ].filter(x=>isFinite(x[1]) && (x[3]>0 || x[0]!=='Costi nascosti')).map(([n,inc,tgt,eu])=>{
+    const p=inc*100;
+    /* il marketing è una forchetta: si sbaglia anche spendendo troppo poco */
+    const st = n==='Marketing' ? ['ok','warn','warn','bad'][mktZona(p,tgt)] : lpStato(p,tgt);
+    return lpRow(n, `obiettivo ${n==='Marketing'?'al centro ':'≤ '}${fmtNum(tgt)}%`,
+      fmtE(eu), Math.round(p)+'%', st);
+  }).join('');
+
+  /* --- com'è andata, a parole: le stesse frasi della slide «In sintesi» --- */
+  const sintesi = racconto.length
+    ? `<div class="lpsez">Come è andato ${periodo.toLowerCase()}</div>
+       <div class="lptx">${racconto.map(x=>`<p>${x}</p>`).join('')}</div>` : '';
+
+  /* --- dove si perde --- */
+  const perdite = deboli.length
+    ? `<div class="lpsez">Dove si perde</div>` + deboli.map(sc=>`
+        <div class="lpc ${sc.z>=3?'bad':'warn'}">
+          <div class="et">${sc.area}${sc.episodio?' · da confermare':''}</div>
+          <div class="nm">${sc.euro>0?fmtE(sc.euro):fmtP(sc.inc)}${sc.euro>0?'<small> di troppo</small>':''}</div>
+          <div class="nt">${sc.sommario||''}</div>
+        </div>`).join('')
+    : `<div class="lpsez">Dove si perde</div>
+       <div class="lpc ok"><div class="et">Nessuna area fuori controllo</div>
+         <div class="nm">—</div>
+         <div class="nt">Tutte le aree stanno dentro la loro soglia: la leva non è il taglio dei costi, è la crescita dell'incasso.</div></div>`;
+
+  /* --- che cosa fare: le stesse azioni del piano, in ordine di valore --- */
+  const azione = c => `<div class="lpaz">
+    <div class="t">${c.t}</div>
+    <div class="m">${c.area} · ${(VEL[c.v]||VEL.medio).t}${num(c.e)>0?` · vale ${fmtE(c.e)}`:''}</div>
+    <div class="x">${c.x||''}</div></div>`;
+  const piano1 = piano.fase1.length
+    ? `<div class="lpsez">Da fare subito</div>${piano.fase1.map(azione).join('')}` : '';
+  const piano2 = piano.fase2.length
+    ? `<div class="lpsez">Poi, nei mesi</div>${piano.fase2.map(azione).join('')}` : '';
+  const niente = (!piano.fase1.length && !piano.fase2.length)
+    ? `<div class="lpsez">Che cosa fare</div>
+       <div class="lptx"><p>Non ci sono azioni correttive aperte su questo periodo. Il lavoro si sposta sui ricavi: coperti, scontrino medio e menu.</p></div>` : '';
+
+  /* --- quello che il locale fa bene: si dice, non si dà per scontato --- */
+  const buone = forti.length
+    ? `<div class="lpsez">Quello che regge</div>
+       ${forti.map(sc=>lpRow(sc.area, sc.sommario, fmtP(sc.inc), 'in obiettivo', 'ok')).join('')}` : '';
+
+  /* --- quanto vale rimettersi in riga --- */
+  const quanto = rec && rec.tot>0
+    ? lpCard('Se le aree rientrassero', fmtE(rec.tot),
+        `è quello che tornerebbe a margine nel periodo · l'utile operativo passerebbe da ${fmtE(a.ro)} a ${fmtE(a.ro+rec.tot)}`)
+    : '';
+
+  /* --- i limiti del dato: prima di fidarsi dei numeri --- */
+  const contr=repControlli(d);
+  const verifiche = contr.length
+    ? `<div class="lpsez">Prima di fidarsi dei numeri</div>
+       <div class="lptx">${contr.map(x=>`<p>${x}</p>`).join('')}</div>` : '';
+
+  return `<div class="lp">${lpTesta('Analisi e presentazione', periodo)}
+    ${barra}
+    ${testa}
+    ${quanto}
+    <div class="lpsez">Le aree di costo</div>
+    ${aree}
+    ${sintesi}
+    ${perdite}
+    ${piano1}${piano2}${niente}
+    ${buone}
+    ${verifiche}
+    <div class="lpnota">Questa è la lettura breve. Le slide da consegnare al cliente,
+      l'export in PowerPoint e i commenti scritti con l'AI si fanno in
+      <b>modalità Pro</b>, dal computer.</div>
+  </div>`;
+}
+
+const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN};
 async function liteRender(p){
   const el=document.getElementById('litePage'); if(!el) return;
   const nm=document.getElementById('clientName');
@@ -3826,6 +4063,21 @@ function dashGauges(a, t, isM, ricaviNote){
   </div>`;
 }
 
+/* Il riquadro merchandising vive in un pannello che si apre dalla testata.
+   Si ricalcola ogni volta che si apre, così dice sempre il vero anche se nel
+   frattempo è cambiato il periodo, l'anno o l'interruttore. */
+function merchPanAperto(){ const b=document.getElementById('merchPanBox'); return b && !b.hidden; }
+function merchPanDisegna(){
+  const b=document.getElementById('merchPanBox'); if(!b) return;
+  b.innerHTML = merchBoxHTML(compute(), scope!=='ytd');
+}
+function merchPan(apri){
+  const b=document.getElementById('merchPanBox'); if(!b) return;
+  const on = (apri===undefined) ? b.hidden : !!apri;
+  if(on){ merchPanDisegna(); b.hidden=false; } else { b.hidden=true; b.innerHTML=''; }
+  document.getElementById('merchExp')?.classList.toggle('on', on);
+}
+
 /* riquadro merchandising: le stesse voci lette con e senza merchandising */
 function merchBoxHTML(m, isM){
   if(!hasMerchData()) return '';
@@ -3908,7 +4160,6 @@ function renderDash(){
   renderDashLite(a, t, m, isM);
 
   dashBody.innerHTML=`
-  ${merchBoxHTML(m, isM)}
   ${dashGauges(a, t, isM, ricaviNote)}
 
   <section>
@@ -7102,7 +7353,9 @@ const etichettaPeriodo = per => per.tipo==='mese' ? MESI[per.i]+' '+S.anno
                               : 'Anno '+S.anno;
 
 /* un mese entra nel report base solo se ha tutte e quattro le gambe */
-const meseCompleto = mx => !!(mx && mx.ricavi>0 && mx.mp>0 && mx.ru>0 && mx.sg>0);
+/* le spese generali contano insieme al marketing: da quando il marketing
+   è un'area a sé, un mese può avere tutto il peso su quella voce */
+const meseCompleto = mx => !!(mx && mx.ricavi>0 && mx.mp>0 && mx.ru>0 && (mx.sg>0 || mx.mk>0));
 const stagionale = () => !!(S.stag && S.stag.on);
 const meseAperto = i => !stagionale() || !!(S.stag.mesi||[])[i];
 
@@ -9079,6 +9332,8 @@ document.addEventListener('click',async e=>{
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
+  const lb=e.target.closest('[data-lbu]');
+  if(lb){ liteBU=lb.dataset.lbu; liteRender(current); return; }
   const mw=e.target.closest('[data-merch]');
   if(mw){ setMerchMode(mw.dataset.merch); return; }
   const sv=e.target.closest('[data-save]');
@@ -9130,10 +9385,10 @@ document.addEventListener('click',async e=>{
   if(b.id==='anAI'){ anWithAI(); return; }
   const rp=b.closest&&b.closest('[data-rper]');
   if(rp){ const [tipo,i]=rp.dataset.rper.split('.');
-    repPer={tipo, i:i===undefined?null:+i}; renderAN(); return; }
-  if(b.id==='repStag'){ migrateS(); S.stag.on=!S.stag.on; saveState(); renderAN(); return; }
+    repPer={tipo, i:i===undefined?null:+i}; anRidisegna(); return; }
+  if(b.id==='repStag'){ migrateS(); S.stag.on=!S.stag.on; saveState(); anRidisegna(); return; }
   const rm=b.closest&&b.closest('[data-rmese]');
-  if(rm){ migrateS(); const i=+rm.dataset.rmese; S.stag.mesi[i]=!S.stag.mesi[i]; saveState(); renderAN(); return; }
+  if(rm){ migrateS(); const i=+rm.dataset.rmese; S.stag.mesi[i]=!S.stag.mesi[i]; saveState(); anRidisegna(); return; }
   if(b.id==='anPrint'){ printSlides(); return; }
   if(b.id==='anUno'){ stampaUnaPagina(); return; }
   const mg=b.closest&&b.closest('[data-metgo]');
@@ -11765,6 +12020,8 @@ function renderMerchSw(){
   const M=merchMode(), attivo=hasMerchData();
   sw.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.merch===M));
   sw.classList.toggle('off', !attivo && M==='incl');
+  const exp=document.getElementById('merchExp');
+  if(exp){ exp.classList.toggle('vuoto', !attivo); if(!attivo) merchPan(false); else if(merchPanAperto()) merchPanDisegna(); }
   sw.title = attivo
     ? 'Merchandising: '+(M==='incl'?'incluso nei conti':M==='escl'?'escluso dai conti':'visualizzato da solo')
     : 'Nessun dato di merchandising caricato: le voci sono nel Conto economico e nelle Spese generali';
