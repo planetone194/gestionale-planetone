@@ -1863,7 +1863,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v136</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v137</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -7663,15 +7663,142 @@ Il senso: se il food cost ideale è il 28%, in Conto economico ci si aspetta di 
 Le stime in euro accanto alle cure sono **ordini di grandezza, non impegni**. Vanno tarate sui risultati ottenuti davvero.
 
 Il recupero potenziale non si presenta mai come una cifra promessa: si scompone nei passaggi che lo rendono possibile, ognuno con la sua mossa e il suo tempo.`}
+,
+{t:'Menu engineering · da dove si parte', x:`Il conto economico dice **quanto** costa un'area. Il menu engineering dice **dove**, prodotto per prodotto, e soprattutto **che cosa farne**. Sono due strumenti diversi e si usano in quest'ordine: prima si chiude il cruscotto, poi si apre la carta.
+
+Servono tre cose, e senza una delle tre l'analisi non regge:
+
+* il **venduto di cassa** con pezzi e incasso per prodotto;
+* il **listino**, cioè il prezzo di carta di ogni prodotto;
+* le **schede costo**, cioè ingredienti, dosi e prezzi d'acquisto.
+
+Prima di fidarsi dei numeri si guarda la **copertura**: le schede costo devono coprire almeno l'**80% del venduto** ed essere state aggiornate negli ultimi **sei mesi**. Sotto quella soglia l'incidenza è calcolata su mezzo menu e non dice niente del locale. Si scrive nel report, non si nasconde.
+
+La prima verifica è la **quadratura**: il venduto di cassa deve tornare con i ricavi del conto economico. Uno scarto sotto il 2% è fisiologico; sopra, prima di usare qualunque altra pagina, va capito da dove viene.`},
+
+{t:'Il costo presunto', x:`Un prodotto senza scheda costo non si butta via e non si lascia a zero: si stima.
+
+La regola è l'**incidenza media della sua categoria**, calcolata sui soli prodotti di quella categoria che la scheda ce l'hanno, moltiplicata per il prezzo del prodotto. Servono almeno **tre schede** nella categoria perché la media valga qualcosa: con meno, il prodotto resta fuori dai conti e lo si dichiara.
+
+Il punto non è la stima: è che il costo presunto va sempre **marcato come tale**. Chi legge un totale deve sapere che cosa sta sommando — costo misurato, costo stimato, o niente. Un numero che mescola le tre cose senza dirlo è peggio di un numero mancante, perché sembra vero.`},
+
+{t:'Il core 80%', x:`Il **core** sono i prodotti che, messi in fila dall'incasso più alto, arrivano insieme all'**80% dell'incasso** della loro categoria. Sono pochi, e sono quelli da presidiare uno per uno: prezzo, scheda costo, disponibilità, posizione a menu.
+
+L'ordine dentro una categoria si costruisce così:
+
+* il core sta in alto, in ordine di incasso;
+* chi, dentro il core, lascia per pezzo **chiaramente meno della media del core** — almeno un decimo in meno — scende in fondo al core;
+* fuori dal core si ordina per **primo margine totale** (pezzi × euro che restano su ogni pezzo);
+* **nessun prodotto fuori dal core sale sopra il core**: al massimo è un focus.
+
+Con meno di due prodotti nel core la regola non si applica e si ordina per margine totale.
+
+Perché il margine totale e non il margine a pezzo: sul venduto vero di due anni di un locale, le tre posizioni più viste portano il **69% del guadagno** ordinando per margine totale, contro il 39% ordinando per margine a pezzo con una fascia di tolleranza. È lo stesso risultato del metodo «Sequenza in Menu» del foglio Excel.`},
+
+{t:'Il cavallo', x:`Un **cavallo** è un piatto molto richiesto che lascia meno della media della sua categoria. In termini misurabili: vende almeno il **70% di una quota media** di categoria e il suo margine a pezzo sta **sotto la media pesata sui pezzi**.
+
+La Margherita. L'Aperol Spritz. Il tagliere da condividere.
+
+Un cavallo **non va al primo posto della categoria**, ma non va nemmeno affossato. Vende da solo: non ha bisogno della posizione migliore. Il primo posto va al piatto che lascia di più e che si può ancora far crescere; il cavallo resta **subito dopo**, dove lo mette il suo guadagno totale.
+
+Le parole di Cristina, che è la ragione per cui questa regola esiste: *«deve funzionare per il locale… la Margherita e l'Aperol Spritz li dobbiamo curare bene, altrimenti anziché farli guadagnare li affossiamo»*.
+
+La regola si applica solo con almeno **tre prodotti che vendono** nella categoria: sotto quel numero, «sotto la media» non vuol dire niente.`},
+
+{t:'I prodotti in lancio', x:`Un prodotto appena messo a menu ha zero vendite e, con qualunque regola basata sul venduto, finirebbe ultimo. Che è il modo più sicuro per farlo fallire.
+
+Un prodotto segnato **in lancio** si posiziona con il guadagno **stimato al mese**: euro a pezzo × pezzi al mese mediani dei prodotti della categoria che vendono. Ma **mai più in alto del quarto posto**: il lancio è una spinta, non un'eccezione alla realtà.
+
+Il lancio finisce a **40 pezzi** venduti o a **otto settimane** dalla data, quello che arriva prima. Dopo vale solo il guadagno vero.`},
+
+{t:'Il voto: MPI e CPI', x:`Il voto da 1 a 5 non decide l'ordine del menu — quello lo fa il core 80% — dice **chi merita la spinta**.
+
+Si calcola dentro la propria categoria, su tre fattori, con questi pesi:
+
+* **40%** il margine totale (pezzi × euro a pezzo);
+* **35%** gli euro che restano su un pezzo;
+* **25%** i pezzi venduti.
+
+Ogni fattore diventa un percentile dentro la categoria, e il percentile diventa un voto da 1 a 5. Confrontare un antipasto con un caffè non avrebbe senso: il confronto è sempre fra pari.
+
+Le classi:
+
+| voto | che cosa vuol dire |
+|---|---|
+| 4,5 e oltre | da spingere: rende bene e vende |
+| 4 – 4,5 | tiene il locale |
+| 3 – 4 | può crescere: c'è margine, manca la spinta |
+| 2 – 3 | secondario |
+| sotto 2 | da rivedere: prezzo, scheda o presenza a menu |
+
+Il **CPI** è lo stesso conto fra le categorie invece che dentro. Food e beverage restano due blocchi separati, e va per primo quello che incassa di più.`},
+
+{t:'Il prezzo: come si ritocca', x:`Il prezzo che riporta un prodotto in obiettivo si calcola in un secondo: costo diviso l'incidenza target. Il punto non è calcolarlo, è **decidere se farlo**.
+
+Tre regole.
+
+**Il prezzo deve essere scrivibile.** Niente 7,43 €. Mezzo euro fino a dieci, euro intero fino a trenta. Un prezzo che non si può stampare su una carta non è una proposta.
+
+**Prima delle dosi, non prima del prezzo.** Se lo scarto dal target è grosso — oltre dieci punti — quasi mai è un problema di prezzo: sono le dosi, o la scheda è vecchia. Si ricontrolla la scheda prima di toccare il listino.
+
+**Quanti pezzi puoi permetterti di perdere.** Un aumento di prezzo fa perdere qualche pezzo: la domanda vera è quanti. Il conto è: pezzi attuali × (1 − margine vecchio ÷ margine nuovo). Se il numero è grande, il rischio è basso e si procede. Se è piccolo, l'aumento è fragile e conviene lavorare sul costo.
+
+Senza quest'ultimo numero, una simulazione di prezzo è un libro dei sogni: mostra solo il caso in cui non cambia niente.`},
+
+{t:'I prodotti focus e il premio', x:`Si spinge quello che **rende**, non quello che vende già.
+
+I candidati sono i prodotti il cui **margine a pezzo sta sopra la media della loro categoria**: su quelli, ogni pezzo in più vale più della media. Si ordinano per quanto vale spingerli — margine sopra la media × pezzi attuali — non per quanto vendono.
+
+L'obiettivo si dice **in pezzi al mese**, perché è così che lo capisce la squadra. «Fare venti Negroni in più al mese» è un obiettivo; «aumentare la marginalità del 3%» non lo è.
+
+Il premio al team si paga **solo sui pezzi oltre la base**. Quello che si vendeva già non si premia: altrimenti si paga per un risultato che sarebbe arrivato comunque, e il piano incentivi diventa un costo fisso travestito.`},
+
+{t:'La carta: quante referenze', x:`La lunghezza del menu è una leva, e quasi sempre va nella stessa direzione: accorciare.
+
+I segnali da guardare, categoria per categoria:
+
+* **quante referenze fanno l'80%** dell'incasso e quante sono «le altre». Se le altre sono il doppio delle prime, la carta è lunga: allunga la lettura, allarga il magazzino, moltiplica le schede da tenere aggiornate, e non porta incasso;
+* i prodotti **mai venduti** nel periodo: sono a menu e non ne è uscito nemmeno uno;
+* i prodotti che **hanno smesso**: vendevano all'inizio dell'anno e negli ultimi mesi più niente. Prima di toglierli va capito se è calo vero o stagionalità;
+* quante hanno una **scheda costo** e quante stanno **dentro il target**.
+
+Togliere una referenza non è un taglio: è spazio e attenzione restituiti a quelle che guadagnano.`},
+
+{t:'Incasso contro listino', x:`L'incasso ideale è il prezzo di carta moltiplicato per i pezzi venduti. La differenza con quello che è entrato davvero sono **sconti, omaggi, errori di battuta** e prezzi cambiati in cassa e mai aggiornati a listino.
+
+Sotto il 5% è lo sconto fisiologico di un locale. Sopra, vale la pena guardarlo voce per voce: di solito non è una politica commerciale, è una cosa che è successa senza che nessuno la decidesse.
+
+È anche un controllo sulla qualità del dato: se un prodotto incassa **più** del listino, o c'è un supplemento non censito, o il listino è vecchio.`},
+
+{t:'L\'impaginazione del menu', x:`L'ordine proposto è il punto di partenza, non la carta finita. Chi impagina ha vincoli che il motore non vede: lo spazio, le foto, la lunghezza dei nomi, il senso di lettura.
+
+Quello che il motore dà:
+
+* le **categorie** nell'ordine del core 80%, dall'alto verso il basso;
+* dentro ogni categoria i **prodotti** nello stesso ordine;
+* la **stella** sul primo: è quello da mettere in evidenza;
+* il **riquadro** sul secondo.
+
+Un prodotto molto venduto ma a margine più basso — il cavallo — merita comunque un box, ma **in fondo alla pagina**, non in cima: si cura, non si spinge.
+
+La legenda degli allergeni va in fondo al menu: è un obbligo di legge, non una scelta grafica.`}
 ]; }
 
 async function metodoCarica(){
   if(METODO) return METODO;
+  let salvato=null;
   try{
     const raw=await stGet('planetone-metodo');
-    if(raw){ const v=JSON.parse(raw); if(Array.isArray(v)&&v.length) { METODO=v; return METODO; } }
+    if(raw){ const v=JSON.parse(raw); if(Array.isArray(v)&&v.length) salvato=v; }
   }catch(e){}
-  METODO=metodoDiFabbrica();
+  const fab=metodoDiFabbrica();
+  if(!salvato){ METODO=fab; return METODO; }
+  /* Quando il metodo di fabbrica cresce, i capitoli nuovi si aggiungono in coda
+     a quello salvato senza toccare una riga di quello che è stato scritto a mano.
+     Il confronto è sul titolo: un capitolo riscritto resta quello riscritto. */
+  const gia=new Set(salvato.map(c=>norm(c.t||'')));
+  const nuovi=fab.filter(c=>!gia.has(norm(c.t||'')));
+  METODO = nuovi.length ? salvato.concat(nuovi) : salvato;
   return METODO;
 }
 async function metodoSalva(){
