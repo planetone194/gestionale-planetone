@@ -336,6 +336,35 @@
   table.entry tr.sumrow td.lbl{background:#F3F1EB}
   .rowdel{border:none;background:none;color:#C9C4B8;cursor:pointer;font-size:14px;padding:2px 6px;}
   .rowdel:hover{color:var(--bad)}
+  /* venduto e menu engineering */
+  .mevuoto{text-align:center;color:var(--ink2);font-size:13.5px;padding:30px 16px;line-height:1.7;}
+  .mevuoto b{color:var(--ink);}
+  .mecat{margin:0 0 22px;}
+  .mehead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .mehead .t{font-family:var(--num);font-size:15px;font-weight:600;}
+  .mehead .t small{display:block;font-family:'Inter',sans-serif;font-size:11.5px;color:var(--ink2);font-weight:400;margin-top:2px;}
+  .mehead .n{font-family:var(--num);font-size:17px;font-weight:600;text-align:right;}
+  .mehead .n small{display:block;font-family:'Inter',sans-serif;font-size:11px;color:var(--ink2);font-weight:400;}
+  .mebar{position:relative;height:8px;border-radius:5px;background:#EFEDE7;margin:8px 0 10px;overflow:visible;}
+  .mebar i{display:block;height:100%;border-radius:5px;}
+  .mebar i.dentro{background:var(--ok);} .mebar i.sopra{background:var(--warn);}
+  .mebar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);}
+  table.entry.me{min-width:820px;}
+  table.entry.me td{padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums;}
+  table.entry.me td.lbl{text-align:left;padding:6px 10px;min-width:210px;}
+  table.entry.me td.lbl .role{display:block;font-size:10.5px;color:var(--hot);}
+  table.entry.me tr.senza td{background:#FBFAF7;color:var(--ink2);}
+  table.entry.me .manca{font-size:11px;color:var(--hot);}
+  table.entry.me td.alta{color:var(--bad);font-weight:600;}
+  table.entry.me td.bassa{color:var(--ok);}
+  .mevoto{display:inline-block;min-width:34px;text-align:center;border-radius:6px;padding:1px 7px;
+    font-family:var(--num);font-size:12px;font-weight:700;}
+  .mevoto.v5{background:var(--ok-bg);color:var(--ok);} .mevoto.v4{background:#E6F0E9;color:#3B7A54;}
+  .mevoto.v3{background:var(--warn-bg);color:#8a6a0c;} .mevoto.v2{background:#F6E7DC;color:var(--hot);}
+  .mevoto.v1{background:#F7E0DC;color:var(--bad);} .mevoto.no{background:#F2F0EA;color:#B9B4A8;}
+  .pallo{display:inline-block;width:7px;height:7px;border-radius:50%;background:#DAD6CC;margin-right:9px;vertical-align:1px;}
+  .pallo.core{background:var(--brass);}
+  .qarow.fuori .n{color:var(--ink2);}
   /* il quadro in testa a ogni area */
   section.qa{background:#FBFAF7;}
   .qagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
@@ -1697,7 +1726,7 @@
 
     <div class="gh" data-g="ven">Venduto<span class="ca">▼</span></div>
     <div class="gb" data-gb="ven">
-      <button data-page="vdash" class="soon">Report del venduto</button>
+      <button data-page="vdash">Report del venduto</button>
       <button data-page="vriep" class="soon">Riepilogo del periodo</button>
       <button data-page="vprec" class="soon">Anno su anno</button>
       <button data-page="vtrend" class="soon">Andamento nel tempo</button>
@@ -1706,9 +1735,9 @@
 
     <div class="gh" data-g="men">Menu engineering<span class="ca">▼</span></div>
     <div class="gb" data-gb="men">
-      <button data-page="mprof" class="soon">Listino e costi</button>
-      <button data-page="mcore" class="soon">Core business</button>
-      <button data-page="vprio" class="soon">Pagella prodotti e categorie</button>
+      <button data-page="mprof">Listino e costi</button>
+      <button data-page="mcore">Core business</button>
+      <button data-page="vprio">Pagella prodotti e categorie</button>
       <button data-page="mfocus" class="soon">Prodotti focus</button>
       <button data-page="mwhat" class="soon">Simulatore prezzi</button>
       <button data-page="mbuild" class="soon">Menu builder</button>
@@ -1746,7 +1775,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v126</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v127</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1969,6 +1998,10 @@
   <div class="page" id="page-ob"><div id="obBody"></div></div>
   <div class="page" id="page-soon"><div id="soonBody"></div></div>
   <div class="page" id="page-chk"><div id="chkBody"></div></div>
+  <div class="page" id="page-vdash"><div id="vdashBody"></div></div>
+  <div class="page" id="page-mprof"><div id="mprofBody"></div></div>
+  <div class="page" id="page-mcore"><div id="mcoreBody"></div></div>
+  <div class="page" id="page-vprio"><div id="vprioBody"></div></div>
   <div class="page" id="page-ring"><div id="ringBody"></div></div>
   <div class="page" id="page-rforn"><div id="rfornBody"></div></div>
   <div class="page" id="page-rprep"><div id="rprepBody"></div></div>
@@ -8974,6 +9007,333 @@ function prRefresh(){ if(current==='pr') renderPR(); }
 const ALIAS={rica:'ce', mkt:'sg'};
 
 
+
+/* ================= VENDUTO E MENU ENGINEERING =================
+   Quattro pagine costruite sullo stesso dato — l'archivio prodotti con i
+   pezzi e l'incasso mese per mese — e sullo stesso motore: `ordinaPerMargine`,
+   il core 80% portato dall'app di Cristina. Nessuna di queste pagine si
+   compila a mano: leggono e basta. */
+const fmtInt = v => new Intl.NumberFormat('it-IT',{maximumFractionDigits:0}).format(num(v));
+/* i mesi che il selettore del periodo sta guardando */
+function meIdx(){
+  if(scope!=='ytd') return [scope];
+  const m=compute();
+  const c=m.complete.map(x=>x.i);
+  return c.length?c:[0,1,2,3,4,5,6,7,8,9,10,11];
+}
+function mePeriodo(){
+  const m=compute();
+  if(scope!=='ytd') return MESI[scope]+' '+S.anno;
+  return m.complete.length
+    ? m.complete[0].mese+' – '+m.complete[m.complete.length-1].mese+' '+S.anno
+    : 'esercizio '+S.anno;
+}
+const meVuoto = (titolo, sotto) => `<section>
+  <div class="sechead"><div><h2>${titolo}</h2><div class="sub">${sotto}</div></div></div>
+  <div class="mevuoto"><b>Non c'è ancora un archivio prodotti per questo cliente.</b><br>
+    Serve il venduto di cassa con i pezzi e l'incasso per prodotto: si importa dal
+    file del gestionale di cassa, oppure arriva dall'archivio di Menu Profits.<br><br>
+    Su un cliente di prova lo si può generare: <b>Assistente · Checklist dati da caricare</b>.</div>
+</section>`;
+/* la pastiglia col voto da 1 a 5 */
+function meVotoPill(v){
+  if(v==null || v<0) return '<span class="mevoto no">—</span>';
+  const c = v>=4.5?'v5' : v>=4?'v4' : v>=3?'v3' : v>=2?'v2' : 'v1';
+  return `<span class="mevoto ${c}">${fmtNum(Math.round(v*10)/10)}</span>`;
+}
+/* la barra di una categoria contro il suo obiettivo di incidenza */
+function meBarra(inc, obiettivo){
+  if(inc==null) return '';
+  const max=Math.max(inc, obiettivo||0)*1.35 || 1;
+  const w=Math.min(100, inc/max*100), o=obiettivo?Math.min(100,obiettivo/max*100):null;
+  const sopra = obiettivo!=null && inc>obiettivo;
+  return `<div class="mebar"><i class="${sopra?'sopra':'dentro'}" style="width:${w.toFixed(1)}%"></i>
+    ${o!=null?`<b style="left:${o.toFixed(1)}%"></b>`:''}</div>`;
+}
+
+/* ---------------------------------------------- 1 · Report del venduto */
+async function renderVDASH(){
+  const body=document.getElementById('vdashBody');
+  body.innerHTML='<section><div class="sub">Sto leggendo l\'archivio dei prodotti…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Report del venduto', per); return; }
+  const iva=1+num(PRO.iva||0.1);
+  const pz=righe.reduce((a,r)=>a+r.pz,0);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
+  /* la quadratura col conto economico: è il primo controllo da fare */
+  const m=compute();
+  const ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete, 0);
+  const delta = ce.ricavi>0 ? (ric-ce.ricavi)/ce.ricavi : null;
+  const perSeg=seg=>{
+    const l=righe.filter(r=>/bev/i.test(r.seg||'')===(seg==='Beverage'));
+    return {pz:l.reduce((a,r)=>a+r.pz,0), ric:l.reduce((a,r)=>a+r.revenue,0), n:l.length};
+  };
+  const F=perSeg('Food'), B=perSeg('Beverage');
+  /* categorie */
+  const cat={};
+  righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={n:r.cat, seg:r.seg, pz:0, ric:0, prod:0});
+    c.pz+=r.pz; c.ric+=r.revenue; c.prod++; });
+  const cats=Object.values(cat).sort((a,b)=>b.ric-a.ric);
+  /* i mesi */
+  const perMese=MESI.map((_,i)=>{
+    const v=PRO.prod.reduce((a,p)=>{ const x=(p.mesi||[])[i]||{}; return a+numIt(x.inc); },0)/iva;
+    return {i, v: v>0?v:null};
+  });
+  const vis=perMese.filter(x=>x.v!=null);
+  const top=[...righe].sort((a,b)=>b.revenue-a.revenue).slice(0,15);
+  const riga=(n,s,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
+    <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Report del venduto</h2>
+      <div class="sub">${per} · ${righe.length} prodotti venduti su ${PRO.prod.length} a menu · importi IVA esclusa</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Incasso dal venduto', fmtE(ric),
+        `<b>${fmtInt(pz)}</b> pezzi nel periodo · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b>`)}
+      ${qaCard('Quadratura col conto economico',
+        delta==null?'—':Math.abs(delta)<0.005?'in pari':(delta>=0?'+':'−')+fmtP(Math.abs(delta)),
+        delta==null ? 'Non ci sono ricavi caricati nel conto economico per questo periodo.'
+          : `il venduto fa ${fmtE(ric)}, il conto economico ${fmtE(ce.ricavi)}<br>` +
+            (Math.abs(delta)<=0.02 ? 'scarto sotto il 2%: i due archivi si parlano.'
+              : 'oltre il 2% di scarto: prima di usare questi numeri va capito da dove viene.'),
+        delta==null?'':Math.abs(delta)<=0.02?'ok':Math.abs(delta)<=0.05?'warn':'bad')}
+      ${qaCard('Cucina e bar',
+        `${fmtNum(ric>0?F.ric/ric*100:0)}<small>% e </small>${fmtNum(ric>0?B.ric/ric*100:0)}<small>%</small>`,
+        `<b>${fmtInt(F.pz)}</b> pezzi food · <b>${fmtInt(B.pz)}</b> beverage<br>
+         prezzo medio <b>${fmtE2(F.pz?F.ric/F.pz:0)}</b> e <b>${fmtE2(B.pz?B.ric/B.pz:0)}</b>
+         <span class="qabar"><i style="width:${(ric>0?F.ric/ric*100:0).toFixed(1)}%"></i></span>`)}
+      ${qaCard('Come si muove nei mesi', qaSpark(perMese,null,'€')||'—',
+        vis.length<2?'Serve più di un mese di venduto per vedere un andamento.'
+          :(()=>{ const mx=vis.reduce((p,x)=>x.v>p.v?x:p), mn=vis.reduce((p,x)=>x.v<p.v?x:p);
+             return `più alto <b>${MESI[mx.i]}</b> ${fmtE(mx.v)} · più basso <b>${MESI[mn.i]}</b> ${fmtE(mn.v)}`; })())}
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Per categoria</h2>
+      <div class="sub">Dove nasce l'incasso. L'ordine è per incasso, dal più pesante.</div></div></div>
+    ${['Food','Beverage'].map(seg=>{
+      const l=cats.filter(c=>/bev/i.test(c.seg||'')===(seg==='Beverage'));
+      if(!l.length) return '';
+      const tot=l.reduce((a,c)=>a+c.ric,0);
+      return `<div class="qasez">${seg} · ${fmtE(tot)}</div>` + l.map(c=>
+        riga(c.n, `${fmtInt(c.pz)} pezzi · ${c.prod} prodotti · prezzo medio ${fmtE2(c.pz?c.ric/c.pz:0)}`,
+          fmtE(c.ric), fmtNum(ric>0?c.ric/ric*100:0)+'%')).join('');
+    }).join('')}
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>I quindici prodotti che incassano di più</h2>
+      <div class="sub">Non è l'ordine del menu — quello lo decide il core 80% — è solo dove sta l'incasso.</div></div></div>
+    ${top.map((r,k)=>riga(`${k+1}. ${r.nome}`, `${r.cat} · ${fmtInt(r.pz)} pezzi a ${fmtE2(r.prezzoMedio)}`,
+      fmtE(r.revenue), fmtNum(ric>0?r.revenue/ric*100:0)+'%')).join('')}
+  </section>`;
+}
+
+/* ---------------------------------------------- 2 · Listino e costi */
+async function renderMPROF(){
+  const body=document.getElementById('mprofBody');
+  body.innerHTML='<section><div class="sub">Sto leggendo le schede costo…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Listino e costi', per); return; }
+  const conCosto=righe.filter(r=>r.haCosto);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
+  const ricC=conCosto.reduce((a,r)=>a+r.revenue,0);
+  const costo=conCosto.reduce((a,r)=>a+r.pz*r.costo,0);
+  const margine=conCosto.reduce((a,r)=>a+r.contribution,0);
+  const copertura = ric>0 ? ricC/ric : 0;
+  const blocchi=meCategorie(righe);
+
+  const tabella=cat=>{
+    const l=meOrdineCategoria(righe, cat);
+    return `<div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Pezzi</th><th>Prezzo</th><th>Costo</th><th>Margine</th><th>Incidenza</th><th>Margine totale</th><th>Voto</th></tr>
+      ${l.map(r=>`<tr class="${r.haCosto?'':'senza'}">
+        <td class="lbl">${escH(r.nome)}${r.sottoCore80?'<span class="role">sotto il core 80%</span>':''}</td>
+        <td class="tot">${fmtInt(r.pz)}</td>
+        <td class="tot">${fmtE2(r.prezzoMedio)}</td>
+        <td class="tot">${r.haCosto?fmtE2(r.costo):'<span class="manca">manca la scheda</span>'}</td>
+        <td class="tot">${r.haCosto?fmtE2(r.margine):'—'}</td>
+        <td class="tot ${r.haCosto&&r.prezzoMedio>0?(r.costo/r.prezzoMedio*100>(r.obiettivo||99)?'alta':'bassa'):''}">${
+          r.haCosto&&r.prezzoMedio>0?fmtNum(r.costo/r.prezzoMedio*100)+'%':'—'}</td>
+        <td class="tot">${r.haCosto?fmtE(r.contribution):'—'}</td>
+        <td class="tot">${meVotoPill(r.mpiScore)}</td></tr>`).join('')}
+    </table></div>`;
+  };
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Listino e costi</h2>
+      <div class="sub">${per} · ogni categoria contro il suo obiettivo, e sotto il listino prodotto per prodotto.
+      L'ordine dentro la categoria è quello del <b>core 80%</b>, non l'alfabeto.
+      Prezzo e margine sono medi sul periodo e <b>IVA esclusa</b>: l'incidenza è il costo della scheda sul prezzo netto.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Prodotti a menu', fmtInt(righe.length),
+        `${conCosto.length} hanno un costo certo, ${righe.length-conCosto.length} no`,
+        copertura>=0.8?'ok':copertura>=0.6?'warn':'bad')}
+      ${qaCard('Incidenza della materia prima', ricC>0?fmtNum(costo/ricC*100)+'<small>%</small>':'—',
+        `calcolata sul <b>${fmtP(copertura)}</b> del venduto, quello coperto da schede costo<br>` +
+        (copertura>=0.8 ? 'sopra l\'80%: il numero è affidabile.'
+                        : 'sotto l\'80% del venduto: il numero vale per mezzo menu, non per il locale.'),
+        copertura>=0.8?'ok':'warn')}
+      ${qaCard('Margine sulla materia prima', fmtE(margine),
+        `${fmtE(costo)} di materia prima su ${fmtE(ricC)} di venduto con scheda`)}
+    </div>
+  </section>
+
+  ${blocchi.map(bl=>`
+  <section>
+    <div class="sechead"><div><h2>${bl.nome}</h2>
+      <div class="sub">${fmtE(bl.revenue)} di venduto · le categorie sono nell'ordine che decide il core 80%</div></div></div>
+    ${bl.lista.map(c=>{
+      const inc = c.incid!=null ? c.incid*100 : null;
+      const ob = c.obiettivo!=null ? num(c.obiettivo) : null;
+      return `<div class="mecat">
+        <div class="mehead">
+          <div class="t">${escH(c.nome)}
+            <small>${fmtInt(c.pz)} pezzi · ${c.nProd} prodotti · ${fmtE(c.revenue)}</small></div>
+          <div class="n">${inc!=null?fmtNum(inc)+'%':'—'}
+            <small>${ob!=null?'obiettivo '+fmtNum(ob)+'%':'nessun obiettivo'}</small></div>
+        </div>
+        ${meBarra(inc, ob)}
+        ${tabella(c.nome)}
+      </div>`;
+    }).join('')}
+  </section>`).join('')}`;
+}
+
+/* ---------------------------------------------- 3 · Core business */
+async function renderMCORE(){
+  const body=document.getElementById('mcoreBody');
+  body.innerHTML='<section><div class="sub">Sto leggendo il venduto…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Core business', per); return; }
+  /* il core: le voci che insieme fanno l'80% dell'incasso. È la stessa soglia
+     con cui il motore decide l'ordine del menu. */
+  const core=(lista, campo)=>{
+    const ord=[...lista].sort((a,b)=>b[campo]-a[campo]);
+    const tot=ord.reduce((a,x)=>a+x[campo],0)||1;
+    let cum=0; const out=[];
+    ord.forEach(x=>{ const prima=cum; cum+=x[campo];
+      out.push({...x, quota:x[campo]/tot, cum:cum/tot, dentro: prima/tot < PROP_SOGLIA_CORE}); });
+    return {lista:out, tot, n:out.filter(x=>x.dentro).length};
+  };
+  const cat={};
+  righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={nome:r.cat, seg:r.seg, revenue:0, pz:0, nProd:0});
+    c.revenue+=r.revenue; c.pz+=r.pz; c.nProd++; });
+  const riga=(n,s,v,q,cls)=>`<div class="qarow ${cls||''}"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
+    <div class="v">${v}</div><div class="p">${q}</div></div>`;
+  const blocco=(titolo, lista, campo, sotto)=>{
+    const c=core(lista, campo);
+    return `<section>
+      <div class="sechead"><div><h2>${titolo}</h2><div class="sub">${sotto}</div></div></div>
+      <div class="qanota"><b>${c.n}</b> su ${c.lista.length} fanno l'80% dell'incasso.
+        Sono quelle da presidiare una per una: prezzo, scheda costo, disponibilità, posizione a menu.</div>
+      ${c.lista.map(x=>riga(
+        `${x.dentro?'<span class="pallo core"></span>':'<span class="pallo"></span>'}${escH(x.nome||x.cat)}`,
+        x.nProd!=null?`${fmtInt(x.pz)} pezzi · ${x.nProd} prodotti`:`${fmtInt(x.pz)} pezzi`,
+        fmtE(x.revenue), fmtNum(x.quota*100)+'%', x.dentro?'dentro':'fuori')).join('')}
+    </section>`;
+  };
+  const segOrd=['Food','Beverage'].map(seg=>({seg,
+    cats:Object.values(cat).filter(c=>/bev/i.test(c.seg||'')===(seg==='Beverage'))}))
+    .filter(x=>x.cats.length)
+    .sort((a,b)=>b.cats.reduce((s,c)=>s+c.revenue,0)-a.cats.reduce((s,c)=>s+c.revenue,0));
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
+  const coreProd=core(righe.map(r=>({nome:r.nome, cat:r.cat, pz:r.pz, revenue:r.revenue})), 'revenue');
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Core business</h2>
+      <div class="sub">${per} · dove nasce davvero l'incasso. Il core è l'insieme che insieme fa l'<b>80%</b>:
+      poche voci, da presidiare una per una.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Prodotti nel core', fmtInt(coreProd.n),
+        `su ${righe.length} venduti: fanno <b>${fmtP(0.8)}</b> dell'incasso<br>
+         gli altri ${righe.length-coreProd.n} si dividono il resto`)}
+      ${qaCard('Incasso del periodo', fmtE(ric),
+        `${fmtInt(righe.reduce((a,r)=>a+r.pz,0))} pezzi venduti`)}
+      ${qaCard('Quanto pesa il primo', (()=>{const p=coreProd.lista[0];
+        return p?fmtNum(p.quota*100)+'<small>%</small>':'—';})(),
+        (()=>{const p=coreProd.lista[0];
+          return p?`<b>${escH(p.nome)}</b> da solo · ${fmtE(p.revenue)}`:'';})())}
+    </div>
+  </section>
+  ${segOrd.map(x=>blocco(x.seg+' · le categorie', x.cats, 'revenue',
+    'Dentro il core le categorie che insieme arrivano all\'80% dell\'incasso del reparto.')).join('')}
+  <section>
+    <div class="sechead"><div><h2>I prodotti del core</h2>
+      <div class="sub">Gli stessi conti sui singoli prodotti, su tutto il locale.</div></div></div>
+    ${coreProd.lista.filter(x=>x.dentro).map(x=>riga(
+      `<span class="pallo core"></span>${escH(x.nome)}`, x.cat,
+      fmtE(x.revenue), fmtNum(x.quota*100)+'%', 'dentro')).join('')}
+  </section>`;
+}
+
+/* ---------------------------------------------- 4 · Pagella */
+async function renderVPRIO(){
+  const body=document.getElementById('vprioBody');
+  body.innerHTML='<section><div class="sub">Sto calcolando i voti…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Pagella prodotti e categorie', per); return; }
+  const blocchi=meCategorie(righe);
+  const CLASSI=[
+    ['da spingere','Da spingere','voto 4,5 e oltre: rendono bene e vendono. Sono quelli da mettere davanti.'],
+    ['tiene il locale','Tengono il locale','voto fra 4 e 4,5: il tessuto su cui sta in piedi il conto.'],
+    ['può crescere','Possono crescere','voto fra 3 e 4: c\'è margine, manca la spinta.'],
+    ['secondario','Secondari','voto fra 2 e 3: non fanno danno, non fanno la differenza.'],
+    ['da rivedere','Da rivedere','voto sotto 2: prezzo, scheda costo o presenza a menu da rimettere in discussione.']
+  ];
+  const conCosto=righe.filter(r=>r.haCosto);
+  const senza=righe.filter(r=>!r.haCosto);
+  const riga=r=>`<div class="qarow"><div class="n">${escH(r.nome)}
+      <small>${r.cat} · ${fmtInt(r.pz)} pezzi · margine ${fmtE2(r.margine)} a pezzo</small></div>
+    <div class="v">${fmtE(r.contribution)}</div>
+    <div class="p">${meVotoPill(r.mpiScore)}</div></div>`;
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Pagella prodotti e categorie</h2>
+      <div class="sub">${per} · il voto da 1 a 5 pesa <b>il margine totale al 40%</b>, <b>gli euro a pezzo al 35%</b>
+      e <b>i pezzi venduti al 25%</b>, sempre dentro la propria categoria.
+      Non decide l'ordine del menu — quello lo fa il core 80% — dice chi merita la spinta.</div></div></div>
+    <div class="qagrid">
+      ${CLASSI.slice(0,3).map(([k,t])=>{
+        const l=conCosto.filter(r=>r.classe===k);
+        return qaCard(t, fmtInt(l.length)+'<small> prodotti</small>',
+          l.length?`${fmtE(l.reduce((a,r)=>a+r.contribution,0))} di margine nel periodo`:'nessuno in questa fascia',
+          k==='da spingere'?'ok':'');
+      }).join('')}
+    </div>
+    ${senza.length?`<div class="qanota"><b>${senza.length} prodotti non hanno un costo certo</b> e restano fuori dalla pagella:
+      senza scheda costo non si può dare un voto. Si completano in <b>Ricette e schede costo</b>.</div>`:''}
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Le categorie</h2>
+      <div class="sub">Lo stesso voto, calcolato fra le categorie invece che dentro. Food e beverage restano separati.</div></div></div>
+    ${blocchi.map(bl=>`<div class="qasez">${bl.nome}</div>` + bl.lista.map(c=>
+      `<div class="qarow"><div class="n">${escH(c.nome)}
+         <small>${fmtInt(c.pz)} pezzi · ${c.nProd} prodotti · incidenza ${c.incid!=null?fmtNum(c.incid*100)+'%':'—'}</small></div>
+       <div class="v">${fmtE(c.contribution)}</div>
+       <div class="p">${meVotoPill(c.cpiScore)}</div></div>`).join('')).join('')}
+  </section>
+
+  ${CLASSI.map(([k,t,d])=>{
+    const l=conCosto.filter(r=>r.classe===k).sort((a,b)=>b.contribution-a.contribution);
+    if(!l.length) return '';
+    return `<section>
+      <div class="sechead"><div><h2>${t}</h2><div class="sub">${d}</div></div></div>
+      ${l.map(riga).join('')}
+    </section>`;
+  }).join('')}`;
+}
+
 /* ================= IL QUADRO DELL'AREA =================
    In testa a ogni pagina di area, in modalità Pro: il numero e la sua distanza
    dall'obiettivo, lo stesso numero visto su cucina e bar, e l'andamento dei
@@ -8991,7 +9351,7 @@ const QA_CFG={
 };
 /* una riga di dodici mesi, con la linea dell'obiettivo: si legge in un secondo
    e non chiede una libreria di grafici */
-function qaSpark(serie, obiettivo){
+function qaSpark(serie, obiettivo, unita){
   const vis=serie.filter(x=>x.v!=null);
   if(vis.length<2) return '';
   const vals=vis.map(x=>x.v).concat(obiettivo!=null?[obiettivo]:[]);
@@ -9003,7 +9363,8 @@ function qaSpark(serie, obiettivo){
   const yo = obiettivo!=null ? Y(obiettivo).toFixed(1) : null;
   const punti=serie.map((x,i)=>x.v==null?'':
     `<circle cx="${X(i).toFixed(1)}" cy="${Y(x.v).toFixed(1)}" r="1.5"
-      class="${obiettivo!=null && x.v>obiettivo?'fuori':'dentro'}"><title>${MESI[i]}: ${fmtNum(x.v)}%</title></circle>`).join('');
+      class="${obiettivo!=null && x.v>obiettivo?'fuori':'dentro'}"><title>${MESI[i]}: ${
+        unita==='€' ? fmtE(x.v) : fmtNum(x.v)+'%'}</title></circle>`).join('');
   return `<svg class="qaspark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
     ${yo!=null?`<line x1="0" y1="${yo}" x2="${W}" y2="${yo}" class="obj"/>`:''}
     <polyline points="${d}" class="linea"/>${punti}</svg>`;
@@ -9183,7 +9544,7 @@ function qaRicavi(m,a,per,qF){
         `${fmtNum(qF*100)}<small>% e </small>${fmtNum((1-qF)*100)}<small>%</small>`,
         `<b>${fmtE(a.ricaviFood)}</b> food · <b>${fmtE(a.ricaviBev)}</b> beverage<br>
          <span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>`)}
-      ${qaCard('Come si muove nei mesi', qaSpark(serie,null)||'—',
+      ${qaCard('Come si muove nei mesi', qaSpark(serie.map(x=>({i:x.i, v:x.v==null?null:x.v*1000})),null,'€')||'—',
         vis.length<2?'Serve più di un mese per vedere un andamento.'
           :`più alto <b>${MESI[meglio.i]}</b> ${fmtE(meglio.v*1000)} · più basso <b>${MESI[peggio.i]}</b> ${fmtE(peggio.v*1000)}`)}
       ${confronto}
@@ -9766,7 +10127,8 @@ async function liteCHK(){
       Qui si controlla soltanto a che punto siamo.</div></div>`;
 }
 
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, chk:renderCHK, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, chk:renderCHK,
+  vdash:renderVDASH, mprof:renderMPROF, mcore:renderMCORE, vprio:renderVPRIO, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -11180,8 +11542,6 @@ const SOON={
   aimsg :{t:'Messaggi al cliente', g:'Assistente', m:'serve il collegamento al modello',
           d:"Il messaggio da mandare al titolare, scritto con i suoi numeri veri: il riepilogo del periodo e gli alert di quando un numero esce dai binari. Si rilegge, si corregge e si manda dal telefono."},
 
-  vdash :{t:'Report del venduto', g:'Venduto', m:'serve il venduto di cassa',
-          d:"Quanto ha venduto il locale, per famiglia, categoria e prodotto, mese per mese: è il dato da cui nasce tutto il resto del menu engineering."},
   vriep :{t:'Riepilogo del periodo', g:'Venduto', m:'serve il venduto di cassa',
           d:"Il totale del periodo per famiglia e categoria — incasso, pezzi, coperti — e la quadratura fra il totale di cassa e la somma dei prodotti venduti."},
   vprec :{t:'Anno su anno', g:'Venduto', m:"serve un secondo anno caricato",
@@ -11191,12 +11551,6 @@ const SOON={
   vlist :{t:'Incasso contro listino', g:'Venduto', m:'servono il venduto e il listino',
           d:"Quanto è entrato davvero rispetto ai prezzi di listino: la differenza sono sconti, omaggi ed errori di battuta."},
 
-  mprof :{t:'Listino e costi', g:'Menu engineering', m:'servono le schede costo',
-          d:"Ogni categoria contro il suo obiettivo, e sotto il listino con costo della materia prima, margine e incidenza prodotto per prodotto."},
-  mcore :{t:'Core business', g:'Menu engineering', m:'serve il venduto di cassa',
-          d:"Dove nasce l'incasso: le famiglie e le categorie che fanno il grosso del venduto, poche e da presidiare una per una."},
-  vprio :{t:'Pagella prodotti e categorie', g:'Menu engineering', m:'servono le schede costo',
-          d:"Il voto da 1 a 5 di ogni prodotto e di ogni categoria. Non decide l'ordine del menu — quello lo fa il core 80% — ma dice chi merita la spinta e chi va rivisto."},
   mfocus:{t:'Prodotti focus', g:'Menu engineering', m:'servono le schede costo',
           d:"I prodotti su cui concentrare la spinta per tre mesi, con l'obiettivo di pezzi e l'effetto atteso sul margine."},
   mwhat :{t:'Simulatore prezzi', g:'Menu engineering', m:'servono le schede costo',
