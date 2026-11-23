@@ -118,14 +118,24 @@
   .side-foot .cloud a{color:var(--brass);text-decoration:none;cursor:pointer;}
   .side-foot .cloud a:hover{text-decoration:underline;}
   /* schermata di accesso: copre tutto finché non si entra */
-  #accesso{position:fixed;inset:0;z-index:9999;background:var(--scuro);display:flex;align-items:center;justify-content:center;padding:24px;}
+  /* sul telefono la tastiera copre meta' schermo: la scatola sta in alto e la
+     pagina scorre, cosi' il bottone Entra resta sempre raggiungibile */
+  #accesso{position:fixed;inset:0;z-index:9999;background:var(--scuro);display:flex;
+    align-items:flex-start;justify-content:center;padding:7vh 20px 28px;overflow-y:auto;
+    -webkit-text-size-adjust:100%;}
   #accesso .box{background:var(--card);border-radius:14px;padding:30px 30px 26px;width:min(380px,100%);box-shadow:0 24px 60px rgba(0,0,0,.4);}
   #accesso .marchio{font-family:var(--serif);font-size:23px;letter-spacing:.5px;color:var(--ink);line-height:1.1;}
   #accesso .marchio span{display:block;font-family:var(--num);font-size:10.5px;letter-spacing:2.6px;color:var(--brass);margin-top:3px;}
   #accesso .intro{font-size:12.5px;color:var(--ink2);margin:14px 0 18px;line-height:1.5;}
   #accesso label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink2);margin-bottom:12px;}
-  #accesso input{display:block;width:100%;margin-top:5px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
-    font-family:var(--num);font-size:13.5px;color:var(--ink);background:#fff;text-transform:none;letter-spacing:0;}
+  /* 16px esatti: sotto questa misura iOS zooma da solo appena si tocca il campo */
+  #accesso input{display:block;width:100%;margin-top:5px;padding:11px 12px;border:1px solid var(--line);border-radius:8px;
+    font-family:var(--num);font-size:16px;color:var(--ink);background:#fff;text-transform:none;letter-spacing:0;}
+  #accesso .pwrow{position:relative;display:block;}
+  #accesso .pwrow input{padding-right:96px;}
+  #accesso .pwrow .occhio{position:absolute;right:4px;bottom:4px;border:none;background:none;width:auto;margin:0;
+    font-family:inherit;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;padding:8px 10px;text-transform:none;letter-spacing:0;}
+  #accesso .pwrow .occhio:hover{color:var(--brand);background:none;}
   #accesso input:focus{outline:2px solid var(--brass);outline-offset:-2px;}
   #accesso button{width:100%;margin-top:6px;padding:11px;border:none;border-radius:8px;background:var(--brand);color:#fff;
     font-size:13.5px;font-weight:600;cursor:pointer;}
@@ -1542,7 +1552,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v113</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v114</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -11396,13 +11406,20 @@ function schermataAccesso(messaggio){
     d.innerHTML=`<form class="box" autocomplete="on">
       <div class="marchio">PLANET ONE<span>GESTIONALE F&amp;B</span></div>
       <p class="intro">Archivio condiviso: quello che carichi tu lo vedono anche i colleghi.</p>
-      <label>Email<input type="email" id="accEmail" value="consulenze@planetone.it" autocomplete="username"></label>
-      <label>Password<input type="password" id="accPwd" autocomplete="current-password" autofocus></label>
+      <label>Email<input type="email" id="accEmail" value="consulenze@planetone.it" autocomplete="username"
+        inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false"></label>
+      <label>Password<span class="pwrow"><input type="password" id="accPwd" autocomplete="current-password"
+        autocapitalize="none" autocorrect="off" spellcheck="false"><button type="button" class="occhio" id="accOcchio">mostra</button></span></label>
       <div class="err" id="accErr">${messaggio||''}</div>
       <button type="submit" id="accBtn">Entra</button>
     </form>`;
     document.body.appendChild(d);
     const err=d.querySelector('#accErr'), btn=d.querySelector('#accBtn');
+    d.querySelector('#accOcchio').addEventListener('click', ()=>{
+      const i=d.querySelector('#accPwd'), v=i.type==='password';
+      i.type = v ? 'text' : 'password';
+      d.querySelector('#accOcchio').textContent = v ? 'nascondi' : 'mostra';
+    });
     d.querySelector('form').addEventListener('submit', async e=>{
       e.preventDefault();
       const em=d.querySelector('#accEmail').value, pw=d.querySelector('#accPwd').value;
@@ -11412,7 +11429,13 @@ function schermataAccesso(messaggio){
         await sbToken(em,pw);
         d.remove(); risolvi(true);
       }catch(ex){
-        err.textContent = /invalid/i.test(ex.message) ? 'Email o password non corrette.' : ex.message;
+        const m=String(ex&&ex.message||ex);
+        err.textContent =
+          /invalid|credential/i.test(m) ? 'Email o password non corrette. Tocca "mostra" per controllare che cosa hai scritto.'
+        : /rate|too many/i.test(m)      ? 'Troppi tentativi di fila: aspetta un minuto e riprova.'
+        : /failed to fetch|network|load failed/i.test(m) ? 'Non riesco a raggiungere l\'archivio: controlla la connessione e riprova.'
+        : /confirm/i.test(m)            ? 'Questa email non e\' ancora confermata in Supabase.'
+        : m;
         btn.disabled=false; btn.textContent='Entra';
       }
     });
