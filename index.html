@@ -381,6 +381,25 @@
   .tipo.t5{background:var(--ok-bg);color:var(--ok);} .tipo.t4{background:#E6F0E9;color:#3B7A54;}
   .tipo.t3{background:var(--warn-bg);color:#8a6a0c;} .tipo.t2{background:#F6E7DC;color:var(--hot);}
   .tipo.t1{background:#F7E0DC;color:var(--bad);} .tipo.t0{background:#F2F0EA;color:#B9B4A8;}
+  table.entry.me tr.famrow td{background:#F3F1EB;font-weight:600;}
+  table.entry.me.wf{min-width:1020px;}
+  .wfin{width:76px;border:1.5px solid var(--line);border-radius:6px;padding:4px 7px;
+    font-family:var(--num);font-size:12.5px;text-align:right;background:#FFFDF6;color:var(--ink);}
+  .wfin:focus{outline:2px solid var(--brass);outline-offset:-2px;}
+  .wfperd small{display:block;font-size:10.5px;color:var(--ink2);font-family:'Inter',sans-serif;}
+  /* la bozza del menu */
+  .stella{color:var(--brass);} .riq{color:var(--brand);}
+  ol.mbvoci{list-style:none;margin:6px 0 0;padding:0;counter-reset:v;}
+  ol.mbvoci li{display:flex;align-items:baseline;gap:10px;padding:6px 2px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  ol.mbvoci li:last-child{border-bottom:none;}
+  ol.mbvoci li.stella .nome{font-weight:700;}
+  ol.mbvoci li.riq .nome{font-weight:600;}
+  ol.mbvoci .seg{width:16px;flex:none;color:var(--brass);font-size:12px;}
+  ol.mbvoci li.riq .seg{color:var(--brand);}
+  ol.mbvoci .nome{flex:1;min-width:0;}
+  ol.mbvoci .pr{font-family:var(--num);font-weight:600;white-space:nowrap;}
+  ol.mbvoci .mg{font-size:11.5px;color:var(--ink2);white-space:nowrap;min-width:120px;text-align:right;}
+  ol.mbvoci .nota{font-size:10.5px;color:var(--hot);white-space:nowrap;}
   .pallo{display:inline-block;width:7px;height:7px;border-radius:50%;background:#DAD6CC;margin-right:9px;vertical-align:1px;}
   .pallo.core{background:var(--brass);}
   .qarow.fuori .n{color:var(--ink2);}
@@ -1746,10 +1765,10 @@
     <div class="gh" data-g="ven">Venduto<span class="ca">▼</span></div>
     <div class="gb" data-gb="ven">
       <button data-page="vdash">Report del venduto</button>
-      <button data-page="vriep" class="soon">Riepilogo del periodo</button>
-      <button data-page="vprec" class="soon">Anno su anno</button>
-      <button data-page="vtrend" class="soon">Andamento nel tempo</button>
-      <button data-page="vlist" class="soon">Incasso contro listino</button>
+      <button data-page="vriep">Riepilogo del periodo</button>
+      <button data-page="vprec">Anno su anno</button>
+      <button data-page="vtrend">Andamento nel tempo</button>
+      <button data-page="vlist">Incasso contro listino</button>
     </div>
 
     <div class="gh" data-g="men">Menu engineering<span class="ca">▼</span></div>
@@ -1757,10 +1776,10 @@
       <button data-page="mprof">Listino e costi</button>
       <button data-page="mcore">Core business</button>
       <button data-page="vprio">Pagella prodotti e categorie</button>
-      <button data-page="mfocus" class="soon">Prodotti focus</button>
-      <button data-page="mwhat" class="soon">Simulatore prezzi</button>
-      <button data-page="mbuild" class="soon">Menu builder</button>
-      <button data-page="msugg" class="soon">Suggerimenti</button>
+      <button data-page="mfocus">Prodotti focus</button>
+      <button data-page="mwhat">Simulatore prezzi</button>
+      <button data-page="mbuild">Menu builder</button>
+      <button data-page="msugg">Suggerimenti</button>
     </div>
 
     <div class="gh" data-g="ric">Ricette e fornitori<span class="ca">▼</span></div>
@@ -1794,7 +1813,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v129</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v132</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2018,6 +2037,14 @@
   <div class="page" id="page-soon"><div id="soonBody"></div></div>
   <div class="page" id="page-chk"><div id="chkBody"></div></div>
   <div class="page" id="page-vdash"><div id="vdashBody"></div></div>
+  <div class="page" id="page-vriep"><div id="vriepBody"></div></div>
+  <div class="page" id="page-vprec"><div id="vprecBody"></div></div>
+  <div class="page" id="page-vtrend"><div id="vtrendBody"></div></div>
+  <div class="page" id="page-vlist"><div id="vlistBody"></div></div>
+  <div class="page" id="page-mwhat"><div id="mwhatBody"></div></div>
+  <div class="page" id="page-mfocus"><div id="mfocusBody"></div></div>
+  <div class="page" id="page-mbuild"><div id="mbuildBody"></div></div>
+  <div class="page" id="page-msugg"><div id="msuggBody"></div></div>
   <div class="page" id="page-mprof"><div id="mprofBody"></div></div>
   <div class="page" id="page-mcore"><div id="mcoreBody"></div></div>
   <div class="page" id="page-vprio"><div id="vprioBody"></div></div>
@@ -3851,7 +3878,10 @@ function liteAN(){
   </div>`;
 }
 
-const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK};
+const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
+  vdash:liteVDASH, vriep:liteVRIEP, vprec:liteVPREC, vtrend:liteVTREND, vlist:liteVLIST,
+  mprof:liteMPROF, mcore:liteMCORE, vprio:liteVPRIO,
+  mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG};
 async function liteRender(p){
   const el=document.getElementById('litePage'); if(!el) return;
   const nm=document.getElementById('clientName');
@@ -9483,6 +9513,1009 @@ async function renderVPRIO(){
   </section>`;
 }
 
+
+
+/* =============== VENDUTO E MENU ENGINEERING · in lite ===============
+   Sul telefono non si decide un prezzo né si impagina una carta: si guarda
+   com'è andata. Ogni pagina qui dentro è la stessa sostanza della versione pro,
+   ridotta a quello che si legge in piedi, in sala, in dieci secondi. */
+async function lmBase(){
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  return {idx, per, righe};
+}
+const lmVuoto = (titolo, per) => `<div class="lp">${lpTesta(titolo, per)}
+  <div class="lpvuoto">Non c'è ancora un archivio prodotti per questo cliente.<br><br>
+    Serve il venduto di cassa con i pezzi e l'incasso per prodotto.
+    Si carica dal computer, in <b>modalità Pro</b>.</div></div>`;
+const lmSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
+
+/* ---- Report del venduto ---- */
+async function liteVDASH(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Report del venduto', per);
+  const iva=1+num(PRO.iva||0.1);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
+  const m=compute(), ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete,0);
+  const d=ce.ricavi>0?(ric-ce.ricavi)/ce.ricavi:null;
+  const top=[...righe].sort((a,b)=>b.revenue-a.revenue).slice(0,12);
+  return `<div class="lp">${lpTesta('Report del venduto', per)}
+    ${lpCard('Incasso dal venduto', fmtE(ric),
+      `${fmtInt(pz)} pezzi · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b><br>${fmtE(ric*iva)} IVA inclusa`)}
+    ${lpCard('Torna col conto economico?',
+      d==null?'—':Math.abs(d)<0.005?'sì':(d>=0?'+':'−')+fmtP(Math.abs(d)),
+      d==null?'non ci sono ricavi caricati per questo periodo'
+        :`venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}`,
+      d==null?'':Math.abs(d)<=0.02?'ok':Math.abs(d)<=0.05?'warn':'bad')}
+    <div class="lpsez">I dodici che incassano di più</div>
+    ${top.map(r=>lpRow(r.nome, `${r.cat} · ${fmtInt(r.pz)} pezzi`, fmtE(r.revenue),
+      fmtNum(ric>0?r.revenue/ric*100:0)+'%')).join('')}
+    ${lpChiusura('Venduto · Report del venduto')}</div>`;
+}
+
+/* ---- Riepilogo del periodo ---- */
+async function liteVRIEP(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Riepilogo del periodo', per);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
+  const fam={}; righe.forEach(r=>{ const f=fam[lmSeg(r)]||(fam[lmSeg(r)]={pz:0,ric:0,cat:{}});
+    f.pz+=r.pz; f.ric+=r.revenue;
+    const c=f.cat[r.cat]||(f.cat[r.cat]={pz:0,ric:0}); c.pz+=r.pz; c.ric+=r.revenue; });
+  return `<div class="lp">${lpTesta('Riepilogo del periodo', per)}
+    ${lpCard('Incasso', fmtE(ric), `${fmtInt(pz)} pezzi · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b>`)}
+    ${Object.entries(fam).sort((a,b)=>b[1].ric-a[1].ric).map(([f,d])=>
+      `<div class="lpsez">${f} · ${fmtE(d.ric)}</div>` +
+      Object.entries(d.cat).sort((a,b)=>b[1].ric-a[1].ric).map(([c,x])=>
+        lpRow(c, `${fmtInt(x.pz)} pezzi`, fmtE(x.ric),
+          fmtNum(ric>0?x.ric/ric*100:0)+'%')).join('')).join('')}
+    ${lpChiusura('Venduto · Riepilogo del periodo')}</div>`;
+}
+
+/* ---- Anno su anno ---- */
+async function liteVPREC(){
+  const m=compute(), mPrec=computeAnno(num(S.anno)-1);
+  if(!mPrec || !mPrec.complete.length) return `<div class="lp">${lpTesta('Anno su anno','esercizio '+S.anno)}
+    <div class="lpvuoto">Non c'è un secondo anno da confrontare: per il ${num(S.anno)-1}
+      non risulta nessun mese consuntivato.</div></div>`;
+  const idx=(scope!=='ytd'?[scope]:MESI.map((_,i)=>i))
+    .filter(i=>meseCompleto(m.months[i]) && meseCompleto(mPrec.months[i]));
+  if(!idx.length) return `<div class="lp">${lpTesta('Anno su anno','esercizio '+S.anno)}
+    <div class="lpvuoto">Nessun mese è completo in tutti e due gli anni.</div></div>`;
+  const ora=sumRows(idx.map(i=>m.months[i]),0), pri=sumRows(idx.map(i=>mPrec.months[i]),0);
+  const d=(a,b)=>b>0?(a-b)/b:null;
+  const fr=v=>v==null?'—':(v>=0?'+':'−')+fmtP(Math.abs(v));
+  const voci=[['Incasso',ora.ricavi,pri.ricavi,1],['Food',ora.ricaviFood,pri.ricaviFood,1],
+    ['Beverage',ora.ricaviBev,pri.ricaviBev,1],['Materia prima',ora.mp,pri.mp,0],
+    ['Personale',ora.ru,pri.ru,0],['Spese generali',ora.sg,pri.sg,0],['Utile operativo',ora.ro,pri.ro,1]];
+  return `<div class="lp">${lpTesta('Anno su anno',
+    `${idx.length} mes${idx.length===1?'e':'i'} confrontabil${idx.length===1?'e':'i'} col ${num(S.anno)-1}`)}
+    ${lpCard('Incasso', fr(d(ora.ricavi,pri.ricavi)),
+      `${fmtE(ora.ricavi)} contro ${fmtE(pri.ricavi)}`,
+      d(ora.ricavi,pri.ricavi)>=0?'ok':'bad')}
+    ${lpCard('Utile operativo', fr(d(ora.ro,pri.ro)),
+      `${fmtE(ora.ro)} contro ${fmtE(pri.ro)} · ${fmtP(ora.ro/ora.ricavi)} contro ${fmtP(pri.ro/pri.ricavi)}`,
+      d(ora.ro,pri.ro)>=0?'ok':'bad')}
+    <div class="lpsez">Voce per voce</div>
+    ${voci.map(([n,a,b,buono])=>{ const v=d(a,b);
+      return lpRow(n, `${fmtE(b)} nel ${num(S.anno)-1}`, fmtE(a), fr(v),
+        v==null?'':(buono?(v>=0?'ok':'bad'):(v<=0?'ok':'warn'))); }).join('')}
+    ${lpChiusura('Venduto · Anno su anno')}</div>`;
+}
+
+/* ---- Andamento nel tempo ---- */
+async function liteVTREND(){
+  let righe=[]; try{ righe=await meRighe(null); }catch(e){}
+  if(!righe.length) return lmVuoto('Andamento nel tempo','esercizio '+S.anno);
+  const car=MESI.map((_,i)=>i).filter(i=>(PRO.prod||[]).some(p=>numIt(((p.mesi||[])[i]||{}).pz)>0));
+  if(car.length<4) return `<div class="lp">${lpTesta('Andamento nel tempo','esercizio '+S.anno)}
+    <div class="lpvuoto">Servono almeno quattro mesi di venduto: al momento ne risultano ${car.length}.</div></div>`;
+  const n=Math.max(1,Math.round(car.length/3));
+  const inizio=car.slice(0,n), fine=car.slice(-n);
+  const med=(p,ix)=>ix.reduce((a,i)=>a+numIt(((p.mesi||[])[i]||{}).pz),0)/ix.length;
+  const dati=(PRO.prod||[]).map(p=>{ const a=med(p,inizio), b=med(p,fine);
+    return {n:p.n, cat:p.cat, a, b, d:b-a}; }).filter(x=>x.a>0||x.b>0);
+  const su=dati.filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,10);
+  const giu=dati.filter(x=>x.d<0).sort((a,b)=>a.d-b.d).slice(0,10);
+  const smesso=dati.filter(x=>x.a>0&&x.b===0);
+  const r=x=>lpRow(x.n, `${x.cat} · ${fmtNum(x.a)} → ${fmtNum(x.b)} al mese`,
+    (x.d>=0?'+':'−')+fmtNum(Math.abs(x.d)), 'pz/mese', x.d>=0?'ok':'bad');
+  return `<div class="lp">${lpTesta('Andamento nel tempo',
+    `${inizio.map(i=>MESI[i].slice(0,3)).join(', ')} contro ${fine.map(i=>MESI[i].slice(0,3)).join(', ')}`)}
+    ${lpCard('In crescita', fmtInt(dati.filter(x=>x.d>0).length)+'<small> prodotti</small>',
+      su.length?`il primo è <b>${su[0].n}</b>`:'', 'ok')}
+    ${lpCard('In calo', fmtInt(dati.filter(x=>x.d<0).length)+'<small> prodotti</small>',
+      giu.length?`il primo è <b>${giu[0].n}</b>`:'', giu.length?'warn':'ok')}
+    ${smesso.length?lpCard('Hanno smesso', fmtInt(smesso.length)+'<small> prodotti</small>',
+      'venduti all\'inizio dell\'anno e più niente negli ultimi mesi','bad'):''}
+    ${su.length?`<div class="lpsez">Chi sale</div>${su.map(r).join('')}`:''}
+    ${giu.length?`<div class="lpsez">Chi scende</div>${giu.map(r).join('')}`:''}
+    ${lpChiusura('Venduto · Andamento nel tempo')}</div>`;
+}
+
+/* ---- Incasso contro listino ---- */
+async function liteVLIST(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Incasso contro listino', per);
+  const conL=righe.map(r=>({...r, li:meListino(r)})).filter(r=>r.li>0);
+  if(!conL.length) return `<div class="lp">${lpTesta('Incasso contro listino', per)}
+    <div class="lpvuoto">Manca il prezzo di listino: senza il prezzo di carta non si può dire
+      quanto si sarebbe dovuto incassare.</div></div>`;
+  const reale=conL.reduce((a,r)=>a+r.revenue,0), ideale=conL.reduce((a,r)=>a+r.li,0);
+  const p=(reale-ideale)/ideale;
+  const peggio=conL.map(r=>({...r, eu:r.revenue-r.li, d:(r.revenue-r.li)/r.li}))
+    .filter(r=>r.d<-0.02).sort((a,b)=>a.eu-b.eu).slice(0,10);
+  return `<div class="lp">${lpTesta('Incasso contro listino', per)}
+    ${lpCard('Quanto se n\'è andato', (p>=0?'+':'−')+fmtNum(Math.abs(p)*100)+'<small>%</small>',
+      `incassati <b>${fmtE(reale)}</b> su ${fmtE(ideale)} a prezzo di carta<br>
+       sono <b>${fmtE(Math.abs(reale-ideale))}</b> di sconti, omaggi ed errori di battuta`,
+      p>=-0.03?'ok':p>=-0.06?'warn':'bad')}
+    ${peggio.length?`<div class="lpsez">Dove si incassa meno del listino</div>`+
+      peggio.map(r=>lpRow(r.nome, `${r.cat} · ${fmtInt(r.pz)} pezzi`, fmtE(r.eu),
+        '−'+fmtNum(Math.abs(r.d)*100)+'%','bad')).join(''):''}
+    ${lpChiusura('Venduto · Incasso contro listino')}</div>`;
+}
+
+/* ---- Listino e costi ---- */
+async function liteMPROF(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Listino e costi', per);
+  const cat={}; righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={ric:0,costo:0,ricC:0,pz:0,ob:r.obiettivo});
+    c.pz+=r.pz; c.ric+=r.revenue; if(r.haCosto){ c.costo+=r.pz*r.costo; c.ricC+=r.revenue; } });
+  const l=Object.entries(cat).map(([n,c])=>({n, ...c,
+    inc:c.ricC>0?c.costo/c.ricC*100:null,
+    euro:(c.ricC>0&&c.ob)?((c.costo/c.ricC*100)-c.ob)/100*c.ricC:null}))
+    .sort((a,b)=>(b.euro||-1e9)-(a.euro||-1e9));
+  const sopra=l.filter(c=>c.euro>0);
+  const costo=l.reduce((a,c)=>a+c.costo,0), ricC=l.reduce((a,c)=>a+c.ricC,0);
+  return `<div class="lp">${lpTesta('Listino e costi', per)}
+    ${lpCard('Materia prima sul venduto', ricC>0?fmtNum(costo/ricC*100)+'<small> € ogni 100</small>':'—',
+      `${fmtE(costo)} di materia prima su ${fmtE(ricC)} di venduto con costo noto`)}
+    ${sopra.length?lpCard('Spesa oltre il target', fmtE(sopra.reduce((a,c)=>a+c.euro,0)),
+      `${sopra.length} categorie sopra il proprio obiettivo · la più pesante è <b>${sopra[0].n}</b>`,'warn')
+      :lpCard('Spesa oltre il target','—','nessuna categoria sopra il proprio obiettivo','ok')}
+    <div class="lpsez">Le categorie, dalla più pesante</div>
+    ${l.map(c=>lpRow(c.n, `${fmtInt(c.pz)} pezzi · ${fmtE(c.ric)}${c.ob?' · obiettivo '+fmtNum(c.ob)+'%':''}`,
+      c.inc!=null?fmtNum(c.inc)+'%':'—',
+      c.euro!=null?(c.euro>0?'+':'')+fmtE(c.euro):null,
+      c.euro==null?'':c.euro>0?'bad':'ok')).join('')}
+    ${lpChiusura('Menu engineering · Listino e costi')}</div>`;
+}
+
+/* ---- Core business ---- */
+async function liteMCORE(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Core business', per);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
+  const ord=[...righe].sort((a,b)=>b.revenue-a.revenue);
+  let cum=0; const core=[];
+  ord.forEach(r=>{ const prima=cum; cum+=r.revenue; if(prima/ric<PROP_SOGLIA_CORE) core.push({...r, quota:r.revenue/ric}); });
+  return `<div class="lp">${lpTesta('Core business', per)}
+    ${lpCard('Prodotti nel core', fmtInt(core.length)+'<small> su '+righe.length+'</small>',
+      `insieme fanno l'<b>80%</b> dell'incasso · ${fmtE(core.reduce((a,r)=>a+r.revenue,0))}`)}
+    ${lpCard('Quanto pesa il primo', core.length?fmtNum(core[0].quota*100)+'<small>%</small>':'—',
+      core.length?`<b>${core[0].nome}</b> da solo · ${fmtE(core[0].revenue)}`:'')}
+    <div class="lpsez">Le referenze da presidiare</div>
+    ${core.map(r=>lpRow(r.nome, `${r.cat} · ${fmtInt(r.pz)} pezzi`, fmtE(r.revenue),
+      fmtNum(r.quota*100)+'%')).join('')}
+    ${lpChiusura('Menu engineering · Core business')}</div>`;
+}
+
+/* ---- Pagella ---- */
+async function liteVPRIO(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Pagella prodotti e categorie', per);
+  const con=righe.filter(r=>r.haCosto);
+  const spingi=con.filter(r=>r.classe==='da spingere').sort((a,b)=>b.contribution-a.contribution);
+  const rivedi=con.filter(r=>r.classe==='da rivedere'||r.classe==='secondario')
+    .sort((a,b)=>a.mpiScore-b.mpiScore).slice(0,12);
+  const r=x=>lpRow(x.nome, `${x.cat} · ${fmtInt(x.pz)} pezzi · ${fmtE2(x.margine)} a pezzo`,
+    fmtE(x.contribution), fmtNum(Math.round(x.mpiScore*10)/10),
+    x.mpiScore>=4?'ok':x.mpiScore>=3?'':'bad');
+  return `<div class="lp">${lpTesta('Pagella prodotti e categorie', per)}
+    ${lpCard('Da spingere', fmtInt(spingi.length)+'<small> prodotti</small>',
+      spingi.length?`${fmtE(spingi.reduce((a,x)=>a+x.contribution,0))} di margine nel periodo`:'nessuno','ok')}
+    ${lpCard('Da rivedere', fmtInt(con.filter(x=>x.classe==='da rivedere').length)+'<small> prodotti</small>',
+      'voto sotto 2: prezzo, scheda costo o presenza a menu da rimettere in discussione',
+      con.some(x=>x.classe==='da rivedere')?'warn':'ok')}
+    ${spingi.length?`<div class="lpsez">Da spingere</div>${spingi.slice(0,12).map(r).join('')}`:''}
+    ${rivedi.length?`<div class="lpsez">Da rivedere</div>${rivedi.map(r).join('')}`:''}
+    ${lpChiusura('Menu engineering · Pagella')}</div>`;
+}
+
+/* ---- Simulatore prezzi ---- */
+async function liteMWHAT(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Simulatore prezzi', per);
+  const cand=righe.filter(r=>r.haCosto&&r.obiettivo&&r.prezzoMedio>0&&r.pz>0)
+    .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
+    .filter(r=>r.inc>r.obiettivo+1)
+    .map(r=>{ const nuovo=mePrezzoTarget(r), ivaK=meIvaDi(r);
+      const nn=nuovo?nuovo/ivaK:0, mOld=r.prezzoMedio-r.costo, mNew=nn-r.costo;
+      return {...r, nuovo, eff:(mNew-mOld)*r.pz, perd: mNew>0 ? r.pz-(r.pz*mOld/mNew) : null}; })
+    .sort((a,b)=>b.eff-a.eff).slice(0,15);
+  if(!cand.length) return `<div class="lp">${lpTesta('Simulatore prezzi', per)}
+    <div class="lpvuoto">Nessun prodotto sta sopra il target della sua categoria:
+      non c'è un prezzo da ritoccare.</div></div>`;
+  return `<div class="lp">${lpTesta('Simulatore prezzi', per)}
+    ${lpCard('Se si accettassero tutte', fmtE(cand.reduce((a,r)=>a+r.eff,0)),
+      'di margine in più sul periodo, <b>a parità di pezzi venduti</b> — che è l\'ipotesi più ottimistica possibile','ok')}
+    <div class="lpsez">I prezzi proposti</div>
+    ${cand.map(r=>lpRow(r.nome,
+      `${fmtE2(r.prezzoMedio*meIvaDi(r))} → <b>${fmtE2(r.nuovo)}</b> · incidenza ${fmtNum(r.inc)}% contro ${fmtNum(r.obiettivo)}%` +
+      (r.perd!=null&&r.perd>0?`<br>puoi perderne ${fmtInt(r.perd)} pezzi restando in pari`:''),
+      fmtE(r.eff), null)).join('')}
+    <div class="lpnota">I prezzi si cambiano dal computer, in <b>modalità Pro</b>: lì la proposta
+      si può correggere a mano e i conti si rifanno.</div></div>`;
+}
+
+/* ---- Prodotti focus ---- */
+async function liteMFOCUS(){
+  const {idx,per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Prodotti focus', per);
+  const nMesi=Math.max(1, idx.length);
+  const perCat={}; righe.filter(r=>r.haCosto).forEach(r=>{ (perCat[r.cat]=perCat[r.cat]||[]).push(r); });
+  const media={}; Object.entries(perCat).forEach(([c,l])=>{ media[c]=l.reduce((a,r)=>a+r.margine,0)/l.length; });
+  const cand=righe.filter(r=>r.haCosto&&r.pz>0&&r.margine>media[r.cat])
+    .map(r=>({...r, base:r.pz/nMesi, sopra:r.margine-media[r.cat]}))
+    .sort((a,b)=>b.sopra*b.base-a.sopra*a.base).slice(0,10);
+  if(!cand.length) return lmVuoto('Prodotti focus', per);
+  const cre=focusCresc/100, pre=focusPremio/100;
+  const vale=cand.reduce((a,r)=>a+(r.base*cre*nMesi)*(r.margine*(1-pre)),0);
+  return `<div class="lp">${lpTesta('Prodotti focus', per)}
+    ${lpCard('Vale sul periodo', fmtE(vale),
+      `se ogni prodotto cresce del <b>${fmtNum(focusCresc)}%</b>, già tolto il premio al team`,'ok')}
+    <div class="lpsez">Su cosa spingere</div>
+    ${cand.map(r=>lpRow(r.nome,
+      `${r.cat} · da <b>${fmtNum(r.base)}</b> a <b>${fmtNum(r.base*(1+cre))}</b> pezzi al mese`,
+      fmtE2(r.margine), 'a pezzo')).join('')}
+    <div class="lpnota">Il premio si paga <b>solo sui pezzi oltre la base</b>: quello che si vendeva
+      già non si premia. La crescita richiesta e il premio si regolano in <b>modalità Pro</b>.</div></div>`;
+}
+
+/* ---- Menu builder ---- */
+async function liteMBUILD(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Menu builder', per);
+  const blocchi=meCategorie(righe);
+  return `<div class="lp">${lpTesta('Menu builder', per)}
+    ${lpCard('L\'ordine proposto', fmtInt(blocchi.reduce((a,b)=>a+b.lista.length,0))+'<small> categorie</small>',
+      'le categorie nell\'ordine del core 80%, e dentro ciascuna i prodotti nello stesso ordine')}
+    ${blocchi.map(bl=>`<div class="lpsez">${bl.nome}</div>` +
+      bl.lista.map((c,i)=>{ const l=meOrdineCategoria(righe,c.nome);
+        return lpRow(`${i+1}. ${c.nome}`,
+          l.length?`in evidenza: <b>${l[0].nome}</b>${l[1]?` · riquadro: ${l[1].nome}`:''}`:'',
+          `${l.length}`, 'prodotti'); }).join('')).join('')}
+    <div class="lpnota">La bozza da mandare al grafico si stampa dal computer,
+      in <b>modalità Pro</b>.</div></div>`;
+}
+
+/* ---- Suggerimenti ---- */
+async function liteMSUGG(){
+  const {per,righe}=await lmBase();
+  if(!righe.length) return lmVuoto('Suggerimenti', per);
+  const sopra=righe.filter(r=>r.haCosto&&r.obiettivo&&r.prezzoMedio>0)
+    .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
+    .filter(r=>r.inc>r.obiettivo)
+    .map(r=>({...r, costa:(r.inc-r.obiettivo)/100*r.revenue}))
+    .sort((a,b)=>b.costa-a.costa).slice(0,12);
+  const mai=(PRO.prod||[]).filter(p=>!(p.mesi||[]).some(m=>numIt(m.pz)>0));
+  const senza=righe.filter(r=>!r.haCosto);
+  return `<div class="lp">${lpTesta('Suggerimenti', per)}
+    ${lpCard('Costa in più del target', fmtE(sopra.reduce((a,r)=>a+r.costa,0)),
+      `${sopra.length} prodotti sopra il target della loro categoria`, sopra.length?'warn':'ok')}
+    ${mai.length?lpCard('Mai venduti', fmtInt(mai.length)+'<small> prodotti</small>',
+      'sono a menu e nel periodo non ne è uscito nemmeno uno','warn'):''}
+    ${senza.length?lpCard('Senza scheda costo', fmtInt(senza.length)+'<small> prodotti</small>',
+      'non entrano in nessuna analisi finché la scheda manca','warn'):''}
+    ${sopra.length?`<div class="lpsez">Da dove partire</div>`+
+      sopra.map(r=>lpRow(r.nome, `${r.cat} · incidenza ${fmtNum(r.inc)}% contro ${fmtNum(r.obiettivo)}%`,
+        fmtE(r.costa), '+'+fmtNum(r.inc-r.obiettivo)+' pt','bad')).join(''):''}
+    ${lpChiusura('Menu engineering · Suggerimenti')}</div>`;
+}
+
+/* =============== VENDUTO · le altre quattro pagine ===============
+   Stessa materia prima di Report del venduto — l'archivio prodotti — guardata
+   da quattro angoli diversi: il totale del periodo, il confronto con l'anno
+   prima, il movimento nel tempo, e quanto si è incassato rispetto al listino. */
+const meSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
+/* il prezzo di listino di una riga: serve a dire quanto avrebbe dovuto incassare */
+function meListino(r){
+  const p=(PRO.prod||[]).find(x=>x.id===r.key);
+  const pv=p?numIt(p.pv):0;
+  return pv>0 ? pv*r.pz : null;
+}
+const meRiga=(n,s_,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s_?`<small>${s_}</small>`:''}</div>
+  <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
+
+/* ---------------------------------------- Riepilogo del periodo */
+async function renderVRIEP(){
+  const body=document.getElementById('vriepBody');
+  body.innerHTML='<section><div class="sub">Sto sommando il periodo…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Riepilogo del periodo', per); return; }
+  const iva=1+num(PRO.iva||0.1);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
+  const m=compute();
+  const ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete, 0);
+  const delta = ce.ricavi>0 ? ric-ce.ricavi : null;
+  /* famiglia → categoria, come nel suo riepilogo */
+  const fam={};
+  righe.forEach(r=>{
+    const f=fam[meSeg(r)]||(fam[meSeg(r)]={pz:0, ric:0, cat:{}});
+    f.pz+=r.pz; f.ric+=r.revenue;
+    const c=f.cat[r.cat]||(f.cat[r.cat]={pz:0, ric:0, n:0});
+    c.pz+=r.pz; c.ric+=r.revenue; c.n++;
+  });
+  const fams=Object.entries(fam).sort((a,b)=>b[1].ric-a[1].ric);
+  /* mese per mese, per chi guarda l'anno */
+  const perMese=MESI.map((_,i)=>{
+    let p_=0, v=0;
+    (PRO.prod||[]).forEach(x=>{ const c=(x.mesi||[])[i]||{}; p_+=numIt(c.pz); v+=numIt(c.inc); });
+    return {i, pz:p_, ric:v/iva};
+  }).filter(x=>x.pz>0||x.ric>0);
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Riepilogo del periodo</h2>
+      <div class="sub">${per} · il totale per famiglia e per categoria, e la quadratura fra
+      il venduto di cassa e i ricavi del conto economico.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Incasso del periodo', fmtE(ric),
+        `${fmtE(ric*iva)} IVA inclusa · <b>${fmtInt(pz)}</b> pezzi · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b>`)}
+      ${qaCard('Quadratura col conto economico',
+        delta==null?'—':Math.abs(delta)<Math.max(1,ce.ricavi*0.005)?'in pari':(delta>0?'+':'−')+fmtE(Math.abs(delta)),
+        delta==null?'Non ci sono ricavi caricati nel conto economico per questo periodo.'
+          :`venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}`,
+        delta==null?'':Math.abs(delta)<=ce.ricavi*0.02?'ok':'warn')}
+      ${qaCard('Prodotti e categorie', fmtInt(righe.length)+'<small> prodotti</small>',
+        `${Object.values(fam).reduce((a,f)=>a+Object.keys(f.cat).length,0)} categorie con venduto nel periodo`)}
+    </div>
+  </section>
+
+  ${fams.map(([f,d])=>`<section>
+    <div class="sechead"><div><h2>${f}</h2>
+      <div class="sub">${fmtE(d.ric)} · ${fmtInt(d.pz)} pezzi · ${fmtNum(ric>0?d.ric/ric*100:0)}% dell'incasso</div></div></div>
+    ${Object.entries(d.cat).sort((a,b)=>b[1].ric-a[1].ric).map(([c,x])=>
+      meRiga(escH(c), `${fmtInt(x.pz)} pezzi · ${x.n} prodotti · prezzo medio ${fmtE2(x.pz?x.ric/x.pz:0)}`,
+        fmtE(x.ric), fmtNum(d.ric>0?x.ric/d.ric*100:0)+'%')).join('')}
+  </section>`).join('')}
+
+  ${perMese.length>1?`<section>
+    <div class="sechead"><div><h2>Mese per mese</h2>
+      <div class="sub">Tutto l'anno caricato, qualunque sia il periodo selezionato.</div></div></div>
+    ${perMese.map(x=>meRiga(MESI[x.i], `${fmtInt(x.pz)} pezzi · prezzo medio ${fmtE2(x.pz?x.ric/x.pz:0)}`,
+      fmtE(x.ric), null)).join('')}
+  </section>`:''}`;
+}
+
+/* ---------------------------------------- Anno su anno */
+async function renderVPREC(){
+  const body=document.getElementById('vprecBody');
+  body.innerHTML='<section><div class="sub">Sto confrontando gli anni…</div></section>';
+  const per=mePeriodo();
+  const m=compute(), mPrec=computeAnno(num(S.anno)-1);
+  if(!mPrec || !mPrec.complete.length){
+    body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Anno su anno</h2><div class="sub">${per}</div></div></div>
+      <div class="mevuoto"><b>Non c'è un secondo anno da confrontare.</b><br>
+        Per il ${num(S.anno)-1} non risulta nessun mese consuntivato.<br>
+        Si carica dal selettore <b>Anno</b> in alto, poi si torna qui.</div></section>`;
+    return;
+  }
+  /* i mesi che esistono completi in tutti e due gli anni: solo quelli si confrontano */
+  const idx=(scope!=='ytd'?[scope]:MESI.map((_,i)=>i))
+    .filter(i=>meseCompleto(m.months[i]) && meseCompleto(mPrec.months[i]));
+  if(!idx.length){
+    body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Anno su anno</h2><div class="sub">${per}</div></div></div>
+      <div class="mevuoto"><b>Nessun mese confrontabile.</b><br>
+        Un mese entra nel confronto solo se è completo in tutti e due gli anni.</div></section>`;
+    return;
+  }
+  const ora=sumRows(idx.map(i=>m.months[i]),0), pri=sumRows(idx.map(i=>mPrec.months[i]),0);
+  const d=(a,b)=> b>0 ? (a-b)/b : null;
+  const freccia=v=>v==null?'—':(v>=0?'+':'−')+fmtP(Math.abs(v));
+  const cls=v=>v==null?'':v>=0?'ok':'bad';
+  const voci=[
+    ['Incasso', ora.ricavi, pri.ricavi],
+    ['Food', ora.ricaviFood, pri.ricaviFood],
+    ['Beverage', ora.ricaviBev, pri.ricaviBev],
+    ['Materia prima', ora.mp, pri.mp],
+    ['Personale', ora.ru, pri.ru],
+    ['Spese generali', ora.sg, pri.sg],
+    ['Utile operativo', ora.ro, pri.ro]
+  ];
+  const qF=x=>(x.ricaviFood+x.ricaviBev)>0?x.ricaviFood/(x.ricaviFood+x.ricaviBev):null;
+  /* il venduto per categoria esiste per un anno solo: lo si dice invece di fingere */
+  let venduto='';
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(righe.length){
+    venduto=`<section>
+      <div class="sechead"><div><h2>Il venduto di quest'anno, per categoria</h2>
+        <div class="sub">L'archivio prodotti tiene un anno alla volta, quindi il confronto per
+        categoria con il ${num(S.anno)-1} non è possibile: qui c'è solo il ${S.anno}.
+        Il confronto fra gli anni, sopra, viene dal conto economico.</div></div></div>
+      ${(()=>{ const cat={}; righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={pz:0,ric:0,seg:meSeg(r)});
+          c.pz+=r.pz; c.ric+=r.revenue; });
+        const tot=righe.reduce((a,r)=>a+r.revenue,0);
+        return Object.entries(cat).sort((a,b)=>b[1].ric-a[1].ric).map(([n,c])=>
+          meRiga(escH(n), `${c.seg} · ${fmtInt(c.pz)} pezzi`, fmtE(c.ric),
+            fmtNum(tot>0?c.ric/tot*100:0)+'%')).join(''); })()}
+    </section>`;
+  }
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Anno su anno</h2>
+      <div class="sub">${idx.length} mes${idx.length===1?'e':'i'} confrontabil${idx.length===1?'e':'i'}:
+      ${idx.map(i=>MESI[i]).join(', ')}. Solo i mesi completi in tutti e due gli anni.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Incasso', freccia(d(ora.ricavi,pri.ricavi)),
+        `${fmtE(ora.ricavi)} contro ${fmtE(pri.ricavi)} del ${num(S.anno)-1}`,
+        cls(d(ora.ricavi,pri.ricavi)))}
+      ${qaCard('Utile operativo', freccia(d(ora.ro,pri.ro)),
+        `${fmtE(ora.ro)} contro ${fmtE(pri.ro)}<br>
+         incidenza ${fmtP(ora.ro/ora.ricavi)} contro ${fmtP(pri.ro/pri.ricavi)}`,
+        cls(d(ora.ro,pri.ro)))}
+      ${qaCard('Il peso della cucina',
+        qF(ora)!=null?fmtNum(qF(ora)*100)+'<small>%</small>':'—',
+        qF(pri)!=null?`era il <b>${fmtNum(qF(pri)*100)}%</b> nel ${num(S.anno)-1}`:'')}
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Voce per voce</h2>
+      <div class="sub">Dal conto economico, sugli stessi mesi dei due anni.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Voce</th><th>${S.anno}</th><th>${num(S.anno)-1}</th><th>Differenza</th><th>Variazione</th>
+        <th>Incidenza ${S.anno}</th><th>Incidenza ${num(S.anno)-1}</th></tr>
+      ${voci.map(([n,a,b])=>{
+        const v=d(a,b), buono = n==='Incasso'||n==='Food'||n==='Beverage'||n==='Utile operativo';
+        return `<tr><td class="lbl">${n}</td>
+          <td class="tot">${fmtE(a)}</td><td class="tot">${fmtE(b)}</td>
+          <td class="tot">${(a-b>=0?'+':'−')+fmtE(Math.abs(a-b))}</td>
+          <td class="tot ${v==null?'':(buono?(v>=0?'bassa':'alta'):(v<=0?'bassa':'alta'))}">${freccia(v)}</td>
+          <td class="tot">${ora.ricavi>0&&n!=='Incasso'?fmtP(a/ora.ricavi):'—'}</td>
+          <td class="tot">${pri.ricavi>0&&n!=='Incasso'?fmtP(b/pri.ricavi):'—'}</td></tr>`;
+      }).join('')}
+    </table></div>
+  </section>
+  ${venduto}`;
+}
+
+/* ---------------------------------------- Andamento nel tempo */
+async function renderVTREND(){
+  const body=document.getElementById('vtrendBody');
+  body.innerHTML='<section><div class="sub">Sto guardando come si muovono…</div></section>';
+  let righe=[]; try{ righe=await meRighe(null); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Andamento nel tempo', 'esercizio '+S.anno); return; }
+  /* i mesi caricati, in ordine: il confronto è fra il primo terzo e l'ultimo */
+  const car=MESI.map((_,i)=>i).filter(i=>(PRO.prod||[]).some(p=>numIt(((p.mesi||[])[i]||{}).pz)>0));
+  if(car.length<4){
+    body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Andamento nel tempo</h2>
+        <div class="sub">esercizio ${S.anno}</div></div></div>
+      <div class="mevuoto"><b>Servono almeno quattro mesi di venduto.</b><br>
+        Al momento ne risultano ${car.length}: con meno di così, un movimento non si distingue
+        da una settimana storta.</div></section>`;
+    return;
+  }
+  const n=Math.max(1, Math.round(car.length/3));
+  const inizio=car.slice(0,n), fine=car.slice(-n);
+  const somma=(p,idxs)=>idxs.reduce((a,i)=>a+numIt(((p.mesi||[])[i]||{}).pz),0)/idxs.length;
+  const dati=(PRO.prod||[]).map(p=>{
+    const a=somma(p,inizio), b=somma(p,fine);
+    return {n:p.n, cat:p.cat, a, b, d:b-a, v: a>0 ? (b-a)/a : (b>0?null:0)};
+  }).filter(x=>x.a>0||x.b>0);
+  const dove=x=>{
+    if(x.a>0 && x.b===0) return ['ha smesso','bad'];
+    if(x.a===0 && x.b>0) return ['è partito ora','ok'];
+    if(x.v==null) return ['nuovo','ok'];
+    if(x.v>=0.25) return ['in crescita','ok'];
+    if(x.v<=-0.25) return ['in calo','bad'];
+    return ['stabile',''];
+  };
+  const su=dati.filter(x=>x.d>0).sort((a,b)=>b.d-a.d);
+  const giu=dati.filter(x=>x.d<0).sort((a,b)=>a.d-b.d);
+  const tab=l=>`<div class="tblwrap"><table class="entry me">
+    <tr><th>Prodotto</th><th>Categoria</th><th>Dove sta</th><th>Differenza al mese</th>
+      <th>Al mese: inizio → fine</th></tr>
+    ${l.map(x=>{ const [et,c]=dove(x); return `<tr>
+      <td class="lbl">${escH(x.n)}</td>
+      <td class="tot" style="text-align:left">${escH(x.cat)}</td>
+      <td class="tot"><span class="verdict ${c==='ok'?'v-ok':c==='bad'?'v-bad':'v-warn'}">${et}</span></td>
+      <td class="tot ${x.d>=0?'bassa':'alta'}">${(x.d>=0?'+':'−')+fmtNum(Math.abs(x.d))} pz</td>
+      <td class="tot">${fmtNum(x.a)} → ${fmtNum(x.b)}</td></tr>`; }).join('')}
+  </table></div>`;
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Andamento nel tempo</h2>
+      <div class="sub">esercizio ${S.anno} · confronto fra la media mensile dei primi
+      <b>${inizio.map(i=>MESI[i].slice(0,3)).join(', ')}</b> e quella degli ultimi
+      <b>${fine.map(i=>MESI[i].slice(0,3)).join(', ')}</b>. Sono pezzi al mese, non totali:
+      così mesi di lunghezza diversa restano confrontabili.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('In crescita', fmtInt(dati.filter(x=>dove(x)[0]==='in crescita').length)+'<small> prodotti</small>',
+        su.length?`il primo è <b>${escH(su[0].n)}</b>, ${fmtNum(su[0].d)} pezzi al mese in più`:'', 'ok')}
+      ${qaCard('In calo', fmtInt(dati.filter(x=>dove(x)[0]==='in calo').length)+'<small> prodotti</small>',
+        giu.length?`il primo è <b>${escH(giu[0].n)}</b>, ${fmtNum(Math.abs(giu[0].d))} pezzi al mese in meno`:'', 'warn')}
+      ${qaCard('Hanno smesso', fmtInt(dati.filter(x=>dove(x)[0]==='ha smesso').length)+'<small> prodotti</small>',
+        'venduti all\'inizio dell\'anno e più niente negli ultimi mesi',
+        dati.some(x=>dove(x)[0]==='ha smesso')?'bad':'ok')}
+    </div>
+  </section>
+  ${su.length?`<section><div class="sechead"><div><h2>Chi sale</h2>
+    <div class="sub">Ordinati per pezzi al mese guadagnati.</div></div></div>${tab(su)}</section>`:''}
+  ${giu.length?`<section><div class="sechead"><div><h2>Chi scende</h2>
+    <div class="sub">Ordinati per pezzi al mese persi. Prima di toglierli dal menu va capito se
+    è calo vero o stagionalità.</div></div></div>${tab(giu)}</section>`:''}`;
+}
+
+/* ---------------------------------------- Incasso contro listino */
+async function renderVLIST(){
+  const body=document.getElementById('vlistBody');
+  body.innerHTML='<section><div class="sub">Sto confrontando cassa e listino…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Incasso contro listino', per); return; }
+  const conL=righe.map(r=>({...r, li:meListino(r)})).filter(r=>r.li!=null && r.li>0);
+  if(!conL.length){
+    body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Incasso contro listino</h2><div class="sub">${per}</div></div></div>
+      <div class="mevuoto"><b>Manca il prezzo di listino.</b><br>
+        Senza il prezzo di carta non si può dire quanto si sarebbe dovuto incassare.</div></section>`;
+    return;
+  }
+  const reale=conL.reduce((a,r)=>a+r.revenue,0);
+  const ideale=conL.reduce((a,r)=>a+r.li,0);
+  const scarto=reale-ideale, perc=ideale>0?scarto/ideale:0;
+  /* famiglia → categoria */
+  const fam={};
+  conL.forEach(r=>{
+    const f=fam[meSeg(r)]||(fam[meSeg(r)]={reale:0, ideale:0, cat:{}});
+    f.reale+=r.revenue; f.ideale+=r.li;
+    const c=f.cat[r.cat]||(f.cat[r.cat]={reale:0, ideale:0, pz:0});
+    c.reale+=r.revenue; c.ideale+=r.li; c.pz+=r.pz;
+  });
+  const peggiori=[...conL].map(r=>({...r, d:(r.revenue-r.li)/r.li, eu:r.revenue-r.li}))
+    .filter(r=>r.d<-0.02).sort((a,b)=>a.eu-b.eu).slice(0,15);
+  const riga=(n,s_,re,id)=>{
+    const d=id>0?(re-id)/id:null;
+    return `<tr><td class="lbl">${n}${s_?`<span class="role">${s_}</span>`:''}</td>
+      <td class="tot">${fmtE(re)}</td><td class="tot">${fmtE(id)}</td>
+      <td class="tot ${re-id<0?'alta':'bassa'}">${(re-id>=0?'+':'−')+fmtE(Math.abs(re-id))}</td>
+      <td class="tot ${d<-0.03?'alta':d>0?'bassa':''}">${d==null?'—':(d>=0?'+':'−')+fmtNum(Math.abs(d)*100)+'%'}</td></tr>`;
+  };
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Incasso contro listino</h2>
+      <div class="sub">${per} · quanto è entrato davvero rispetto a quello che gli stessi pezzi
+      avrebbero fatto a prezzo di carta. La differenza sono <b>sconti, omaggi, errori di battuta</b>
+      e prezzi cambiati senza aggiornare il listino.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Incassato davvero', fmtE(reale),
+        `su ${fmtE(ideale)} che valeva a listino · ${fmtInt(conL.length)} prodotti con prezzo di carta`)}
+      ${qaCard('Quanto se n\'è andato', (scarto>=0?'+':'−')+fmtE(Math.abs(scarto)),
+        `${(perc>=0?'+':'−')}${fmtNum(Math.abs(perc)*100)}% rispetto al listino<br>` +
+        (perc<-0.05 ? 'oltre il 5%: vale la pena capire voce per voce da dove viene.'
+         : perc<0 ? 'sotto il 5%: è lo sconto fisiologico di un locale.'
+         : 'sopra il listino: di solito sono supplementi o prezzi aggiornati solo in cassa.'),
+        perc>=-0.03?'ok':perc>=-0.06?'warn':'bad')}
+      ${qaCard('Un punto quanto vale', fmtE(ideale/100),
+        'ogni punto percentuale di sconto in meno vale questo, sul periodo')}
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Per famiglia e categoria</h2>
+      <div class="sub">L'incasso ideale è il prezzo di listino moltiplicato per i pezzi venduti.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Famiglia / categoria</th><th>Incasso reale</th><th>Incasso ideale da listino</th>
+        <th>Incassato vs listino €</th><th>Incassato vs listino %</th></tr>
+      ${Object.entries(fam).sort((a,b)=>b[1].reale-a[1].reale).map(([f,d])=>
+        `<tr class="famrow">${riga('<b>'+f+'</b>', null, d.reale, d.ideale).slice(4)}` +
+        Object.entries(d.cat).sort((a,b)=>b[1].reale-a[1].reale).map(([c,x])=>
+          riga('&nbsp;&nbsp;'+escH(c), fmtInt(x.pz)+' pezzi', x.reale, x.ideale)).join('')
+      ).join('')}
+    </table></div>
+  </section>
+
+  ${peggiori.length?`<section>
+    <div class="sechead"><div><h2>Dove si è incassato meno del listino</h2>
+      <div class="sub">I quindici prodotti che, in euro sul periodo, si allontanano di più dal
+      prezzo di carta. Può essere uno sconto voluto, un omaggio, o un prezzo cambiato e mai aggiornato.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Categoria</th><th>Pezzi</th><th>Incasso reale</th>
+        <th>A listino</th><th>Differenza</th><th>%</th></tr>
+      ${peggiori.map(r=>`<tr>
+        <td class="lbl">${escH(r.nome)}</td>
+        <td class="tot" style="text-align:left">${escH(r.cat)}</td>
+        <td class="tot">${fmtInt(r.pz)}</td>
+        <td class="tot">${fmtE(r.revenue)}</td>
+        <td class="tot">${fmtE(r.li)}</td>
+        <td class="tot alta">${fmtE(r.eu)}</td>
+        <td class="tot alta">−${fmtNum(Math.abs(r.d)*100)}%</td></tr>`).join('')}
+    </table></div>
+  </section>`:''}`;
+}
+
+
+/* =============== MENU ENGINEERING · le quattro pagine che decidono ===============
+   Qui si smette di misurare e si comincia a scegliere: che prezzo fare, su cosa
+   spingere, come impaginare il menu, da dove partire. */
+
+/* un prezzo che si può scrivere su una carta: niente 7,43 € */
+function mePrezzoTondo(v){
+  if(!(v>0)) return 0;
+  if(v<10)  return Math.round(v*2)/2;          /* mezzo euro fino a dieci */
+  if(v<30)  return Math.round(v);              /* euro intero fino a trenta */
+  return Math.round(v/0.5)*0.5;
+}
+/* il prezzo IVA inclusa che porta l'incidenza al target della categoria */
+function mePrezzoTarget(r){
+  if(!r.haCosto || !r.obiettivo) return null;
+  const netto = r.costo/(r.obiettivo/100);
+  const p=(PRO.prod||[]).find(x=>x.id===r.key);
+  const iva = (p && p.pvi>0 && p.pv>0) ? (p.pvi/p.pv) : (1+num(PRO.iva||0.1));
+  return mePrezzoTondo(netto*iva);
+}
+const meIvaDi = r => {
+  const p=(PRO.prod||[]).find(x=>x.id===r.key);
+  return (p && p.pvi>0 && p.pv>0) ? (p.pvi/p.pv) : (1+num(PRO.iva||0.1));
+};
+
+/* ---------------------------------------- Simulatore prezzi */
+let wfPrezzi={};      /* le proposte che l'utente ha toccato a mano */
+async function renderMWHAT(){
+  const body=document.getElementById('mwhatBody');
+  body.innerHTML='<section><div class="sub">Sto preparando le proposte…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Simulatore prezzi', per); return; }
+  const cand=righe.filter(r=>r.haCosto && r.obiettivo && r.prezzoMedio>0 && r.pz>0)
+    .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
+    .filter(r=>r.inc>r.obiettivo+1)
+    .sort((a,b)=>(b.inc-b.obiettivo)/100*b.revenue - (a.inc-a.obiettivo)/100*a.revenue);
+  if(!cand.length){
+    body.innerHTML=`<section>
+      <div class="sechead"><div><h2>Simulatore prezzi</h2><div class="sub">${per}</div></div></div>
+      <div class="mevuoto"><b>Nessun prodotto sta sopra il target della sua categoria.</b><br>
+        Non c'è un prezzo da ritoccare: la leva non è il listino.</div></section>`;
+    return;
+  }
+  const cats=[...new Set(cand.map(r=>r.cat))];
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Simulatore prezzi</h2>
+      <div class="sub">${per} · che cosa succede al margine se cambio un prezzo, <b>prima</b> di cambiarlo
+      davvero. Il prezzo proposto è quello che porta l'incidenza al target della categoria, arrotondato
+      a un numero che si può scrivere su una carta. Si può cambiare a mano: i conti si rifanno.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Prodotti sopra il target', fmtInt(cand.length),
+        `su ${righe.filter(r=>r.haCosto).length} con costo noto`, 'warn')}
+      ${qaCard('Se si accettassero tutte le proposte', '<span id="wfTot">—</span>',
+        'di margine in più sul periodo, a parità di pezzi venduti', 'ok')}
+      ${qaCard('La colonna che decide', '<small>puoi perderne</small>',
+        `quanti pezzi puoi permetterti di <b>non</b> vendere più, dopo l'aumento, restando con lo stesso
+         margine di oggi. Se è un numero grande, il rischio è basso.`)}
+    </div>
+  </section>
+  ${cats.map(c=>{
+    const l=cand.filter(r=>r.cat===c);
+    return `<section>
+      <div class="sechead"><div><h2>${escH(c)}</h2>
+        <div class="sub">obiettivo di incidenza ${fmtNum(l[0].obiettivo)}% · ${l.length} prodotti da rivedere</div></div></div>
+      <div class="tblwrap"><table class="entry me wf">
+        <tr><th>Proposta</th><th>Pezzi</th><th>Costo MP</th><th>Prezzo oggi<small>IVA incl.</small></th>
+          <th>Prezzo nuovo<small>IVA incl.</small></th><th>Incidenza<small>oggi → nuova</small></th>
+          <th>Stato</th><th>Margine a pezzo<small>oggi → nuovo</small></th>
+          <th>Effetto sul<small>periodo</small></th><th>Puoi<small>perderne</small></th></tr>
+        ${l.map(r=>`<tr data-wf="${escH(r.key)}">
+          <td class="lbl">${escH(r.nome)}${r.presunto?'<span class="role">costo presunto</span>':''}</td>
+          <td class="tot">${fmtInt(r.pz)}</td>
+          <td class="tot">${fmtE2(r.costo)}</td>
+          <td class="tot">${fmtE2(r.prezzoMedio*meIvaDi(r))}</td>
+          <td class="tot"><input class="wfin" type="text" inputmode="decimal"
+            value="${fmtNum(wfPrezzi[r.key]!=null?wfPrezzi[r.key]:mePrezzoTarget(r))}"></td>
+          <td class="tot wfinc">—</td><td class="tot wfstato">—</td>
+          <td class="tot wfmarg">—</td><td class="tot wfeff">—</td><td class="tot wfperd">—</td></tr>`).join('')}
+      </table></div>
+    </section>`;
+  }).join('')}`;
+
+  const conti=()=>{
+    let tot=0;
+    cand.forEach(r=>{
+      const tr=document.querySelector(`[data-wf="${CSS.escape(r.key)}"]`); if(!tr) return;
+      const nuovoLordo=numIt(tr.querySelector('.wfin').value);
+      const ivaK=meIvaDi(r);
+      const nuovoNetto=nuovoLordo>0 ? nuovoLordo/ivaK : 0;
+      const mOld=r.prezzoMedio-r.costo, mNew=nuovoNetto-r.costo;
+      const incNew = nuovoNetto>0 ? r.costo/nuovoNetto*100 : null;
+      const eff=(mNew-mOld)*r.pz;
+      /* quanti pezzi si possono perdere restando con lo stesso margine totale */
+      const perd = mNew>0 ? r.pz - (r.pz*mOld/mNew) : null;
+      const z = incNew==null ? null : incNew<=r.obiettivo ? 0 : incNew<=r.obiettivo+2 ? 1 : incNew<=r.obiettivo+5 ? 2 : 3;
+      tr.querySelector('.wfinc').innerHTML = incNew==null?'—'
+        : `${fmtNum(r.inc)}% → <b>${fmtNum(incNew)}%</b>`;
+      tr.querySelector('.wfstato').innerHTML = z==null?'—'
+        : `<span class="verdict ${ZC[z]}">${['in obiettivo','poco sopra','sopra','fuori'][z]}</span>`;
+      tr.querySelector('.wfmarg').innerHTML = `${fmtE2(mOld)} → <b>${fmtE2(mNew)}</b>`;
+      tr.querySelector('.wfeff').innerHTML = `<span class="${eff>=0?'bassa':'alta'}">${(eff>=0?'+':'−')+fmtE(Math.abs(eff))}</span>`;
+      tr.querySelector('.wfperd').innerHTML = perd==null||perd<0 ? '—'
+        : `<b>${fmtInt(perd)}</b> pz<small> ${fmtNum(r.pz>0?perd/r.pz*100:0)}%</small>`;
+      tot+=eff;
+    });
+    const el=document.getElementById('wfTot'); if(el) el.textContent=(tot>=0?'+':'−')+fmtE(Math.abs(tot));
+  };
+  body.querySelectorAll('.wfin').forEach(i=>{
+    i.oninput=()=>{ const tr=i.closest('[data-wf]'); wfPrezzi[tr.dataset.wf]=numIt(i.value); conti(); };
+  });
+  conti();
+}
+
+/* ---------------------------------------- Prodotti focus */
+let focusCresc=20, focusPremio=10;
+async function renderMFOCUS(){
+  const body=document.getElementById('mfocusBody');
+  body.innerHTML='<section><div class="sub">Sto scegliendo i prodotti…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Prodotti focus', per); return; }
+  const nMesi=Math.max(1, idx.length);
+  /* i candidati: margine a pezzo sopra la media della categoria e già venduti.
+     Si spinge quello che rende, non quello che vende di più. */
+  const perCat={};
+  righe.filter(r=>r.haCosto).forEach(r=>{ (perCat[r.cat]=perCat[r.cat]||[]).push(r); });
+  const media={}; Object.entries(perCat).forEach(([c,l])=>{
+    media[c]=l.reduce((a,r)=>a+r.margine,0)/l.length; });
+  const cand=righe.filter(r=>r.haCosto && r.pz>0 && r.margine>media[r.cat])
+    .map(r=>({...r, base:r.pz/nMesi, sopra:r.margine-media[r.cat]}))
+    .sort((a,b)=>b.sopra*b.base - a.sopra*a.base).slice(0,12);
+  if(!cand.length){ body.innerHTML=meVuoto('Prodotti focus', per); return; }
+  const dis=()=>{
+    const cre=focusCresc/100, pre=focusPremio/100;
+    const righeHTML=cand.map(r=>{
+      const ob=r.base*(1+cre), extra=(ob-r.base)*nMesi;
+      const premio=r.margine*pre;
+      const vale=extra*(r.margine-premio);
+      return {r, ob, extra, premio, vale};
+    });
+    const tot=righeHTML.reduce((a,x)=>a+x.vale,0);
+    const totPremio=righeHTML.reduce((a,x)=>a+x.extra*x.premio,0);
+    document.getElementById('fcTot').innerHTML=fmtE(tot);
+    document.getElementById('fcPremio').innerHTML=fmtE(totPremio);
+    document.getElementById('fcTab').innerHTML=`<div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Categoria</th><th>Base<small>pezzi al mese</small></th>
+        <th>Obiettivo<small>pezzi al mese</small></th><th>1° margine<small>a pezzo</small></th>
+        <th>Premio al team<small>€ a pezzo</small></th><th>Pezzi in più<small>sul periodo</small></th>
+        <th>Vale<small>netto del premio</small></th></tr>
+      ${righeHTML.map(x=>`<tr>
+        <td class="lbl">${escH(x.r.nome)}${x.r.presunto?'<span class="role">costo presunto</span>':''}</td>
+        <td class="tot" style="text-align:left">${escH(x.r.cat)}</td>
+        <td class="tot">${fmtNum(x.r.base)}</td>
+        <td class="tot"><b>${fmtNum(x.ob)}</b></td>
+        <td class="tot">${fmtE2(x.r.margine)}</td>
+        <td class="tot">${fmtE2(x.premio)}</td>
+        <td class="tot">${fmtNum(x.extra)}</td>
+        <td class="tot bassa">${fmtE(x.vale)}</td></tr>`).join('')}
+    </table></div>`;
+  };
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Prodotti focus</h2>
+      <div class="sub">${per} · i prodotti su cui concentrare la spinta. Non i più venduti:
+      quelli il cui <b>margine a pezzo sta sopra la media della loro categoria</b>, quindi ogni
+      pezzo in più vale più della media. La base è quello che vendono oggi al mese.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Vale sul periodo', '<span id="fcTot">—</span>',
+        'margine in più se tutti gli obiettivi vengono centrati, già tolto il premio al team', 'ok')}
+      ${qaCard('Premio al team', '<span id="fcPremio">—</span>',
+        'quanto andrebbe alla squadra, sui soli pezzi oltre la base')}
+      ${qaCard('I prodotti scelti', fmtInt(cand.length),
+        'ordinati per quanto vale spingerli, non per quanto vendono')}
+    </div>
+    <div class="params" style="margin-top:14px">
+      <label>Crescita richiesta <input type="number" id="fcCre" step="5" value="${focusCresc}"> %</label>
+      <label>Premio al team <input type="number" id="fcPre" step="1" value="${focusPremio}"> % del margine</label>
+    </div>
+  </section>
+  <section>
+    <div class="sechead"><div><h2>Il piano</h2>
+      <div class="sub">L'obiettivo è in pezzi al mese, perché è così che lo si dice alla squadra.
+      Il premio si paga <b>solo sui pezzi oltre la base</b>: quello che si vendeva già non si premia.</div></div></div>
+    <div id="fcTab"></div>
+  </section>`;
+  document.getElementById('fcCre').oninput=e=>{ focusCresc=num(e.target.value)||0; dis(); };
+  document.getElementById('fcPre').oninput=e=>{ focusPremio=num(e.target.value)||0; dis(); };
+  dis();
+}
+
+/* ---------------------------------------- Menu builder */
+async function renderMBUILD(){
+  const body=document.getElementById('mbuildBody');
+  body.innerHTML='<section><div class="sub">Sto componendo il menu…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Menu builder', per); return; }
+  const blocchi=meCategorie(righe);
+  /* la stella: dentro ogni categoria, il primo che il motore mette in cima e che
+     ha anche il voto più alto. Il riquadro: il secondo. */
+  const pagine=blocchi.map(bl=>({nome:bl.nome, cats:bl.lista.map(c=>{
+    const l=meOrdineCategoria(righe, c.nome);
+    return {cat:c.nome, voto:c.cpiScore, incid:c.incid, lista:l};
+  })}));
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Menu builder</h2>
+      <div class="sub">${per} · l'ordine proposto per la carta. Le categorie vanno nell'ordine che
+      decide il <b>core 80%</b> fra categorie, i prodotti nell'ordine che lo stesso motore decide
+      dentro la categoria. La <b class="stella">★</b> è il prodotto da mettere in evidenza,
+      il <b class="riq">▭</b> quello da chiudere in un riquadro.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Categorie a menu', fmtInt(pagine.reduce((a,p)=>a+p.cats.length,0)),
+        `${righe.length} prodotti venduti nel periodo`)}
+      ${qaCard('Prodotti in evidenza', fmtInt(pagine.reduce((a,p)=>a+p.cats.length,0)),
+        'uno per categoria: la stella va al primo che il motore mette in cima')}
+      ${qaCard('Da stampare', '<small>anteprima</small>',
+        'questa pagina propone l\'ordine. L\'impaginazione vera, con i font e la grafica della carta, si fa fuori.')}
+    </div>
+    <div class="tbltools"><button class="btn small" onclick="window.print()">Stampa la bozza</button>
+      <span class="savestate">Da mandare al grafico insieme ai testi.</span></div>
+  </section>
+  ${pagine.map(p=>`<section>
+    <div class="sechead"><div><h2>${p.nome}</h2>
+      <div class="sub">le categorie sono nell'ordine proposto, dall'alto verso il basso della carta</div></div></div>
+    ${p.cats.map((c,ci)=>`<div class="mecat">
+      <div class="mehead">
+        <div class="t">${ci+1}. ${escH(c.cat)}<small>${c.lista.length} prodotti · incidenza ${
+          c.incid!=null?fmtNum(c.incid*100)+'%':'—'}</small></div>
+        <div class="n">${meVotoPill(c.voto)}<small>voto della categoria</small></div>
+      </div>
+      <ol class="mbvoci">
+        ${c.lista.map((r,i)=>`<li class="${i===0?'stella':i===1?'riq':''}">
+          <span class="seg">${i===0?'★':i===1?'▭':''}</span>
+          <span class="nome">${escH(r.nome)}</span>
+          <span class="pr">${fmtE2(r.prezzoMedio*meIvaDi(r))}</span>
+          <span class="mg">${r.haCosto?fmtE2(r.margine)+' di margine':'senza scheda costo'}</span>
+          ${r.sottoCore80?'<span class="nota">sotto il core 80%</span>':''}
+        </li>`).join('')}
+      </ol>
+    </div>`).join('')}
+  </section>`).join('')}`;
+}
+
+/* ---------------------------------------- Suggerimenti */
+async function renderMSUGG(){
+  const body=document.getElementById('msuggBody');
+  body.innerHTML='<section><div class="sub">Sto mettendo in fila le azioni…</div></section>';
+  const idx=meIdx(), per=mePeriodo();
+  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  if(!righe.length){ body.innerHTML=meVuoto('Suggerimenti', per); return; }
+  /* 1 · chi costa più del target della sua categoria */
+  const sopra=righe.filter(r=>r.haCosto && r.obiettivo && r.prezzoMedio>0)
+    .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
+    .filter(r=>r.inc>r.obiettivo)
+    .map(r=>({...r, punti:r.inc-r.obiettivo, costa:(r.inc-r.obiettivo)/100*r.revenue}))
+    .sort((a,b)=>b.costa-a.costa).slice(0,20);
+  /* 2 · le azioni, in ordine di quanto valgono */
+  const azioni=[];
+  sopra.slice(0,8).forEach(r=>{
+    const nuovo=mePrezzoTarget(r);
+    azioni.push({n:r.nome, perche:`incidenza ${fmtNum(r.inc)}% contro un target del ${fmtNum(r.obiettivo)}%`,
+      vale:r.costa,
+      fare: nuovo ? `portare il prezzo a <b>${fmtE2(nuovo)}</b> IVA inclusa, oppure rivedere la scheda costo`
+                  : 'rivedere la scheda costo o il prezzo'});
+  });
+  righe.filter(r=>!r.haCosto).slice(0,6).forEach(r=>{
+    azioni.push({n:r.nome, perche:'non ha scheda costo e nella sua categoria non ci sono abbastanza schede per stimarla',
+      vale:r.revenue*0.05,
+      fare:'compilare la scheda in <b>Ricette e schede costo</b>: finché manca, questo prodotto non entra in nessuna analisi'});
+  });
+  const mai=(PRO.prod||[]).filter(p=>!(p.mesi||[]).some(m=>numIt(m.pz)>0));
+  if(mai.length) azioni.push({n:`${mai.length} prodotti mai venduti`,
+    perche:'sono a menu ma nel periodo non ne è stato venduto nemmeno uno',
+    vale:0, fare:'decidere se toglierli dalla carta: occupano spazio e allungano la lettura'});
+  azioni.sort((a,b)=>b.vale-a.vale);
+  /* 3 · la fotografia per categoria */
+  const cat={};
+  righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={fam:meSeg(r), n:0, ric:0, conScheda:0,
+      dentro:0, conCosto:0});
+    c.n++; c.ric+=r.revenue;
+    if(r.costoVero!=null) c.conScheda++;
+    if(r.haCosto){ c.conCosto++;
+      if(r.obiettivo && r.prezzoMedio>0 && r.costo/r.prezzoMedio*100<=r.obiettivo) c.dentro++; }
+  });
+  (PRO.prod||[]).forEach(p=>{ const c=cat[p.cat]; if(c && !(p.mesi||[]).some(m=>numIt(m.pz)>0)) c.mai=(c.mai||0)+1; });
+  /* le referenze che fanno l'80% dentro ogni categoria */
+  Object.entries(cat).forEach(([n,c])=>{
+    const l=righe.filter(r=>r.cat===n).sort((a,b)=>b.revenue-a.revenue);
+    const tot=l.reduce((a,r)=>a+r.revenue,0)||1;
+    let cum=0, k=0; for(const r of l){ const p=cum/tot; cum+=r.revenue; k++; if(p>=0.8){ k--; break; } }
+    c.core=k; c.altre=l.length-k;
+  });
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Suggerimenti</h2>
+      <div class="sub">${per} · le azioni aperte sul menu, ordinate per quanto valgono.
+      Non è una lista di buoni propositi: ogni riga ha un numero accanto.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Azioni aperte', fmtInt(azioni.length),
+        azioni.length?`la prima vale <b>${fmtE(azioni[0].vale)}</b> sul periodo`:'niente da fare',
+        azioni.length?'warn':'ok')}
+      ${qaCard('Costa in più del target', fmtE(sopra.reduce((a,r)=>a+r.costa,0)),
+        `${sopra.length} prodotti sopra il target della loro categoria`, sopra.length?'warn':'ok')}
+      ${qaCard('Prodotti mai venduti', fmtInt(mai.length),
+        mai.length?'sono a menu e non ne è uscito nemmeno uno':'nessuno: la carta è tutta viva',
+        mai.length?'warn':'ok')}
+    </div>
+  </section>
+
+  ${sopra.length?`<section>
+    <div class="sechead"><div><h2>Chi costa più di quanto dovrebbe</h2>
+      <div class="sub">L'ultima colonna è quello che quel prodotto, sul periodo, è costato in più
+      del suo target. È da lì che si decide l'ordine, non dai punti percentuali.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Categoria</th><th>Pezzi venduti<small>nel periodo</small></th>
+        <th>Incidenza reale</th><th>Target categoria</th><th>Punti sopra</th>
+        <th>Costa in più<small>${escH(per)}</small></th><th>Nota</th></tr>
+      ${sopra.map(r=>`<tr>
+        <td class="lbl">${escH(r.nome)}</td>
+        <td class="tot" style="text-align:left">${escH(r.cat)}</td>
+        <td class="tot">${fmtInt(r.pz)}</td>
+        <td class="tot alta">${fmtNum(r.inc)}%</td>
+        <td class="tot">${fmtNum(r.obiettivo)}%</td>
+        <td class="tot alta">+${fmtNum(r.punti)}</td>
+        <td class="tot alta">${fmtE(r.costa)}</td>
+        <td class="tot" style="text-align:left;font-size:11.5px;color:var(--ink2)">${
+          r.presunto?'costo presunto dalla media di categoria'
+          : r.punti>10 ? 'scarto grosso: prima di toccare il prezzo, ricontrollare le dosi'
+          : 'prezzo o dosi da rivedere'}</td></tr>`).join('')}
+    </table></div>
+  </section>`:''}
+
+  ${azioni.length?`<section>
+    <div class="sechead"><div><h2>Che cosa fare, in ordine</h2>
+      <div class="sub">La prima riga è quella che vale di più. Si parte da lì.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Perché</th><th>Vale nel periodo</th><th>Cosa fare</th></tr>
+      ${azioni.map(a=>`<tr>
+        <td class="lbl">${escH(a.n)}</td>
+        <td class="tot" style="text-align:left">${a.perche}</td>
+        <td class="tot">${a.vale>0?fmtE(a.vale):'—'}</td>
+        <td class="tot" style="text-align:left">${a.fare}</td></tr>`).join('')}
+    </table></div>
+  </section>`:''}
+
+  <section>
+    <div class="sechead"><div><h2>La carta, categoria per categoria</h2>
+      <div class="sub">Quante referenze servono davvero, quante hanno una scheda costo,
+      quante stanno dentro il target.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Categoria</th><th>Famiglia</th><th>Proposte</th><th>Referenze che fanno l'80%</th>
+        <th>Le altre</th><th>Con scheda costo</th><th>Dentro il target</th><th>Mai vendute</th><th>Cosa guardare</th></tr>
+      ${Object.entries(cat).sort((a,b)=>b[1].ric-a[1].ric).map(([n,c])=>`<tr>
+        <td class="lbl">${escH(n)}</td>
+        <td class="tot" style="text-align:left">${c.fam}</td>
+        <td class="tot">${c.n}</td>
+        <td class="tot">${c.core}</td>
+        <td class="tot ${c.altre>c.core?'alta':''}">${c.altre}</td>
+        <td class="tot ${c.conScheda<c.n?'alta':'bassa'}">${c.conScheda} su ${c.n}</td>
+        <td class="tot ${c.conCosto&&c.dentro/c.conCosto<0.5?'alta':'bassa'}">${c.dentro} su ${c.conCosto}</td>
+        <td class="tot ${c.mai?'alta':''}">${c.mai||'—'}</td>
+        <td class="tot" style="text-align:left;font-size:11.5px;color:var(--ink2)">${
+          c.altre>c.core*2 ? 'carta lunga: poche referenze fanno il grosso'
+          : c.conScheda<c.n ? 'mancano schede costo'
+          : c.conCosto&&c.dentro/c.conCosto<0.5 ? 'più di metà sopra il target'
+          : 'in ordine'}</td></tr>`).join('')}
+    </table></div>
+  </section>`;
+}
+
 /* ================= IL QUADRO DELL'AREA =================
    In testa a ogni pagina di area, in modalità Pro: il numero e la sua distanza
    dall'obiettivo, lo stesso numero visto su cucina e bar, e l'andamento dei
@@ -10281,7 +11314,9 @@ async function liteCHK(){
 }
 
 const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, chk:renderCHK,
-  vdash:renderVDASH, mprof:renderMPROF, mcore:renderMCORE, vprio:renderVPRIO, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
+  vdash:renderVDASH, mprof:renderMPROF, mcore:renderMCORE, vprio:renderVPRIO,
+  vriep:renderVRIEP, vprec:renderVPREC, vtrend:renderVTREND, vlist:renderVLIST,
+  mwhat:renderMWHAT, mfocus:renderMFOCUS, mbuild:renderMBUILD, msugg:renderMSUGG, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -11695,23 +12730,7 @@ const SOON={
   aimsg :{t:'Messaggi al cliente', g:'Assistente', m:'serve il collegamento al modello',
           d:"Il messaggio da mandare al titolare, scritto con i suoi numeri veri: il riepilogo del periodo e gli alert di quando un numero esce dai binari. Si rilegge, si corregge e si manda dal telefono."},
 
-  vriep :{t:'Riepilogo del periodo', g:'Venduto', m:'serve il venduto di cassa',
-          d:"Il totale del periodo per famiglia e categoria — incasso, pezzi, coperti — e la quadratura fra il totale di cassa e la somma dei prodotti venduti."},
-  vprec :{t:'Anno su anno', g:'Venduto', m:"serve un secondo anno caricato",
-          d:"Lo stesso periodo dell'anno prima accanto a quello di quest'anno: incasso, pezzi, coperto medio."},
-  vtrend:{t:'Andamento nel tempo', g:'Venduto', m:'serve il venduto di cassa',
-          d:"Come si muovono nel tempo i prodotti e le categorie, stagionalità compresa."},
-  vlist :{t:'Incasso contro listino', g:'Venduto', m:'servono il venduto e il listino',
-          d:"Quanto è entrato davvero rispetto ai prezzi di listino: la differenza sono sconti, omaggi ed errori di battuta."},
 
-  mfocus:{t:'Prodotti focus', g:'Menu engineering', m:'servono le schede costo',
-          d:"I prodotti su cui concentrare la spinta per tre mesi, con l'obiettivo di pezzi e l'effetto atteso sul margine."},
-  mwhat :{t:'Simulatore prezzi', g:'Menu engineering', m:'servono le schede costo',
-          d:"Cosa succede al margine se cambio un prezzo, una dose o un fornitore, prima di cambiarlo davvero."},
-  mbuild:{t:'Menu builder', g:'Menu engineering', m:'servono il venduto e le schede costo',
-          d:"La costruzione del menu: l'ordine proposto dal core 80%, la stella, il riquadro, e la bozza impaginata da mandare al grafico."},
-  msugg :{t:'Suggerimenti', g:'Menu engineering', m:'servono il venduto e le schede costo',
-          d:"Le azioni in attesa, ordinate per quanto valgono: prezzo da ritoccare, scheda da rifare, prodotto da togliere."},
 
   obmese:{t:'Obiettivi del mese', g:'Obiettivi per area', m:'da costruire',
           d:"L'obiettivo di incasso e di margine del mese, e dove siamo rispetto a quello."},
