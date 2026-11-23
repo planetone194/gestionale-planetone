@@ -1216,7 +1216,9 @@
   #suggpan .sgch{color:var(--ink2);font-size:15px;transition:transform .18s;flex:none;margin-left:4px;}
   #suggpan .sg.aperto .sgch{transform:rotate(180deg);}
   #suggpan .sg .sgb{display:none;}
-  #suggpan .sg.aperto .sgb{display:flex;}
+  /* `grid`, non `flex`: con flex le due colonne restavano affiancate anche sul
+     telefono, dove la regola della griglia le impila */
+  #suggpan .sg.aperto .sgb{display:grid;}
   /* la scelta del periodo nell'analisi: anno o mese, come in pro */
   .lpper{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;}
   .lpch{background:#1B1B1B;border:1px solid #303030;color:#A8A8A8;border-radius:999px;
@@ -1252,7 +1254,9 @@
   .lriga .v{font-family:var(--num);font-size:22px;font-weight:700;color:#fff;letter-spacing:-.6px;margin:1px 0 2px;}
   .lriga .d{font-size:11.5px;color:#9A9A9A;line-height:1.45;}
   .lriga .d b{color:#fff;}
-  .lspie{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  /* `dense`: quando una spia si apre e prende tutta la riga, i riquadri che
+     vengono dopo risalgono a tappare il buco invece di lasciarlo nero */
+  .lspie{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;grid-auto-flow:row dense;}
   .lspia{background:#1B1B1B;border:1px solid #333;border-radius:16px;padding:15px 14px 16px;text-align:center;}
   .lspia.on{background:#2B2317;border-color:#6B5520;}
   .lspia.on.rossa{background:#2E1A17;border-color:#73302A;}
@@ -1423,9 +1427,33 @@
   html.mobi .gaugeside{flex-direction:column;}
   html.mobi section{overflow-x:auto;}
   html.mobi .sgb{grid-template-columns:1fr;padding-left:0;}
-  html.mobi #suggmodal{padding:10px 8px;}
+  /* Il pop-up dei suggerimenti sul telefono: i titoli lunghi non vanno
+     incolonnati in sei righe da due parole. L'intestazione di ogni voce si
+     dispone su due piani — numero, tempi, euro e freccia sopra; titolo sotto,
+     a tutta larghezza — e i corpi si impilano invece di stare in due colonne. */
+  html.mobi #suggmodal{padding:0;align-items:flex-end;}
+  html.mobi #suggmodal .pan{border-radius:16px 16px 0 0;padding:14px 15px 18px;max-height:94vh;overflow-y:auto;}
+  html.mobi #suggmodal .ph{flex-wrap:wrap;gap:4px 10px;align-items:center;padding-bottom:9px;}
+  html.mobi #suggmodal .ph h3{font-size:16px;flex:1;}
+  html.mobi #suggmodal .ph .sub2{flex:1 1 100%;order:3;font-size:11px;line-height:1.4;}
+  html.mobi #suggmodal .ph .mini{order:2;}
+  html.mobi #suggmodal .ph .x{order:2;margin-left:4px;}
+  html.mobi .sg{padding:11px 0 12px;}
+  html.mobi .sgh{flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+  html.mobi .sgt{flex:1 1 100%;order:3;font-size:14.5px;line-height:1.32;}
+  html.mobi .sgn{width:20px;height:20px;font-size:11.5px;}
+  html.mobi .sgh .verdict{margin-left:0;font-size:10px;}
+  html.mobi .sgv{font-size:14px;margin-left:auto;}
+  html.mobi .sgb{grid-template-columns:1fr;gap:12px;padding-left:0;}
+  html.mobi .sgb .et{font-size:9.5px;margin-bottom:4px;}
+  html.mobi .sgb p,html.mobi .sgb li{font-size:12.5px;line-height:1.5;}
+  html.mobi .sgb ul{padding-left:15px;}
+  html.mobi .pfoot{font-size:10.5px;line-height:1.5;}
   /* su schermo stretto "+0,9 p.p." finiva sopra la pastiglia dell'obiettivo */
-  html.mobi .ordsw{width:100%;align-self:stretch;}
+  /* a tutta larghezza, ma con il suo respiro: senza margine la prima scheda
+     cliente andava a sbattere contro i bottoni dell'ordinamento */
+  html.mobi .ordsw{width:100%;align-self:stretch;margin:4px 0 14px;}
+  html.mobi .sechead{margin-bottom:10px;}
   html.mobi .ordsw .ol{display:none;}
   html.mobi .ordsw button{flex:1;padding:9px 4px;font-size:12px;}
   html.mobi .ordsw button:first-of-type{border-left:none;}
@@ -1870,7 +1898,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v138</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v139</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
