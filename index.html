@@ -1530,9 +1530,9 @@
     <button class="vo" onclick="vaiDa('home')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Cambia locale</span><span class="fr">›</span></button>
     <button class="vo" onclick="chiudiSheet();window.print()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Scarica il report</span><span class="fr">›</span></button>
     <div class="st">Dal computer</div>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">da computer</span></button>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Turni e simulazione</span><span class="nota">da computer</span></button>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Archivio e ricette</span><span class="nota">da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">Pro, da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Turni e simulazione</span><span class="nota">Pro, da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Archivio e ricette</span><span class="nota">Pro, da computer</span></button>
   </div></div>
 
 <nav class="tabbar" id="tabbar">
@@ -1614,7 +1614,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v117</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v118</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3034,17 +3034,17 @@ function renderDashLite(a, t, m, isM){
   const incRu=a.incRu*100, incMp=a.incMp*100, incSg=a.incSg*100;
   sp.push(lSpia('pers','Stipendi',
     incRu<=t.ru ? `${R(incRu)} € ogni 100, il limite è ${fmtNum(t.ru)}`
-                : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}<br>sono ${E(a.ru-a.ricavi*t.ru/100)}`,
+                : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}<br><b>${E(a.ru-a.ricavi*t.ru/100)}</b> di troppo`,
     incRu<=t.ru ? '' : incRu>t.ru+10 ? 'rossa' : 'on'));
   const incMpF = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
   sp.push(lSpia('mp','Materia prima',
     incMp<=t.mp ? `${R(incMp)} € ogni 100, il limite è ${fmtNum(t.mp)}`
       : `${R(incMp)} € ogni 100 invece di ${fmtNum(t.mp)}${
-          incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}<br>sono ${E(a.mp-a.ricavi*t.mp/100)}`,
+          incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}<br><b>${E(a.mp-a.ricavi*t.mp/100)}</b> di troppo`,
     incMp<=t.mp ? '' : incMp>t.mp+10 ? 'rossa' : 'on'));
   sp.push(lSpia('sg','Spese fisse',
     incSg<=t.sg ? `${R(incSg)} € ogni 100, il limite è ${fmtNum(t.sg)}`
-                : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}<br>sono ${E(a.sg-a.ricavi*t.sg/100)}`,
+                : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}<br><b>${E(a.sg-a.ricavi*t.sg/100)}</b> di troppo`,
     incSg<=t.sg ? '' : incSg>t.sg+10 ? 'rossa' : 'on'));
   /* sprechi: dal confronto fra bilancio e schede, se c'è */
   let c=null; try{ c=cnConfronto(); }catch(e){}
@@ -3155,22 +3155,25 @@ function lpChiusura(dove){
 const LP_PC = {
   pi:['Pianificazione turni','si compila una griglia settimanale'],
   tu:['Analisi dei turni','si incrociano ore e incassi di ogni servizio'],
-  si:['Simulazione','si aprono e si chiudono servizi per vedere che cosa cambia'],
-  pr:['Produttivita del personale','si legge una griglia di sette giorni'],
-  ceagg:['Conto economico aggregato','e una tabella a scalare'],
-  ver:['Versioni precedenti','si ripristinano copie dell archivio'],
-  ring:['Ingredienti e prezzi','e un archivio di centinaia di righe'],
-  rforn:['Fornitori','e un archivio da compilare'],
+  si:['Simulazione','si aprono e si chiudono i servizi per vedere che cosa cambia'],
+  pr:['Produttività del personale','si legge una griglia di sette giorni'],
+  ceagg:['Conto economico aggregato','è una tabella a scalare'],
+  ver:['Versioni precedenti','si ripristinano le copie dell\'archivio'],
+  ring:['Ingredienti e prezzi d\'acquisto','è un archivio di centinaia di righe'],
+  rforn:['Fornitori','è un archivio da compilare'],
   rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese'],
   rric:['Ricette e schede costo','si costruiscono le schede riga per riga'],
-  an:['Analisi e presentazione','e il report da stampare per il cliente'],
-  ce:['Conto economico','']
+  an:['Analisi e presentazione','è il report da stampare per il cliente']
 };
 function lpSoloPC(pagina){
   const v=LP_PC[pagina]||['Questa pagina',''];
+  const telefono=document.documentElement.classList.contains('mobi');
+  const coda = telefono
+    ? 'Sul telefono trovi i numeri già pronti nelle altre sezioni.'
+    : 'Passa a <b>modalità Pro</b> con l\'interruttore in alto a destra.';
   return `<div class="lp"><div class="lpvuoto"><span class="ico">🖥</span>
-    <b>${v[0]}</b> si usa dal computer${v[1]?`:<br>${v[1]}`:''}.<br><br>
-    Sul telefono trovi i numeri gia pronti nelle altre sezioni.</div></div>`;
+    <b>${v[0]}</b> si usa in <b>modalità Pro</b>, dal computer${v[1]?`:<br>${v[1]}`:''}.<br><br>
+    ${coda}</div></div>`;
 }
 
 /* ---------- 1 - conto economico ---------- */
