@@ -993,6 +993,39 @@
   html.litepg .ordsw button{background:#242424;border-left-color:#3A3A3A;color:#9A9A9A;}
   html.litepg .ordsw button.on{background:var(--brass);color:#1A1A1A;}
 
+  /* ======== pagine in modalita lite: solo lettura, un dato per riga ========
+     Sul telefono non si caricano dati: si guardano. Quindi niente tabelle da
+     scorrere di lato, niente campi da compilare: una scheda per concetto,
+     numeri grandi, e in fondo la riga che dice dove si modifica. */
+  #litePage{display:none;}
+  html.litealt #litePage{display:block;}
+  html.litealt .page{display:none!important;}
+  .lp h2{font-family:var(--num);font-size:21px;font-weight:700;color:#fff;margin:0 0 3px;letter-spacing:-.5px;}
+  .lp .lpsub{font-size:12.5px;color:#8F8F8F;margin:0 0 16px;line-height:1.45;}
+  .lpc{background:#1B1B1B;border:1px solid #303030;border-radius:16px;padding:15px 16px;margin-bottom:11px;}
+  .lpc .et{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;font-weight:700;}
+  .lpc .nm{font-family:var(--num);font-size:27px;font-weight:700;color:#fff;letter-spacing:-1px;line-height:1.1;margin-top:3px;}
+  .lpc .nm small{font-size:14px;letter-spacing:0;color:#9A9A9A;}
+  .lpc .nt{font-size:12px;color:#9A9A9A;margin-top:6px;line-height:1.5;}
+  .lpc .nt b{color:#fff;}
+  .lpc.ok{border-color:#2F5340;}
+  .lpc.warn{border-color:#6B5520;background:#241E13;}
+  .lpc.bad{border-color:#73302A;background:#241513;}
+  .lpc.ok .et{color:#7FC79C;} .lpc.warn .et{color:#E8B14A;} .lpc.bad .et{color:#E0705E;}
+  .lpsez{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;font-weight:700;margin:22px 2px 8px;}
+  .lprow{display:flex;align-items:baseline;gap:10px;padding:10px 2px;border-bottom:1px solid #262626;}
+  .lprow:last-child{border-bottom:none;}
+  .lprow .n{flex:1;font-size:13.5px;color:#D8D8D8;min-width:0;}
+  .lprow .n small{display:block;font-size:11px;color:#7A7A7A;margin-top:1px;}
+  .lprow .v{font-family:var(--num);font-size:14px;font-weight:600;color:#fff;white-space:nowrap;}
+  .lprow .p{font-family:var(--num);font-size:12.5px;color:#9A9A9A;white-space:nowrap;min-width:56px;text-align:right;}
+  .lprow .p.ok{color:#7FC79C;} .lprow .p.warn{color:#E8B14A;} .lprow .p.bad{color:#E0705E;}
+  .lpnota{font-size:11.5px;color:#6E6E6E;line-height:1.55;margin-top:18px;padding-top:12px;border-top:1px solid #262626;}
+  .lpvuoto{text-align:center;color:#8F8F8F;font-size:13.5px;padding:34px 12px;line-height:1.65;}
+  .lpvuoto b{color:#D8D8D8;}
+  .lpvuoto .ico{display:block;font-size:26px;margin-bottom:12px;opacity:.55;}
+  .lptesto{font-size:14px;color:#C8C8C8;line-height:1.65;}
+  .lptesto b{color:#fff;}
   .litewrap{color:#fff;margin-bottom:18px;}
   .litewrap .ltt{display:flex;align-items:baseline;gap:11px;margin-bottom:10px;}
   .litewrap .ltt h2{font-family:var(--num);font-size:19px;font-weight:700;letter-spacing:-.3px;color:#fff;margin:0;}
@@ -1135,8 +1168,8 @@
   /* il salvataggio e' automatico: sul telefono il bottone copriva le schede */
   html.mobi .savewrap{display:none;}
   html.litepg .savewrap{display:none;}
+  /* sul telefono esiste una sola esperienza: lite. L'interruttore sparisce. */
   html.mobi .modesw{display:none;}
-  html.mobi .modesw.insheet{display:flex;}
   html.mobi:not(.mob) .vistabtn{display:none;}
   html.mob .modesw{display:flex;top:12px;right:166px;bottom:auto;}
   html.mob .vistabtn{top:12px;right:14px;bottom:auto;left:auto;}
@@ -1485,24 +1518,21 @@
 <!-- «Altro»: sale a metà schermo, non copre tutto -->
 <div class="sheet" id="altSheet"><div class="velo" onclick="chiudiSheet()"></div>
   <div class="pan"><div class="grip"></div>
-    <div class="st">Analisi e controllo</div>
+    <div class="st">I numeri</div>
+    <button class="vo" onclick="vaiDa('ce')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Conto economico</span><span class="fr">›</span></button>
+    <button class="vo" onclick="vaiDa('ru')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Risorse umane</span><span class="fr">›</span></button>
+    <button class="vo" onclick="vaiDa('sg')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Spese generali</span><span class="fr">›</span></button>
+    <button class="vo" onclick="vaiDa('cn')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Costi nascosti</span><span class="fr">›</span></button>
+    <div class="st">Confronti</div>
     <button class="vo" onclick="vaiDa('cf')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Confronto tra periodi</span><span class="fr">›</span></button>
-    <button class="vo" onclick="vaiDa('tu')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Analisi dei turni</span><span class="fr">›</span></button>
-    <button class="vo" onclick="vaiDa('pr')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Produttività del personale</span><span class="fr">›</span></button>
-    <button class="vo" onclick="vaiDa('si')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Simulazione</span><span class="fr">›</span></button>
-    <button class="vo" hidden onclick="vaiDa('ceagg')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Conto economico aggregato</span><span class="fr">›</span></button>
     <div class="st">Il locale</div>
-    <button class="vo" onclick="vaiDa('pi')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg><span>Pianificazione turni</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('me')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Metodo Planet One</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('home')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Cambia locale</span><span class="fr">›</span></button>
     <button class="vo" onclick="chiudiSheet();window.print()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Scarica il report</span><span class="fr">›</span></button>
-    <div class="st">Come lo vedi</div>
-    <div class="modesw insheet"><span class="ml">Modalità</span>
-      <button type="button" data-mode="lite">Lite</button>
-      <button type="button" data-mode="pro">Pro</button></div>
     <div class="st">Dal computer</div>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">meglio da computer</span></button>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Archivio e ricette</span><span class="nota">meglio da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Turni e simulazione</span><span class="nota">da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Archivio e ricette</span><span class="nota">da computer</span></button>
   </div></div>
 
 <nav class="tabbar" id="tabbar">
@@ -1584,7 +1614,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v116</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v117</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1618,6 +1648,8 @@
       <button class="btn savemini" data-save="mini" title="Salva ora (Ctrl/Cmd + S)" aria-label="Salva ora">💾</button>
     </div>
   </header>
+
+  <div id="litePage"></div>
 
 
   <!-- ============ CRUSCOTTO ============ -->
@@ -2603,10 +2635,22 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') chiudiSugg(); });
 /* ================= modalità lite / pro =================
    Lite: tutta la pagina diventa scura e resta solo il quadro del cliente.
    Pro: il gestionale completo. L'interruttore ricorda la scelta. */
-const LITE_PAG=['dash','home'];     /* dove la modalita lite ha una sua veste */
-function litePg(p){
+const LITE_PAG=['dash','home'];     /* queste due hanno gia' la loro veste lite */
+/* 'an' resta com'e': e' il report da stampare, e in lite non ha senso riscriverlo */
+const LITE_CHIARE=['an'];
+function liteAttiva(){
   const h=document.documentElement;
-  h.classList.toggle('litepg', h.classList.contains('lite') && LITE_PAG.indexOf(p||current)>=0);
+  return h.classList.contains('lite') || h.classList.contains('mobi');
+}
+function litePg(p){
+  const h=document.documentElement, pag=p||current;
+  const lite=liteAttiva();
+  const propria = LITE_PAG.indexOf(pag)>=0;                     /* cruscotto, elenco clienti */
+  const chiara  = LITE_CHIARE.indexOf(pag)>=0;                  /* lasciata com'e' */
+  const altra   = lite && !propria && !chiara;                  /* passa da #litePage */
+  h.classList.toggle('litepg', lite && !chiara);
+  h.classList.toggle('litealt', altra);
+  if(altra) liteRender(pag);
 }
 function setMode(m){
   const h=document.documentElement, on = m!=='pro';
@@ -2640,13 +2684,16 @@ function toggleVista(){
   if(b) b.textContent = on ? '🖥 Vista desktop' : '📱 Vista mobile';
   try{ localStorage.setItem('p1:vista', on?'mob':''); }catch(e){}
   syncMobi();
+  if(typeof litePg==='function') litePg();
   if(document.getElementById('page-dash')?.classList.contains('active') && typeof renderDash==='function') renderDash();
   window.scrollTo(0,0);
 }
 try{ if(localStorage.getItem('p1:vista')==='mob'){ document.documentElement.classList.add('mob'); } }catch(e){}
 syncMobi();
 window.addEventListener('resize',()=>{
-  if(syncMobi() && document.getElementById('page-dash')?.classList.contains('active') && typeof renderDash==='function') renderDash();
+  if(!syncMobi()) return;
+  if(typeof litePg==='function') litePg();
+  if(document.getElementById('page-dash')?.classList.contains('active') && typeof renderDash==='function') renderDash();
 });
 
 /* ================= fogli che salgono dal basso ================= */
@@ -3072,6 +3119,255 @@ function renderDashLite(a, t, m, isM){
     <div class="lspie">${sp.map(lSpiaHTML).join('')}</div>
     ${coda}
   </div>`;
+}
+
+
+/* ================== pagine in modalita lite ==================
+   Sul telefono si guardano i dati, non si caricano: ogni pagina qui dentro e'
+   una lettura breve della stessa sostanza che in pro sta in tabella. */
+function lpAgg(){
+  const m=compute(), t=S.targets, isM=scope!=='ytd';
+  const rows = isM ? [m.months[scope]] : m.complete;
+  const a = sumRows(rows, isM?0:m.orphanCosts);
+  const per = isM ? MESI[scope]+' '+S.anno
+    : (m.complete.length ? m.complete[0].mese+' – '+m.complete[m.complete.length-1].mese+' '+S.anno
+                         : 'esercizio '+S.anno);
+  return {m,t,a,isM,per,idx: isM?[scope]:m.complete.map(x=>MESI.indexOf(x.mese))};
+}
+function lpStato(inc, obiettivo){            /* inc e obiettivo in punti percentuali */
+  if(!isFinite(inc)) return '';
+  if(inc<=obiettivo) return 'ok';
+  return inc>obiettivo+10 ? 'bad' : 'warn';
+}
+function lpCard(et, numero, nota, stato){
+  return `<div class="lpc ${stato||''}"><div class="et">${et}</div>
+    <div class="nm">${numero}</div>${nota?`<div class="nt">${nota}</div>`:''}</div>`;
+}
+function lpRow(nome, sotto, valore, quota, stato){
+  return `<div class="lprow"><div class="n">${nome}${sotto?`<small>${sotto}</small>`:''}</div>
+    <div class="v">${valore}</div>${quota!=null?`<div class="p ${stato||''}">${quota}</div>`:''}</div>`;
+}
+function lpTesta(titolo, sotto){ return `<h2>${titolo}</h2><div class="lpsub">${sotto}</div>`; }
+function lpChiusura(dove){
+  return `<div class="lpnota">Questi numeri si modificano dal computer, in <b>${dove}</b>.
+    Sul telefono la pagina resta in sola lettura.</div>`;
+}
+const LP_PC = {
+  pi:['Pianificazione turni','si compila una griglia settimanale'],
+  tu:['Analisi dei turni','si incrociano ore e incassi di ogni servizio'],
+  si:['Simulazione','si aprono e si chiudono servizi per vedere che cosa cambia'],
+  pr:['Produttivita del personale','si legge una griglia di sette giorni'],
+  ceagg:['Conto economico aggregato','e una tabella a scalare'],
+  ver:['Versioni precedenti','si ripristinano copie dell archivio'],
+  ring:['Ingredienti e prezzi','e un archivio di centinaia di righe'],
+  rforn:['Fornitori','e un archivio da compilare'],
+  rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese'],
+  rric:['Ricette e schede costo','si costruiscono le schede riga per riga'],
+  an:['Analisi e presentazione','e il report da stampare per il cliente'],
+  ce:['Conto economico','']
+};
+function lpSoloPC(pagina){
+  const v=LP_PC[pagina]||['Questa pagina',''];
+  return `<div class="lp"><div class="lpvuoto"><span class="ico">🖥</span>
+    <b>${v[0]}</b> si usa dal computer${v[1]?`:<br>${v[1]}`:''}.<br><br>
+    Sul telefono trovi i numeri gia pronti nelle altre sezioni.</div></div>`;
+}
+
+/* ---------- 1 - conto economico ---------- */
+function liteCE(){
+  const {m,t,a,isM,per}=lpAgg();
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Conto economico',per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const incMp=a.incMp*100;
+  const fc = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
+  const bc = a.ricaviBev>0  ? a.mpBev /a.ricaviBev*100  : null;
+  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>o.x.ricavi>0).map(o=>{
+    const inc=o.x.mp/o.x.ricavi*100;
+    return lpRow(MESI[o.i], null, fmtE(o.x.ricavi),
+      Math.round(inc)+'%', lpStato(inc, t.mp));
+  }).join('');
+  return `<div class="lp">${lpTesta('Conto economico', per)}
+    ${lpCard('Ricavi', fmtE(a.ricavi),
+      `Food <b>${fmtE(a.ricaviFood)}</b> · Beverage <b>${fmtE(a.ricaviBev)}</b>`)}
+    ${lpCard('Materia prima', Math.round(incMp)+'<small> € ogni 100</small>',
+      `${fmtE(a.mp)} · l'obiettivo è ${fmtNum(t.mp)}` +
+      (fc!=null&&bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
+      lpStato(incMp, t.mp))}
+    <div class="lpsez">Mese per mese · ricavi e materia prima</div>
+    ${mesi}
+    ${lpChiusura('1 · Conto economico')}</div>`;
+}
+
+/* ---------- 2 - risorse umane ---------- */
+function liteRU(){
+  const {m,t,a,per,idx}=lpAgg();
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Risorse umane',per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const M=merchMode();
+  const val=(pers)=>idx.reduce((s,i)=>s+mPick(num(pers.m[i]), pers.mk?num(pers.mk[i]):0, M), 0);
+  const rep={}; let persone=0;
+  (S.ru||[]).forEach(pers=>{
+    const v=val(pers); if(!v) return;
+    persone++; const r=pers.reparto||'Altro';
+    rep[r]=(rep[r]||0)+v;
+  });
+  const incRu=a.incRu*100;
+  const iF = a.ricaviFood>0 ? a.ruFood/a.ricaviFood*100 : null;
+  const iB = a.ricaviBev>0  ? a.ruBev /a.ricaviBev*100  : null;
+  const righe=Object.entries(rep).sort((x,y)=>y[1]-x[1]).map(([nome,v])=>
+    lpRow(nome, null, fmtE(v), Math.round(v/a.ru*100)+'%')).join('');
+  let bu='';
+  if(iF!=null && iB!=null){
+    const gap=Math.abs(iF-iB);
+    bu = lpCard('Cucina e bar',
+      `${Math.round(iF)}<small> contro </small>${Math.round(iB)}`,
+      `€ di stipendi ogni 100 di incasso del proprio reparto. ` + (gap<=15
+        ? `<b>${Math.round(gap)} punti</b> di distanza: dentro la soglia di attenzione di 15.`
+        : `<b>${Math.round(gap)} punti</b> di distanza, sopra la soglia di 15 — e sul totale non si vede.`),
+      gap<=15?'ok':gap>20?'bad':'warn');
+  }
+  return `<div class="lp">${lpTesta('Risorse umane', per)}
+    ${lpCard('Costo del personale', Math.round(incRu)+'<small> € ogni 100</small>',
+      `${fmtE(a.ru)} · l'obiettivo è ${fmtNum(t.ru)} · <b>${persone}</b> person${persone===1?'a':'e'}`,
+      lpStato(incRu, t.ru))}
+    ${bu}
+    <div class="lpsez">Per reparto</div>
+    ${righe||'<div class="lpvuoto">Nessuna persona caricata in questo periodo.</div>'}
+    ${lpChiusura('2 · Risorse umane')}</div>`;
+}
+
+/* ---------- 3 - spese generali ---------- */
+function liteSG(){
+  const {t,a,per,idx}=lpAgg();
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Spese generali',per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const voci=[], incSg=a.incSg*100;
+  let unaTantum=0;
+  (S.sg||[]).forEach(c=>{
+    const v=idx.reduce((s,i)=>s+num(c.m[i]),0);
+    if(Math.abs(v)<0.005) return;
+    const presenze=(c.m||[]).filter(x=>num(x)>0).length;   /* su tutto l'anno */
+    if(presenze<=2) unaTantum+=v;
+    voci.push({nome:c.nome, gruppo:c.gruppo, v, raro:presenze<=2});
+  });
+  voci.sort((x,y)=>y.v-x.v);
+  const ricorrenti=a.sg-unaTantum;
+  const righe=voci.slice(0,10).map(x=>lpRow(x.nome, x.raro?'una o due volte l\'anno':x.gruppo,
+    fmtE(x.v), Math.round(x.v/a.sg*100)+'%')).join('');
+  return `<div class="lp">${lpTesta('Spese generali', per)}
+    ${lpCard('Spese generali', Math.round(incSg)+'<small> € ogni 100</small>',
+      `${fmtE(a.sg)} · l'obiettivo è ${fmtNum(t.sg)}`, lpStato(incSg, t.sg))}
+    ${unaTantum>0 ? lpCard('Tolte le voci che compaiono una o due volte',
+      (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100</small>',
+      `<b>${fmtE(unaTantum)}</b> sono saldi e rate, non spesa corrente. Depurate quelle, la spesa ricorrente fa <b>${fmtE(ricorrenti)}</b>.`,
+      lpStato(ricorrenti/a.ricavi*100, t.sg)) : ''}
+    <div class="lpsez">Le voci che pesano di più</div>
+    ${righe}
+    ${lpChiusura('3 · Spese generali')}</div>`;
+}
+
+/* ---------- 4 - costi nascosti ---------- */
+function liteCN(){
+  const {a,per}=lpAgg();
+  let c=null; try{ migrateS(); c=cnConfronto(); }catch(e){}
+  if(!c) return `<div class="lp">${lpTesta('Costi nascosti','esercizio '+S.anno)}
+    <div class="lpvuoto">Per confrontare il bilancio con le ricette serve l'archivio delle schede costo,
+    oppure le incidenze teoriche scritte a mano.<br><br>Si caricano dal computer.</div></div>`;
+  const dpp=(c.incReale-c.incTeor)*100;
+  const sp=cnSpiegato();
+  const righe=[
+    ['Autoconsumi del personale', sp.auto],
+    ['Omaggi e customer care',    sp.omag],
+    ['Rimanenze invendute',       sp.rim],
+    ['Dosi, rotture, dispersioni',sp.ghost]
+  ].filter(x=>x[1]>0).map(x=>lpRow(x[0], null, fmtE(x[1]))).join('');
+  return `<div class="lp">${lpTesta('Costi nascosti', 'esercizio '+S.anno+' · '+(c.fonte==='venduto'?'dal venduto di cassa':'dalle incidenze scritte a mano'))}
+    ${lpCard('Food cost ideale', fmtP(c.incTeor), `da schede ricetta · ${fmtE(c.teor)}`)}
+    ${lpCard('Food cost reale', fmtP(c.incReale), `dal bilancio · ${fmtE(c.reale)}`)}
+    ${lpCard('Delta', (dpp>=0?'+':'−')+fmtNum(Math.abs(dpp))+'<small> punti</small>',
+      `<b>${fmtE(Math.abs(c.oltre))}</b> ${c.oltre>=0?'di materia prima in più di quella che le ricette spiegano':'in meno di quello che le ricette prevedono: è precisione, non errore'}`,
+      dpp<=2?'ok':dpp>4?'bad':'warn')}
+    ${righe?`<div class="lpsez">Dove va lo scarto</div>${righe}`:''}
+    ${lpChiusura('4 · Costi nascosti')}</div>`;
+}
+
+/* ---------- confronto fra due anni ---------- */
+function liteCF(){
+  const anni=anniCliente();
+  if(anni.length<2) return `<div class="lp">${lpTesta('Confronto tra periodi','')}
+    <div class="lpvuoto">Questo cliente ha un anno solo: il <b>${S.anno}</b>.<br>
+    Per confrontare serve un secondo anno, da aggiungere dal computer.</div></div>`;
+  const B=num(S.anno), A=anni.find(x=>x!==B);
+  const mesi=cfMesiPari(A,B);
+  if(!mesi.length) return `<div class="lp">${lpTesta('Confronto tra periodi','')}
+    <div class="lpvuoto">${A} e ${B} non hanno nessun mese in comune con i dati caricati.</div></div>`;
+  const sA=cfSomma(A,mesi,'tot'), sB=cfSomma(B,mesi,'tot');
+  if(!sA||!sB) return `<div class="lp">${lpTesta('Confronto tra periodi','')}
+    <div class="lpvuoto">Dati non leggibili per uno dei due anni.</div></div>`;
+  const pc=(o,k)=> o.ric>0 ? o[k]/o.ric*100 : NaN;
+  const crescita = sA.ric>0 ? (sB.ric/sA.ric-1)*100 : NaN;
+  const riga=(nome,kA,kB,meglioGiu)=>{
+    const d=kB-kA, buono = meglioGiu ? d<0 : d>0;
+    const dt=(d>=0?'+':'−')+fmtNum(Math.abs(Math.round(d*10)/10))+' p.p.';
+    return lpRow(nome, fmtNum(Math.round(kA*10)/10)+' → '+fmtNum(Math.round(kB*10)/10),
+      '', dt, Math.abs(d)<0.1 ? '' : (buono?'ok':'bad'));
+  };
+  return `<div class="lp">${lpTesta('Confronto tra periodi',
+      `${A} contro ${B} · ${cfEtichettaPari(mesi).toLowerCase()}`)}
+    ${lpCard('Ricavi', fmtE(sB.ric),
+      `nel ${A} erano <b>${fmtE(sA.ric)}</b> · ${isFinite(crescita)?(crescita>=0?'+':'−')+fmtNum(Math.abs(Math.round(crescita*10)/10))+'%':'—'}`,
+      crescita>=0?'ok':'warn')}
+    ${lpCard('Utile operativo', fmtE(sB.ro),
+      `nel ${A} era <b>${fmtE(sA.ro)}</b> · ${fmtNum(Math.round(pc(sB,'ro')*10)/10)} € ogni 100`,
+      sB.ro>=sA.ro?'ok':'warn')}
+    <div class="lpsez">Incidenze, in punti percentuali</div>
+    ${riga('Materia prima', pc(sA,'mp'), pc(sB,'mp'), true)}
+    ${riga('Personale',     pc(sA,'ru'), pc(sB,'ru'), true)}
+    ${riga('Spese generali',pc(sA,'sg'), pc(sB,'sg'), true)}
+    ${riga('Utile',         pc(sA,'ro'), pc(sB,'ro'), false)}
+    <div class="lpnota">Il confronto usa solo i mesi caricati in entrambi gli anni, altrimenti
+      si confronterebbero periodi diversi. Il verde segue l'effetto sul margine, non il segno.</div></div>`;
+}
+
+/* ---------- obiettivi ---------- */
+function liteOB(){
+  const t=S.targets;
+  const r=(n,v,sotto)=>lpRow(n, sotto, fmtNum(v)+'%');
+  return `<div class="lp">${lpTesta('Obiettivi Planet One',
+      'Le soglie che accendono le spie del cruscotto. Valgono per questo cliente.')}
+    ${r('Risorse umane', t.ru, 'costo del personale sui ricavi, al massimo')}
+    ${r('Materia prima', t.mp, 'food + beverage sui ricavi, al massimo')}
+    ${r('Spese generali', t.sg, 'costi indiretti sui ricavi, al massimo')}
+    ${r('Costi nascosti', t.cn, 'scarto fra bilancio e schede, al massimo')}
+    ${r('Utile operativo', t.ro, 'quello che resta: si ricava dagli altri tre')}
+    <div class="lpsez">Prime cost</div>
+    ${lpRow('Materia prima + personale', 'fascia sana 60–65 · obiettivo Planet One 62',
+      fmtNum(num(t.mp)+num(t.ru))+'%')}
+    ${lpChiusura('Obiettivi Planet One')}</div>`;
+}
+
+/* ---------- il metodo ---------- */
+async function liteME(){
+  await metodoCarica();
+  const cap=(METODO||[]).map(c=>`<div class="lpc"><div class="et">${escH(c.t||'')}</div>
+    <div class="lptesto" style="margin-top:8px">${String(c.x||'').replace(/\n/g,'<br>')}</div></div>`).join('');
+  return `<div class="lp">${lpTesta('Il metodo Planet One',
+      'Il know how che alimenta le diagnosi del report. Si legge, non si modifica dal telefono.')}
+    ${cap||'<div class="lpvuoto">Il testo del metodo non è ancora stato caricato.</div>'}</div>`;
+}
+
+const LITE_REND = {ce:liteCE, ru:liteRU, sg:liteSG, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME};
+async function liteRender(p){
+  const el=document.getElementById('litePage'); if(!el) return;
+  const nm=document.getElementById('clientName');
+  if(nm){ nm.value=S.cliente||''; nm.size=Math.max(12,(S.cliente||'').length+1); }
+  try{
+    const f=LITE_REND[p];
+    el.innerHTML = f ? await f() : lpSoloPC(p);
+  }catch(e){
+    el.innerHTML = `<div class="lp"><div class="lpvuoto">Questa pagina non si apre in modalità lite.<br>
+      <b>${escH(String(e&&e.message||e))}</b></div></div>`;
+  }
 }
 
 let SUGG=[];
@@ -10431,6 +10727,7 @@ function gotoPage(p){
   const vista = SOON[p] ? 'soon' : p;
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+vista));
   if(SOON[p]) return renderSOON(p);
+  if(document.documentElement.classList.contains('litealt')) return;   // la disegna liteRender
   PAGES[p]();
 }
 /* ---------- backup: esporta/importa tutti i clienti ---------- */
