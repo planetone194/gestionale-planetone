@@ -1241,7 +1241,12 @@
   /* sul telefono esiste una sola esperienza: lite. L'interruttore sparisce. */
   html.mobi .toolsrow{display:none;}
   html.mobi:not(.mob) .vistabtn{display:none;}
-  html.mob .toolsrow{position:fixed;top:12px;right:14px;z-index:70;margin:0;width:auto;}
+  /* Nell'anteprima mobile la riga degli interruttori NON sparisce: dentro c'è
+     il bottone per tornare al desktop, e se si nasconde non si esce più.
+     Quello che sparisce sono i bottoni del cliente e il merchandising. */
+  html.mob .toolsrow{display:flex!important;position:fixed;top:12px;right:14px;z-index:70;margin:0;width:auto;}
+  html.mob .toolsright{margin-left:0;}
+  html.mob #vistabtn{display:inline-flex!important;align-items:center;}
   html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
   html.mob .modesw{display:inline-flex;}
   html.mobi .topbtns,html.mobi .merchsw,html.mobi .annosw,html.mobi #btnRename,
@@ -1698,7 +1703,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v123</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v124</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2813,6 +2818,17 @@ function toggleVista(){
   window.scrollTo(0,0);
 }
 try{ if(localStorage.getItem('p1:vista')==='mob'){ document.documentElement.classList.add('mob'); } }catch(e){}
+/* via d'uscita sempre disponibile: Esc sull'anteprima mobile torna al desktop,
+   anche se per un errore di stile il bottone non si vedesse */
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  if(!document.documentElement.classList.contains('mob')) return;
+  /* se c'è qualcosa di aperto sopra la pagina, Esc chiude quello, non l'anteprima */
+  if(document.querySelector('.sheet.open')){ chiudiSheet(); return; }
+  const sm=document.getElementById('suggmodal');
+  if(sm && sm.getBoundingClientRect().height>0){ chiudiSugg(); return; }
+  toggleVista();
+});
 syncMobi();
 window.addEventListener('resize',()=>{
   if(!syncMobi()) return;
