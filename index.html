@@ -336,6 +336,27 @@
   table.entry tr.sumrow td.lbl{background:#F3F1EB}
   .rowdel{border:none;background:none;color:#C9C4B8;cursor:pointer;font-size:14px;padding:2px 6px;}
   .rowdel:hover{color:var(--bad)}
+  /* checklist dei dati: una griglia di spunte, niente da scrivere */
+  table.entry.chk{min-width:860px;}
+  table.entry.chk th{text-align:center;vertical-align:bottom;padding:8px 6px;line-height:1.3;}
+  table.entry.chk th:first-child{text-align:left;}
+  table.entry.chk td.lbl{min-width:120px;font-weight:600;}
+  .chkc{text-align:center;font-family:var(--num);font-size:15px;padding:7px 6px;}
+  .chkc.si{color:var(--ok);font-weight:700;}
+  .chkc.no{color:#D8D4CA;font-size:17px;}
+  .chkc.na{color:#C9C4B8;font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;font-family:inherit;}
+  table.entry.chk tr.spenta td.lbl{color:var(--ink2);font-weight:400;}
+  .chkopt,.chkven{display:block;font-size:9px;letter-spacing:.6px;font-weight:600;text-transform:uppercase;margin-top:3px;}
+  .chkopt{color:var(--ink2);} .chkven{color:#8355F7;}
+  .chkrow{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);}
+  .chkrow:first-of-type{border-top:none;}
+  .chkrow .s{flex:none;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;
+    justify-content:center;font-family:var(--num);font-weight:700;font-size:14px;}
+  .chkrow .s.si{background:var(--ok-bg);color:var(--ok);}
+  .chkrow .s.no{background:#F2F0EA;color:#B9B4A8;}
+  .chkrow .t{flex:1;min-width:0;font-size:13.5px;}
+  .chkrow .d{font-size:12px;color:var(--ink2);margin-top:2px;line-height:1.5;}
+  .chkrow .d.dove{color:#9A958A;}
   .tbltools{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
   .livebar{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;}
   .live{background:#FAF9F6;border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:12.5px;color:var(--ink2);}
@@ -1099,8 +1120,11 @@
   /* l'interruttore fra le due modalità: due segmenti, si vede sempre dove si è */
   /* la riga degli interruttori: sta nel flusso sopra la testata, cosi' non
      copre mai i bottoni sotto. Altezza e raggi identici a quelli della testata. */
-  .toolsrow{display:flex;justify-content:flex-end;align-items:center;gap:9px;margin:0 0 9px;flex-wrap:wrap;}
-  .toolsrow.two{margin:0 0 14px;}
+  /* una riga sola sopra la testata: a sinistra i bottoni del cliente, a destra
+     gli interruttori. Modalità e Vista mobile stanno in fondo a destra: così
+     quando in lite spariscono merchandising e bottoni, loro non si spostano. */
+  .toolsrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;flex-wrap:wrap;}
+  .toolsright{display:flex;align-items:center;gap:9px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;}
   /* il dettaglio merchandising non occupa più mezza pagina: è un pannello
      che si apre da qui e si richiude, così sotto restano i cruscotti,
      i consigli e le aree di costo tutti nella prima schermata */
@@ -1217,8 +1241,8 @@
   /* sul telefono esiste una sola esperienza: lite. L'interruttore sparisce. */
   html.mobi .toolsrow{display:none;}
   html.mobi:not(.mob) .vistabtn{display:none;}
-  html.mob .toolsrow:not(.two){position:fixed;top:12px;right:14px;z-index:70;margin:0;}
-  html.mobi .toolsrow.two,html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
+  html.mob .toolsrow{position:fixed;top:12px;right:14px;z-index:70;margin:0;width:auto;}
+  html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
   html.mob .modesw{display:inline-flex;}
   html.mobi .topbtns,html.mobi .merchsw,html.mobi .annosw,html.mobi #btnRename,
   html.mobi #viewChips,html.mobi #period{display:none!important;}
@@ -1603,6 +1627,7 @@
     <div class="gb" data-gb="ass">
       <button data-page="aiask" class="soon">Chiedi all'assistente</button>
       <button data-page="aimsg" class="soon">Messaggi al cliente</button>
+      <button data-page="chk">Checklist dati da caricare</button>
     </div>
 
     <div class="gh" data-g="cru">Cruscotto<span class="ca">▼</span></div>
@@ -1673,22 +1698,11 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v122</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v123</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
   <div class="toolsrow">
-    <div class="modesw" id="modesw"><span class="ml">Modalità</span>
-      <button type="button" data-mode="lite">Lite</button>
-      <button type="button" data-mode="pro">Pro</button></div>
-    <button class="vistabtn" id="vistabtn" onclick="toggleVista()">📱 Vista mobile</button>
-    <span class="merchsw" id="merchSw" title="il merchandising entra nei conti, ne resta fuori, oppure si guarda da solo">
-      <span class="ml">Merch</span>
-      <button type="button" data-merch="incl">Acceso</button><button type="button" data-merch="escl">Spento</button><button type="button" data-merch="solo">Isolato</button>
-    </span>
-    <button class="merchexp" id="merchExp" onclick="merchPan()" title="dettaglio: gli stessi conti con e senza merchandising">⌄</button>
-  </div>
-  <div class="toolsrow two">
     <div class="topbtns">
       <select id="clientSelect" class="clientsel cli" title="cambia cliente"></select>
       <button class="btn ghost" id="btnNewClient">+ Cliente</button>
@@ -1699,6 +1713,17 @@
       <button class="btn ghost ico cli" id="btnReset" title="Azzera dati — svuota il cliente corrente">↺</button>
       <button class="btn cli" onclick="window.print()">Stampa report</button>
       <button class="btn savemini" data-save="mini" title="Salva ora (Ctrl/Cmd + S)" aria-label="Salva ora">💾</button>
+    </div>
+    <div class="toolsright">
+      <span class="merchsw" id="merchSw" title="il merchandising entra nei conti, ne resta fuori, oppure si guarda da solo">
+        <span class="ml">Merch</span>
+        <button type="button" data-merch="incl">Acceso</button><button type="button" data-merch="escl">Spento</button><button type="button" data-merch="solo">Isolato</button>
+      </span>
+      <button class="merchexp" id="merchExp" onclick="merchPan()" title="dettaglio: gli stessi conti con e senza merchandising">⌄</button>
+      <div class="modesw" id="modesw"><span class="ml">Modalità</span>
+        <button type="button" data-mode="lite">Lite</button>
+        <button type="button" data-mode="pro">Pro</button></div>
+      <button class="vistabtn" id="vistabtn" onclick="toggleVista()">📱 Vista mobile</button>
     </div>
   </div>
   <div class="merchpan" id="merchPanBox" hidden></div>
@@ -1892,6 +1917,7 @@
   <div class="page" id="page-ver"><div id="verBody"></div></div>
   <div class="page" id="page-ob"><div id="obBody"></div></div>
   <div class="page" id="page-soon"><div id="soonBody"></div></div>
+  <div class="page" id="page-chk"><div id="chkBody"></div></div>
   <div class="page" id="page-ring"><div id="ringBody"></div></div>
   <div class="page" id="page-rforn"><div id="rfornBody"></div></div>
   <div class="page" id="page-rprep"><div id="rprepBody"></div></div>
@@ -3711,7 +3737,7 @@ function liteAN(){
   </div>`;
 }
 
-const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN};
+const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK};
 async function liteRender(p){
   const el=document.getElementById('litePage'); if(!el) return;
   const nm=document.getElementById('clientName');
@@ -8881,7 +8907,187 @@ function prPartial(){
 function prRefresh(){ if(current==='pr') renderPR(); }
 /* due voci di menu, una pagina sola: cambia solo che cosa si guarda */
 const ALIAS={rica:'ce', mkt:'sg'};
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
+/* ================== CHECKLIST DEI DATI DA CARICARE ==================
+   Una pagina sola che risponde alla domanda che si fa a ogni cliente nuovo e
+   a ogni mese nuovo: che cosa mi manca? Mese per mese per quello che è
+   mensile, una volta sola per quello che si carica una volta. Non inventa
+   niente: legge l'archivio e dice sì o no. */
+const CHK_MESI=[
+  {k:'ric', t:'Ricavi',          g:'cruscotto', d:'incasso del mese diviso Food e Beverage, IVA esclusa',
+   dove:'Cruscotto · Ricavi'},
+  {k:'mp',  t:'Materia prima',   g:'cruscotto', d:'acquisti di cucina e di bar di competenza del mese',
+   dove:'Cruscotto · Materia prima'},
+  {k:'ru',  t:'Personale',       g:'cruscotto', d:'costo del lavoro per persona, lordo azienda',
+   dove:'Cruscotto · Risorse umane'},
+  {k:'sg',  t:'Spese generali',  g:'cruscotto', d:'affitti, utenze, servizi, manutenzioni',
+   dove:'Cruscotto · Spese generali'},
+  {k:'mk',  t:'Marketing',       g:'consigliato', d:'agenzia, campagne, sponsorizzazioni, portali, stampe',
+   dove:'Cruscotto · Marketing'},
+  {k:'cn',  t:'Costi nascosti',  g:'consigliato', d:'autoconsumi, omaggi, rotture, rimanenze',
+   dove:'Cruscotto · Costi nascosti'},
+  {k:'ven', t:'Venduto di cassa',g:'venduto', d:'pezzi e incasso per prodotto, estratti dal gestionale di cassa',
+   dove:'Venduto · Report del venduto'},
+  {k:'gio', t:'Incassi giornalieri', g:'consigliato', d:'incasso per giorno e per servizio: serve a dire quali servizi reggono',
+   dove:'Personale · Analisi dei turni'}
+];
+async function chkStato(){
+  migrateS();
+  const m=compute();
+  let P=[]; try{ await proCarica(); P=(PRO&&PRO.prod)||[]; }catch(e){}
+  /* il venduto, mese per mese, da tutto l'archivio prodotti */
+  const ven=Array.from({length:12},(_,i)=>P.reduce((t,x)=>{
+    const c=(x.mesi||[])[i]||{}; return t+numIt(c.pz)+numIt(c.inc); },0));
+  /* gli incassi giornalieri caricati, mese per mese dell'anno aperto */
+  const gio=Array.from({length:12},()=>0);
+  Object.keys(S.incassi||{}).forEach(k=>{
+    const d=new Date(k+'T12:00:00'); if(isNaN(d)) return;
+    if(d.getFullYear()!==num(S.anno)) return;
+    const v=S.incassi[k]||[];
+    if(v.some(x=>x!=null&&x!=='')) gio[d.getMonth()]++;
+  });
+  const mesi=Array.from({length:12},(_,i)=>{
+    const x=m.months[i];
+    return {i, aperto:meseAperto(i),
+      ric:x.ricavi>0, mp:x.mp>0, ru:x.ru>0, sg:x.sg>0, mk:x.mk>0, cn:x.cn>0,
+      ven:ven[i]>0, gio:gio[i]>0, completo:meseCompleto(x)};
+  });
+  /* quello che si carica una volta sola */
+  const conCosto=P.filter(x=>{ try{ return ricCosto(x)!=null; }catch(e){ return false; } }).length;
+  const ore=oreTipo();
+  const mPrec=computeAnno(num(S.anno)-1);
+  const una=[
+    {t:'Archivio prodotti e listino', ok:P.length>0, g:'venduto',
+     d:'nome, categoria e prezzo di vendita di ogni prodotto a menu',
+     n:P.length?`${P.length} prodotti in archivio`:'nessun prodotto importato',
+     dove:'Menu engineering · Listino e costi'},
+    {t:'Schede costo delle ricette', ok:conCosto>0, g:'venduto',
+     d:'ingredienti, dosi e prezzi d\'acquisto: senza, non c\'è margine per prodotto',
+     n:P.length?`${conCosto} prodotti su ${P.length} hanno un costo certo`:'servono prima i prodotti',
+     dove:'Ricette e fornitori · Ricette e schede costo'},
+    {t:'Incidenza teorica da schede ricetta', ok:(mpsVal('food')!=null||mpsVal('bev')!=null), g:'consigliato',
+     d:'il food cost ideale: è il metro con cui si misurano i costi nascosti',
+     n:(mpsVal('food')!=null||mpsVal('bev')!=null)?'inserita':'non inserita',
+     dove:'Cruscotto · Materia prima'},
+    {t:'Ore di lavoro o griglia dei turni', ok:!!ore.fonte, g:'consigliato',
+     d:'senza ore non si calcola la produttività oraria, che è metà della diagnosi sul personale',
+     n:ore.fonte?('da '+ore.fonte):'nessuna ora caricata',
+     dove:'Personale · Pianificazione turni'},
+    {t:'Obiettivi per area', ok:num(S.targets&&S.targets.ru)>0, g:'cruscotto',
+     d:'le soglie su cui si accendono i semafori: di serie sono quelle Planet One',
+     n:`personale ${fmtNum(S.targets.ru)} · materia prima ${fmtNum(S.targets.mp)} · spese generali ${fmtNum(S.targets.sg)} · marketing ${fmtNum(S.targets.mk)}`,
+     dove:'Obiettivi per area'},
+    {t:'Anno precedente', ok:!!(mPrec && mPrec.complete && mPrec.complete.length), g:'consigliato',
+     d:'senza il confronto anno su anno il report dice come va, non se sta migliorando',
+     n:(mPrec&&mPrec.complete&&mPrec.complete.length)?`${mPrec.complete.length} mesi caricati sul ${num(S.anno)-1}`:`niente sul ${num(S.anno)-1}`,
+     dove:'il selettore Anno, in alto'}
+  ];
+  return {mesi, una, nCompleti:mesi.filter(x=>x.completo).length,
+          nAperti:mesi.filter(x=>x.aperto).length};
+}
+/* l'elenco di quello che manca, in italiano, pronto da mandare al cliente */
+function chkElenco(st){
+  const out=[];
+  CHK_MESI.filter(v=>v.g!=='consigliato').forEach(v=>{
+    const senza=st.mesi.filter(x=>x.aperto && !x[v.k]).map(x=>MESI[x.i]);
+    if(senza.length===st.nAperti) out.push(`${v.t} — manca per tutto l'anno (${v.d})`);
+    else if(senza.length) out.push(`${v.t} — mancano ${senza.join(', ')}`);
+  });
+  st.una.filter(x=>!x.ok && x.g!=='consigliato').forEach(x=>out.push(`${x.t} — ${x.d}`));
+  return out;
+}
+async function renderCHK(){
+  const nm=document.getElementById('clientName');
+  if(nm){ nm.value=S.cliente||''; nm.size=Math.max(12,(S.cliente||'').length+1); }
+  const body=document.getElementById('chkBody');
+  body.innerHTML='<section><div class="sub">Sto leggendo l\'archivio…</div></section>';
+  const st=await chkStato();
+  const manca=chkElenco(st);
+  const segno=(ok,aperto)=>!aperto ? '<td class="chkc na">chiuso</td>'
+    : ok ? '<td class="chkc si">✓</td>' : '<td class="chkc no">—</td>';
+  const righe=st.mesi.map(x=>`<tr${x.aperto?'':' class="spenta"'}>
+      <td class="lbl">${MESI[x.i]}</td>
+      ${CHK_MESI.map(v=>segno(x[v.k], x.aperto)).join('')}
+      <td class="chkc">${!x.aperto?'' : x.completo
+        ? '<span class="verdict v-ok">nel report</span>'
+        : '<span class="verdict v-warn">incompleto</span>'}</td>
+    </tr>`).join('');
+  const colonna=v=>`<th title="${escH(v.d)}">${v.t}${v.g==='consigliato'?'<span class="chkopt">consigliato</span>':v.g==='venduto'?'<span class="chkven">venduto</span>':''}</th>`;
+  body.innerHTML=`
+  <section>
+    <div class="sechead"><div><h2>Checklist dei dati da caricare</h2>
+      <div class="sub">Che cosa serve, mese per mese, per chiudere il cruscotto e per fare l'analisi sul venduto.
+      La spunta non la mette nessuno a mano: la legge dall'archivio.</div></div></div>
+    <div class="legend" style="margin-top:10px">
+      <span><i style="background:var(--ok)"></i>caricato</span>
+      <span><i style="background:#D8D4CA"></i>manca</span>
+      <span><i style="background:var(--brass)"></i>serve per il cruscotto</span>
+      <span><i style="background:#8355F7"></i>serve per il venduto e il menu engineering</span>
+    </div>
+    <div class="tblwrap" style="margin-top:12px"><table class="entry chk">
+      <tr><th>Mese ${S.anno}</th>${CHK_MESI.map(colonna).join('')}<th>Stato</th></tr>
+      ${righe}
+    </table></div>
+    <div class="sub" style="margin-top:10px">Un mese entra nel report solo quando ha tutte e quattro le gambe:
+      ricavi, materia prima, personale e spese generali. In questo esercizio sono
+      <b>${st.nCompleti}</b> su ${st.nAperti}.</div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Una volta sola</h2>
+      <div class="sub">Non si ricarica ogni mese: si imposta una volta e vale per tutto l'anno.</div></div></div>
+    ${st.una.map(x=>`<div class="chkrow">
+      <div class="s ${x.ok?'si':'no'}">${x.ok?'✓':'—'}</div>
+      <div class="t"><b>${x.t}</b>${x.g==='consigliato'?'<span class="chkopt">consigliato</span>':x.g==='venduto'?'<span class="chkven">venduto</span>':''}
+        <div class="d">${x.d}</div>
+        <div class="d dove">${x.n} · si carica in <b>${x.dove}</b></div></div>
+    </div>`).join('')}
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Che cosa chiedere al cliente</h2>
+      <div class="sub">Solo quello che manca davvero, nell'ordine in cui serve.</div></div></div>
+    ${manca.length
+      ? `<ul class="bul">${manca.map(x=>`<li>${x}</li>`).join('')}</ul>
+         <div class="tbltools"><button class="btn small" id="chkCopia">Copia l'elenco</button>
+         <span class="savestate">Da incollare in una mail o in un messaggio al titolare.</span></div>`
+      : `<div class="sub">Non manca niente di essenziale: il cruscotto è completo e l'analisi sul venduto ha quello che le serve.</div>`}
+  </section>`;
+  const b=document.getElementById('chkCopia');
+  if(b) b.onclick=()=>{
+    const txt=`${S.cliente} · dati mancanti per ${S.anno}\n\n`+manca.map(x=>'· '+x).join('\n');
+    navigator.clipboard.writeText(txt).then(()=>toast('✓ Elenco copiato: incollalo nella mail al cliente.'))
+      .catch(()=>toast('Non sono riuscito a copiare: seleziona l\'elenco a mano.'));
+  };
+}
+
+/* la stessa checklist in lite: si legge, non si carica */
+async function liteCHK(){
+  const st=await chkStato();
+  const manca=chkElenco(st);
+  const sez=(titolo, voci)=>voci.length ? `<div class="lpsez">${titolo}</div>`+voci.join('') : '';
+  const perVoce=CHK_MESI.map(v=>{
+    const senza=st.mesi.filter(x=>x.aperto && !x[v.k]).map(x=>MESI[x.i].slice(0,3));
+    const n=st.nAperti-senza.length;
+    const stato = v.g==='consigliato' ? (senza.length?'warn':'ok')
+                                      : (senza.length?(senza.length===st.nAperti?'bad':'warn'):'ok');
+    return lpRow(v.t, senza.length? 'mancano '+senza.join(', ') : 'tutti i mesi caricati',
+      n+'/'+st.nAperti, senza.length?'da caricare':'completo', stato);
+  });
+  const una=st.una.map(x=>lpRow(x.t, x.n, x.ok?'✓':'—', x.ok?'fatto':'manca', x.ok?'ok':(x.g==='consigliato'?'warn':'bad')));
+  return `<div class="lp">${lpTesta('Checklist dati da caricare','esercizio '+S.anno)}
+    ${lpCard('Mesi pronti per il report', st.nCompleti+'<small> su '+st.nAperti+'</small>',
+      st.nCompleti===st.nAperti ? 'il cruscotto è completo'
+        : 'un mese entra nel report solo con ricavi, materia prima, personale e spese generali',
+      st.nCompleti===st.nAperti?'ok':st.nCompleti?'warn':'bad')}
+    ${sez('Mese per mese', perVoce)}
+    ${sez('Una volta sola', una)}
+    ${manca.length ? `<div class="lpsez">Che cosa chiedere</div>
+      <div class="lptx">${manca.map(x=>`<p>${x}</p>`).join('')}</div>` : ''}
+    <div class="lpnota">I dati si caricano dal computer, in <b>modalità Pro</b>.
+      Qui si controlla soltanto a che punto siamo.</div></div>`;
+}
+
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, chk:renderCHK, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
