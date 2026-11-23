@@ -104,6 +104,8 @@
   #nav .gb.open{display:flex;}
   #nav .gb .grp{padding:9px 12px 2px;}
   #nav .gb button{font-size:13.5px;}
+  #nav .gb button.sub2{padding-left:26px;font-size:13px;color:#C2C0BB;}
+  #nav .gb button.sub2::before{content:'';position:absolute;}
   /* le voci non ancora portate dentro: spente, con un pallino vuoto a destra */
   #nav .gb button.soon{color:#8C8A85;position:relative;padding-right:26px;}
   #nav .gb button.soon::after{content:'';position:absolute;right:11px;top:50%;transform:translateY(-50%);
@@ -1521,10 +1523,12 @@
 <!-- «Altro»: sale a metà schermo, non copre tutto -->
 <div class="sheet" id="altSheet"><div class="velo" onclick="chiudiSheet()"></div>
   <div class="pan"><div class="grip"></div>
-    <div class="st">I numeri</div>
-    <button class="vo" onclick="vaiDa('ce')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Conto economico</span><span class="fr">›</span></button>
+    <div class="st">Le aree</div>
+    <button class="vo" onclick="vaiDa('rica')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Ricavi</span><span class="fr">›</span></button>
+    <button class="vo" onclick="vaiDa('ce')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Materia prima</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('ru')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Risorse umane</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('sg')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Spese generali</span><span class="fr">›</span></button>
+    <button class="vo" onclick="vaiDa('mkt')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Marketing</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('cn')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Costi nascosti</span><span class="fr">›</span></button>
     <div class="st">Confronti</div>
     <button class="vo" onclick="vaiDa('cf')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Confronto tra periodi</span><span class="fr">›</span></button>
@@ -1553,70 +1557,81 @@
     <button data-page="home">Clienti</button>
     <div class="sep"></div>
 
-    <div class="gh" data-g="cru">Cruscotto<span class="ca">▼</span></div>
-    <div class="gb" data-gb="cru">
-      <button data-page="dash" class="active">Quadro del cliente</button>
-      <div class="grp">Caricamento dati</div>
-      <button data-page="ce">1 · Conto economico</button>
-      <button data-page="ru">2 · Risorse umane</button>
-      <button data-page="sg">3 · Spese generali</button>
-      <button data-page="cn">4 · Costi nascosti</button>
-      <div class="grp">Analisi &amp; controllo</div>
-      <button data-page="cf">Confronto tra periodi</button>
-      <button data-page="pi">Pianificazione turni</button>
-      <button data-page="tu">Analisi dei turni</button>
-      <button data-page="si">Simulazione</button>
-      <button data-page="pr">Produttività HR</button>
-      <div class="grp">Report cliente</div>
-      <button data-page="an">Analisi &amp; presentazione</button>
-      <button data-page="me">Metodo</button>
-      <div class="grp">Archivio</div>
-      <button data-page="ver">Versioni precedenti</button>
+    <div class="gh" data-g="ass">Assistente<span class="ca">▼</span></div>
+    <div class="gb" data-gb="ass">
+      <button data-page="aiask" class="soon">Chiedi all'assistente</button>
+      <button data-page="aimsg" class="soon">Messaggi al cliente</button>
     </div>
 
-    <div class="gh" data-g="ven">Analisi del venduto<span class="ca">▼</span></div>
+    <div class="gh" data-g="cru">Cruscotto<span class="ca">▼</span></div>
+    <div class="gb" data-gb="cru">
+      <button data-page="dash" class="active">Cruscotto dell'attività</button>
+      <div class="grp">Le aree</div>
+      <button data-page="rica">Ricavi</button>
+      <button data-page="ce">Materia prima</button>
+      <button data-page="ru">Risorse umane</button>
+      <button data-page="sg">Spese generali</button>
+      <button data-page="mkt">Marketing</button>
+      <button data-page="cn">Costi nascosti</button>
+      <div class="grp">Analisi</div>
+      <button data-page="cf">Confronto tra periodi</button>
+      <div class="grp">Report al cliente</div>
+      <button data-page="an">Analisi e presentazione</button>
+      <button data-page="me">Metodo Planet One</button>
+    </div>
+
+    <div class="gh" data-g="ven">Venduto<span class="ca">▼</span></div>
     <div class="gb" data-gb="ven">
-      <button data-page="vdash" class="soon" title="in arrivo">Colpo d'occhio sul venduto</button>
-      <button data-page="vmens" class="soon" title="in arrivo">Venduto mensile per prodotto</button>
-      <button data-page="vriep" class="soon" title="in arrivo">Riepilogo venduto totale</button>
-      <button data-page="vcassa" class="soon" title="in arrivo">Risultati di cassa</button>
-      <button data-page="vprec" class="soon" title="in arrivo">Comparazione anno precedente</button>
-      <button data-page="vlist" class="soon" title="in arrivo">Incasso reale contro listino</button>
-      <button data-page="vprio" class="soon" title="in arrivo">Priorità prodotto e categoria</button>
-      <button data-page="vtrend" class="soon" title="in arrivo">Andamento nel tempo</button>
+      <button data-page="vdash" class="soon">Report del venduto</button>
+      <button data-page="vriep" class="soon">Riepilogo del periodo</button>
+      <button data-page="vprec" class="soon">Anno su anno</button>
+      <button data-page="vtrend" class="soon">Andamento nel tempo</button>
+      <button data-page="vlist" class="soon">Incasso contro listino</button>
     </div>
 
     <div class="gh" data-g="men">Menu engineering<span class="ca">▼</span></div>
     <div class="gb" data-gb="men">
-      <button data-page="mprof" class="soon" title="in arrivo">Menu Profits · listino e costi</button>
-      <button data-page="mwhat" class="soon" title="in arrivo">Simulatore prezzi · what-if</button>
-      <button data-page="mcore" class="soon" title="in arrivo">Core business generale</button>
-      <button data-page="mcores" class="soon" title="in arrivo">Core business con schede costo</button>
-      <button data-page="mfocus" class="soon" title="in arrivo">Prodotti focus</button>
-      <button data-page="mbuild" class="soon" title="in arrivo">Menu builder</button>
-      <button data-page="msugg" class="soon" title="in arrivo">Suggerimenti</button>
-    </div>
-
-    <div class="gh" data-g="obi">Obiettivi<span class="ca">▼</span></div>
-    <div class="gb" data-gb="obi">
-      <button data-page="ob">Obiettivi Planet One</button>
-      <button data-page="obmese" class="soon" title="in arrivo">Obiettivi del mese</button>
-      <button data-page="obbep" class="soon" title="in arrivo">Punto di pareggio</button>
-      <button data-page="obinc" class="soon" title="in arrivo">Incentivi</button>
+      <button data-page="mprof" class="soon">Listino e costi</button>
+      <button data-page="mcore" class="soon">Core business</button>
+      <button data-page="vprio" class="soon">Pagella prodotti e categorie</button>
+      <button data-page="mfocus" class="soon">Prodotti focus</button>
+      <button data-page="mwhat" class="soon">Simulatore prezzi</button>
+      <button data-page="mbuild" class="soon">Menu builder</button>
+      <button data-page="msugg" class="soon">Suggerimenti</button>
     </div>
 
     <div class="gh" data-g="ric">Ricette e fornitori<span class="ca">▼</span></div>
     <div class="gb" data-gb="ric">
       <button data-page="ring">Ingredienti e prezzi d'acquisto</button>
-      <button data-page="rforn">Fornitori</button>
-      <button data-page="rprep">Preparazioni e guarnizioni</button>
+      <button data-page="rforn" class="sub2">Fornitori</button>
+      <button data-page="rprep" class="sub2">Preparazioni e guarnizioni</button>
       <button data-page="rric">Ricette e schede costo</button>
-      <button data-page="rteam" class="soon" title="in arrivo">Ricettario per il team</button>
-      <button data-page="rall" class="soon" title="in arrivo">Allergeni</button>
+      <button data-page="rteam" class="soon">Ricettario per il team</button>
+      <button data-page="rall" class="soon">Allergeni</button>
     </div>
+
+    <div class="gh" data-g="per">Personale<span class="ca">▼</span></div>
+    <div class="gb" data-gb="per">
+      <button data-page="pi">Pianificazione turni</button>
+      <button data-page="tu">Analisi dei turni</button>
+      <button data-page="pr">Produttività del personale</button>
+      <button data-page="si">Simulazione</button>
+      <button data-page="obinc" class="soon">Piano incentivi</button>
+    </div>
+
+    <div class="gh" data-g="obi">Obiettivi per area<span class="ca">▼</span></div>
+    <div class="gb" data-gb="obi">
+      <button data-page="ob">Obiettivi per area</button>
+      <button data-page="obmese" class="soon">Obiettivi del mese</button>
+      <button data-page="obbep" class="soon">Punto di pareggio</button>
+    </div>
+
+    <div class="sep"></div>
+    <div class="grp">Archivio</div>
+    <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v120</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v121</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1672,6 +1687,7 @@
         <label>Risorse umane max <input type="number" step="0.5" data-t="ru"> %</label>
         <label>Materia prima max <input type="number" step="0.5" data-t="mp"> %</label>
         <label>Spese generali max <input type="number" step="0.5" data-t="sg"> %</label>
+        <label title="il marketing è una forchetta: questo è il centro, non un tetto">Marketing <input type="number" step="0.5" data-t="mk"> %</label>
         <label>Costi nascosti max <input type="number" step="0.1" data-t="cn"> %</label>
         <label class="calc">Utile operativo obiettivo <input type="number" data-t="ro" readonly tabindex="-1" title="si ricava da solo: 100 − risorse umane − materia prima − spese generali"> %
           <span class="formula" id="roFormula"></span></label>
@@ -1684,8 +1700,8 @@
   <div class="page" id="page-ce">
     <section>
       <div class="sechead">
-        <div><h2>Conto economico · ricavi e materia prima</h2>
-        <div class="sub">Inserisci i consuntivi mensili IVA esclusa. Tutto il resto — incidenze, semafori, reddito operativo, split Food/Beverage — si compila da solo nel cruscotto.</div></div>
+        <div><h2 id="ceTitolo">Ricavi e materia prima</h2>
+        <div class="sub" id="ceSub">Inserisci i consuntivi mensili IVA esclusa. Tutto il resto — incidenze, semafori, reddito operativo, split Food/Beverage — si compila da solo nel cruscotto.</div></div>
         <button class="btn imp" data-import="ce" type="button">⤒ Importa dati</button>
       </div>
       <div class="importbox" id="ceImportBox" hidden>
@@ -1769,8 +1785,8 @@
   <div class="page" id="page-sg">
     <section>
       <div class="sechead">
-        <div><h2>Spese generali · costi indiretti</h2>
-        <div class="sub">Le voci riprendono la scheda di ripartizione del bilancio Planet One. La ripartizione Food/Beverage è regolabile qui sotto: per incidenza dei ricavi (come da modello) o con una percentuale fissa.</div></div>
+        <div><h2 id="sgTitolo">Spese generali · costi indiretti</h2>
+        <div class="sub" id="sgSub">Le voci riprendono la scheda di ripartizione del bilancio Planet One. La ripartizione Food/Beverage è regolabile qui sotto: per incidenza dei ricavi o con una percentuale fissa.</div></div>
         <button class="btn imp" data-import="sg" type="button">⤒ Importa dati</button>
       </div>
       <div class="importbox" id="sgImportBox" hidden>
@@ -1971,10 +1987,27 @@ const SG_DEFAULT = [
 ];
 const SG_MERCH='Spese Merchandising';
 const isMerchSG = c => (c && c.gruppo===SG_MERCH);
+
+/* ---- marketing: quarta area, scorporata dalle spese generali ----
+   L'area si decide dalla VOCE, non dal gruppo: così i clienti già caricati si
+   riclassificano da soli, senza ricaricare niente, e una voce che non
+   riconosciamo resta dov'è invece di sparire.
+   Fuori dal marketing per decisione del 23/11/2026: le commissioni del
+   delivery (sono il costo di un canale di vendita, non promozione), la
+   formazione interna e i piani incentivi (sono personale). */
+const MKT_RE = /(agenzi[ae]\s*social|campagn[ae]\s*social|cartellonistic|pubblicit|spese\s*commerciali|sponsorizz|fotograf|stampa\s*(del\s*)?men|eventi\s*e\s*serate|portal[ei]\s*(di\s*)?prenotazion|consulenti\s*\(?\s*grafic)/;
+const MKT_NO = /(deliver|glovo|deliveroo|just\s*eat|formazione|incentiv|merchandising)/;
+function areaSG(c){
+  if(isMerchSG(c)) return 'merch';
+  const n = norm(c && c.nome || '');
+  if(MKT_NO.test(n)) return 'sg';
+  return MKT_RE.test(n) ? 'mkt' : 'sg';
+}
+const isMktSG = c => areaSG(c)==='mkt';
 function freshState(){
   return {
     cliente:'Nuovo cliente', anno:new Date().getFullYear(),
-    targets:{ru:34, mp:28, sg:18, cn:2, ro:20, ltRicavi:'', ltUtile:20, prodOra:60},
+    targets:{ru:34, mp:28, sg:15, mk:3, cn:2, ro:20, ltRicavi:'', ltUtile:20, prodOra:60},
     sgSplit:{mode:'incidenze', foodPct:50},
     mpSchede:{food:'', bev:'', agg:''},   // % da schede ricetta e data dell'ultimo aggiornamento
     stag:{on:false, mesi:Array(12).fill(true)},   // locale stagionale: quali mesi è aperto
@@ -2028,6 +2061,15 @@ let CLIENTS={list:[], activeId:null};
 let sOwner=null;
 function migrateS(){
   if(!S.merch||!S.merch.mode) S.merch={mode:'incl'};
+  /* 23/11/2026 — il marketing esce dalle spese generali: 3 punti scorporati
+     dai 18, che restano 15. L'utile obiettivo non si muove, quindi i report
+     già consegnati continuano a tornare. Un cliente che aveva una soglia
+     personalizzata se la tiene: si scorpora solo dal 18 di serie. */
+  if(S.targets && S.targets.mk==null){
+    S.targets.mk = 3;
+    if(num(S.targets.sg)===18) S.targets.sg = 15;
+    S.targets.ro = utileTarget();
+  }
   if(!S.storico||typeof S.storico!=='object') S.storico={};
   if(!S.turni||typeof S.turni!=='object') S.turni={base:0, righe:[]};
   if(!Array.isArray(S.turni.righe)){
@@ -2327,37 +2369,39 @@ function compute(){
       ruF += v * (p.reparto==='Cucina' ? 1 : p.reparto==='Bar' ? 0 : shareF);
     });
     /* spese generali: il gruppo "Spese Merchandising" è la parte merchandising */
-    let sgC=0, sgM=0;
-    S.sg.forEach(c=>{ const v=num(c.m[i]); if(isMerchSG(c)) sgM+=v; else sgC+=v; });
-    const sg = mPick(sgC, sgM, M);
+    let sgC=0, sgM=0, mkC=0;
+    S.sg.forEach(c=>{ const v=num(c.m[i]); const a=areaSG(c);
+      if(a==='merch') sgM+=v; else if(a==='mkt') mkC+=v; else sgC+=v; });
+    const sg = mPick(sgC, sgM, M);          /* spese generali vere, merch incluso secondo l'interruttore */
+    const mk = mPick(mkC, 0, M);            /* marketing: il merchandising ha la sua area */
     const sgShareF = (S.sgSplit&&S.sgSplit.mode==='fissa') ? Math.min(Math.max(num(S.sgSplit.foodPct),0),100)/100 : shareF;
     const sgF = sg*sgShareF;
     const cn = mPick(S.cn.reduce((a,c)=>a+num(c.m[i]),0), 0, M);
-    const totCosti = ru+mp+sg;
+    const totCosti = ru+mp+sg+mk;
     /* le due letture sempre disponibili, qualunque sia l'interruttore */
     const ruMk=S.ru.reduce((a,p)=>a+(p.mk?num(p.mk[i]):0),0);
     const ricaviCore=rfC+rbC+raC, ricaviMerch=rfM+rbM;
     const costiCore=mfC+mbC+sgC+S.ru.reduce((a,p)=>a+num(p.m[i]),0);
     const costiMerch=mfM+mbM+sgM+ruMk;
-    return { mese, i, ...ce, rf, rb, ra, mf, mb, ricavi, mp, ru, ruF, ruB:ru-ruF, mkr, sg, sgF, sgB:sg-sgF, cn, totCosti, ro:ricavi-totCosti,
+    return { mese, i, ...ce, rf, rb, ra, mf, mb, ricavi, mp, ru, ruF, ruB:ru-ruF, mkr, sg, sgF, sgB:sg-sgF, mk, cn, totCosti, ro:ricavi-totCosti,
              ricaviCore, ricaviMerch, costiCore, costiMerch };
   });
   const complete = months.filter(m=>m.ricavi>0);
-  const orphan = months.filter(m=>m.ricavi===0 && (m.ru>0||m.mp>0||m.sg>0));
+  const orphan = months.filter(m=>m.ricavi===0 && (m.ru>0||m.mp>0||m.sg>0||m.mk>0));
   const Sm = k => complete.reduce((a,m)=>a+m[k],0);
-  const ricavi=Sm('ricavi'), ru=Sm('ru'), mp=Sm('mp'), sg=Sm('sg'), cn=Sm('cn');
+  const ricavi=Sm('ricavi'), ru=Sm('ru'), mp=Sm('mp'), sg=Sm('sg'), mk=Sm('mk'), cn=Sm('cn');
   const ricaviFood=Sm('rf'), ricaviBev=Sm('rb'), mpFood=Sm('mf'), mpBev=Sm('mb');
   const ruFood=Sm('ruF'), ruBev=Sm('ruB');
   const orphanCosts = orphan.reduce((a,m)=>a+m.totCosti,0);
-  const ro = ricavi-ru-mp-sg-orphanCosts;
+  const ro = ricavi-ru-mp-sg-mk-orphanCosts;
   const t = S.targets;
   const roSaving = ricavi*(num(t.ro)/100);   /* l'utile al target: riferimento, non il recupero */
-  return { months, complete, orphan, ricavi, ru, mp, sg, cn, ro, orphanCosts,
+  return { months, complete, orphan, ricavi, ru, mp, sg, mk, cn, ro, orphanCosts,
     ricaviFood, ricaviBev, mpFood, mpBev, ruFood, ruBev,
     merchMode:M, merchData:hasMerchData(),
     ricaviCore:Sm('ricaviCore'), ricaviMerch:Sm('ricaviMerch'),
     costiCore:Sm('costiCore'), costiMerch:Sm('costiMerch'),
-    incRu:ru/ricavi, incMp:mp/ricavi, incSg:sg/ricavi, incCn:cn/ricavi,
+    incRu:ru/ricavi, incMp:mp/ricavi, incSg:sg/ricavi, incMk:mk/ricavi, incCn:cn/ricavi,
     roSaving, recupero: recuperoPot({ricavi, ru, mp, sg, ro}, t).tot };
 }
 
@@ -2840,12 +2884,15 @@ function cardCostiNascosti(a){
     <div class="go">Apri costi nascosti →</div>
   </div>`;
 }
-function areaCard(pagina, nome, euro, inc, target, steps, riga2, azione){
-  const z=isFinite(inc)?zone(inc,target,steps):0;
+function areaCard(pagina, nome, euro, inc, target, steps, riga2, azione, forchetta){
+  const z = !isFinite(inc) ? 0 : forchetta ? mktZona(inc*100, target) : zone(inc,target,steps);
+  const et = forchetta
+    ? `incidenza ${fmtP(inc)} · al centro ${fmtNum(target)}%`
+    : `incidenza ${fmtP(inc)} · obiettivo ≤ ${fmtNum(target)}%`;
   return `<div class="acard z${z}" data-goto="${pagina}">
-    <div class="al">${nome}<span class="verdict ${ZC[z]}">${ZN[z]}</span></div>
+    <div class="al">${nome}<span class="verdict ${ZC[z]}">${forchetta&&z===0?'in fascia':ZN[z]}</span></div>
     <div class="av">${fmtE(euro)}</div>
-    <div class="ax">incidenza ${fmtP(inc)} · obiettivo ≤ ${fmtNum(target)}%<br>${riga2}</div>
+    <div class="ax">${et}<br>${riga2}</div>
     <div class="go">${azione} →</div>
   </div>`;
 }
@@ -2853,9 +2900,9 @@ function areaCard(pagina, nome, euro, inc, target, steps, riga2, azione){
 /* Barra dello scostamento: la linea dell'obiettivo sta sempre al centro, uguale in ogni riga.
    La barra parte da lì — a sinistra se si spende meno (risparmio), a destra se si spende di più.
    Si legge una riga sola: da che parte sto, e di quanto. */
-function gaugeHTML(name, subtitle, pct, euro, target, steps, maxExtra, ricavi){
+function gaugeHTML(name, subtitle, pct, euro, target, steps, maxExtra, ricavi, forchetta){
   if(!isFinite(pct)) return '';
-  const p=pct*100, z=zone(pct,target,steps);
+  const p=pct*100, z = forchetta ? mktZona(p,target) : zone(pct,target,steps);
   const span=maxExtra;                          // punti percentuali visibili per lato
   const dpp=p-target;                           // scostamento in punti percentuali
   const half=Math.max(-1,Math.min(1,dpp/span))*50;
@@ -2867,8 +2914,11 @@ function gaugeHTML(name, subtitle, pct, euro, target, steps, maxExtra, ricavi){
   const xVal=50+half;                       // posizione del dato sulla barra
   return `<div class="strip">
     <div class="head">
-      <div class="name">${name}<b class="pc">${fmtP(pct)}</b><span class="verdict ${ZC[z]}">${ZN[z]}</span></div>
-      <div class="reading"><span class="money">${fmtE(euro)}${inLinea?'':` · ${scost>0?`extracosto <b style="color:var(--bad)">${fmtE(scost)}</b>`:`risparmio <b style="color:var(--ok)">${fmtE(-scost)}</b>`}`}</span></div>
+      <div class="name">${name}<b class="pc">${fmtP(pct)}</b><span class="verdict ${ZC[z]}">${
+        forchetta ? (z===0 ? 'in fascia' : (p<target ? 'sotto la fascia' : 'sopra la fascia')) : ZN[z]}</span></div>
+      <div class="reading"><span class="money">${fmtE(euro)}${inLinea?'':
+        forchetta ? ` · ${scost>0?'sopra':'sotto'} il centro di <b>${fmtE(Math.abs(scost))}</b>`
+        : ` · ${scost>0?`extracosto <b style="color:var(--bad)">${fmtE(scost)}</b>`:`risparmio <b style="color:var(--ok)">${fmtE(-scost)}</b>`}`}</span></div>
     </div>
     <div class="devbar">
       <div class="zones">
@@ -2895,12 +2945,12 @@ function killChart(k){ if(charts[k]){charts[k].destroy(); delete charts[k];} }
 let scope='ytd';
 function sumRows(rows, orphanCosts){
   const Sm=k=>rows.reduce((a,x)=>a+x[k],0);
-  const o={ n:rows.length, ricavi:Sm('ricavi'), ru:Sm('ru'), mp:Sm('mp'), sg:Sm('sg'), cn:Sm('cn'),
+  const o={ n:rows.length, ricavi:Sm('ricavi'), ru:Sm('ru'), mp:Sm('mp'), sg:Sm('sg'), mk:Sm('mk'), cn:Sm('cn'),
     ricaviFood:Sm('rf'), ricaviBev:Sm('rb'), mpFood:Sm('mf'), mpBev:Sm('mb'),
     ruFood:Sm('ruF'), ruBev:Sm('ruB'), sgFood:Sm('sgF'), sgBev:Sm('sgB'), totCosti:Sm('totCosti'),
     ricaviCore:Sm('ricaviCore'), ricaviMerch:Sm('ricaviMerch'), costiCore:Sm('costiCore'), costiMerch:Sm('costiMerch') };
-  o.ro = o.ricavi - o.ru - o.mp - o.sg - (orphanCosts||0);
-  o.incRu=o.ru/o.ricavi; o.incMp=o.mp/o.ricavi; o.incSg=o.sg/o.ricavi; o.incCn=o.cn/o.ricavi;
+  o.ro = o.ricavi - o.ru - o.mp - o.sg - o.mk - (orphanCosts||0);
+  o.incRu=o.ru/o.ricavi; o.incMp=o.mp/o.ricavi; o.incSg=o.sg/o.ricavi; o.incMk=o.mk/o.ricavi; o.incCn=o.cn/o.ricavi;
   return o;
 }
 function renderChips(m, elId){
@@ -3013,6 +3063,7 @@ const LIC={
   sg:'<path d="M3.5 10.5 12 4l8.5 6.5"/><path d="M5.6 12.2V20h12.8v-7.8"/>',
   spr:'<path d="M12 3.5c3.6 4.3 5.6 7.2 5.6 9.6A5.6 5.6 0 0 1 12 18.7a5.6 5.6 0 0 1-5.6-5.6c0-2.4 2-5.3 5.6-9.6z"/>',
   bu:'<circle cx="12" cy="12" r="8.2"/><circle cx="12" cy="12" r="3.3"/>',
+  mkt:'<path d="M4 9.5v5h3l5 3.5V6L7 9.5z"/><path d="M16.5 9.2a4 4 0 0 1 0 5.6"/><path d="M19 6.7a7.5 7.5 0 0 1 0 10.6"/>',
   dati:'<ellipse cx="12" cy="6.2" rx="7" ry="2.7"/><path d="M5 6.2v11.6c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7V6.2"/><path d="M5 12c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7"/>'
 };
 function lSpia(ico, nome, testo, stato){ return {ico,nome,testo,stato:stato||''}; }
@@ -3050,6 +3101,13 @@ function renderDashLite(a, t, m, isM){
       : `${R(incMp)} € ogni 100 invece di ${fmtNum(t.mp)}${
           incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}<br><b>${E(a.mp-a.ricavi*t.mp/100)}</b> di troppo`,
     incMp<=t.mp ? '' : incMp>t.mp+10 ? 'rossa' : 'on'));
+  const incMk=a.incMk*100, zMk=mktZona(incMk, t.mk);
+  sp.push(lSpia('mkt','Marketing',
+    zMk===0 ? `${R(incMk)} € ogni 100, in fascia`
+    : incMk < num(t.mk)
+      ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}<br>si fa vedere poco`)
+      : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}<br><b>${E(a.mk-a.ricavi*t.mk/100)}</b> oltre la fascia`,
+    zMk===0 ? '' : zMk>=3 ? 'rossa' : 'on'));
   sp.push(lSpia('sg','Spese fisse',
     incSg<=t.sg ? `${R(incSg)} € ogni 100, il limite è ${fmtNum(t.sg)}`
                 : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}<br><b>${E(a.sg-a.ricavi*t.sg/100)}</b> di troppo`,
@@ -3187,7 +3245,7 @@ function lpSoloPC(pagina){
 /* ---------- 1 - conto economico ---------- */
 function liteCE(){
   const {m,t,a,isM,per}=lpAgg();
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Conto economico',per)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Materia prima',per)}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
   const incMp=a.incMp*100;
   const fc = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
@@ -3197,16 +3255,64 @@ function liteCE(){
     return lpRow(MESI[o.i], null, fmtE(o.x.ricavi),
       Math.round(inc)+'%', lpStato(inc, t.mp));
   }).join('');
-  return `<div class="lp">${lpTesta('Conto economico', per)}
-    ${lpCard('Ricavi', fmtE(a.ricavi),
-      `Food <b>${fmtE(a.ricaviFood)}</b> · Beverage <b>${fmtE(a.ricaviBev)}</b>`)}
+  return `<div class="lp">${lpTesta('Materia prima', per)}
     ${lpCard('Materia prima', Math.round(incMp)+'<small> € ogni 100</small>',
       `${fmtE(a.mp)} · l'obiettivo è ${fmtNum(t.mp)}` +
       (fc!=null&&bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
       lpStato(incMp, t.mp))}
-    <div class="lpsez">Mese per mese · ricavi e materia prima</div>
+    ${lpCard('Food e beverage',
+      (fc!=null?Math.round(fc):'—')+'<small> e </small>'+(bc!=null?Math.round(bc):'—'),
+      `€ ogni 100 del proprio incasso · food <b>${fmtE(a.mpFood)}</b>, beverage <b>${fmtE(a.mpBev)}</b>`)}
+    <div class="lpsez">Mese per mese · incasso e materia prima</div>
     ${mesi}
-    ${lpChiusura('1 · Conto economico')}</div>`;
+    ${lpChiusura('Materia prima')}</div>`;
+}
+
+/* ---------- 1a - i ricavi, da soli ---------- */
+function liteRicavi(){
+  const {m,a,per}=lpAgg();
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Ricavi',per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const qF = a.ricavi>0 ? a.ricaviFood/(a.ricaviFood+a.ricaviBev) : 0;
+  const mesi = m.months.map((x,i)=>({x,i})).filter(o=>o.x.ricavi>0)
+    .map(o=>lpRow(MESI[o.i], null, fmtE(o.x.ricavi),
+      o.x.rf+o.x.rb>0 ? Math.round(o.x.rf/(o.x.rf+o.x.rb)*100)+'% food' : null)).join('');
+  return `<div class="lp">${lpTesta('Ricavi', per)}
+    ${lpCard('Incasso del periodo', fmtE(a.ricavi),
+      `media <b>${fmtE(a.ricavi/(a.n||1))}</b> al mese su ${a.n} ${a.n===1?'mese':'mesi'}`)}
+    ${lpCard('Food', fmtE(a.ricaviFood), `${Math.round(qF*100)} € ogni 100 di incasso`)}
+    ${lpCard('Beverage', fmtE(a.ricaviBev), `${Math.round((1-qF)*100)} € ogni 100 di incasso`)}
+    <div class="lpsez">Mese per mese</div>
+    ${mesi}
+    ${lpChiusura('Ricavi')}</div>`;
+}
+
+/* ---------- 3a - marketing: una fascia, non un tetto ---------- */
+function liteMKT(){
+  const {t,a,per,idx}=lpAgg();
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Marketing',per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const inc=a.incMk*100, z=mktZona(inc, t.mk);
+  const cls = z===0?'ok' : z>=3?'bad':'warn';
+  const voci=[];
+  (S.sg||[]).filter(isMktSG).forEach(c=>{
+    const v=idx.reduce((x,i)=>x+num(c.m[i]),0);
+    if(Math.abs(v)>0.005) voci.push({n:c.nome, v});
+  });
+  voci.sort((x,y)=>y.v-x.v);
+  const righe=voci.map(x=>lpRow(x.n, null, fmtE(x.v),
+    a.mk>0?Math.round(x.v/a.mk*100)+'%':null)).join('');
+  const nota = z===0 ? `${fmtE(a.mk)} · la fascia è centrata su ${fmtNum(t.mk)}`
+    : inc < num(t.mk)
+      ? (inc<0.5 ? `${fmtE(a.mk)} · il locale non si sta facendo vedere`
+                 : `${fmtE(a.mk)} · sotto il centro di <b>${fmtE(a.ricavi*t.mk/100-a.mk)}</b>`)
+      : `${fmtE(a.mk)} · sopra il centro di <b>${fmtE(a.mk-a.ricavi*t.mk/100)}</b>`;
+  return `<div class="lp">${lpTesta('Marketing', per)}
+    ${lpCard('Quanto si fa vedere', Math.round(inc)+'<small> € ogni 100</small>', nota, cls)}
+    ${righe?`<div class="lpsez">Dove vanno</div>${righe}`
+           :'<div class="lpvuoto">Nessuna spesa di marketing riconosciuta nel periodo.<br>O il locale non ne fa, o è dentro un\'altra voce.</div>'}
+    <div class="lpnota">Questa è l'unica area in cui spendere poco non è una buona notizia:
+      la soglia è il <b>centro di una fascia</b>, non un tetto.</div></div>`;
 }
 
 /* ---------- 2 - risorse umane ---------- */
@@ -3254,7 +3360,7 @@ function liteSG(){
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
   const voci=[], incSg=a.incSg*100;
   let unaTantum=0;
-  (S.sg||[]).forEach(c=>{
+  (S.sg||[]).filter(c=>areaSG(c)!=='mkt').forEach(c=>{
     const v=idx.reduce((s,i)=>s+num(c.m[i]),0);
     if(Math.abs(v)<0.005) return;
     const presenze=(c.m||[]).filter(x=>num(x)>0).length;   /* su tutto l'anno */
@@ -3344,11 +3450,12 @@ function liteCF(){
 function liteOB(){
   const t=S.targets;
   const r=(n,v,sotto)=>lpRow(n, sotto, fmtNum(v)+'%');
-  return `<div class="lp">${lpTesta('Obiettivi Planet One',
+  return `<div class="lp">${lpTesta('Obiettivi per area',
       'Le soglie che accendono le spie del cruscotto. Valgono per questo cliente.')}
     ${r('Risorse umane', t.ru, 'costo del personale sui ricavi, al massimo')}
     ${r('Materia prima', t.mp, 'food + beverage sui ricavi, al massimo')}
     ${r('Spese generali', t.sg, 'costi indiretti sui ricavi, al massimo')}
+    ${r('Marketing', t.mk, 'il centro di una fascia, non un tetto: zero è sbagliato quanto il doppio')}
     ${r('Costi nascosti', t.cn, 'scarto fra bilancio e schede, al massimo')}
     ${r('Utile operativo', t.ro, 'quello che resta: si ricava dagli altri tre')}
     <div class="lpsez">Prime cost</div>
@@ -3367,7 +3474,7 @@ async function liteME(){
     ${cap||'<div class="lpvuoto">Il testo del metodo non è ancora stato caricato.</div>'}</div>`;
 }
 
-const LITE_REND = {ce:liteCE, ru:liteRU, sg:liteSG, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME};
+const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME};
 async function liteRender(p){
   const el=document.getElementById('litePage'); if(!el) return;
   const nm=document.getElementById('clientName');
@@ -3810,6 +3917,7 @@ function renderDash(){
     ${gaugeHTML('Risorse umane','costo del personale su ricavi', a.incRu, a.ru, t.ru, [5,10], 20, a.ricavi)}
     ${gaugeHTML('Materia prima','food + beverage su ricavi', a.incMp, a.mp, t.mp, [5,10], 20, a.ricavi)}
     ${gaugeHTML('Spese generali','costi indiretti su ricavi', a.incSg, a.sg, t.sg, [5,10], 20, a.ricavi)}
+    ${a.mk>0 || num(t.mk)>0 ? gaugeHTML('Marketing','promozione su ricavi · fascia, non tetto', a.incMk, a.mk, t.mk, [1,2], 4, a.ricavi, true) : ''}
   </section>
 
   <section>
@@ -3830,6 +3938,14 @@ function renderDash(){
       ${areaCard('sg','Spese generali', a.sg, a.incSg, t.sg, [5,10],
         (()=>{const g={};S.sg.forEach(c=>{g[c.gruppo]=(g[c.gruppo]||0)+c.m.reduce((x,v)=>x+num(v),0);});const top=Object.entries(g).sort((x,y)=>y[1]-x[1])[0];return top&&top[1]>0?'gruppo principale: '+top[0]:'nessuna voce caricata';})(),
         'Apri spese generali')}
+      ${areaCard('mkt','Marketing', a.mk, a.incMk, t.mk, [0,0],
+        (()=>{
+          if(!(a.mk>0)) return 'nessuna spesa riconosciuta: o non ce n\'è, o è dentro un\'altra voce';
+          const v={}; S.sg.filter(isMktSG).forEach(c=>{ v[c.nome]=(v[c.nome]||0)+c.m.reduce((x,n)=>x+num(n),0); });
+          const top=Object.entries(v).sort((x,y)=>y[1]-x[1])[0];
+          return top&&top[1]>0 ? 'voce principale: '+top[0] : 'nessuna voce caricata';
+        })(),
+        'Apri marketing', true)}
       ${cardCostiNascosti(a)}
     </div>
   </section>
@@ -3901,7 +4017,13 @@ function buCard(name, ric, mp, ru, sgq, t){
    I costi nascosti NON entrano nella somma perché sono già dentro la materia prima. */
 function utileTarget(){
   const t=S.targets;
-  return +(100 - num(t.ru) - num(t.mp) - num(t.sg)).toFixed(1);
+  return +(100 - num(t.ru) - num(t.mp) - num(t.sg) - num(t.mk)).toFixed(1);
+}
+/* Il marketing è l'unica area in cui la soglia è un CENTRO, non un tetto:
+   zero è sbagliato quanto il doppio. La scala è simmetrica attorno al target. */
+function mktZona(inc, target){
+  const t=Math.max(num(target),0.1), d=Math.abs(num(inc)-t)/t;
+  return d<=0.17 ? 0 : d<=0.34 ? 1 : d<=0.67 ? 2 : 3;      /* verde · giallo · arancio · rosso */
 }
 function syncTargets(){
   S.targets.ro = utileTarget();
@@ -3910,10 +4032,10 @@ function syncTargets(){
   document.getElementById('cnMaxLbl').textContent=S.targets.cn;
   const f=document.getElementById('roFormula');
   if(f){
-    const t=S.targets, somma=num(t.ru)+num(t.mp)+num(t.sg);
+    const t=S.targets, somma=num(t.ru)+num(t.mp)+num(t.sg)+num(t.mk);
     f.innerHTML = somma>100
       ? `<b style="color:var(--bad)">le soglie sommano ${fmtNum(somma)}%: oltre il 100% non resta utile</b>`
-      : `100 − ${fmtNum(num(t.ru))} − ${fmtNum(num(t.mp))} − ${fmtNum(num(t.sg))}`;
+      : `100 − ${fmtNum(num(t.ru))} − ${fmtNum(num(t.mp))} − ${fmtNum(num(t.sg))} − ${fmtNum(num(t.mk))}`;
   }
 }
 const fmtNum = v => new Intl.NumberFormat('it-IT',{maximumFractionDigits:1}).format(v);
@@ -3932,8 +4054,17 @@ const CE_ROWS=[
   ['mb','Materia prima Beverage','Costi materia prima'],
   ['mbm','Beverage (Merchandising)','Costi materia prima',1]
 ];
+let ceVista='tutto';        /* 'Ricavi' · 'Costi materia prima' · 'tutto' */
 function renderCE(){
   const tb=document.getElementById('ceTable');
+  {
+    const T={Ricavi:['Ricavi','Food, beverage, altri ricavi e merchandising, mese per mese e IVA esclusa. È il denominatore di tutte le incidenze del cruscotto.'],
+             'Costi materia prima':['Materia prima','Gli acquisti di merce del bilancino, divisi food e beverage. L\'incidenza sui ricavi è il food cost del locale.'],
+             tutto:['Ricavi e materia prima','Inserisci i consuntivi mensili IVA esclusa. Tutto il resto si compila da solo nel cruscotto.']}[ceVista]||[];
+    const h2=document.getElementById('ceTitolo'), sb=document.getElementById('ceSub');
+    if(h2&&T[0]) h2.textContent=T[0];
+    if(sb&&T[1]) sb.textContent=T[1];
+  }
   let h='<tr><th>Voce</th>'+M3.map(x=>`<th>${x}</th>`).join('')+'<th class="tot">Totale</th></tr>';
   const m=compute();
   const etich = merchMode()==='escl' ? ' (escl. merchandising)' : merchMode()==='solo' ? ' (solo merchandising)' : '';
@@ -3948,7 +4079,7 @@ function renderCE(){
     return r+'<tr class="spacer"><td colspan="14"></td></tr>';   // respiro fra i due blocchi
   };
   let lastG='';
-  CE_ROWS.forEach(([k,label,g,mk])=>{
+  CE_ROWS.filter(([k,label,g])=> ceVista==='tutto' || g===ceVista).forEach(([k,label,g,mk])=>{
     if(g!==lastG){
       if(lastG==='Ricavi'){ // riga di ripartizione manuale sotto i ricavi
         h+=`<tr><td class="lbl">Ripartizione % Food <span class="role">manuale o da venduto</span></td>`+MESI.map((_,i)=>{
@@ -4042,18 +4173,29 @@ function ruChart(){
 /* ================================================================
    RENDER · SPESE GENERALI
 ================================================================ */
+let sgVista='sg';           /* 'sg' spese generali vere · 'mkt' marketing */
 function renderSG(){
   const tb=document.getElementById('sgTable');
+  {
+    const mkt = sgVista==='mkt';
+    const h2=document.getElementById('sgTitolo'), sb=document.getElementById('sgSub');
+    if(h2) h2.textContent = mkt ? 'Marketing · farsi vedere' : 'Spese generali · costi indiretti';
+    if(sb) sb.textContent = mkt
+      ? 'Sponsorizzazioni, eventi, fotografo, stampa del menu, portali di prenotazione, agenzia e campagne. È l\'unica area in cui spendere poco non è una buona notizia: la soglia è il centro di una fascia, non un tetto.'
+      : 'Le voci riprendono la scheda di ripartizione del bilancio Planet One. Il marketing è scorporato e si legge nella sua pagina.';
+  }
   let h='<tr><th>Voce di costo</th><th class="tot vtot" title="Totale del periodo · incidenza sui ricavi">TOT</th>'+M3.map(x=>`<th>${x}</th>`).join('')+'<th></th></tr>';
-  const gruppi=[...new Set(S.sg.map(c=>c.gruppo))];
+  const dentro = c => sgVista==='mkt' ? isMktSG(c) : areaSG(c)!=='mkt';
+  const righeVista = S.sg.filter(dentro);
+  const gruppi=[...new Set(righeVista.map(c=>c.gruppo))];
   const ricPeriodo=compute().ricavi;                       // per l'incidenza accanto al totale
   const peso = v => ricPeriodo>0 ? ' · '+quotaTxt(v/ricPeriodo) : '';
   const cellTot = v => `<td class="tot vtot">${v?fmtE2(v):''}${v&&ricPeriodo>0?`<span class="q">${quotaTxt(v/ricPeriodo)}</span>`:''}</td>`;
   gruppi.forEach(g=>{
-    const totG=S.sg.filter(c=>c.gruppo===g).reduce((a,c)=>a+c.m.reduce((x,v)=>x+num(v),0),0);
+    const totG=righeVista.filter(c=>c.gruppo===g).reduce((a,c)=>a+c.m.reduce((x,v)=>x+num(v),0),0);
     h+=`<tr class="grouph"><td colspan="15">${g}${totG?`<span class="gtot">${fmtE(totG)}${peso(totG)}</span>`:''}</td></tr>`;
     const mk = (g===SG_MERCH);
-    S.sg.filter(c=>c.gruppo===g).forEach(c=>{
+    righeVista.filter(c=>c.gruppo===g).forEach(c=>{
       const tot=c.m.reduce((a,v)=>a+num(v),0);
       h+=`<tr${mk?' class="mkrow"':''}><td class="lbl"><input data-sgnome="${c.id}" value="${c.nome}"></td>`+
         cellTot(tot)+
@@ -4062,8 +4204,11 @@ function renderSG(){
     });
   });
   const m=compute();
-  h+=`<tr class="sumrow"><td class="lbl">TOTALE SPESE GENERALI</td><td class="tot vtot">${fmtE2(m.sg)}</td>`+m.months.map(x=>`<td class="tot">${fmtE2(x.sg)}</td>`).join('')+`<td></td></tr>`;
-  h+=`<tr class="sumrow"><td class="lbl">Incidenza su ricavi %</td><td class="tot vtot">${fmtP(m.incSg)}</td>`+m.months.map(x=>`<td class="tot">${x.ricavi?fmtP(x.sg/x.ricavi):''}</td>`).join('')+`<td></td></tr>`;
+  const K = sgVista==='mkt' ? 'mk' : 'sg';
+  const totA = sgVista==='mkt' ? m.mk : m.sg;
+  const incA = m.ricavi>0 ? totA/m.ricavi : NaN;
+  h+=`<tr class="sumrow"><td class="lbl">TOTALE ${sgVista==='mkt'?'MARKETING':'SPESE GENERALI'}</td><td class="tot vtot">${fmtE2(totA)}</td>`+m.months.map(x=>`<td class="tot">${fmtE2(x[K])}</td>`).join('')+`<td></td></tr>`;
+  h+=`<tr class="sumrow"><td class="lbl">Incidenza su ricavi %</td><td class="tot vtot">${fmtP(incA)}</td>`+m.months.map(x=>`<td class="tot">${x.ricavi?fmtP(x[K]/x.ricavi):''}</td>`).join('')+`<td></td></tr>`;
   tb.innerHTML=h;
   sgLive(); sgChart();
 }
@@ -8481,7 +8626,9 @@ function prPartial(){
   const k=document.getElementById('prKpis'); if(k) k.innerHTML=prKpisHTML(d);
 }
 function prRefresh(){ if(current==='pr') renderPR(); }
-const PAGES={home:renderHome, dash:renderDash, ce:renderCE, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
+/* due voci di menu, una pagina sola: cambia solo che cosa si guarda */
+const ALIAS={rica:'ce', mkt:'sg'};
+const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -8546,7 +8693,7 @@ document.addEventListener('input',e=>{
   if(el.dataset.t){
     if(el.readOnly) return;                       // l'utile obiettivo si ricava, non si scrive
     S.targets[el.dataset.t]= el.classList.contains('euroin') ? parseIt(el.value) : num(el.value);
-    if(['ru','mp','sg'].includes(el.dataset.t)) S.targets.ro=utileTarget();
+    if(['ru','mp','sg','mk'].includes(el.dataset.t)) S.targets.ro=utileTarget();
     saveState();
     if(current==='dash') renderDash(); else if(current==='pr') prPartial();
     return;
@@ -9888,47 +10035,56 @@ document.getElementById('pdfClose').addEventListener('click',()=>{ document.getE
    la mappa dell'app è quella definitiva da subito, e si vede a colpo d'occhio
    cosa manca ancora. */
 const SOON={
-  vdash :{t:"Colpo d'occhio sul venduto", g:'Analisi del venduto',
-          d:"Quanto ha venduto il locale nel periodo, diviso per famiglia e categoria, e quanta parte di quel venduto sappiamo costare davvero perché ha una scheda costo."},
-  vmens :{t:'Venduto mensile per prodotto', g:'Analisi del venduto',
-          d:"Il venduto di cassa prodotto per prodotto, mese per mese: è il dato da cui nasce tutto il resto."},
-  vriep :{t:'Riepilogo venduto totale', g:'Analisi del venduto',
-          d:"Il totale del periodo per famiglia e categoria, con incasso, pezzi e incidenza della materia prima."},
-  vcassa:{t:'Risultati di cassa', g:'Analisi del venduto',
-          d:"Incasso, pezzi e coperti dalla cassa, con la quadratura fra il totale di cassa e la somma dei prodotti venduti."},
-  vprec :{t:'Comparazione anno precedente', g:'Analisi del venduto',
-          d:"Lo stesso mese dell'anno prima accanto a quello di quest'anno: incasso, pezzi, coperto medio."},
-  vlist :{t:'Incasso reale contro listino', g:'Analisi del venduto',
-          d:"Quanto è entrato davvero rispetto ai prezzi di listino: la differenza sono sconti, omaggi ed errori di battuta."},
-  vprio :{t:'Priorità prodotto e categoria', g:'Analisi del venduto',
-          d:"Gli indici MPI e CPI: quali prodotti e quali categorie meritano la spinta, quali vanno rivisti e quali tolti."},
-  vtrend:{t:'Andamento nel tempo', g:'Analisi del venduto',
+  aiask :{t:"Chiedi all'assistente", g:'Assistente', m:'serve il collegamento al modello',
+          d:"L'assistente conosce i numeri di questo locale, lo storico e il metodo Planet One, e risponde sia al consulente sia al titolare. Sugli altri locali usa solo dati aggregati e anonimi, mai niente di riservato."},
+  aimsg :{t:'Messaggi al cliente', g:'Assistente', m:'serve il collegamento al modello',
+          d:"Il messaggio da mandare al titolare, scritto con i suoi numeri veri: il riepilogo del periodo e gli alert di quando un numero esce dai binari. Si rilegge, si corregge e si manda dal telefono."},
+
+  vdash :{t:'Report del venduto', g:'Venduto', m:'serve il venduto di cassa',
+          d:"Quanto ha venduto il locale, per famiglia, categoria e prodotto, mese per mese: è il dato da cui nasce tutto il resto del menu engineering."},
+  vriep :{t:'Riepilogo del periodo', g:'Venduto', m:'serve il venduto di cassa',
+          d:"Il totale del periodo per famiglia e categoria — incasso, pezzi, coperti — e la quadratura fra il totale di cassa e la somma dei prodotti venduti."},
+  vprec :{t:'Anno su anno', g:'Venduto', m:"serve un secondo anno caricato",
+          d:"Lo stesso periodo dell'anno prima accanto a quello di quest'anno: incasso, pezzi, coperto medio."},
+  vtrend:{t:'Andamento nel tempo', g:'Venduto', m:'serve il venduto di cassa',
           d:"Come si muovono nel tempo i prodotti e le categorie, stagionalità compresa."},
-  mprof :{t:'Menu Profits · listino e costi', g:'Menu engineering',
-          d:"Il listino con, accanto a ogni prodotto, il costo della materia prima dalla scheda, il margine e l'incidenza."},
-  mwhat :{t:'Simulatore prezzi · what-if', g:'Menu engineering',
+  vlist :{t:'Incasso contro listino', g:'Venduto', m:'servono il venduto e il listino',
+          d:"Quanto è entrato davvero rispetto ai prezzi di listino: la differenza sono sconti, omaggi ed errori di battuta."},
+
+  mprof :{t:'Listino e costi', g:'Menu engineering', m:'servono le schede costo',
+          d:"Ogni categoria contro il suo obiettivo, e sotto il listino con costo della materia prima, margine e incidenza prodotto per prodotto."},
+  mcore :{t:'Core business', g:'Menu engineering', m:'serve il venduto di cassa',
+          d:"Dove nasce l'incasso: le famiglie e le categorie che fanno il grosso del venduto, poche e da presidiare una per una."},
+  vprio :{t:'Pagella prodotti e categorie', g:'Menu engineering', m:'servono le schede costo',
+          d:"Il voto da 1 a 5 di ogni prodotto e di ogni categoria. Non decide l'ordine del menu — quello lo fa il core 80% — ma dice chi merita la spinta e chi va rivisto."},
+  mfocus:{t:'Prodotti focus', g:'Menu engineering', m:'servono le schede costo',
+          d:"I prodotti su cui concentrare la spinta per tre mesi, con l'obiettivo di pezzi e l'effetto atteso sul margine."},
+  mwhat :{t:'Simulatore prezzi', g:'Menu engineering', m:'servono le schede costo',
           d:"Cosa succede al margine se cambio un prezzo, una dose o un fornitore, prima di cambiarlo davvero."},
-  mcore :{t:'Core business generale', g:'Menu engineering',
-          d:"I prodotti che fanno il grosso del venduto: pochi, e vanno presidiati uno per uno."},
-  mcores:{t:'Core business con schede costo', g:'Menu engineering',
-          d:"Lo stesso core business, limitato ai prodotti di cui conosciamo il costo vero."},
-  mfocus:{t:'Prodotti focus', g:'Menu engineering',
-          d:"I prodotti su cui concentrare la spinta del mese, con l'effetto atteso sul margine."},
-  mbuild:{t:'Menu builder', g:'Menu engineering',
-          d:"La costruzione del menu: categorie, ordine dei prodotti, cosa entra e cosa esce."},
-  msugg :{t:'Suggerimenti', g:'Menu engineering',
+  mbuild:{t:'Menu builder', g:'Menu engineering', m:'servono il venduto e le schede costo',
+          d:"La costruzione del menu: l'ordine proposto dal core 80%, la stella, il riquadro, e la bozza impaginata da mandare al grafico."},
+  msugg :{t:'Suggerimenti', g:'Menu engineering', m:'servono il venduto e le schede costo',
           d:"Le azioni in attesa, ordinate per quanto valgono: prezzo da ritoccare, scheda da rifare, prodotto da togliere."},
-  obmese:{t:'Obiettivi del mese', g:'Obiettivi',
+
+  obmese:{t:'Obiettivi del mese', g:'Obiettivi per area', m:'da costruire',
           d:"L'obiettivo di incasso e di margine del mese, e dove siamo rispetto a quello."},
-  obbep :{t:'Punto di pareggio', g:'Obiettivi',
+  obbep :{t:'Punto di pareggio', g:'Obiettivi per area', m:'da costruire',
           d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
-  obinc :{t:'Incentivi', g:'Obiettivi',
-          d:"Il piano incentivi per la squadra, legato agli obiettivi e ai prodotti focus."},
-  rteam :{t:'Ricettario per il team', g:'Ricette e fornitori',
+  obinc :{t:'Piano incentivi', g:'Personale', m:'da costruire',
+          d:"Il piano incentivi per la squadra, legato agli obiettivi del mese e ai prodotti focus."},
+
+  rteam :{t:'Ricettario per il team', g:'Ricette e fornitori', m:'servono le ricette',
           d:"Le stesse ricette, stampabili per la squadra: dosi, procedimento, bicchiere e guarnizione, senza i costi."},
-  rall  :{t:'Allergeni', g:'Ricette e fornitori',
+  rall  :{t:'Allergeni', g:'Ricette e fornitori', m:'servono le ricette',
           d:"Gli allergeni per prodotto secondo il Reg. 1169/2011, pronti da stampare e allegare al menu."}
 };
+/* ogni voce spenta dice che cosa le manca, invece di un generico «in arrivo» */
+function soonTitoli(){
+  document.querySelectorAll('#nav button.soon').forEach(b=>{
+    const x=SOON[b.dataset.page];
+    b.title = x && x.m ? x.m : 'in arrivo';
+  });
+}
 function renderSOON(k){
   const x=SOON[k]||{t:'In arrivo', g:'', d:''};
   document.getElementById('soonBody').innerHTML=`
@@ -10980,7 +11136,9 @@ function gotoPage(p){
   document.body.classList.toggle('is-home', p==='home');
   document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));
   navSegna(p); tabSegna(p); perSegna(); litePg(p);
-  const vista = SOON[p] ? 'soon' : p;
+  if(p==='rica') ceVista='Ricavi'; else if(p==='ce') ceVista='Costi materia prima';
+  if(p==='mkt') sgVista='mkt';   else if(p==='sg') sgVista='sg';
+  const vista = SOON[p] ? 'soon' : (ALIAS[p]||p);
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+vista));
   if(SOON[p]) return renderSOON(p);
   if(document.documentElement.classList.contains('litealt')) return;   // la disegna liteRender
@@ -12078,7 +12236,7 @@ document.addEventListener('visibilitychange', async ()=>{
   }
 });
 (async ()=>{
-  navInit();
+  navInit(); soonTitoli();
   await cloudAvvio();
   await loadClients();
   sOwner=CLIENTS.activeId;
