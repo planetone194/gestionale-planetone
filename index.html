@@ -1187,7 +1187,29 @@
   .lpnota{font-size:11.5px;color:#6E6E6E;line-height:1.55;margin-top:18px;padding-top:12px;border-top:1px solid #262626;}
   .lpvuoto{text-align:center;color:#8F8F8F;font-size:13.5px;padding:34px 12px;line-height:1.65;}
   .lpvuoto b{color:#D8D8D8;}
+  .lq .d .par{color:#7E7E7E;}
   .lpvuoto .ico{display:block;font-size:26px;margin-bottom:12px;opacity:.55;}
+  /* le spie si aprono: il riquadro da solo dice che c'è un problema,
+     il dettaglio dice che cosa farne */
+  .lspia.apribile{cursor:pointer;position:relative;}
+  .lspia .eu{font-family:var(--num);font-size:14px;font-weight:700;color:#E8B14A;margin-top:7px;}
+  .lspia .eu small{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;
+    letter-spacing:.4px;color:#8C8C8C;margin-top:1px;}
+  .lspia:not(.on) .eu{color:#8C8C8C;}
+  .lspia .ch{position:absolute;top:12px;right:12px;color:#6E6E6E;font-size:14px;transition:transform .18s;}
+  .lspia.aperta .ch{transform:rotate(180deg);}
+  .lspia .det{display:none;text-align:left;margin-top:12px;padding-top:11px;border-top:1px solid #2E2E2E;}
+  .lspia.aperta{grid-column:1/-1;}
+  .lspia.aperta .det{display:block;}
+  .lspia .det p{font-size:12.5px;color:#B4B4B4;line-height:1.6;margin:0 0 9px;}
+  .lspia .det p:last-child{margin-bottom:0;}
+  .lspia .det b{color:#fff;}
+  /* il pop-up dei suggerimenti: elenco chiuso, si apre quello che serve */
+  #suggpan .sg .sgh{cursor:pointer;}
+  #suggpan .sgch{color:var(--ink2);font-size:15px;transition:transform .18s;flex:none;margin-left:4px;}
+  #suggpan .sg.aperto .sgch{transform:rotate(180deg);}
+  #suggpan .sg .sgb{display:none;}
+  #suggpan .sg.aperto .sgb{display:flex;}
   /* la scelta del periodo nell'analisi: anno o mese, come in pro */
   .lpper{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;}
   .lpch{background:#1B1B1B;border:1px solid #303030;color:#A8A8A8;border-radius:999px;
@@ -1253,6 +1275,7 @@
      quando in lite spariscono merchandising e bottoni, loro non si spostano. */
   .toolsrow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;flex-wrap:wrap;}
   .toolsright{display:flex;align-items:center;gap:9px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end;}
+  .moblogo{display:none;}   /* il marchio serve solo dove la barra laterale sparisce */
   /* il dettaglio merchandising non occupa più mezza pagina: è un pannello
      che si apre da qui e si richiude, così sotto restano i cruscotti,
      i consigli e le aree di costo tutti nella prima schermata */
@@ -1367,12 +1390,21 @@
   html.mobi .savewrap{display:none;}
   html.litepg .savewrap{display:none;}
   /* sul telefono esiste una sola esperienza: lite. L'interruttore sparisce. */
-  html.mobi .toolsrow{display:none;}
+  /* Sul telefono la riga degli interruttori diventa la testata: il marchio a
+     sinistra, gli interruttori a destra, e il contenuto comincia SOTTO invece
+     che sotto di loro. Prima era fissa sopra la pagina e il primo blocco ci
+     finiva addosso. */
+  html.mobi .toolsrow{display:flex!important;position:sticky;top:0;z-index:60;
+    margin:-16px -14px 14px;padding:9px 14px;width:auto;
+    background:#131313;border-bottom:1px solid #262626;
+    justify-content:space-between;align-items:center;gap:10px;}
+  html.mobi .moblogo{display:block;flex:none;}
+  html.mobi .moblogo img{height:21px;display:block;}
   html.mobi:not(.mob) .vistabtn{display:none;}
+  html.mobi:not(.mob) .toolsright{display:none;}   /* sul telefono vero stanno nel foglio «Altro» */
   /* Nell'anteprima mobile la riga degli interruttori NON sparisce: dentro c'è
      il bottone per tornare al desktop, e se si nasconde non si esce più.
      Quello che sparisce sono i bottoni del cliente e il merchandising. */
-  html.mob .toolsrow{display:flex!important;position:fixed;top:12px;right:14px;z-index:70;margin:0;width:auto;}
   html.mob .toolsright{margin-left:0;}
   html.mob #vistabtn{display:inline-flex!important;align-items:center;}
   html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
@@ -1831,11 +1863,12 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v135</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v136</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
   <div class="toolsrow">
+    <span class="moblogo" id="mobLogo" aria-hidden="true"></span>
     <div class="topbtns">
       <select id="clientSelect" class="clientsel cli" title="cambia cliente"></select>
       <button class="btn ghost" id="btnNewClient">+ Cliente</button>
@@ -2829,18 +2862,27 @@ function apriSugg(){
       <div class="sub2">${(S.cliente||'Cliente')} · ${per} · dalle cure del metodo</div>
       <button class="mini" onclick="stampaSugg()" style="margin-left:auto">Scarica PDF</button>
       <div class="x" onclick="chiudiSugg()">✕</div></div>
-    ${SUGG.map((x,i)=>`<div class="sg">
-      <div class="sgh"><div class="sgn">${i+1}</div><div class="sgt">${x.tit}</div>
+    ${SUGG.map((x,i)=>`<div class="sg ${i===0?'aperto':''}" data-sg="${i}">
+      <div class="sgh" onclick="suggApri(${i})"><div class="sgn">${i+1}</div>
+        <div class="sgt">${x.tit}</div>
         <span class="verdict ${x.vel==='subito'?'v-ok':'v-warn'}">${VEL[x.vel].t}</span>
-        <div class="sgv">+${fmtE(x.euro)}</div></div>
+        <div class="sgv">+${fmtE(x.euro)}</div>
+        <div class="sgch">⌄</div></div>
       <div class="sgb">
         <div><div class="et">I numeri</div>${x.num.map(t=>`<p>${t}</p>`).join('')}</div>
         <div><div class="et">Che cosa fare</div><ul>${x.fare.map(t=>`<li>${t}</li>`).join('')}</ul>
           ${x.link.map(l=>`<span class="sgo" data-goto="${l.p}" onclick="chiudiSugg()">${l.txt} →</span>`).join('')}</div>
       </div></div>`).join('')}
     <div class="pfoot">Ordinati per valore in euro moltiplicato per il coefficiente di velocità: un'azione che dà
-    effetto nel mese vale tre volte una che ne chiede sei. Le aree già in obiettivo non generano suggerimenti.</div>`;
+    effetto nel mese vale tre volte una che ne chiede sei. Le aree già in obiettivo non generano suggerimenti.<br>
+    Tocca un titolo per aprirlo o richiuderlo.</div>`;
   document.getElementById('suggmodal').classList.add('open');
+}
+/* I suggerimenti arrivano chiusi, tranne il primo: così si vede subito l'elenco
+   completo di quello che c'è da fare, e si apre solo quello che interessa. */
+function suggApri(i){
+  const el=document.querySelector(`[data-sg="${i}"]`); if(!el) return;
+  el.classList.toggle('aperto');
 }
 /* I suggerimenti in una pagina stampabile: si salva in PDF dal browser e si
    manda al cliente senza dover aprire l'app. Stessa sostanza del pannello,
@@ -3299,12 +3341,23 @@ const LIC={
   mkt:'<path d="M4 9.5v5h3l5 3.5V6L7 9.5z"/><path d="M16.5 9.2a4 4 0 0 1 0 5.6"/><path d="M19 6.7a7.5 7.5 0 0 1 0 10.6"/>',
   dati:'<ellipse cx="12" cy="6.2" rx="7" ry="2.7"/><path d="M5 6.2v11.6c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7V6.2"/><path d="M5 12c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7"/>'
 };
-function lSpia(ico, nome, testo, stato){ return {ico,nome,testo,stato:stato||''}; }
-function lSpiaHTML(s){
+/* Una spia porta con sé quanto vale — serve a metterle in fila — e il
+   dettaglio che si apre toccandola: su un telefono il riquadro da solo dice
+   che c'è un problema, non che cosa farne. */
+function lSpia(ico, nome, testo, stato, euro, det, euLab){
+  return {ico, nome, testo, stato:stato||'', euro:num(euro)||0, det:det||[],
+          euLab: euLab || 'da recuperare'};
+}
+function lSpiaHTML(s, i){
   const col = s.stato==='rossa' ? '#E0705E' : s.stato==='on' ? '#E8B14A' : '#8C8C8C';
-  return `<div class="lspia ${s.stato==='rossa'?'on rossa':s.stato==='on'?'on':''}">
+  const apribile = s.det && s.det.length;
+  return `<div class="lspia ${s.stato==='rossa'?'on rossa':s.stato==='on'?'on':''} ${apribile?'apribile':''}"
+      ${apribile?`data-spia="${i}"`:''}>
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.7">${LIC[s.ico]}</svg>
-    <div class="n">${s.nome}</div><div class="d">${s.testo}</div></div>`;
+    <div class="n">${s.nome}</div><div class="d">${s.testo}</div>
+    ${s.euro>0?`<div class="eu">${fmtE(s.euro)}<small>${s.euLab}</small></div>`:''}
+    ${apribile?`<div class="ch">⌄</div><div class="det">${s.det.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
+  </div>`;
 }
 function renderDashLite(a, t, m, isM){
   const el=document.getElementById('dashLite'); if(!el) return;
@@ -3324,27 +3377,67 @@ function renderDashLite(a, t, m, isM){
   /* --- le spie --- */
   const sp=[];
   const incRu=a.incRu*100, incMp=a.incMp*100, incSg=a.incSg*100;
+  const exRu=Math.max(0, a.ru-a.ricavi*t.ru/100);
   sp.push(lSpia('pers','Stipendi',
     incRu<=t.ru ? `${R(incRu)} € ogni 100, il limite è ${fmtNum(t.ru)}`
-                : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}<br><b>${E(a.ru-a.ricavi*t.ru/100)}</b> di troppo`,
-    incRu<=t.ru ? '' : incRu>t.ru+10 ? 'rossa' : 'on'));
+                : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}`,
+    incRu<=t.ru ? '' : incRu>t.ru+10 ? 'rossa' : 'on',
+    exRu,
+    [`Il costo del personale è <b>${E(a.ru)}</b> sul periodo, cioè <b>${fmtNum(incRu)} €</b> ogni 100 di incasso.`,
+     incRu<=t.ru ? `È sotto il limite del ${fmtNum(t.ru)}%: da qui non c'è niente da recuperare.`
+       : `Per stare al ${fmtNum(t.ru)}% servirebbero <b>${E(a.ricavi*t.ru/100)}</b>: ${E(exRu)} in meno di oggi.`,
+     (a.ricaviFood>0&&a.ricaviBev>0)
+       ? `In cucina pesa <b>${fmtNum(a.ruFood/a.ricaviFood*100)}%</b>, al bar <b>${fmtNum(a.ruBev/a.ricaviBev*100)}%</b>: la media nasconde la differenza.`
+       : `Per vedere cucina e bar separati servono i ricavi divisi fra food e beverage.`,
+     `Le due leve sono le ore messe in campo e l'incasso che quelle ore producono. Si guardano in <b>Analisi dei turni</b>.`]));
   const incMpF = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
+  const exMp=Math.max(0, a.mp-a.ricavi*t.mp/100);
+  const incMpB = a.ricaviBev>0 ? a.mpBev/a.ricaviBev*100 : null;
   sp.push(lSpia('mp','Materia prima',
     incMp<=t.mp ? `${R(incMp)} € ogni 100, il limite è ${fmtNum(t.mp)}`
       : `${R(incMp)} € ogni 100 invece di ${fmtNum(t.mp)}${
-          incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}<br><b>${E(a.mp-a.ricavi*t.mp/100)}</b> di troppo`,
-    incMp<=t.mp ? '' : incMp>t.mp+10 ? 'rossa' : 'on'));
+          incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}`,
+    incMp<=t.mp ? '' : incMp>t.mp+10 ? 'rossa' : 'on',
+    exMp,
+    [`Gli acquisti di merce fanno <b>${E(a.mp)}</b>, cioè <b>${fmtNum(incMp)} €</b> ogni 100 di incasso.`,
+     incMp<=t.mp ? `È dentro il limite del ${fmtNum(t.mp)}%.`
+       : `Per stare al ${fmtNum(t.mp)}% servirebbero <b>${E(a.ricavi*t.mp/100)}</b>: ${E(exMp)} in meno.`,
+     (incMpF!=null&&incMpB!=null)
+       ? `In cucina <b>${fmtNum(incMpF)}%</b> sui ricavi food, al bar <b>${fmtNum(incMpB)}%</b> sui ricavi beverage.`
+       : `Per separare cucina e bar servono i ricavi divisi.`,
+     `Prima di toccare i prezzi va capito se è pricing o dispersione: lo dice il confronto fra bilancio e schede costo, in <b>Costi nascosti</b>.`]));
   const incMk=a.incMk*100, zMk=mktZona(incMk, t.mk);
+  const scMk=a.mk-a.ricavi*num(t.mk)/100;
   sp.push(lSpia('mkt','Marketing',
     zMk===0 ? `${R(incMk)} € ogni 100, in fascia`
     : incMk < num(t.mk)
       ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}<br>si fa vedere poco`)
-      : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}<br><b>${E(a.mk-a.ricavi*t.mk/100)}</b> oltre la fascia`,
-    zMk===0 ? '' : zMk>=3 ? 'rossa' : 'on'));
+      : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}`,
+    zMk===0 ? '' : zMk>=3 ? 'rossa' : 'on',
+    Math.abs(scMk),
+    [`Il marketing vale <b>${E(a.mk)}</b> sul periodo, <b>${fmtNum(incMk)} €</b> ogni 100 di incasso.`,
+     `Questa è l'unica area in cui la soglia è <b>il centro di una fascia, non un tetto</b>: zero è sbagliato quanto il doppio.`,
+     scMk<0 ? `Per arrivare al centro del ${fmtNum(t.mk)}% servirebbero <b>${E(-scMk)}</b> in più. Un locale che non si fa vedere vive di quello che passa davanti.`
+            : `Sopra il centro di <b>${E(scMk)}</b>: va verificato che la spesa stia producendo coperti, non solo visibilità.`,
+     `Agenzia, campagne, sponsorizzazioni, fotografo, stampe e commissioni dei portali entrano qui. Le commissioni del delivery no: sono il costo di un canale di vendita.`],
+    scMk<0 ? 'da investire' : 'oltre la fascia'));
+  const exSg=Math.max(0, a.sg-a.ricavi*t.sg/100);
+  /* le voci che compaiono una o due volte l'anno sono saldi, non spesa corrente */
+  let unaTantum=0;
+  (S.sg||[]).filter(c=>areaSG(c)!=='mkt').forEach(c=>{
+    const v=(scope!=='ytd'?[scope]:m.complete.map(x=>x.i)).reduce((x,i)=>x+num(c.m[i]),0);
+    if(Math.abs(v)>0.005 && (c.m||[]).filter(x=>num(x)>0).length<=2) unaTantum+=v;
+  });
   sp.push(lSpia('sg','Spese fisse',
     incSg<=t.sg ? `${R(incSg)} € ogni 100, il limite è ${fmtNum(t.sg)}`
-                : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}<br><b>${E(a.sg-a.ricavi*t.sg/100)}</b> di troppo`,
-    incSg<=t.sg ? '' : incSg>t.sg+10 ? 'rossa' : 'on'));
+                : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}`,
+    incSg<=t.sg ? '' : incSg>t.sg+10 ? 'rossa' : 'on',
+    exSg,
+    [`Le spese generali fanno <b>${E(a.sg)}</b>, <b>${fmtNum(incSg)} €</b> ogni 100 di incasso, contro un limite del ${fmtNum(t.sg)}%.`,
+     unaTantum>0 ? `Attenzione prima di tagliare: <b>${E(unaTantum)}</b> vengono da voci che compaiono una o due volte l'anno — sono saldi, non spesa corrente. Depurate quelle, la ricorrente fa <b>${E(a.sg-unaTantum)}</b>.`
+                 : `Sono tutte voci che tornano ogni mese: non c'è una parte una tantum che gonfia il conto.`,
+     `Dentro ci sono voci rigide — affitti, contratti pluriennali — che non si muovono a comando. Il taglio può uscire solo dalla parte flessibile.`,
+     `Il saving vero sta in energia, gas, telefonia, noleggi, assicurazioni e software: si passano una per una.`]));
   /* sprechi: dal confronto fra bilancio e schede, se c'è */
   let c=null; try{ c=cnConfronto(); }catch(e){}
   if(c){
@@ -3354,7 +3447,10 @@ function renderDashLite(a, t, m, isM){
              : `${dpp.toFixed(1).replace('.',',')} punti fra bilancio e ricette: ${E(c.oltre)}`,
       dpp<=2 ? '' : dpp>4 ? 'rossa' : 'on'));
   } else {
-    sp.push(lSpia('spr','Sprechi','non si sanno: servono le schede costo col venduto',''));
+    sp.push(lSpia('spr','Sprechi','non si sanno: servono le schede costo col venduto','',0,
+      ['Il confronto fra quello che le ricette dicono di dover costare e quello che il bilancio dice di aver speso è la misura della dispersione: autoconsumi, omaggi, rotture, dosi fuori scheda, errori di carico.',
+       'Senza schede costo quel confronto non si può fare, e la materia prima resta un numero solo, senza una spiegazione.',
+       'Si parte dalle ricette dei prodotti che fanno l\'80% del venduto: con quelle il numero già regge.']));
   }
   /* il reparto che pesa: si vede solo scorporando le business unit */
   const iF = a.ricaviFood>0 ? a.ruFood/a.ricaviFood*100 : null;
@@ -3362,12 +3458,22 @@ function renderDashLite(a, t, m, isM){
   if(iF!=null && iB!=null){
     const gap=Math.abs(iF-iB), altoF=iF>iB;
     const nome=altoF?'La cucina':'Il bar', alto=altoF?iF:iB, basso=altoF?iB:iF, altro=altoF?'bar':'cucina';
+    const ricAlto = altoF?a.ricaviFood:a.ricaviBev;
+    const exBU = Math.max(0, (alto-num(t.ru))/100*ricAlto);
     sp.push(lSpia('bu', nome,
       gap<=15 ? `cucina e bar sono allineati: ${R(iF)} e ${R(iB)} € ogni 100`
               : `${R(alto)} € di stipendi ogni 100, al ${altro} ${R(basso)}`,
-      gap<=15 ? '' : gap>20 ? 'rossa' : 'on'));
+      gap<=15 ? '' : gap>20 ? 'rossa' : 'on',
+      gap<=15 ? 0 : exBU,
+      [`Il personale imputato ${altoF?'alla cucina':'al bar'} pesa <b>${fmtNum(alto)}%</b> sul suo incasso, ${altoF?'al bar':'in cucina'} <b>${fmtNum(basso)}%</b>: <b>${fmtNum(gap)} punti</b> di distanza fra due reparti dello stesso locale.`,
+       gap<=15 ? `Sotto i 15 punti è fisiologico.` : `La soglia di attenzione è 15 punti. Sul totale questo non si vede: si vede solo scorporando i reparti.`,
+       basso<=num(t.ru) ? `Attenzione: ${altoF?'il bar':'la cucina'} è già sotto l'obiettivo del ${fmtNum(t.ru)}%, quindi spostargli ore peggiorerebbe l'unico reparto che funziona. Quelle ore non sono mal distribuite: sono in eccesso.`
+                        : `Vale la pena verificare se è questione di ore mal distribuite o di ore in eccesso.`,
+       exBU>0 ? `Portare ${altoF?'la cucina':'il bar'} all'obiettivo vale <b>${E(exBU)}</b> sul periodo. È il valore pieno dello scarto, non una mossa da fare in una volta.` : ``]));
   } else {
-    sp.push(lSpia('bu','Cucina e bar','servono i ricavi divisi fra food e beverage',''));
+    sp.push(lSpia('bu','Cucina e bar','servono i ricavi divisi fra food e beverage','',0,
+      ['Senza i ricavi divisi fra food e beverage il personale resta un numero solo e la differenza fra i due reparti non si vede.',
+       'La divisione si carica nel Conto economico, a mano oppure dal venduto di cassa.']));
   }
   /* che cosa manca */
   const vuoti = m.months.filter(x=>x.ricavi===0 && x.totCosti===0).map(x=>x.mese);
@@ -3376,12 +3482,19 @@ function renderDashLite(a, t, m, isM){
   sp.push(lSpia('dati','I dati',
     mancanti.length ? `manca ${mancanti.length===1?'':'ancora '}${mancanti.slice(0,2).join(' e ')}${mancanti.length>2?' e altri':''}`
                     : 'tutti i mesi del periodo sono caricati',
-    mancanti.length ? 'on' : ''));
+    mancanti.length ? 'on' : '', 0,
+    [mancanti.length ? `Non risultano caricati: <b>${mancanti.join(', ')}</b>.`
+                     : `Tutti i mesi del periodo hanno i dati.`,
+     `Un mese entra nei conti solo quando ha tutte e quattro le gambe: ricavi, materia prima, personale e spese generali. Finché ne manca una, resta fuori e le incidenze sono calcolate senza di lui.`,
+     `L'elenco completo di quello che manca sta in <b>Assistente · Checklist dati da caricare</b>.`]));
 
   /* --- la coda: la prima cosa da fare --- */
-  /* le accese salgono in cima: su un telefono si vedono per prime */
+  /* L'ordine è quello che conta davvero: quanto vale, in euro, sistemare
+     quella riga. Una spia gialla da 20.000 € viene prima di una rossa da 2.000:
+     il colore dice quanto si è fuori, gli euro dicono quanto si porta a casa.
+     A parità di valore vengono prima le accese, e in fondo le informative. */
   const ORD={rossa:0, on:1, '':2};
-  sp.sort((x,y)=>ORD[x.stato]-ORD[y.stato]);
+  sp.sort((x,y)=> (y.euro-x.euro) || (ORD[x.stato]-ORD[y.stato]));
   const rp = recuperoPot(a,t);
   const primo = (SUGG && SUGG.length) ? SUGG[0] : null;
   const accese = sp.filter(x=>x.stato).length;
@@ -3396,16 +3509,18 @@ function renderDashLite(a, t, m, isM){
     : `<div class="lcoda"><div class="az">${quante} ${rp.tot>0
           ? 'Restano '+E(rp.tot)+' di recupero potenziale sulle aree sopra obiettivo.'
           : 'Non c\'è niente da sistemare: si lavora sulla crescita.'}</div>
-        <div class="eu">${fmtP(a.ro/a.ricavi)}<small>ti resta ogni 100 €</small></div></div>`;
+        <div class="eu">${fmtP(a.ro/a.ricavi)}<small>stai guadagnando ogni 100 € incassati</small></div></div>`;
 
   /* sul telefono un quadrante solo: l'incasso diventa una riga, così le spie
      restano sopra la piega e non si scrolla per vedere se c'è qualcosa che non va */
   const mob = document.documentElement.classList.contains('mobi');
   const incTesto = `${a.ricavi>=be ? 'sopra il pareggio di <b>'+E(a.ricavi-be)+'</b>' : 'sotto il pareggio di <b>'+E(be-a.ricavi)+'</b>'}
       · ${a.ricavi>=obiettivo ? 'obiettivo raggiunto' : 'all\'obiettivo mancano <b>'+E(obiettivo-a.ricavi)+'</b>'}`;
-  const qResta = `<div class="lq"><div class="l">Ti resta</div>${lGauge(utile/30, tUtile/30, '#7FC79C')}
-        <div class="v">${R(utile)}<small> € ogni 100</small></div>
-        <div class="d">l'obiettivo è <b>${fmtNum(tUtile)}</b> · in euro fa <b>${E(a.ro)}</b></div></div>`;
+  /* «Ti resta» suonava come un avanzo. È un guadagno, e si dice per intero:
+     quanto si guadagna ogni cento euro incassati. */
+  const qResta = `<div class="lq"><div class="l">Stai guadagnando</div>${lGauge(utile/30, tUtile/30, '#7FC79C')}
+        <div class="v">${fmtNum(utile)}<small> € ogni 100 € incassati</small></div>
+        <div class="d">l'obiettivo è il <b>${fmtNum(tUtile)}%</b> <span class="par">(in euro fa ${E(a.ro)})</span></div></div>`;
   const qIncasso = `<div class="lq"><div class="l">Incasso</div>${lGauge((a.ricavi-be)/(topF-be||1), (obiettivo-be)/(topF-be||1), '#E8B14A')}
         <div class="v">${E(a.ricavi)}</div><div class="d">${incTesto}</div></div>`;
   const rIncasso = `<div class="lriga"><div class="l">Incasso</div><div class="v">${E(a.ricavi)}</div>
@@ -3415,7 +3530,7 @@ function renderDashLite(a, t, m, isM){
     <div class="ltt"><h2>${escH(S.cliente||'Cliente')}</h2><span>${per}</span></div>
     <div class="lquadri">${qResta}${mob?'':qIncasso}</div>
     ${mob?rIncasso:''}
-    <div class="lspie">${sp.map(lSpiaHTML).join('')}</div>
+    <div class="lspie">${sp.map((x,i)=>lSpiaHTML(x,i)).join('')}</div>
     ${coda}
   </div>`;
 }
@@ -12191,6 +12306,9 @@ document.addEventListener('click',async e=>{
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
+  /* una spia del cruscotto lite si apre e si chiude toccandola */
+  const sps=e.target.closest('[data-spia]');
+  if(sps){ sps.classList.toggle('aperta'); return; }
   const lb=e.target.closest('[data-lbu]');
   if(lb){ liteBU=lb.dataset.lbu;
     /* lo stesso interruttore vale per lite e per pro: se cambiasse solo da una
@@ -15332,6 +15450,10 @@ document.addEventListener('visibilitychange', async ()=>{
 });
 (async ()=>{
   navInit(); soonTitoli();
+  /* il marchio della testata mobile è lo stesso della barra laterale, clonato:
+     duplicarne l'immagine nel file costerebbe qualche KB per niente */
+  (()=>{ const src=document.querySelector('.side .logo img'), dove=document.getElementById('mobLogo');
+    if(src && dove && !dove.firstChild){ const c=src.cloneNode(); c.removeAttribute('class'); dove.appendChild(c); } })();
   await cloudAvvio();
   await loadClients();
   sOwner=CLIENTS.activeId;
