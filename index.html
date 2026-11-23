@@ -141,6 +141,9 @@
     font-size:13.5px;font-weight:600;cursor:pointer;}
   #accesso button:hover{background:var(--brand-dk);} #accesso button:disabled{opacity:.6;cursor:default;}
   #accesso .err{min-height:17px;font-size:12px;color:var(--bad);margin-bottom:8px;}
+  #accesso .diag{margin-top:12px;font-size:11.5px;color:var(--ink2);line-height:1.5;}
+  #accesso .diag a{color:var(--brand);text-decoration:underline;cursor:pointer;}
+  #accesso .diag span{display:block;margin-top:5px;font-family:var(--num);font-size:10.5px;word-break:break-word;}
   @media(max-width:900px){
     .app{flex-direction:column;}
     .side{width:100%;height:auto;position:static;flex-direction:column;padding:12px 14px;border-right:none;border-bottom:1px solid var(--line);}
@@ -1552,7 +1555,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v114</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v115</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -11412,9 +11415,24 @@ function schermataAccesso(messaggio){
         autocapitalize="none" autocorrect="off" spellcheck="false"><button type="button" class="occhio" id="accOcchio">mostra</button></span></label>
       <div class="err" id="accErr">${messaggio||''}</div>
       <button type="submit" id="accBtn">Entra</button>
+      <div class="diag"><a id="accDiag">Prova la connessione</a><span id="accDiagOut"></span></div>
     </form>`;
     document.body.appendChild(d);
     const err=d.querySelector('#accErr'), btn=d.querySelector('#accBtn');
+    d.querySelector('#accDiag').addEventListener('click', async ()=>{
+      const out=d.querySelector('#accDiagOut');
+      out.textContent='sto provando…';
+      const righe=['rete del telefono: '+(navigator.onLine?'online':'OFFLINE')];
+      try{
+        const r=await fetch(SB_URL+'/auth/v1/health',{headers:{'apikey':SB_KEY}});
+        righe.push('archivio: risponde ('+r.status+')');
+      }catch(ex){ righe.push('archivio: NON risponde — '+String(ex&&ex.message||ex)); }
+      try{
+        const r2=await fetch('https://api.github.com/zen',{cache:'no-store'});
+        righe.push('internet in generale: ok ('+r2.status+')');
+      }catch(ex){ righe.push('internet in generale: bloccato — '+String(ex&&ex.message||ex)); }
+      out.textContent=righe.join(' · ');
+    });
     d.querySelector('#accOcchio').addEventListener('click', ()=>{
       const i=d.querySelector('#accPwd'), v=i.type==='password';
       i.type = v ? 'text' : 'password';
