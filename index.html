@@ -1614,7 +1614,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v118</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v119</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3372,6 +3372,251 @@ async function liteRender(p){
       <b>${escH(String(e&&e.message||e))}</b></div></div>`;
   }
 }
+
+
+/* ================== MENU ENGINEERING · il motore ==================
+   Portato dall'app Menu Profits di Cristina (v787.40, file del 23/11/2026).
+   `ordinaPerMargine` è copiata alla lettera, senza ritocchi: dentro ci sono
+   il core 80%, la regola del cavallo, il raggruppamento delle varianti e la
+   collocazione dei lanci. Tutto quello che le sta attorno qui sotto è il
+   ponte: prende il nostro archivio e produce le righe che quella funzione
+   si aspetta in pasto.
+
+   Una riga del motore è fatta così:
+     pz            pezzi venduti nel periodo
+     revenue       incasso del prodotto, IVA esclusa
+     margine       euro che restano su un pezzo (prezzo medio − costo scheda)
+     contribution  margine totale (pz × margine)
+     mpiScore      il voto da 1 a 5; negativo = nessun costo certo
+     gruppo        sotto-categoria, per tenere vicine le varianti
+     lancio        prodotto appena lanciato
+   Finché non portiamo anche gruppo e lancio dall'archivio, restano spenti:
+   il motore se ne accorge da solo e salta quelle due regole.             */
+const FASCIA_MARGINE_ORDINE = 0.05;
+const LANCIO_PEZZI_MAX = 40, LANCIO_GIORNI_MAX = 56, LANCIO_POSIZIONE_MIN = 4;
+const ORDINE_CAVALLI_DOPO = 1;      /* il 1° posto della categoria non va a un cavallo */
+const PROP_SOGLIA_CORE = 0.8, PROP_TOLLERANZA = 0.10, PROP_MIN_CORE = 2;
+const ORDINE_MIN_PRODOTTI_MEDIA = 3;
+
+function ordinaPerMargine(lista){
+  const q6 = v => Math.round((v||0)*1e6)/1e6;
+  // 02/11 (v787.16): chi non ha un punteggio (nessuna scheda costo certa: mpiScore -1) va SEMPRE in fondo.
+  const senza = x => x.mpiScore!==undefined && x.mpiScore<0;
+  const inLancio = x => !!x.lancio && !senza(x);
+  // v787.24: i piatti dello stesso GRUPPO (sotto-categoria: Taglieri, Carpacci, Risotti, Acque...) stanno sempre vicini. Il gruppo sta dove sta il suo
+  // piatto migliore; dentro il gruppo l'ordine e' quello normale. Senza gruppi la lista resta com'e'.
+  const raggruppa = ord => {
+    if(!ord.some(x=>x && x.gruppo)) return ord;
+    const out = [], fatti = {};
+    ord.forEach(x=>{
+      if(!x.gruppo){ out.push(x); return; }
+      if(fatti[x.gruppo]) return;
+      fatti[x.gruppo] = true;
+      ord.forEach(y=>{ if(y.gruppo === x.gruppo) out.push(y); });
+    });
+    return out;
+  };
+  const normali = lista.filter(x=>!inLancio(x));
+  const lanci = lista.filter(inLancio);
+  // confronti arrotondati a 6 decimali (v787.16): due prodotti con gli stessi numeri non si scambiano per un'unghia di virgola mobile
+  // 21/11 (v787.37) — IL 1° POSTO NON VA A UN «CAVALLO». Cristina: «deve funzionare per il locale... la Margherita e l'Aperol Spritz li dobbiamo curare
+  // bene, altrimenti anziche' farli guadagnare li affossiamo», e «non dobbiamo scendere cosi' tanto». Un cavallo (Kasavana) e' un piatto molto richiesto
+  // (almeno il 70% di una quota media della categoria) che lascia meno della media della categoria (margine a pezzo pesato sui pezzi). Vende da solo:
+  // il primo posto va al piatto che lascia di piu' e che si puo' ancora far crescere, ma il cavallo resta SUBITO DOPO, dove lo mette il suo guadagno
+  // totale (con ORDINE_CAVALLI_DOPO = 1 la quota di guadagno nei primi tre posti resta uguale a prima: Barcollo 69%, Burici 72%). Servono almeno 3 prodotti
+  // che vendono con punteggio, altrimenti nessun cavallo.
+  let sogliaMedia = null, pzQuota = 0;
+  { const v = normali.filter(x=>!senza(x) && (x.pz||0)>0);
+    if(v.length >= ORDINE_MIN_PRODOTTI_MEDIA){
+      const pzT = v.reduce((t,x)=>t+(x.pz||0),0);
+      if(pzT>0){ sogliaMedia = v.reduce((t,x)=>t+(x.pz||0)*(x.margine||0),0)/pzT; pzQuota = 0.7*pzT/v.length; }
+    } }
+  const eCavallo = x => sogliaMedia!==null && !senza(x) && (x.pz||0)>0 && (x.pz||0) >= pzQuota && q6(x.margine) < q6(sogliaMedia);
+  normali.forEach(x=>{ try{ x.cavallo = eCavallo(x); }catch(e){} });
+  const ord = normali.slice().sort((a,b)=>{
+    const sa = senza(a), sb = senza(b);
+    if(sa!==sb) return sa ? 1 : -1;
+    return (q6(b.contribution)-q6(a.contribution)) || (q6(b.mpiScore)-q6(a.mpiScore)) || (q6(b.margine)-q6(a.margine));
+  });
+  if(ord.some(x=>x.cavallo)){
+    const top = ord.filter(x=>!x.cavallo && !senza(x)).slice(0, ORDINE_CAVALLI_DOPO);
+    const resto = ord.filter(x=>top.indexOf(x)<0);
+    ord.length = 0; top.concat(resto).forEach(x=>ord.push(x));
+  }
+  // 21/11/2026 (v787.38, PROVA) — ORDINE «CORE 80%»: la proposta scelta da Cristina (foglio Excel «PROPOSTA classifica impaginazione core 80%»).
+  // Il CORE sono i prodotti che, messi in fila dall'incasso piu' alto, fanno insieme l'80% dell'incasso della categoria.
+  //   1) il core sta in alto, in ordine di incasso;
+  //   2) fa eccezione chi, dentro il core, lascia per pezzo CHIARAMENTE meno della media del core (almeno un decimo in meno, come lo Spritz Bianco):
+  //      va in fondo al core (sempre in ordine di incasso fra quelli come lui). Se lascia solo un centesimo in meno non si muove;
+  //   3) fuori dal core i prodotti sono in fila per 1° margine totale (pezzi x euro a pezzo), come nella v787.37;
+  //   4) i prodotti senza punteggio restano in fondo e i prodotti in lancio seguono la loro regola (mai sopra il 4° posto);
+  //   5) con meno di 2 prodotti nel core la regola non si applica: resta l'ordine della v787.37 (1° margine totale, il cavallo non e' 1°).
+  // Nessun prodotto fuori dal core sale sopra il core: al massimo diventa un FOCUS (vedi Prodotti Focus), la posizione non cambia.
+  {
+    const validi = normali.filter(x=>!senza(x));
+    const totRev = validi.reduce((t,x)=>t+(x.revenue||0),0);
+    normali.forEach(x=>{ x.nelCore80 = false; x.sottoCore80 = false; });
+    const core = totRev>0 ? validi.filter(x=>{
+      if(!((x.pz||0)>0)) return false;
+      const sopra = validi.reduce((t,y)=> t + (q6(y.revenue)>q6(x.revenue) ? (y.revenue||0) : 0), 0);
+      return sopra < PROP_SOGLIA_CORE*totRev - 1e-6;
+    }) : [];
+    if(core.length >= PROP_MIN_CORE){
+      const pzCore = core.reduce((t,x)=>t+(x.pz||0),0);
+      const mCore = pzCore>0 ? core.reduce((t,x)=>t+(x.contribution||0),0)/pzCore : 0;
+      core.forEach(x=>{ x.nelCore80 = true; x.sottoCore80 = (x.margine||0) < mCore*(1-PROP_TOLLERANZA); });
+      const gr = x => senza(x) ? 3 : (x.nelCore80 ? (x.sottoCore80 ? 1 : 0) : 2);
+      const cmpM = (a,b)=> (q6(b.contribution)-q6(a.contribution)) || (q6(b.mpiScore)-q6(a.mpiScore)) || (q6(b.margine)-q6(a.margine));
+      const cmpI = (a,b)=> (q6(b.revenue)-q6(a.revenue)) || cmpM(a,b);
+      const nuovo = normali.slice().sort((a,b)=>{
+        const ga = gr(a), gb = gr(b);
+        if(ga!==gb) return ga-gb;
+        return (ga<=1) ? cmpI(a,b) : cmpM(a,b);
+      });
+      ord.length = 0; nuovo.forEach(x=>ord.push(x));
+    }
+  }
+  if(lanci.length){
+    // Ogni lancio ha il suo posto fra i prodotti GIA' PROVATI: davanti al primo che guadagna al mese meno della sua stima, ma con almeno 3 prodotti
+    // provati sopra (mai piu' in alto del 4° posto). A parita' di posto i lanci stanno in ordine di guadagno stimato, dal piu' alto.
+    const st = L => (L.stimaMese===null||L.stimaMese===undefined) ? -1 : L.stimaMese;
+    const provati = ord;
+    const conPunteggio = provati.filter(x=>!senza(x)).length;
+    const minSopra = Math.min(LANCIO_POSIZIONE_MIN-1, conPunteggio);
+    lanci.forEach(L=>{
+      let kp;
+      if(st(L)<0) kp = minSopra;
+      else { const k = provati.findIndex(x=>!senza(x) && q6(x.contribMese) < q6(L.stimaMese)); kp = (k<0 ? conPunteggio : k); }
+      L._kp = Math.max(kp, minSopra);
+    });
+    lanci.sort((a,b)=>q6(st(b))-q6(st(a)));
+    const fuori = [];
+    for(let i=0;i<=provati.length;i++){
+      lanci.forEach(L=>{ if(L._kp===i) fuori.push(L); });
+      if(i<provati.length) fuori.push(provati[i]);
+    }
+    lanci.forEach(L=>{ delete L._kp; });
+    ord.length = 0; fuori.forEach(x=>ord.push(x));
+  }
+  return raggruppa(ord);
+}
+
+/* ---------------- il ponte ----------------
+   mesi: elenco di indici 0-11, oppure null per l'anno intero. */
+async function meRighe(mesi){
+  await mpCarica(); await proCarica();
+  const P = (PRO && PRO.prod) || [];
+  const idx = mesi && mesi.length ? mesi : [0,1,2,3,4,5,6,7,8,9,10,11];
+  const dentro = {}; idx.forEach(i=>dentro[i]=true);
+  const ivaStd = numIt(PRO && PRO.iva) || 0.1;
+  const righe = [];
+  P.forEach(x=>{
+    const c = ricCosto(x);                               /* null = scheda assente o rotta */
+    const iva = (x.pvi>0 && x.pv>0) ? (x.pvi/x.pv - 1) : ivaStd;
+    let pz=0, incLordo=0;
+    (x.mesi||[]).forEach((m,i)=>{
+      if(!dentro[i]) return;
+      pz += numIt(m.pz); incLordo += numIt(m.inc);
+    });
+    if(!pz && !incLordo) return;                         /* mai venduto nel periodo: fuori */
+    const revenue = incLordo/(1+iva);                    /* la cassa è lorda, i conti si fanno netti */
+    const costo = c ? c.tot : null;
+    const prezzoMedio = pz>0 ? revenue/pz : 0;
+    const margine = (costo!=null && pz>0) ? (prezzoMedio - costo) : 0;
+    righe.push({
+      key:x.id, nome:x.n, cat:(x.cat||'Senza categoria'),
+      seg:((PRO.seg||{})[x.cat]||''),
+      pz, revenue, costo, prezzoMedio, margine,
+      contribution: (costo!=null ? pz*margine : 0),
+      haCosto: costo!=null,
+      obiettivo: numIt((PRO.target||{})[x.cat]) || null,
+      gruppo:'', lancio:false
+    });
+  });
+  return meVoto(righe);
+}
+
+/* Il voto MPI, come nella sua app: percentile dentro la categoria su tre
+   fattori, tradotto in 1-5, pesato 40% margine totale, 35% euro a pezzo,
+   25% pezzi. Chi non ha un costo certo prende -1 e il motore lo manda in
+   fondo senza farlo competere. */
+function meVoto(righe){
+  const perCat = {};
+  righe.forEach(r=>{ (perCat[r.cat] = perCat[r.cat] || []).push(r); });
+  const q = v => Math.round((v||0)*1e9)/1e9;
+  const pct = (arr, campo, val) => {
+    const n = arr.length; if(!n) return 0;
+    const v = q(val);
+    return arr.filter(x=>q(x[campo])<=v).length/n;
+  };
+  const voto = p => p>=0.8?5 : p>=0.6?4 : p>=0.4?3 : p>=0.2?2 : 1;
+  righe.forEach(r=>{
+    if(!r.haCosto){ r.mpiScore = -1; r.classe = 'senza costo'; return; }
+    const a = perCat[r.cat];
+    const sPezzi  = r.pz===0 ? 1 : voto(pct(a,'pz',r.pz));
+    const sPezzo  = voto(pct(a,'margine',r.margine));
+    const sTotale = r.pz===0 ? 1 : voto(pct(a,'contribution',r.contribution));
+    r.mpiScore = sTotale*0.4 + sPezzi*0.25 + sPezzo*0.35;
+    r.classe = r.mpiScore>=4.5 ? 'da spingere'
+             : r.mpiScore>=4   ? 'tiene il locale'
+             : r.mpiScore>=3   ? 'può crescere'
+             : r.mpiScore>=2   ? 'secondario' : 'da rivedere';
+  });
+  return righe;
+}
+
+/* Le categorie: stessi campi dei prodotti, così passano dallo stesso motore
+   e il core 80% vale anche fra le categorie. Food e Beverage restano due
+   blocchi separati, e va per primo quello che incassa di più. */
+function meCategorie(righe){
+  const m = {};
+  righe.forEach(r=>{
+    const c = m[r.cat] || (m[r.cat] = {key:r.cat, nome:r.cat, seg:r.seg,
+      pz:0, revenue:0, contribution:0, conCosto:0, nProd:0,
+      obiettivo:r.obiettivo, gruppo:'', lancio:false});
+    c.pz += r.pz; c.revenue += r.revenue; c.nProd++;
+    if(r.haCosto){ c.contribution += r.contribution; c.conCosto += r.revenue; }
+  });
+  const cats = Object.values(m);
+  cats.forEach(c=>{
+    c.margine = c.pz>0 ? c.contribution/c.pz : 0;
+    c.costo   = c.conCosto - c.contribution;             /* materia prima delle righe con scheda */
+    c.incid   = c.conCosto>0 ? c.costo/c.conCosto : null;  /* incidenza sul venduto con scheda */
+    c.mpiScore = c.conCosto>0 ? 1 : -1;                  /* una categoria senza schede non compete */
+    c.haCosto = c.conCosto>0;
+  });
+  /* il voto fra categorie: stessa meccanica, ma sull'insieme di tutte */
+  const q = v => Math.round((v||0)*1e9)/1e9;
+  const pct = (campo,val)=>{ const n=cats.length; if(!n) return 0;
+    const v=q(val); return cats.filter(x=>q(x[campo])<=v).length/n; };
+  const voto = p => p>=0.8?5 : p>=0.6?4 : p>=0.4?3 : p>=0.2?2 : 1;
+  cats.forEach(c=>{
+    if(!c.haCosto){ c.cpiScore=-1; return; }
+    c.resa = c.revenue>0 ? c.contribution/c.revenue : 0;
+    c.cpiScore = voto(pct('contribution',c.contribution))*0.4
+               + voto(pct('pz',c.pz))*0.25
+               + voto(pct('resa',c.resa))*0.35;
+    c.mpiScore = c.cpiScore;                              /* il motore legge mpiScore */
+  });
+  const segDi = c => /bev/i.test(c.seg||'') ? 'Beverage' : /food/i.test(c.seg||'') ? 'Food' : 'Altro';
+  const blocchi = {};
+  cats.forEach(c=>{ (blocchi[segDi(c)] = blocchi[segDi(c)] || []).push(c); });
+  const ordine = Object.entries(blocchi)
+    .map(([nome,lista])=>({nome, lista:ordinaPerMargine(lista),
+                           revenue:lista.reduce((t,x)=>t+x.revenue,0)}))
+    .sort((a,b)=>{
+      if(a.nome==='Altro') return 1;                      /* non-prodotti sempre in fondo */
+      if(b.nome==='Altro') return -1;
+      return b.revenue-a.revenue;                         /* davanti il blocco che incassa di più */
+    });
+  return ordine;
+}
+
+/* L'ordine proposto dei prodotti dentro una categoria. */
+function meOrdineCategoria(righe, cat){
+  return ordinaPerMargine(righe.filter(r=>r.cat===cat));
+}
+
 
 let SUGG=[];
 function dashGauges(a, t, isM, ricaviNote){
