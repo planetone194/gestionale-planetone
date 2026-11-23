@@ -1831,7 +1831,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v134</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v135</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3743,20 +3743,80 @@ function liteCF(){
 
 /* ---------- obiettivi ---------- */
 function liteOB(){
-  const t=S.targets;
-  const r=(n,v,sotto)=>lpRow(n, sotto, fmtNum(v)+'%');
-  return `<div class="lp">${lpTesta('Obiettivi per area',
-      'Le soglie che accendono le spie del cruscotto. Valgono per questo cliente.')}
-    ${r('Risorse umane', t.ru, 'costo del personale sui ricavi, al massimo')}
-    ${r('Materia prima', t.mp, 'food + beverage sui ricavi, al massimo')}
-    ${r('Spese generali', t.sg, 'costi indiretti sui ricavi, al massimo')}
-    ${r('Marketing', t.mk, 'il centro di una fascia, non un tetto: zero è sbagliato quanto il doppio')}
-    ${r('Costi nascosti', t.cn, 'scarto fra bilancio e schede, al massimo')}
-    ${r('Utile operativo', t.ro, 'quello che resta: si ricava dagli altri tre')}
+  const m=compute(), t=S.targets;
+  const isM=scope!=='ytd';
+  const rows=isM?[m.months[scope]]:m.complete;
+  const a=sumRows(rows, isM?0:m.orphanCosts);
+  const per = isM ? MESI[scope]+' '+S.anno
+    : (m.complete.length ? m.complete[0].mese+' – '+m.complete[m.complete.length-1].mese+' '+S.anno
+                         : 'esercizio '+S.anno);
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Obiettivi per area', per)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo:
+      senza quelli non si può dire a che punto siamo.</div></div>`;
+
+  /* Una soglia da sola non dice niente: accanto ci vuole dove siamo, quanto
+     manca in punti e quanto vale in euro. È la differenza fra un promemoria
+     e uno strumento. */
+  /* «1 punti» no: e il confronto va fatto sul numero arrotondato, altrimenti
+     34 − 33 fa 1,0000000000000036 e il singolare non scatta mai */
+  const pt = d => { const q=Math.round(Math.abs(d)*10)/10;
+    return fmtNum(q)+(q===1?' punto':' punti'); };
+  const riga=(nome, inc, tgt, mai, sotto, fascia)=>{
+    if(!isFinite(inc)) return lpRow(nome, sotto+' · obiettivo '+fmtNum(tgt)+'%', '—', null);
+    /* un'area a zero perché non è mai stata registrata non è un'area virtuosa:
+       dirlo «risparmiato» sarebbe una bugia che si porta dietro tutto il resto */
+    if(mai) return lpRow(nome,
+      `${sotto} · obiettivo ${fmtNum(tgt)}%<br><b>mai registrati</b>: finché non ci sono,
+       questa riga non dice se siamo dentro o fuori`, '—', 'da misurare', 'warn');
+    const dpp=inc-tgt;
+    const z = fascia ? mktZona(inc,tgt) : (dpp<=0?0:dpp<=5?1:dpp<=10?2:3);
+    const st = ['ok','warn','warn','bad'][z];
+    const scost = dpp/100*a.ricavi;
+    const detto = fascia
+      ? (z===0 ? 'in fascia'
+         : dpp<0 ? `<b>${pt(dpp)}</b> sotto il centro: ${fmtE(-scost)} in meno di quanto servirebbe`
+                 : `<b>${pt(dpp)}</b> sopra il centro: ${fmtE(scost)}`)
+      : (dpp<=0 ? `<b>${pt(dpp)}</b> sotto l'obiettivo: ${fmtE(-scost)} risparmiati`
+                : `<b>${pt(dpp)}</b> sopra: ${fmtE(scost)} di troppo`);
+    return lpRow(nome,
+      `${sotto} · obiettivo ${fmtNum(tgt)}%<br>sei a <b>${fmtNum(inc)}%</b> · ${detto}`,
+      fmtNum(inc)+'%', (dpp>0?'+':'')+fmtNum(dpp)+' pt', st);
+  };
+  const rec=recuperoPot(a,t);
+  const incRo=a.ro/a.ricavi*100, tRo=num(t.ro);
+  const pc=(a.incMp+a.incRu)*100, tPc=num(t.mp)+num(t.ru);
+
+  return `<div class="lp">${lpTesta('Obiettivi per area', per)}
+    ${lpCard('Quanto vale rientrare', rec && rec.tot>0 ? fmtE(rec.tot) : '—',
+      rec && rec.tot>0
+        ? `è quello che tornerebbe a margine nel periodo se le aree sopra soglia rientrassero.<br>
+           L'utile operativo passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(a.ro+rec.tot)}</b>`
+        : 'tutte le aree sono dentro le loro soglie: da qui non c\'è altro da prendere',
+      rec && rec.tot>0 ? 'warn' : 'ok')}
+    ${lpCard('Utile operativo', fmtNum(incRo)+'<small> € ogni 100</small>',
+      `${fmtE(a.ro)} · l'obiettivo è ${fmtNum(tRo)}<br>` +
+      (incRo>=tRo ? `<b>${fmtNum(incRo-tRo)} punti</b> sopra l'obiettivo`
+                  : `mancano <b>${fmtNum(tRo-incRo)} punti</b>, cioè <b>${fmtE((tRo-incRo)/100*a.ricavi)}</b>`),
+      incRo>=tRo ? 'ok' : incRo>=tRo-5 ? 'warn' : 'bad')}
+
+    <div class="lpsez">Area per area · dove siamo</div>
+    ${riga('Risorse umane', a.incRu*100, num(t.ru), false, 'costo del personale sui ricavi')}
+    ${riga('Materia prima', a.incMp*100, num(t.mp), false, 'food + beverage sui ricavi')}
+    ${riga('Spese generali', a.incSg*100, num(t.sg), false, 'costi indiretti sui ricavi')}
+    ${riga('Marketing', a.incMk*100, num(t.mk), !(a.mk>0),
+      'il centro di una fascia, non un tetto', true)}
+    ${riga('Costi nascosti', a.incCn*100, num(t.cn), !(a.cn>0), 'scarto fra bilancio e schede')}
+
     <div class="lpsez">Prime cost</div>
-    ${lpRow('Materia prima + personale', 'fascia sana 60–65 · obiettivo Planet One 62',
-      fmtNum(num(t.mp)+num(t.ru))+'%')}
-    ${lpChiusura('Obiettivi Planet One')}</div>`;
+    ${lpRow('Materia prima + personale',
+      `fascia sana 60–65 · obiettivo Planet One ${fmtNum(tPc)}%<br>sei a <b>${fmtNum(pc)}%</b> · ` +
+      (pc<=tPc ? `<b>${pt(tPc-pc)}</b> sotto` :
+       `<b>${pt(pc-tPc)}</b> sopra: ${fmtE((pc-tPc)/100*a.ricavi)}`),
+      fmtNum(pc)+'%', (pc>tPc?'+':'')+fmtNum(pc-tPc)+' pt',
+      pc<=tPc?'ok':pc<=70?'warn':'bad')}
+
+    <div class="lpnota">Le soglie si modificano dal computer, in <b>Obiettivi per area</b>.
+      Sul telefono la pagina resta in sola lettura.</div></div>`;
 }
 
 /* ---------- il metodo ---------- */
