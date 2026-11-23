@@ -364,6 +364,19 @@
   .mevoto.v1{background:#F7E0DC;color:var(--bad);} .mevoto.no{background:#F2F0EA;color:#B9B4A8;}
   table.entry.me th small{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:#9A958A;}
   table.entry.me.prio{min-width:1080px;}
+  /* lo stesso interruttore, vestito per la modalità pro */
+  section.qa .lpbu{background:#fff;border-color:var(--line);}
+  section.qa .lpbu button{color:var(--ink2);}
+  section.qa .lpbu button:hover{color:var(--ink);}
+  section.qa .lpbu button.on{background:var(--ink);color:#fff;}
+  section.qa .lpbu button.on[data-lbu="food"]{background:var(--food);}
+  section.qa .lpbu button.on[data-lbu="bev"]{background:var(--bev);}
+  /* quando un filtro è attivo si vede nel titolo: non deve poter passare inosservato */
+  .bufiltro{display:inline-block;margin-left:10px;border-radius:6px;padding:1px 9px;
+    font-family:'Inter',sans-serif;font-size:11px;font-weight:600;letter-spacing:.3px;
+    vertical-align:3px;color:#fff;}
+  .bufiltro.food{background:var(--food);} .bufiltro.bev{background:var(--bev);}
+  .lp .bufiltro{vertical-align:4px;}
   .pres{color:var(--hot);font-weight:700;margin-left:3px;cursor:help;}
   .vdsearch,.vdsel{border:1.5px solid var(--line);border-radius:9px;padding:7px 12px;font:inherit;
     font-size:13px;background:#fff;color:var(--ink);}
@@ -383,6 +396,11 @@
   .tipo.t1{background:#F7E0DC;color:var(--bad);} .tipo.t0{background:#F2F0EA;color:#B9B4A8;}
   table.entry.me tr.famrow td{background:#F3F1EB;font-weight:600;}
   table.entry.me.wf{min-width:1020px;}
+  table.entry.me.ob{min-width:860px;}
+  table.entry.me.ob tr.aperto td{background:#FBFAF7;}
+  .obin{width:92px;border:1.5px solid var(--line);border-radius:6px;padding:4px 7px;
+    font-family:var(--num);font-size:12.5px;text-align:right;background:#fff;color:var(--ink);}
+  .obin:focus{outline:2px solid var(--brass);outline-offset:-2px;background:#FFFDF6;}
   .wfin{width:76px;border:1.5px solid var(--line);border-radius:6px;padding:4px 7px;
     font-family:var(--num);font-size:12.5px;text-align:right;background:#FFFDF6;color:var(--ink);}
   .wfin:focus{outline:2px solid var(--brass);outline-offset:-2px;}
@@ -1804,8 +1822,8 @@
     <div class="gh" data-g="obi">Obiettivi per area<span class="ca">▼</span></div>
     <div class="gb" data-gb="obi">
       <button data-page="ob">Obiettivi per area</button>
-      <button data-page="obmese" class="soon">Obiettivi del mese</button>
-      <button data-page="obbep" class="soon">Punto di pareggio</button>
+      <button data-page="obmese">Obiettivi del mese</button>
+      <button data-page="obbep">Punto di pareggio</button>
     </div>
 
     <div class="sep"></div>
@@ -1813,7 +1831,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v132</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v134</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2045,6 +2063,8 @@
   <div class="page" id="page-mfocus"><div id="mfocusBody"></div></div>
   <div class="page" id="page-mbuild"><div id="mbuildBody"></div></div>
   <div class="page" id="page-msugg"><div id="msuggBody"></div></div>
+  <div class="page" id="page-obmese"><div id="obmeseBody"></div></div>
+  <div class="page" id="page-obbep"><div id="obbepBody"></div></div>
   <div class="page" id="page-mprof"><div id="mprofBody"></div></div>
   <div class="page" id="page-mcore"><div id="mcoreBody"></div></div>
   <div class="page" id="page-vprio"><div id="vprioBody"></div></div>
@@ -3492,7 +3512,7 @@ function lpSoloPC(pagina){
 /* ---------- 1 - conto economico ---------- */
 function liteCE(){
   const {m,t,a:a0,per}=lpAgg(), a=lpBUa(a0);
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per), true)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per))}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const incMp=a.incMp*100;
   const fc = a0.ricaviFood>0 ? a0.mpFood/a0.ricaviFood*100 : null;
@@ -3504,9 +3524,9 @@ function liteCE(){
     const inc=MP(o.x)/RIC(o.x)*100;
     return lpRow(MESI[o.i], null, fmtE(RIC(o.x)), Math.round(inc)+'%', lpStato(inc, t.mp));
   }).join('');
-  return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per), true)}
+  return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Materia prima':'Materia prima · '+a.et,
-      Math.round(incMp)+'<small> € ogni 100</small>',
+      fmtNum(incMp)+'<small> € ogni 100</small>',
       `${fmtE(a.mp)} · l'obiettivo è ${fmtNum(t.mp)}` +
       (a.bu==='tot' && fc!=null && bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
       lpStato(incMp, t.mp))}
@@ -3521,7 +3541,7 @@ function liteCE(){
 /* ---------- 1a - i ricavi, da soli ---------- */
 function liteRicavi(){
   const {m,a:a0,per}=lpAgg(), a=lpBUa(a0);
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per), true)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per))}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const tot=a0.ricaviFood+a0.ricaviBev;
   const qF = tot>0 ? a0.ricaviFood/tot : 0;
@@ -3530,7 +3550,7 @@ function liteRicavi(){
     .map(o=>lpRow(MESI[o.i], null, fmtE(RIC(o.x)),
       a.bu!=='tot' ? null
         : (o.x.rf+o.x.rb>0 ? Math.round(o.x.rf/(o.x.rf+o.x.rb)*100)+'% food' : null))).join('');
-  return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per), true)}
+  return `<div class="lp">${lpTesta('Ricavi', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Incasso del periodo':'Incasso '+a.et, fmtE(a.ricavi),
       `media <b>${fmtE(a.ricavi/(a0.n||1))}</b> al mese su ${a0.n} ${a0.n===1?'mese':'mesi'}` +
       (a.bu==='tot' ? '' : ` · <b>${Math.round((a.bu==='food'?qF:1-qF)*100)}</b> € ogni 100 di incasso totale`))}
@@ -3544,7 +3564,7 @@ function liteRicavi(){
 /* ---------- 3a - marketing: una fascia, non un tetto ---------- */
 function liteMKT(){
   const {t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per), true)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per))}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const q = a.bu==='tot' ? 1 : a.quota;
   const inc=a.incMk*100, z=mktZona(inc, t.mk);
@@ -3562,9 +3582,9 @@ function liteMKT(){
       ? (inc<0.5 ? `${fmtE(a.mk)} · il locale non si sta facendo vedere`
                  : `${fmtE(a.mk)} · sotto il centro di <b>${fmtE(a.ricavi*t.mk/100-a.mk)}</b>`)
       : `${fmtE(a.mk)} · sopra il centro di <b>${fmtE(a.mk-a.ricavi*t.mk/100)}</b>`;
-  return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per), true)}
+  return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Quanto si fa vedere':'Quanto si fa vedere · '+a.et,
-      Math.round(inc)+'<small> € ogni 100</small>', nota, cls)}
+      fmtNum(inc)+'<small> € ogni 100</small>', nota, cls)}
     ${righe?`<div class="lpsez">Dove vanno</div>${righe}`
            :'<div class="lpvuoto">Nessuna spesa di marketing riconosciuta nel periodo.<br>O il locale non ne fa, o è dentro un\'altra voce.</div>'}
     ${a.bu==='tot' ? '' : `<div class="lpnota">Le spese di marketing non nascono divise fra cucina e bar:
@@ -3576,7 +3596,7 @@ function liteMKT(){
 /* ---------- 2 - risorse umane ---------- */
 function liteRU(){
   const {m,t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per), true)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per))}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const M=merchMode();
   const rTot=a0.ricaviFood+a0.ricaviBev, shareF = rTot>0 ? a0.ricaviFood/rTot : .5;
@@ -3609,9 +3629,9 @@ function liteRU(){
         : `<b>${Math.round(gap)} punti</b> di distanza, sopra la soglia di 15 — e sul totale non si vede.`),
       gap<=15?'ok':gap>20?'bad':'warn');
   }
-  return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per), true)}
+  return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Costo del personale':'Costo del personale · '+a.et,
-      Math.round(incRu)+'<small> € ogni 100</small>',
+      fmtNum(incRu)+'<small> € ogni 100</small>',
       `${fmtE(a.ru)} · l'obiettivo è ${fmtNum(t.ru)}` +
       (a.bu==='tot' ? ` · <b>${persone}</b> person${persone===1?'a':'e'}` : ''),
       lpStato(incRu, t.ru))}
@@ -3626,7 +3646,7 @@ function liteRU(){
 /* ---------- 3 - spese generali ---------- */
 function liteSG(){
   const {t,a:a0,per,idx}=lpAgg(), a=lpBUa(a0);
-  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per), true)}
+  if(!(a.ricavi>0)) return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per))}
     <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo${a.bu==='tot'?'':' su '+a.et.toLowerCase()}.</div></div>`;
   const q = a.bu==='tot' ? 1 : a.quota;
   const voci=[], incSg=a.incSg*100;
@@ -3643,9 +3663,9 @@ function liteSG(){
   const ricorrenti=a.sg-unaTantum;
   const righe=voci.slice(0,10).map(x=>lpRow(x.nome, x.raro?'una o due volte l\'anno':x.gruppo,
     fmtE(x.v), Math.round(x.v/tot*100)+'%')).join('');
-  return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per), true)}
+  return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Spese generali':'Spese generali · '+a.et,
-      Math.round(incSg)+'<small> € ogni 100</small>',
+      fmtNum(incSg)+'<small> € ogni 100</small>',
       `${fmtE(a.sg)} · l'obiettivo è ${fmtNum(t.sg)}`, lpStato(incSg, t.sg))}
     ${unaTantum>0 ? lpCard('Tolte le voci che compaiono una o due volte',
       (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100</small>',
@@ -3881,7 +3901,8 @@ function liteAN(){
 const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
   vdash:liteVDASH, vriep:liteVRIEP, vprec:liteVPREC, vtrend:liteVTREND, vlist:liteVLIST,
   mprof:liteMPROF, mcore:liteMCORE, vprio:liteVPRIO,
-  mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG};
+  mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG,
+  obmese:liteOBMESE, obbep:liteOBBEP};
 async function liteRender(p){
   const el=document.getElementById('litePage'); if(!el) return;
   const nm=document.getElementById('clientName');
@@ -3889,6 +3910,7 @@ async function liteRender(p){
   try{
     const f=LITE_REND[p];
     el.innerHTML = f ? await f() : lpSoloPC(p);
+    buInnesta(p);
   }catch(e){
     el.innerHTML = `<div class="lp"><div class="lpvuoto">Questa pagina non si apre in modalità lite.<br>
       <b>${escH(String(e&&e.message||e))}</b></div></div>`;
@@ -9139,7 +9161,7 @@ async function renderVDASH(){
   const body=document.getElementById('vdashBody');
   body.innerHTML='<section><div class="sub">Sto leggendo l\'archivio dei prodotti…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Report del venduto', per); return; }
   const iva=1+num(PRO.iva||0.1);
   /* quanti mesi sono stati caricati, su tutto l'anno: è la prima cosa da sapere */
@@ -9230,7 +9252,7 @@ async function renderMPROF(){
   const body=document.getElementById('mprofBody');
   body.innerHTML='<section><div class="sub">Sto leggendo le schede costo…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Listino e costi', per); return; }
   const veri=righe.filter(r=>r.costoVero!=null);
   const ric=righe.reduce((a,r)=>a+r.revenue,0);
@@ -9308,7 +9330,7 @@ async function renderMCORE(){
   const body=document.getElementById('mcoreBody');
   body.innerHTML='<section><div class="sub">Sto leggendo il venduto…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Core business', per); return; }
   const ric=righe.reduce((a,r)=>a+r.revenue,0);
   const segDi = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
@@ -9421,7 +9443,7 @@ async function renderVPRIO(){
   const body=document.getElementById('vprioBody');
   body.innerHTML='<section><div class="sub">Sto calcolando i voti…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Pagella prodotti e categorie', per); return; }
   const blocchi=meCategorie(righe);
   const conCosto=righe.filter(r=>r.haCosto);
@@ -9515,13 +9537,307 @@ async function renderVPRIO(){
 
 
 
+
+/* =============== OBIETTIVI DEL MESE E PUNTO DI PAREGGIO ===============
+   Due pagine che guardano avanti invece che indietro: quanto deve incassare
+   il locale per coprire tutto, e quanto gli manca per arrivare dove avevamo
+   detto. Nessuna delle due inventa un obiettivo: lo costruisce sull'anno
+   prima, o sui costi veri. */
+function obMeseStato(){
+  migrateS();
+  if(!S.obm || typeof S.obm!=='object') S.obm={cresc:5, mesi:{}};
+  if(!S.obm.mesi) S.obm.mesi={};
+  if(S.obm.cresc==null) S.obm.cresc=5;
+  return S.obm;
+}
+/* l'obiettivo di un mese: quello scritto a mano, oppure l'anno prima più la crescita */
+function obMeseTarget(i, mPrec, cresc){
+  const o=obMeseStato();
+  const manuale=num(o.mesi[i]);
+  if(manuale>0) return {v:manuale, fonte:'scritto a mano'};
+  const base = mPrec ? num(mPrec.months[i].ricavi) : 0;
+  if(!(base>0)) return {v:0, fonte:null};
+  return {v: base*(1+cresc/100), fonte:'dall\'anno prima'};
+}
+
+async function renderOBMESE(){
+  const body=document.getElementById('obmeseBody');
+  const o=obMeseStato();
+  const m=compute(), mPrec=computeAnno(num(S.anno)-1);
+  const cresc=num(o.cresc);
+  const righe=MESI.map((nome,i)=>{
+    const t=obMeseTarget(i, mPrec, cresc);
+    const fatto=num(m.months[i].ricavi);
+    const prima=mPrec?num(mPrec.months[i].ricavi):0;
+    const chiuso=meseCompleto(m.months[i]) || fatto>0;
+    return {i, nome, prima, obiettivo:t.v, fonte:t.fonte, fatto, chiuso,
+      manca: t.v>0 ? t.v-fatto : null,
+      /* il confronto con l'anno prima esiste solo se questo mese ha dei ricavi:
+         altrimenti un mese non ancora caricato risulterebbe «−100%» */
+      vsPrec: (prima>0 && fatto>0) ? (fatto-prima)/prima : null};
+  });
+  const conOb=righe.filter(x=>x.obiettivo>0);
+  const chiusi=righe.filter(x=>x.chiuso && x.obiettivo>0);
+  const raggiunti=chiusi.filter(x=>x.fatto>=x.obiettivo);
+  const obAnno=conOb.reduce((a,x)=>a+x.obiettivo,0);
+  const fattoAnno=righe.reduce((a,x)=>a+x.fatto,0);
+  const mancaAnno=obAnno-fattoAnno;
+  /* il mese su cui si sta lavorando: il primo non ancora chiuso */
+  const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Obiettivi del mese</h2>
+      <div class="sub">L'obiettivo nasce dall'anno prima più una crescita, e si può scrivere a mano
+      mese per mese. Per ogni mese chiuso si vede se è stato raggiunto e di quanto; per quelli
+      ancora aperti, quanto manca.</div></div></div>
+    <div class="qagrid">
+      ${(()=>{
+        const aperti=righe.filter(x=>!x.chiuso && x.obiettivo>0);
+        /* con mesi ancora da fare non si può dire che l'anno è fuori obiettivo:
+           si dice quanto manca e quanto resta per farlo */
+        const stato = obAnno<=0 ? ''
+          : mancaAnno<=0 ? 'ok'
+          : aperti.length ? 'warn'
+          : fattoAnno/obAnno>=0.95 ? 'warn' : 'bad';
+        return qaCard('Obiettivo dell\'anno', obAnno>0?fmtE(obAnno):'—',
+          obAnno>0 ? `incassati <b>${fmtE(fattoAnno)}</b> · ${
+              mancaAnno>0 ? `mancano <b>${fmtE(mancaAnno)}</b>` : `<b>superato di ${fmtE(-mancaAnno)}</b>`}` +
+            (aperti.length ? `<br>restano <b>${aperti.length} mes${aperti.length===1?'e':'i'}</b> da fare:
+              ${fmtE(mancaAnno/aperti.length)} al mese` : '')
+          : `Serve il ${num(S.anno)-1} caricato, oppure un obiettivo scritto a mano.`, stato);
+      })()}
+      ${qaCard('Mesi raggiunti', chiusi.length?`${raggiunti.length}<small> su ${chiusi.length}</small>`:'—',
+        chiusi.length?'sui mesi già chiusi con un obiettivo':'nessun mese chiuso con un obiettivo',
+        chiusi.length? (raggiunti.length===chiusi.length?'ok':raggiunti.length>=chiusi.length/2?'warn':'bad') : '')}
+      ${corrente
+        ? qaCard('Il mese aperto: '+corrente.nome,
+            corrente.obiettivo>0?fmtE(corrente.obiettivo):'—',
+            `incassati finora <b>${fmtE(corrente.fatto)}</b> · ${
+              corrente.manca>0?`mancano <b>${fmtE(corrente.manca)}</b>`:'<b>già raggiunto</b>'}`,
+            corrente.manca<=0?'ok':'')
+        : qaCard('Il mese aperto','—','tutti i mesi con obiettivo risultano chiusi')}
+    </div>
+    <div class="params" style="margin-top:14px">
+      <label>Crescita sull'anno prima <input type="number" id="obCre" step="0.5" value="${fmtNum(cresc)}"> %</label>
+      <span class="savestate">Vale per tutti i mesi che non hanno un obiettivo scritto a mano.</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Mese per mese</h2>
+      <div class="sub">L'obiettivo si può scrivere direttamente nella colonna: quello che scrivi
+      a mano vince sulla crescita automatica. Lascia vuoto per tornare al calcolo.</div></div></div>
+    <div class="tblwrap"><table class="entry me ob">
+      <tr><th>Mese</th><th>Anno scorso</th><th>Crescita</th><th>Obiettivo</th><th>Incassato</th>
+        <th>Rispetto all'anno scorso</th><th>Quanto manca</th><th>Raggiunto?</th></tr>
+      ${righe.map(x=>`<tr class="${x.chiuso?'':'aperto'}">
+        <td class="lbl">${x.nome}${x.fonte==='scritto a mano'?'<span class="role">obiettivo scritto a mano</span>':''}</td>
+        <td class="tot">${x.prima>0?fmtE(x.prima):'—'}</td>
+        <td class="tot">${x.fonte==='dall\'anno prima'?'+'+fmtNum(cresc)+'%':'—'}</td>
+        <td class="tot"><input class="obin" type="text" inputmode="decimal" data-obm="${x.i}"
+          value="${num(o.mesi[x.i])>0?fmtNum(num(o.mesi[x.i])):''}"
+          placeholder="${x.obiettivo>0?fmtNum(Math.round(x.obiettivo)):'—'}"></td>
+        <td class="tot">${x.fatto>0?fmtE(x.fatto):'—'}</td>
+        <td class="tot ${x.vsPrec==null?'':x.vsPrec>=0?'bassa':'alta'}">${
+          x.vsPrec==null?'—':(x.vsPrec>=0?'+':'−')+fmtP(Math.abs(x.vsPrec))}</td>
+        <td class="tot ${x.manca==null?'':x.manca>0?'alta':'bassa'}">${
+          x.manca==null?'—':x.manca>0?fmtE(x.manca):'+'+fmtE(-x.manca)}</td>
+        <td class="tot">${
+          x.obiettivo<=0 ? '—'
+          : !x.chiuso ? `<span class="verdict v-warn">in corso</span>`
+          : x.fatto>=x.obiettivo ? `<span class="verdict v-ok">sì</span>`
+          : `<span class="verdict v-bad">no</span>`}</td></tr>`).join('')}
+      <tr class="sumrow"><td class="lbl">Totale</td>
+        <td class="tot">${mPrec?fmtE(righe.reduce((a,x)=>a+x.prima,0)):'—'}</td>
+        <td class="tot">—</td>
+        <td class="tot">${obAnno>0?fmtE(obAnno):'—'}</td>
+        <td class="tot">${fmtE(fattoAnno)}</td>
+        <td class="tot">—</td>
+        <td class="tot ${mancaAnno>0?'alta':'bassa'}">${obAnno>0?(mancaAnno>0?fmtE(mancaAnno):'+'+fmtE(-mancaAnno)):'—'}</td>
+        <td class="tot">${obAnno>0?(mancaAnno<=0?'<span class="verdict v-ok">sì</span>':'<span class="verdict v-warn">in corso</span>'):'—'}</td></tr>
+    </table></div>
+    ${!mPrec?`<div class="qanota">Il ${num(S.anno)-1} non è caricato, quindi la crescita non ha una base:
+      gli obiettivi vanno scritti a mano.</div>`:''}
+  </section>`;
+
+  document.getElementById('obCre').oninput=e=>{
+    obMeseStato().cresc=num(e.target.value)||0; saveState(); renderOBMESE();
+  };
+  body.querySelectorAll('.obin').forEach(inp=>{
+    inp.onchange=()=>{
+      const i=+inp.dataset.obm, v=numIt(inp.value);
+      if(v>0) obMeseStato().mesi[i]=v; else delete obMeseStato().mesi[i];
+      saveState(); renderOBMESE();
+    };
+  });
+}
+
+/* ---------------------------------------- Punto di pareggio */
+function bepDati(){
+  const m=compute(), t=S.targets;
+  const isM=scope!=='ytd';
+  const rows=isM?[m.months[scope]]:m.complete;
+  const a=sumRows(rows, isM?0:m.orphanCosts);
+  if(!(a.ricavi>0)) return null;
+  /* la materia prima è l'unico costo che cresce con l'incasso: tutto il resto,
+     nel conto di un locale, si comporta da fisso nel breve periodo */
+  const incMp=a.mp/a.ricavi;
+  const fissi=a.ru+a.sg+a.mk;
+  const bep = incMp<1 ? fissi/(1-incMp) : null;
+  const nMesi=Math.max(1,a.n);
+  /* lo stesso conto se la materia prima rientrasse nel suo obiettivo */
+  const incT=num(t.mp)/100;
+  const bepT = incT<1 ? fissi/(1-incT) : null;
+  return {m, t, a, isM, incMp, fissi, bep, bepT, nMesi,
+    margine: a.ricavi-bep, copertura: bep>0 ? a.ricavi/bep : null};
+}
+async function renderOBBEP(){
+  const body=document.getElementById('obbepBody');
+  const d=bepDati();
+  if(!d){ body.innerHTML=`<section>
+    <div class="sechead"><div><h2>Punto di pareggio</h2></div></div>
+    <div class="mevuoto"><b>Non ci sono ancora ricavi caricati per questo periodo.</b></div></section>`; return; }
+  const {a,t,incMp,fissi,bep,bepT,nMesi}=d;
+  const per = d.isM ? MESI[scope]+' '+S.anno : `${nMesi} mes${nMesi===1?'e':'i'} del ${S.anno}`;
+  /* i giorni di apertura: dalla griglia dei turni se c'è, altrimenti 6 su 7 */
+  const gg = (()=>{ try{ const o=oreTipo(); if(o && o.fonte) return 6; }catch(e){} return 6; })();
+  const mese=bep/nMesi, sett=mese*12/52, giorno=sett/gg;
+  const guadagno = (bepT!=null && bep!=null) ? bep-bepT : null;
+
+  body.innerHTML=`
+  <section class="qa">
+    <div class="sechead"><div><h2>Punto di pareggio</h2>
+      <div class="sub">${per} · quanto deve incassare il locale per coprire tutti i costi.
+      La <b>materia prima</b> è l'unico costo che cresce insieme all'incasso: tutto il resto —
+      personale, spese generali, marketing — nel breve periodo si comporta da fisso, e va coperto
+      comunque.</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Il pavimento', bep!=null?fmtE(bep):'—',
+        `sotto questo incasso il locale perde.<br>Ha incassato <b>${fmtE(a.ricavi)}</b>: ${
+          a.ricavi>=bep ? `<b>${fmtE(a.ricavi-bep)}</b> sopra il pareggio`
+                        : `<b>${fmtE(bep-a.ricavi)}</b> sotto`}`,
+        a.ricavi>=bep?'ok':'bad')}
+      ${qaCard('Quanto serve al mese', fmtE(mese),
+        `<b>${fmtE(sett)}</b> alla settimana · <b>${fmtE(giorno)}</b> al giorno di apertura
+         <br><i>stimando ${gg} giorni di apertura a settimana</i>`)}
+      ${qaCard('Quanto incassa oggi, al mese', fmtE(a.ricavi/nMesi),
+        a.ricavi/nMesi>=mese
+          ? `<b>${fmtE(a.ricavi/nMesi-mese)}</b> al mese sopra il pavimento`
+          : `<b>${fmtE(mese-a.ricavi/nMesi)}</b> al mese sotto il pavimento`,
+        a.ricavi/nMesi>=mese?'ok':'bad')}
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Com'è fatto il conto</h2>
+      <div class="sub">Il pareggio è i costi fissi divisi per quello che resta di ogni euro
+      dopo aver pagato la materia prima.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Voce</th><th>Importo sul periodo</th><th>Incidenza sui ricavi</th><th>Nel conto del pareggio</th></tr>
+      <tr><td class="lbl">Materia prima</td><td class="tot">${fmtE(a.mp)}</td>
+        <td class="tot">${fmtP(incMp)}</td><td class="tot" style="text-align:left">costo variabile: cresce con l'incasso</td></tr>
+      <tr><td class="lbl">Personale</td><td class="tot">${fmtE(a.ru)}</td>
+        <td class="tot">${fmtP(a.incRu)}</td><td class="tot" style="text-align:left">fisso: va pagato comunque</td></tr>
+      <tr><td class="lbl">Spese generali</td><td class="tot">${fmtE(a.sg)}</td>
+        <td class="tot">${fmtP(a.incSg)}</td><td class="tot" style="text-align:left">fisso</td></tr>
+      <tr><td class="lbl">Marketing</td><td class="tot">${fmtE(a.mk)}</td>
+        <td class="tot">${fmtP(a.incMk)}</td><td class="tot" style="text-align:left">fisso</td></tr>
+      <tr class="sumrow"><td class="lbl">Costi fissi da coprire</td><td class="tot">${fmtE(fissi)}</td>
+        <td class="tot">${fmtP(fissi/a.ricavi)}</td>
+        <td class="tot" style="text-align:left">÷ (100% − ${fmtP(incMp)}) = <b>${fmtE(bep)}</b></td></tr>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sechead"><div><h2>Il vantaggio, a parità di incasso</h2>
+      <div class="sub">Che cosa succederebbe al pavimento se la materia prima rientrasse
+      nel suo obiettivo del ${fmtNum(t.mp)}%.</div></div></div>
+    ${guadagno!=null && guadagno>0 ? `
+      <div class="qarow"><div class="n">Pavimento di oggi<small>con la materia prima al ${fmtP(incMp)}</small></div>
+        <div class="v">${fmtE(bep)}</div><div class="p"></div></div>
+      <div class="qarow"><div class="n">Pavimento con la materia prima in obiettivo<small>al ${fmtNum(t.mp)}%</small></div>
+        <div class="v">${fmtE(bepT)}</div><div class="p ok">−${fmtE(guadagno)}</div></div>
+      <div class="qanota">Il pavimento si abbasserebbe di <b>${fmtE(guadagno)}</b> sul periodo:
+        sono ${fmtE(guadagno/nMesi)} al mese di incasso che <b>non</b> servirebbero più per stare in pari.
+        A parità di incasso, diventano margine.</div>`
+    : `<div class="qanota">La materia prima è già dentro il suo obiettivo: da questa leva non c'è
+       altro da prendere. Il pavimento si abbassa solo riducendo i costi fissi.</div>`}
+  </section>`;
+}
+
+/* ---- le due pagine in lite ---- */
+async function liteOBMESE(){
+  const o=obMeseStato();
+  const m=compute(), mPrec=computeAnno(num(S.anno)-1);
+  const cresc=num(o.cresc);
+  const righe=MESI.map((nome,i)=>{
+    const t=obMeseTarget(i, mPrec, cresc);
+    const fatto=num(m.months[i].ricavi);
+    return {i, nome, obiettivo:t.v, fatto, chiuso:fatto>0, manca:t.v>0?t.v-fatto:null};
+  });
+  const conOb=righe.filter(x=>x.obiettivo>0);
+  if(!conOb.length) return `<div class="lp">${lpTesta('Obiettivi del mese','esercizio '+S.anno)}
+    <div class="lpvuoto">Non c'è ancora un obiettivo: serve il ${num(S.anno)-1} caricato,
+      oppure un obiettivo scritto a mano dal computer.</div></div>`;
+  const obAnno=conOb.reduce((a,x)=>a+x.obiettivo,0);
+  const fattoAnno=righe.reduce((a,x)=>a+x.fatto,0);
+  const manca=obAnno-fattoAnno;
+  const chiusi=righe.filter(x=>x.chiuso && x.obiettivo>0);
+  const raggiunti=chiusi.filter(x=>x.fatto>=x.obiettivo);
+  const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
+  return `<div class="lp">${lpTesta('Obiettivi del mese','esercizio '+S.anno)}
+    ${lpCard('Obiettivo dell\'anno', fmtE(obAnno),
+      `incassati <b>${fmtE(fattoAnno)}</b> · ${manca>0?`mancano <b>${fmtE(manca)}</b>`:`<b>superato di ${fmtE(-manca)}</b>`}`,
+      manca<=0?'ok':fattoAnno/obAnno>=0.9?'warn':'bad')}
+    ${corrente?lpCard('Il mese aperto: '+corrente.nome, fmtE(corrente.obiettivo),
+      `incassati finora <b>${fmtE(corrente.fatto)}</b> · ${
+        corrente.manca>0?`mancano <b>${fmtE(corrente.manca)}</b>`:'<b>già raggiunto</b>'}`,
+      corrente.manca<=0?'ok':''):''}
+    ${lpCard('Mesi raggiunti', `${raggiunti.length}<small> su ${chiusi.length}</small>`,
+      'sui mesi già chiusi con un obiettivo',
+      chiusi.length?(raggiunti.length===chiusi.length?'ok':raggiunti.length>=chiusi.length/2?'warn':'bad'):'')}
+    <div class="lpsez">Mese per mese</div>
+    ${conOb.map(x=>lpRow(x.nome,
+      `obiettivo ${fmtE(x.obiettivo)}${x.chiuso?'':' · ancora aperto'}`,
+      x.fatto>0?fmtE(x.fatto):'—',
+      x.manca==null?null:x.manca>0?'−'+fmtE(x.manca):'+'+fmtE(-x.manca),
+      x.manca==null?'':x.manca<=0?'ok':x.chiuso?'bad':'warn')).join('')}
+    ${lpChiusura('Obiettivi per area · Obiettivi del mese')}</div>`;
+}
+async function liteOBBEP(){
+  const d=bepDati();
+  if(!d) return `<div class="lp">${lpTesta('Punto di pareggio','esercizio '+S.anno)}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  const {a,t,incMp,fissi,bep,bepT,nMesi}=d;
+  const gg=6, mese=bep/nMesi, sett=mese*12/52, giorno=sett/gg;
+  return `<div class="lp">${lpTesta('Punto di pareggio', d.isM?MESI[scope]+' '+S.anno:`${nMesi} mes${nMesi===1?'e':'i'} del ${S.anno}`)}
+    ${lpCard('Il pavimento', fmtE(bep),
+      `sotto questo incasso il locale perde<br>ha incassato <b>${fmtE(a.ricavi)}</b>: ${
+        a.ricavi>=bep?`<b>${fmtE(a.ricavi-bep)}</b> sopra`:`<b>${fmtE(bep-a.ricavi)}</b> sotto`}`,
+      a.ricavi>=bep?'ok':'bad')}
+    ${lpCard('Quanto serve', fmtE(mese)+'<small> al mese</small>',
+      `<b>${fmtE(sett)}</b> alla settimana · <b>${fmtE(giorno)}</b> al giorno di apertura`)}
+    <div class="lpsez">Com'è fatto il conto</div>
+    ${lpRow('Materia prima','cresce con l\'incasso', fmtE(a.mp), fmtP(incMp))}
+    ${lpRow('Personale','va pagato comunque', fmtE(a.ru), fmtP(a.incRu))}
+    ${lpRow('Spese generali','fisse', fmtE(a.sg), fmtP(a.incSg))}
+    ${lpRow('Marketing','fisso', fmtE(a.mk), fmtP(a.incMk))}
+    ${lpRow('Costi fissi da coprire', null, fmtE(fissi), fmtP(fissi/a.ricavi))}
+    ${bepT!=null && bep-bepT>0 ? `<div class="lpnota">Se la materia prima rientrasse nel suo
+      obiettivo del ${fmtNum(t.mp)}%, il pavimento scenderebbe di <b>${fmtE(bep-bepT)}</b>:
+      sono ${fmtE((bep-bepT)/nMesi)} al mese che non servirebbero più per stare in pari.</div>`
+      : '<div class="lpnota">La materia prima è già dentro il suo obiettivo: il pavimento si abbassa solo riducendo i costi fissi.</div>'}
+  </div>`;
+}
+
 /* =============== VENDUTO E MENU ENGINEERING · in lite ===============
    Sul telefono non si decide un prezzo né si impagina una carta: si guarda
    com'è andata. Ogni pagina qui dentro è la stessa sostanza della versione pro,
    ridotta a quello che si legge in piedi, in sala, in dieci secondi. */
 async function lmBase(){
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   return {idx, per, righe};
 }
 const lmVuoto = (titolo, per) => `<div class="lp">${lpTesta(titolo, per)}
@@ -9604,7 +9920,7 @@ async function liteVPREC(){
 
 /* ---- Andamento nel tempo ---- */
 async function liteVTREND(){
-  let righe=[]; try{ righe=await meRighe(null); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(null)); }catch(e){}
   if(!righe.length) return lmVuoto('Andamento nel tempo','esercizio '+S.anno);
   const car=MESI.map((_,i)=>i).filter(i=>(PRO.prod||[]).some(p=>numIt(((p.mesi||[])[i]||{}).pz)>0));
   if(car.length<4) return `<div class="lp">${lpTesta('Andamento nel tempo','esercizio '+S.anno)}
@@ -9612,7 +9928,9 @@ async function liteVTREND(){
   const n=Math.max(1,Math.round(car.length/3));
   const inizio=car.slice(0,n), fine=car.slice(-n);
   const med=(p,ix)=>ix.reduce((a,i)=>a+numIt(((p.mesi||[])[i]||{}).pz),0)/ix.length;
-  const dati=(PRO.prod||[]).map(p=>{ const a=med(p,inizio), b=med(p,fine);
+  const dentroBU = p => liteBU==='tot' ? true
+    : (/bev/i.test((PRO.seg||{})[p.cat]||'') === (liteBU==='bev'));
+  const dati=(PRO.prod||[]).filter(dentroBU).map(p=>{ const a=med(p,inizio), b=med(p,fine);
     return {n:p.n, cat:p.cat, a, b, d:b-a}; }).filter(x=>x.a>0||x.b>0);
   const su=dati.filter(x=>x.d>0).sort((a,b)=>b.d-a.d).slice(0,10);
   const giu=dati.filter(x=>x.d<0).sort((a,b)=>a.d-b.d).slice(0,10);
@@ -9818,6 +10136,37 @@ async function liteMSUGG(){
    da quattro angoli diversi: il totale del periodo, il confronto con l'anno
    prima, il movimento nel tempo, e quanto si è incassato rispetto al listino. */
 const meSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
+/* Il filtro Tutto / Food / Bev è uno solo per tutta l'app e vale in tutti e due
+   i modi. Prima stava solo sulle pagine delle aree in lite, restava dove lo si
+   era lasciato e in pro non si vedeva: la stessa pagina finiva per mostrare
+   numeri diversi nei due modi, senza che niente lo dicesse. */
+function meFiltra(righe){
+  if(liteBU==='tot') return righe;
+  const vuoiBev = liteBU==='bev';
+  return righe.filter(r=>/bev/i.test(r.seg||'')===vuoiBev);
+}
+const meEt = () => liteBU==='food' ? 'Food' : liteBU==='bev' ? 'Beverage' : '';
+/* le pagine che hanno senso filtrare: quelle che guardano prodotti o aree di costo */
+const BU_PAGINE=['rica','ce','ru','sg','mkt','vdash','vriep','vtrend','vlist',
+                 'mprof','mcore','vprio','mwhat','mfocus','mbuild','msugg'];
+/* l'interruttore si innesta da solo nella testata della pagina, così sta su
+   tutte senza doverlo scrivere dentro a ognuna */
+function buInnesta(p){
+  if(BU_PAGINE.indexOf(p)<0) return;
+  const lite=document.documentElement.classList.contains('litealt');
+  const root = lite ? document.getElementById('litePage')
+                    : document.getElementById('page-'+(ALIAS[p]||p));
+  if(!root || root.querySelector('.lpbu')) return;
+  const testa = root.querySelector('.lphead') || root.querySelector('.sechead');
+  if(!testa) return;
+  testa.insertAdjacentHTML('beforeend', lpBUsw());
+  if(liteBU!=='tot'){
+    const h=testa.querySelector('h2');
+    if(h && !h.querySelector('.bufiltro'))
+      h.insertAdjacentHTML('beforeend',
+        `<span class="bufiltro ${liteBU}">solo ${meEt().toLowerCase()}</span>`);
+  }
+}
 /* il prezzo di listino di una riga: serve a dire quanto avrebbe dovuto incassare */
 function meListino(r){
   const p=(PRO.prod||[]).find(x=>x.id===r.key);
@@ -9832,7 +10181,7 @@ async function renderVRIEP(){
   const body=document.getElementById('vriepBody');
   body.innerHTML='<section><div class="sub">Sto sommando il periodo…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Riepilogo del periodo', per); return; }
   const iva=1+num(PRO.iva||0.1);
   const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
@@ -9929,7 +10278,7 @@ async function renderVPREC(){
   const qF=x=>(x.ricaviFood+x.ricaviBev)>0?x.ricaviFood/(x.ricaviFood+x.ricaviBev):null;
   /* il venduto per categoria esiste per un anno solo: lo si dice invece di fingere */
   let venduto='';
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(righe.length){
     venduto=`<section>
       <div class="sechead"><div><h2>Il venduto di quest'anno, per categoria</h2>
@@ -9988,7 +10337,7 @@ async function renderVPREC(){
 async function renderVTREND(){
   const body=document.getElementById('vtrendBody');
   body.innerHTML='<section><div class="sub">Sto guardando come si muovono…</div></section>';
-  let righe=[]; try{ righe=await meRighe(null); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(null)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Andamento nel tempo', 'esercizio '+S.anno); return; }
   /* i mesi caricati, in ordine: il confronto è fra il primo terzo e l'ultimo */
   const car=MESI.map((_,i)=>i).filter(i=>(PRO.prod||[]).some(p=>numIt(((p.mesi||[])[i]||{}).pz)>0));
@@ -10004,7 +10353,9 @@ async function renderVTREND(){
   const n=Math.max(1, Math.round(car.length/3));
   const inizio=car.slice(0,n), fine=car.slice(-n);
   const somma=(p,idxs)=>idxs.reduce((a,i)=>a+numIt(((p.mesi||[])[i]||{}).pz),0)/idxs.length;
-  const dati=(PRO.prod||[]).map(p=>{
+  const dentroBU = p => liteBU==='tot' ? true
+    : (/bev/i.test((PRO.seg||{})[p.cat]||'') === (liteBU==='bev'));
+  const dati=(PRO.prod||[]).filter(dentroBU).map(p=>{
     const a=somma(p,inizio), b=somma(p,fine);
     return {n:p.n, cat:p.cat, a, b, d:b-a, v: a>0 ? (b-a)/a : (b>0?null:0)};
   }).filter(x=>x.a>0||x.b>0);
@@ -10058,7 +10409,7 @@ async function renderVLIST(){
   const body=document.getElementById('vlistBody');
   body.innerHTML='<section><div class="sub">Sto confrontando cassa e listino…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Incasso contro listino', per); return; }
   const conL=righe.map(r=>({...r, li:meListino(r)})).filter(r=>r.li!=null && r.li>0);
   if(!conL.length){
@@ -10173,7 +10524,7 @@ async function renderMWHAT(){
   const body=document.getElementById('mwhatBody');
   body.innerHTML='<section><div class="sub">Sto preparando le proposte…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Simulatore prezzi', per); return; }
   const cand=righe.filter(r=>r.haCosto && r.obiettivo && r.prezzoMedio>0 && r.pz>0)
     .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
@@ -10263,7 +10614,7 @@ async function renderMFOCUS(){
   const body=document.getElementById('mfocusBody');
   body.innerHTML='<section><div class="sub">Sto scegliendo i prodotti…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Prodotti focus', per); return; }
   const nMesi=Math.max(1, idx.length);
   /* i candidati: margine a pezzo sopra la media della categoria e già venduti.
@@ -10339,7 +10690,7 @@ async function renderMBUILD(){
   const body=document.getElementById('mbuildBody');
   body.innerHTML='<section><div class="sub">Sto componendo il menu…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Menu builder', per); return; }
   const blocchi=meCategorie(righe);
   /* la stella: dentro ogni categoria, il primo che il motore mette in cima e che
@@ -10393,7 +10744,7 @@ async function renderMSUGG(){
   const body=document.getElementById('msuggBody');
   body.innerHTML='<section><div class="sub">Sto mettendo in fila le azioni…</div></section>';
   const idx=meIdx(), per=mePeriodo();
-  let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
+  let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Suggerimenti', per); return; }
   /* 1 · chi costa più del target della sua categoria */
   const sopra=righe.filter(r=>r.haCosto && r.obiettivo && r.prezzoMedio>0)
@@ -10603,27 +10954,36 @@ function qaVenduto(mesiIdx){
 }
 
 /* ---------------- la fascia delle aree di costo ---------------- */
-function qaCosto(tipo,cfg,m,a,t,per,qF){
+function qaCosto(tipo,cfg,m,a0,t,per,qF){
+  /* l'interruttore Tutto / Food / Bev è lo stesso della modalità lite */
+  const a = (liteBU==='tot') ? a0 : lpBUa(a0);
   const k=cfg.k, tgt=num(t[cfg.tgt]);
   const inc=a['inc'+k.charAt(0).toUpperCase()+k.slice(1)]*100;
   const euro=a[k];
   const z=qaStato(inc,tgt,cfg.fascia);
   const dpp=inc-tgt;
   const scost=(inc-tgt)/100*a.ricavi;
-  /* cucina e bar */
+  /* il confronto fra cucina e bar si fa sempre sul totale: è un paragone,
+     non un filtro, e filtrarlo lo svuoterebbe di senso */
   const FB={
-    mp:{f:a.mpFood, b:a.mpBev},
-    ru:{f:a.ruFood, b:a.ruBev},
-    sg:{f:a.sgFood, b:a.sgBev},
-    mk:{f:a.mk*qSg(a), b:a.mk*(1-qSg(a))}
+    mp:{f:a0.mpFood, b:a0.mpBev},
+    ru:{f:a0.ruFood, b:a0.ruBev},
+    sg:{f:a0.sgFood, b:a0.sgBev},
+    mk:{f:a0.mk*qSg(a0), b:a0.mk*(1-qSg(a0))}
   }[k];
-  const iF = a.ricaviFood>0 ? FB.f/a.ricaviFood*100 : null;
-  const iB = a.ricaviBev >0 ? FB.b/a.ricaviBev *100 : null;
+  const iF = a0.ricaviFood>0 ? FB.f/a0.ricaviFood*100 : null;
+  const iB = a0.ricaviBev >0 ? FB.b/a0.ricaviBev *100 : null;
   const gap = (iF!=null&&iB!=null) ? Math.abs(iF-iB) : null;
   const conv = (k==='sg'||k==='mk');
   /* l'andamento */
   const campo={mp:'mp', ru:'ru', sg:'sg', mk:'mk'}[k];
-  const serie=m.months.map((x,i)=>({i, v: x.ricavi>0 ? num(x[campo])/x.ricavi*100 : null}));
+  /* mese per mese: se c'è un reparto selezionato si guarda quello */
+  const campoBU={mp:{food:'mf',bev:'mb'}, ru:{food:'ruF',bev:'ruB'},
+                 sg:{food:'sgF',bev:'sgB'}, mk:{}}[k];
+  const ricBU = x => liteBU==='food' ? x.rf : liteBU==='bev' ? x.rb : x.ricavi;
+  const cosBU = x => (liteBU!=='tot' && campoBU[liteBU]) ? num(x[campoBU[liteBU]])
+                   : (liteBU!=='tot' ? num(x[campo])*(liteBU==='food'?qf:1-qf) : num(x[campo]));
+  const serie=m.months.map((x,i)=>({i, v: ricBU(x)>0 ? cosBU(x)/ricBU(x)*100 : null}));
   const vis=serie.filter(x=>x.v!=null);
   const peggio=vis.length?vis.reduce((p,x)=>x.v>p.v?x:p):null;
   const meglio=vis.length?vis.reduce((p,x)=>x.v<p.v?x:p):null;
@@ -10639,7 +10999,7 @@ function qaCosto(tipo,cfg,m,a,t,per,qF){
                : `<b>${qaPunti(dpp)}</b> sotto l'obiettivo: <b>${fmtE(-scost)}</b> risparmiati`),
         ['ok','warn','hot','bad'][z]);
 
-  const qf=qSg(a);
+  const qf=qSg(a0);
   const cardFB = (iF==null||iB==null)
     ? qaCard('Cucina e bar','—','Servono i ricavi divisi fra food e beverage per vedere i due reparti separati.')
     : conv
@@ -10665,8 +11025,9 @@ function qaCosto(tipo,cfg,m,a,t,per,qF){
         `<br>la linea tratteggiata è l'obiettivo del ${fmtNum(tgt)}%`);
 
   return `<section class="qa">
-    <div class="sechead"><div><h2>Il quadro · ${cfg.nome}</h2>
-      <div class="sub">${per} · ${cfg.fascia?'la soglia è il centro di una fascia, non un tetto':QA_ET[z]}</div></div></div>
+    <div class="sechead"><div><h2>Il quadro · ${cfg.nome}${a.bu&&a.bu!=='tot'?' · '+a.et:''}</h2>
+      <div class="sub">${per} · ${cfg.fascia?'la soglia è il centro di una fascia, non un tetto':QA_ET[z]}${
+        a.bu&&a.bu!=='tot'?` · <b>stai guardando solo ${a.et.toLowerCase()}</b>`:''}</div></div>
     <div class="qagrid">${cardNumero}${cardFB}${cardAnd}</div>
     ${qaExtra(tipo,m,a,t,qF)}
   </section>`;
@@ -10717,10 +11078,12 @@ function qaRicavi(m,a,per,qF){
 
   return `<section class="qa">
     <div class="sechead"><div><h2>Il quadro · Ricavi</h2>
-      <div class="sub">${per} · da qui nascono tutte le incidenze del cruscotto</div></div></div>
+      <div class="sub">${per} · da qui nascono tutte le incidenze del cruscotto${
+        liteBU!=='tot'?` · <b>stai guardando solo ${liteBU==='food'?'il food':'il beverage'}</b>`:''}</div></div>
     <div class="qagrid">
-      ${qaCard('Incasso del periodo', fmtE(a.ricavi),
-        `media <b>${fmtE(a.ricavi/(a.n||1))}</b> al mese su ${a.n} mes${a.n===1?'e':'i'}` +
+      ${qaCard('Incasso del periodo'+(liteBU!=='tot'?' · '+(liteBU==='food'?'Food':'Beverage'):''),
+        fmtE(liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi),
+        `media <b>${fmtE((liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi)/(a.n||1))}</b> al mese su ${a.n} mes${a.n===1?'e':'i'}` +
         (forti?`<br>${n} mes${n===1?'e':'i'} fanno il 40% dell'anno: <b>${forti}</b>`:''))}
       ${qaCard('Cucina e bar',
         `${fmtNum(qF*100)}<small>% e </small>${fmtNum((1-qF)*100)}<small>%</small>`,
@@ -11316,7 +11679,8 @@ async function liteCHK(){
 const PAGES={home:renderHome, dash:renderDash, ce:renderCE, rica:renderCE, mkt:renderSG, ru:renderRU, pr:renderPR, sg:renderSG, cn:renderCN, ceagg:renderCEAGG, cf:renderCF, pi:renderPIAN, tu:renderTU, si:renderSIM, ver:renderVER, ob:renderOB, an:renderAN, me:renderMET, chk:renderCHK,
   vdash:renderVDASH, mprof:renderMPROF, mcore:renderMCORE, vprio:renderVPRIO,
   vriep:renderVRIEP, vprec:renderVPREC, vtrend:renderVTREND, vlist:renderVLIST,
-  mwhat:renderMWHAT, mfocus:renderMFOCUS, mbuild:renderMBUILD, msugg:renderMSUGG, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
+  mwhat:renderMWHAT, mfocus:renderMFOCUS, mbuild:renderMBUILD, msugg:renderMSUGG,
+  obmese:renderOBMESE, obbep:renderOBBEP, ring:renderING, rforn:renderFORN, rprep:renderPREP, rric:renderRIC};
 let current='dash';
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button[data-page]'); if(!b) return;
@@ -11768,7 +12132,13 @@ document.addEventListener('click',async e=>{
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
   const lb=e.target.closest('[data-lbu]');
-  if(lb){ liteBU=lb.dataset.lbu; liteRender(current); return; }
+  if(lb){ liteBU=lb.dataset.lbu;
+    /* lo stesso interruttore vale per lite e per pro: se cambiasse solo da una
+       parte, le due modalità finirebbero per dire numeri diversi sulla stessa
+       pagina — ed è esattamente il guaio che questo serve a non far più succedere */
+    if(document.documentElement.classList.contains('litealt')) liteRender(current);
+    else if(PAGES[current]) PAGES[current]();
+    return; }
   const mw=e.target.closest('[data-merch]');
   if(mw){ setMerchMode(mw.dataset.merch); return; }
   const sv=e.target.closest('[data-save]');
@@ -12732,10 +13102,6 @@ const SOON={
 
 
 
-  obmese:{t:'Obiettivi del mese', g:'Obiettivi per area', m:'da costruire',
-          d:"L'obiettivo di incasso e di margine del mese, e dove siamo rispetto a quello."},
-  obbep :{t:'Punto di pareggio', g:'Obiettivi per area', m:'da costruire',
-          d:"Quanto deve incassare il locale per coprire tutti i costi: al mese, alla settimana, al giorno di apertura."},
   obinc :{t:'Piano incentivi', g:'Personale', m:'da costruire',
           d:"Il piano incentivi per la squadra, legato agli obiettivi del mese e ai prodotti focus."},
 
@@ -13808,7 +14174,8 @@ function gotoPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id==='page-'+vista));
   if(SOON[p]) return renderSOON(p);
   if(document.documentElement.classList.contains('litealt')) return;   // la disegna liteRender
-  PAGES[p]();
+  const r=PAGES[p]();
+  if(r && typeof r.then==='function') r.then(()=>buInnesta(p)); else buInnesta(p);
 }
 /* ---------- backup: esporta/importa tutti i clienti ---------- */
 async function exportBackup(){
