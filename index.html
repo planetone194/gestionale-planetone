@@ -362,6 +362,25 @@
   .mevoto.v5{background:var(--ok-bg);color:var(--ok);} .mevoto.v4{background:#E6F0E9;color:#3B7A54;}
   .mevoto.v3{background:var(--warn-bg);color:#8a6a0c;} .mevoto.v2{background:#F6E7DC;color:var(--hot);}
   .mevoto.v1{background:#F7E0DC;color:var(--bad);} .mevoto.no{background:#F2F0EA;color:#B9B4A8;}
+  table.entry.me th small{display:block;font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;color:#9A958A;}
+  table.entry.me.prio{min-width:1080px;}
+  .pres{color:var(--hot);font-weight:700;margin-left:3px;cursor:help;}
+  .vdsearch,.vdsel{border:1.5px solid var(--line);border-radius:9px;padding:7px 12px;font:inherit;
+    font-size:13px;background:#fff;color:var(--ink);}
+  .vdsearch{min-width:240px;} .vdsearch:focus,.vdsel:focus{outline:none;border-color:var(--brass);}
+  /* la barra dei totali resta attaccata in basso mentre si scorre: il totale
+     si vede sempre, senza tornare su */
+  .vdtot{position:sticky;bottom:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:18px;
+    background:var(--ink);color:#fff;border-radius:10px;padding:10px 16px;margin-top:12px;
+    font-size:13px;box-shadow:0 -2px 12px rgba(27,42,58,.12);}
+  .vdtot .et{flex:1;min-width:200px;font-weight:600;}
+  .vdtot .et .n{font-weight:400;color:#B9C3CC;}
+  .vdtot .v{font-family:var(--num);font-size:15px;}
+  .vdtot .v small{font-size:11px;color:#B9C3CC;font-family:'Inter',sans-serif;}
+  .tipo{display:inline-block;border-radius:6px;padding:1px 8px;font-size:10.5px;font-weight:600;white-space:nowrap;}
+  .tipo.t5{background:var(--ok-bg);color:var(--ok);} .tipo.t4{background:#E6F0E9;color:#3B7A54;}
+  .tipo.t3{background:var(--warn-bg);color:#8a6a0c;} .tipo.t2{background:#F6E7DC;color:var(--hot);}
+  .tipo.t1{background:#F7E0DC;color:var(--bad);} .tipo.t0{background:#F2F0EA;color:#B9B4A8;}
   .pallo{display:inline-block;width:7px;height:7px;border-radius:50%;background:#DAD6CC;margin-right:9px;vertical-align:1px;}
   .pallo.core{background:var(--brass);}
   .qarow.fuori .n{color:var(--ink2);}
@@ -1775,7 +1794,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v127</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v129</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3974,6 +3993,26 @@ function ordinaPerMargine(lista){
   return raggruppa(ord);
 }
 
+/* Quando un prodotto non ha scheda costo, il costo non si butta via: si stima
+   con l'incidenza media della sua categoria — calcolata sui soli prodotti che la
+   scheda ce l'hanno — e si DICHIARA come presunto. Chi somma sa sempre che cosa
+   sta sommando: costo misurato, costo presunto, oppure niente.
+   Portata dall'app di Cristina (`mp1DiRiga`), soglia compresa. */
+const MIN_SCHEDE_PER_STIMA = 3;
+function meMediaCategoria(righe){
+  const per={};
+  righe.forEach(r=>{
+    if(!r.costoVero || !(r.pz>0)) return;
+    const c=per[r.cat]||(per[r.cat]={costo:0, ric:0, n:0});
+    c.costo += r.pz*r.costoVero; c.ric += r.revenue; c.n++;
+  });
+  const out={};
+  Object.entries(per).forEach(([k,c])=>{
+    out[k] = (c.n>=MIN_SCHEDE_PER_STIMA && c.ric>0) ? c.costo/c.ric : null;
+  });
+  return out;
+}
+
 /* ---------------- il ponte ----------------
    mesi: elenco di indici 0-11, oppure null per l'anno intero. */
 async function meRighe(mesi){
@@ -3993,18 +4032,30 @@ async function meRighe(mesi){
     });
     if(!pz && !incLordo) return;                         /* mai venduto nel periodo: fuori */
     const revenue = incLordo/(1+iva);                    /* la cassa è lorda, i conti si fanno netti */
-    const costo = c ? c.tot : null;
     const prezzoMedio = pz>0 ? revenue/pz : 0;
-    const margine = (costo!=null && pz>0) ? (prezzoMedio - costo) : 0;
     righe.push({
       key:x.id, nome:x.n, cat:(x.cat||'Senza categoria'),
       seg:((PRO.seg||{})[x.cat]||''),
-      pz, revenue, costo, prezzoMedio, margine,
-      contribution: (costo!=null ? pz*margine : 0),
-      haCosto: costo!=null,
+      pz, revenue, prezzoMedio,
+      costoVero: c ? c.tot : null,
+      costo: c ? c.tot : null,
+      margine: (c && pz>0) ? (prezzoMedio - c.tot) : 0,
+      contribution: c ? pz*(prezzoMedio-c.tot) : 0,
+      haCosto: c!=null, presunto:false, stimabile:c!=null,
       obiettivo: numIt((PRO.target||{})[x.cat]) || null,
       gruppo:'', lancio:false
     });
+  });
+  /* seconda passata: chi non ha la scheda prende la media della sua categoria */
+  const media = meMediaCategoria(righe);
+  righe.forEach(r=>{
+    if(r.costoVero!=null) return;
+    const inc = media[r.cat];
+    if(inc==null || !(r.prezzoMedio>0)){ r.stimabile=false; return; }
+    r.costo = inc*r.prezzoMedio;
+    r.margine = r.prezzoMedio - r.costo;
+    r.contribution = r.pz*r.margine;
+    r.haCosto = true; r.presunto = true; r.stimabile = true;
   });
   return meVoto(righe);
 }
@@ -4025,6 +4076,8 @@ function meVoto(righe){
   const voto = p => p>=0.8?5 : p>=0.6?4 : p>=0.4?3 : p>=0.2?2 : 1;
   righe.forEach(r=>{
     if(!r.haCosto){ r.mpiScore = -1; r.classe = 'senza costo'; return; }
+    /* un costo presunto vale per i conti, ma la riga resta marcata: non si
+       confonde mai una media di categoria con una scheda vera */
     const a = perCat[r.cat];
     const sPezzi  = r.pz===0 ? 1 : voto(pct(a,'pz',r.pz));
     const sPezzo  = voto(pct(a,'margine',r.margine));
@@ -9059,77 +9112,87 @@ async function renderVDASH(){
   let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Report del venduto', per); return; }
   const iva=1+num(PRO.iva||0.1);
-  const pz=righe.reduce((a,r)=>a+r.pz,0);
-  const ric=righe.reduce((a,r)=>a+r.revenue,0);
-  /* la quadratura col conto economico: è il primo controllo da fare */
+  /* quanti mesi sono stati caricati, su tutto l'anno: è la prima cosa da sapere */
+  let mesiCarichi=0;
+  for(let i=0;i<12;i++) if(PRO.prod.some(p=>numIt(((p.mesi||[])[i]||{}).pz)>0)) mesiCarichi++;
+  const conPz=righe.filter(r=>r.pz>0).length;
+  /* la quadratura col conto economico */
   const m=compute();
   const ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete, 0);
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
   const delta = ce.ricavi>0 ? (ric-ce.ricavi)/ce.ricavi : null;
-  const perSeg=seg=>{
-    const l=righe.filter(r=>/bev/i.test(r.seg||'')===(seg==='Beverage'));
-    return {pz:l.reduce((a,r)=>a+r.pz,0), ric:l.reduce((a,r)=>a+r.revenue,0), n:l.length};
-  };
-  const F=perSeg('Food'), B=perSeg('Beverage');
-  /* categorie */
-  const cat={};
-  righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={n:r.cat, seg:r.seg, pz:0, ric:0, prod:0});
-    c.pz+=r.pz; c.ric+=r.revenue; c.prod++; });
-  const cats=Object.values(cat).sort((a,b)=>b.ric-a.ric);
-  /* i mesi */
-  const perMese=MESI.map((_,i)=>{
-    const v=PRO.prod.reduce((a,p)=>{ const x=(p.mesi||[])[i]||{}; return a+numIt(x.inc); },0)/iva;
-    return {i, v: v>0?v:null};
-  });
-  const vis=perMese.filter(x=>x.v!=null);
-  const top=[...righe].sort((a,b)=>b.revenue-a.revenue).slice(0,15);
-  const riga=(n,s,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
-    <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
+  const cats=[...new Set(righe.map(r=>r.cat))].sort((a,b)=>a.localeCompare(b,'it'));
 
   body.innerHTML=`
   <section class="qa">
     <div class="sechead"><div><h2>Report del venduto</h2>
-      <div class="sub">${per} · ${righe.length} prodotti venduti su ${PRO.prod.length} a menu · importi IVA esclusa</div></div></div>
+      <div class="sub">${per} · pezzi e incasso per prodotto, come escono dalla cassa.
+      <b>Qui non c'è la materia prima</b>: il costo misurato sta in Core Business.
+      Questa pagina serve a controllare che il venduto torni e a vedere chi è stato venduto sottoprezzo.</div></div></div>
     <div class="qagrid">
-      ${qaCard('Incasso dal venduto', fmtE(ric),
-        `<b>${fmtInt(pz)}</b> pezzi nel periodo · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b>`)}
+      ${qaCard('Periodo aperto', scope!=='ytd'?MESI[scope]:'Anno '+S.anno,
+        `<b>${mesiCarichi}</b> mesi caricati su 12`)}
+      ${qaCard('Prodotti con venduto', fmtInt(conPz),
+        conPz?`su ${PRO.prod.length} proposte a menu`:'questo periodo non è ancora stato caricato',
+        conPz?'':'bad')}
       ${qaCard('Quadratura col conto economico',
         delta==null?'—':Math.abs(delta)<0.005?'in pari':(delta>=0?'+':'−')+fmtP(Math.abs(delta)),
         delta==null ? 'Non ci sono ricavi caricati nel conto economico per questo periodo.'
-          : `il venduto fa ${fmtE(ric)}, il conto economico ${fmtE(ce.ricavi)}<br>` +
+          : `venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}<br>` +
             (Math.abs(delta)<=0.02 ? 'scarto sotto il 2%: i due archivi si parlano.'
-              : 'oltre il 2% di scarto: prima di usare questi numeri va capito da dove viene.'),
+              : 'oltre il 2%: prima di usare queste pagine va capito da dove viene.'),
         delta==null?'':Math.abs(delta)<=0.02?'ok':Math.abs(delta)<=0.05?'warn':'bad')}
-      ${qaCard('Cucina e bar',
-        `${fmtNum(ric>0?F.ric/ric*100:0)}<small>% e </small>${fmtNum(ric>0?B.ric/ric*100:0)}<small>%</small>`,
-        `<b>${fmtInt(F.pz)}</b> pezzi food · <b>${fmtInt(B.pz)}</b> beverage<br>
-         prezzo medio <b>${fmtE2(F.pz?F.ric/F.pz:0)}</b> e <b>${fmtE2(B.pz?B.ric/B.pz:0)}</b>
-         <span class="qabar"><i style="width:${(ric>0?F.ric/ric*100:0).toFixed(1)}%"></i></span>`)}
-      ${qaCard('Come si muove nei mesi', qaSpark(perMese,null,'€')||'—',
-        vis.length<2?'Serve più di un mese di venduto per vedere un andamento.'
-          :(()=>{ const mx=vis.reduce((p,x)=>x.v>p.v?x:p), mn=vis.reduce((p,x)=>x.v<p.v?x:p);
-             return `più alto <b>${MESI[mx.i]}</b> ${fmtE(mx.v)} · più basso <b>${MESI[mn.i]}</b> ${fmtE(mn.v)}`; })())}
     </div>
   </section>
 
   <section>
-    <div class="sechead"><div><h2>Per categoria</h2>
-      <div class="sub">Dove nasce l'incasso. L'ordine è per incasso, dal più pesante.</div></div></div>
-    ${['Food','Beverage'].map(seg=>{
-      const l=cats.filter(c=>/bev/i.test(c.seg||'')===(seg==='Beverage'));
-      if(!l.length) return '';
-      const tot=l.reduce((a,c)=>a+c.ric,0);
-      return `<div class="qasez">${seg} · ${fmtE(tot)}</div>` + l.map(c=>
-        riga(c.n, `${fmtInt(c.pz)} pezzi · ${c.prod} prodotti · prezzo medio ${fmtE2(c.pz?c.ric/c.pz:0)}`,
-          fmtE(c.ric), fmtNum(ric>0?c.ric/ric*100:0)+'%')).join('');
-    }).join('')}
-  </section>
-
-  <section>
-    <div class="sechead"><div><h2>I quindici prodotti che incassano di più</h2>
-      <div class="sub">Non è l'ordine del menu — quello lo decide il core 80% — è solo dove sta l'incasso.</div></div></div>
-    ${top.map((r,k)=>riga(`${k+1}. ${r.nome}`, `${r.cat} · ${fmtInt(r.pz)} pezzi a ${fmtE2(r.prezzoMedio)}`,
-      fmtE(r.revenue), fmtNum(ric>0?r.revenue/ric*100:0)+'%')).join('')}
+    <div class="sechead"><div><h2>Il venduto, prodotto per prodotto</h2>
+      <div class="sub">L'ultima colonna confronta l'incasso vero con quello che gli stessi pezzi
+      avrebbero fatto a prezzo di listino: la differenza sono sconti, omaggi ed errori di battuta.</div></div></div>
+    <div class="tbltools" style="margin:0 0 12px">
+      <input type="search" id="vdQ" class="vdsearch" placeholder="Cerca un prodotto…">
+      <select id="vdCat" class="vdsel"><option value="">Tutte le categorie</option>
+        ${cats.map(c=>`<option>${escH(c)}</option>`).join('')}</select>
+    </div>
+    <div id="vdTab"></div>
+    <div class="vdtot" id="vdTot"></div>
   </section>`;
+
+  const listino = r => {
+    const p=PRO.prod.find(x=>x.id===r.key);
+    const pv=p?numIt(p.pv):0;
+    return pv>0 ? pv*r.pz : null;
+  };
+  const disegna=()=>{
+    const q=norm(document.getElementById('vdQ').value||'');
+    const c=document.getElementById('vdCat').value;
+    const l=righe.filter(r=>(!c||r.cat===c) && (!q||norm(r.nome).includes(q)))
+      .sort((a,b)=>b.revenue-a.revenue);
+    document.getElementById('vdTab').innerHTML=`<div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Categoria</th><th>Pezzi</th><th>Incasso<small>IVA inclusa</small></th>
+        <th>Incasso<small>IVA esclusa</small></th><th>Rispetto al listino</th></tr>
+      ${l.map(r=>{ const li=listino(r);
+        const d = li && li>0 ? (r.revenue-li)/li : null;
+        return `<tr>
+        <td class="lbl">${escH(r.nome)}</td>
+        <td class="tot" style="text-align:left">${escH(r.cat)}</td>
+        <td class="tot">${fmtInt(r.pz)}</td>
+        <td class="tot">${fmtE(r.revenue*iva)}</td>
+        <td class="tot">${fmtE(r.revenue)}</td>
+        <td class="tot ${d==null?'':d<-0.03?'alta':d>0.01?'bassa':''}">${
+          d==null?'—':(d>=0?'+':'−')+fmtNum(Math.abs(d)*100)+'%'}</td></tr>`; }).join('')}
+    </table></div>`;
+    const pz=l.reduce((a,r)=>a+r.pz,0), re=l.reduce((a,r)=>a+r.revenue,0);
+    const et = c ? 'Totale '+escH(c) : (q ? 'Totale della ricerca' : 'Totale — tutti i prodotti');
+    document.getElementById('vdTot').innerHTML=`
+      <span class="et">${et} <span class="n">(${l.length} prodott${l.length===1?'o':'i'} · ${escH(per)})</span></span>
+      <span class="v"><b>${fmtInt(pz)}</b> pz</span>
+      <span class="v"><b>${fmtE(re*iva)}</b> <small>IVA inclusa</small></span>
+      <span class="v"><b>${fmtE(re)}</b> <small>IVA esclusa</small></span>`;
+  };
+  document.getElementById('vdQ').oninput=disegna;
+  document.getElementById('vdCat').onchange=disegna;
+  disegna();
 }
 
 /* ---------------------------------------------- 2 · Listino e costi */
@@ -9139,70 +9202,75 @@ async function renderMPROF(){
   const idx=meIdx(), per=mePeriodo();
   let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Listino e costi', per); return; }
-  const conCosto=righe.filter(r=>r.haCosto);
+  const veri=righe.filter(r=>r.costoVero!=null);
   const ric=righe.reduce((a,r)=>a+r.revenue,0);
-  const ricC=conCosto.reduce((a,r)=>a+r.revenue,0);
-  const costo=conCosto.reduce((a,r)=>a+r.pz*r.costo,0);
-  const margine=conCosto.reduce((a,r)=>a+r.contribution,0);
-  const copertura = ric>0 ? ricC/ric : 0;
-  const blocchi=meCategorie(righe);
-
-  const tabella=cat=>{
-    const l=meOrdineCategoria(righe, cat);
-    return `<div class="tblwrap"><table class="entry me">
-      <tr><th>Prodotto</th><th>Pezzi</th><th>Prezzo</th><th>Costo</th><th>Margine</th><th>Incidenza</th><th>Margine totale</th><th>Voto</th></tr>
-      ${l.map(r=>`<tr class="${r.haCosto?'':'senza'}">
-        <td class="lbl">${escH(r.nome)}${r.sottoCore80?'<span class="role">sotto il core 80%</span>':''}</td>
-        <td class="tot">${fmtInt(r.pz)}</td>
-        <td class="tot">${fmtE2(r.prezzoMedio)}</td>
-        <td class="tot">${r.haCosto?fmtE2(r.costo):'<span class="manca">manca la scheda</span>'}</td>
-        <td class="tot">${r.haCosto?fmtE2(r.margine):'—'}</td>
-        <td class="tot ${r.haCosto&&r.prezzoMedio>0?(r.costo/r.prezzoMedio*100>(r.obiettivo||99)?'alta':'bassa'):''}">${
-          r.haCosto&&r.prezzoMedio>0?fmtNum(r.costo/r.prezzoMedio*100)+'%':'—'}</td>
-        <td class="tot">${r.haCosto?fmtE(r.contribution):'—'}</td>
-        <td class="tot">${meVotoPill(r.mpiScore)}</td></tr>`).join('')}
-    </table></div>`;
-  };
+  const ricV=veri.reduce((a,r)=>a+r.revenue,0);
+  const costo=righe.filter(r=>r.haCosto).reduce((a,r)=>a+r.pz*r.costo,0);
+  const ricC=righe.filter(r=>r.haCosto).reduce((a,r)=>a+r.revenue,0);
+  const copertura = ric>0 ? ricV/ric : 0;
+  /* una riga per categoria: è la tabella di Menu Profits, non il listino prodotti.
+     Il listino prodotto per prodotto sta nella Pagella. */
+  const cat={};
+  righe.forEach(r=>{
+    const c=cat[r.cat]||(cat[r.cat]={n:r.cat, seg:r.seg, pz:0, ric:0, costo:0, ricC:0,
+      prod:0, conScheda:0, obiettivo:r.obiettivo});
+    c.pz+=r.pz; c.ric+=r.revenue; c.prod++;
+    if(r.costoVero!=null) c.conScheda++;
+    if(r.haCosto){ c.costo+=r.pz*r.costo; c.ricC+=r.revenue; }
+  });
+  const cats=Object.values(cat).map(c=>{
+    c.inc = c.ricC>0 ? c.costo/c.ricC*100 : null;
+    c.scost = (c.inc!=null && c.obiettivo) ? c.inc-c.obiettivo : null;
+    c.euro  = (c.scost!=null) ? c.scost/100*c.ricC : null;
+    c.z = c.scost==null ? null : c.scost<=0 ? 0 : c.scost<=2 ? 1 : c.scost<=5 ? 2 : 3;
+    return c;
+  }).sort((a,b)=>b.ric-a.ric);
+  const STATO=['in obiettivo','poco sopra','sopra','fuori controllo'];
+  const sopra=cats.filter(c=>c.euro>0).sort((a,b)=>b.euro-a.euro);
 
   body.innerHTML=`
   <section class="qa">
     <div class="sechead"><div><h2>Listino e costi</h2>
-      <div class="sub">${per} · ogni categoria contro il suo obiettivo, e sotto il listino prodotto per prodotto.
-      L'ordine dentro la categoria è quello del <b>core 80%</b>, non l'alfabeto.
-      Prezzo e margine sono medi sul periodo e <b>IVA esclusa</b>: l'incidenza è il costo della scheda sul prezzo netto.</div></div></div>
+      <div class="sub">${per} · una riga per categoria: venduto, costo della materia prima,
+      incidenza reale contro il target. L'ordine è per venduto, dalla categoria che pesa di più.
+      Il listino prodotto per prodotto sta nella <b>Pagella</b>.</div></div></div>
     <div class="qagrid">
-      ${qaCard('Prodotti a menu', fmtInt(righe.length),
-        `${conCosto.length} hanno un costo certo, ${righe.length-conCosto.length} no`,
-        copertura>=0.8?'ok':copertura>=0.6?'warn':'bad')}
+      ${qaCard('Categorie a menu', fmtInt(cats.length),
+        `${righe.length} prodotti venduti nel periodo · ${veri.length} con scheda costo`)}
       ${qaCard('Incidenza della materia prima', ricC>0?fmtNum(costo/ricC*100)+'<small>%</small>':'—',
-        `calcolata sul <b>${fmtP(copertura)}</b> del venduto, quello coperto da schede costo<br>` +
-        (copertura>=0.8 ? 'sopra l\'80%: il numero è affidabile.'
-                        : 'sotto l\'80% del venduto: il numero vale per mezzo menu, non per il locale.'),
+        `misurata sul <b>${fmtP(copertura)}</b> del venduto<br>` +
+        (copertura>=0.8 ? 'sopra l\'80%: il numero regge.'
+                        : 'sotto l\'80% del venduto: il resto è stimato con la media di categoria.'),
         copertura>=0.8?'ok':'warn')}
-      ${qaCard('Margine sulla materia prima', fmtE(margine),
-        `${fmtE(costo)} di materia prima su ${fmtE(ricC)} di venduto con scheda`)}
+      ${qaCard('Spesa oltre il target', sopra.length?fmtE(sopra.reduce((a,c)=>a+c.euro,0)):'—',
+        sopra.length ? `${sopra.length} categorie sopra il proprio obiettivo · la più pesante è
+          <b>${escH(sopra[0].n)}</b> con ${fmtE(sopra[0].euro)}`
+        : 'nessuna categoria sopra il proprio obiettivo',
+        sopra.length?'warn':'ok')}
     </div>
   </section>
 
-  ${blocchi.map(bl=>`
   <section>
-    <div class="sechead"><div><h2>${bl.nome}</h2>
-      <div class="sub">${fmtE(bl.revenue)} di venduto · le categorie sono nell'ordine che decide il core 80%</div></div></div>
-    ${bl.lista.map(c=>{
-      const inc = c.incid!=null ? c.incid*100 : null;
-      const ob = c.obiettivo!=null ? num(c.obiettivo) : null;
-      return `<div class="mecat">
-        <div class="mehead">
-          <div class="t">${escH(c.nome)}
-            <small>${fmtInt(c.pz)} pezzi · ${c.nProd} prodotti · ${fmtE(c.revenue)}</small></div>
-          <div class="n">${inc!=null?fmtNum(inc)+'%':'—'}
-            <small>${ob!=null?'obiettivo '+fmtNum(ob)+'%':'nessun obiettivo'}</small></div>
-        </div>
-        ${meBarra(inc, ob)}
-        ${tabella(c.nome)}
-      </div>`;
-    }).join('')}
-  </section>`).join('')}`;
+    <div class="sechead"><div><h2>Le categorie</h2>
+      <div class="sub">Lo scostamento in euro è quanto costa, sul periodo, stare sopra il target.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Categoria</th><th>Venduto</th><th>Costo MP</th><th>Incidenza reale</th><th>Target</th>
+        <th>Scostamento</th><th>Stato</th><th>Prodotti</th><th>Con scheda costo</th></tr>
+      ${cats.map(c=>`<tr>
+        <td class="lbl">${escH(c.n)}<span class="role">${fmtInt(c.pz)} pezzi</span></td>
+        <td class="tot">${fmtE(c.ric)}</td>
+        <td class="tot">${c.inc!=null?fmtE(c.costo):'—'}</td>
+        <td class="tot ${c.z>=2?'alta':c.z===0?'bassa':''}">${c.inc!=null?fmtNum(c.inc)+'%':'—'}</td>
+        <td class="tot">${c.obiettivo?fmtNum(c.obiettivo)+'%':'—'}</td>
+        <td class="tot ${c.euro>0?'alta':''}">${c.euro!=null?(c.euro>0?'+':'')+fmtE(c.euro):'—'}</td>
+        <td class="tot">${c.z!=null?`<span class="verdict ${ZC[c.z]}">${STATO[c.z]}</span>`:'—'}</td>
+        <td class="tot">${c.prod}</td>
+        <td class="tot ${c.conScheda<c.prod?'alta':''}">${c.conScheda} su ${c.prod}</td></tr>`).join('')}
+    </table></div>
+    <div class="qanota">Dove la scheda costo manca, il costo è stimato con l'<b>incidenza media
+      della categoria</b> — solo se almeno ${MIN_SCHEDE_PER_STIMA} prodotti di quella categoria
+      una scheda ce l'hanno. Altrimenti la riga resta fuori dal conto.</div>
+  </section>`;
 }
 
 /* ---------------------------------------------- 3 · Core business */
@@ -9212,65 +9280,109 @@ async function renderMCORE(){
   const idx=meIdx(), per=mePeriodo();
   let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Core business', per); return; }
-  /* il core: le voci che insieme fanno l'80% dell'incasso. È la stessa soglia
-     con cui il motore decide l'ordine del menu. */
-  const core=(lista, campo)=>{
+  const ric=righe.reduce((a,r)=>a+r.revenue,0);
+  const segDi = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
+  /* una riga per categoria, dentro la sua famiglia: è la tabella di Core Business.
+     La colonna che conta è l'ultima — quanto costa, in euro, stare sopra il target. */
+  const cat={};
+  righe.forEach(r=>{
+    const c=cat[r.cat]||(cat[r.cat]={n:r.cat, fam:segDi(r), pz:0, ric:0, costo:0, ricC:0,
+      senza:0, prod:0, obiettivo:r.obiettivo});
+    c.pz+=r.pz; c.ric+=r.revenue; c.prod++;
+    if(r.haCosto){ c.costo+=r.pz*r.costo; c.ricC+=r.revenue; } else c.senza+=r.revenue;
+  });
+  const cats=Object.values(cat).map(c=>{
+    c.inc  = c.ricC>0 ? c.costo/c.ricC*100 : null;
+    c.scost= (c.inc!=null && c.obiettivo) ? c.inc-c.obiettivo : null;
+    c.euro = (c.scost!=null) ? c.scost/100*c.ricC : null;
+    c.z = c.scost==null ? null : c.scost<=0 ? 0 : c.scost<=2 ? 1 : c.scost<=5 ? 2 : 3;
+    return c;
+  });
+  const fam=['Food','Beverage'].map(f=>({f, lista:cats.filter(c=>c.fam===f)
+      .sort((a,b)=>(b.euro||-1e9)-(a.euro||-1e9)),
+      ric:cats.filter(c=>c.fam===f).reduce((a,c)=>a+c.ric,0),
+      euro:cats.filter(c=>c.fam===f).reduce((a,c)=>a+Math.max(0,c.euro||0),0)}))
+    .filter(x=>x.lista.length).sort((a,b)=>b.ric-a.ric);
+  const sopraTot=cats.reduce((a,c)=>a+Math.max(0,c.euro||0),0);
+  /* le ricette da vedere per prime: i prodotti che, in euro, pesano di più
+     sopra il target della loro categoria. È da lì che si comincia. */
+  const dav=righe.filter(r=>r.haCosto && r.obiettivo && r.prezzoMedio>0)
+    .map(r=>({...r, inc:r.costo/r.prezzoMedio*100}))
+    .filter(r=>r.inc>r.obiettivo)
+    .map(r=>({...r, oltre:(r.inc-r.obiettivo)/100*r.revenue}))
+    .sort((a,b)=>b.oltre-a.oltre).slice(0,12);
+  /* il core: chi insieme fa l'80% dell'incasso */
+  const core=(lista,campo)=>{
     const ord=[...lista].sort((a,b)=>b[campo]-a[campo]);
     const tot=ord.reduce((a,x)=>a+x[campo],0)||1;
-    let cum=0; const out=[];
-    ord.forEach(x=>{ const prima=cum; cum+=x[campo];
-      out.push({...x, quota:x[campo]/tot, cum:cum/tot, dentro: prima/tot < PROP_SOGLIA_CORE}); });
-    return {lista:out, tot, n:out.filter(x=>x.dentro).length};
+    let cum=0; return ord.map(x=>{ const prima=cum; cum+=x[campo];
+      return {...x, quota:x[campo]/tot, dentro: prima/tot < PROP_SOGLIA_CORE}; });
   };
-  const cat={};
-  righe.forEach(r=>{ const c=cat[r.cat]||(cat[r.cat]={nome:r.cat, seg:r.seg, revenue:0, pz:0, nProd:0});
-    c.revenue+=r.revenue; c.pz+=r.pz; c.nProd++; });
-  const riga=(n,s,v,q,cls)=>`<div class="qarow ${cls||''}"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
-    <div class="v">${v}</div><div class="p">${q}</div></div>`;
-  const blocco=(titolo, lista, campo, sotto)=>{
-    const c=core(lista, campo);
-    return `<section>
-      <div class="sechead"><div><h2>${titolo}</h2><div class="sub">${sotto}</div></div></div>
-      <div class="qanota"><b>${c.n}</b> su ${c.lista.length} fanno l'80% dell'incasso.
-        Sono quelle da presidiare una per una: prezzo, scheda costo, disponibilità, posizione a menu.</div>
-      ${c.lista.map(x=>riga(
-        `${x.dentro?'<span class="pallo core"></span>':'<span class="pallo"></span>'}${escH(x.nome||x.cat)}`,
-        x.nProd!=null?`${fmtInt(x.pz)} pezzi · ${x.nProd} prodotti`:`${fmtInt(x.pz)} pezzi`,
-        fmtE(x.revenue), fmtNum(x.quota*100)+'%', x.dentro?'dentro':'fuori')).join('')}
-    </section>`;
-  };
-  const segOrd=['Food','Beverage'].map(seg=>({seg,
-    cats:Object.values(cat).filter(c=>/bev/i.test(c.seg||'')===(seg==='Beverage'))}))
-    .filter(x=>x.cats.length)
-    .sort((a,b)=>b.cats.reduce((s,c)=>s+c.revenue,0)-a.cats.reduce((s,c)=>s+c.revenue,0));
-  const ric=righe.reduce((a,r)=>a+r.revenue,0);
-  const coreProd=core(righe.map(r=>({nome:r.nome, cat:r.cat, pz:r.pz, revenue:r.revenue})), 'revenue');
+  const coreProd=core(righe.map(r=>({nome:r.nome, cat:r.cat, pz:r.pz, revenue:r.revenue})),'revenue');
+  const nCore=coreProd.filter(x=>x.dentro).length;
+
+  const tabella=l=>`<div class="tblwrap"><table class="entry me">
+    <tr><th>Categoria</th><th>Pz</th><th>Venduto</th><th>Senza costo</th><th>Costo MP</th>
+      <th>Incidenza</th><th>Target</th><th>€ vs target</th></tr>
+    ${l.map(c=>`<tr>
+      <td class="lbl">${escH(c.n)}<span class="role">${c.prod} prodotti</span></td>
+      <td class="tot">${fmtInt(c.pz)}</td>
+      <td class="tot">${fmtE(c.ric)}</td>
+      <td class="tot ${c.senza>0?'alta':''}">${c.senza>0?fmtE(c.senza):'—'}</td>
+      <td class="tot">${c.inc!=null?fmtE(c.costo):'—'}</td>
+      <td class="tot ${c.z>=2?'alta':c.z===0?'bassa':''}">${c.inc!=null?fmtNum(c.inc)+'%':'—'}</td>
+      <td class="tot">${c.obiettivo?fmtNum(c.obiettivo)+'%':'—'}</td>
+      <td class="tot ${c.euro>0?'alta':'bassa'}">${c.euro!=null?(c.euro>0?'+':'')+fmtE(c.euro):'—'}</td></tr>`).join('')}
+  </table></div>`;
 
   body.innerHTML=`
   <section class="qa">
     <div class="sechead"><div><h2>Core business</h2>
-      <div class="sub">${per} · dove nasce davvero l'incasso. Il core è l'insieme che insieme fa l'<b>80%</b>:
-      poche voci, da presidiare una per una.</div></div></div>
+      <div class="sub">${per} · dove nasce l'incasso e dove se ne va la materia prima.
+      Le categorie sono ordinate per <b>euro spesi sopra il target</b>, non per incasso:
+      è da lì che si comincia.</div></div></div>
     <div class="qagrid">
-      ${qaCard('Prodotti nel core', fmtInt(coreProd.n),
-        `su ${righe.length} venduti: fanno <b>${fmtP(0.8)}</b> dell'incasso<br>
-         gli altri ${righe.length-coreProd.n} si dividono il resto`)}
+      ${qaCard('Materia prima spesa in più del target', sopraTot>0?fmtE(sopraTot):'—',
+        sopraTot>0 ? `sul periodo, sommando solo le categorie che sfondano<br>
+          la più pesante è <b>${escH(cats.filter(c=>c.euro>0).sort((a,b)=>b.euro-a.euro)[0].n)}</b>`
+        : 'nessuna categoria sopra il proprio target',
+        sopraTot>0?'warn':'ok')}
+      ${qaCard('Prodotti nel core', fmtInt(nCore),
+        `su ${righe.length} venduti fanno l'<b>80%</b> dell'incasso<br>
+         sono quelli da presidiare uno per uno`)}
       ${qaCard('Incasso del periodo', fmtE(ric),
-        `${fmtInt(righe.reduce((a,r)=>a+r.pz,0))} pezzi venduti`)}
-      ${qaCard('Quanto pesa il primo', (()=>{const p=coreProd.lista[0];
-        return p?fmtNum(p.quota*100)+'<small>%</small>':'—';})(),
-        (()=>{const p=coreProd.lista[0];
-          return p?`<b>${escH(p.nome)}</b> da solo · ${fmtE(p.revenue)}`:'';})())}
+        `${fmtInt(righe.reduce((a,r)=>a+r.pz,0))} pezzi · ${cats.length} categorie`)}
     </div>
   </section>
-  ${segOrd.map(x=>blocco(x.seg+' · le categorie', x.cats, 'revenue',
-    'Dentro il core le categorie che insieme arrivano all\'80% dell\'incasso del reparto.')).join('')}
+
+  ${fam.map(x=>`<section>
+    <div class="sechead"><div><h2>${x.f}</h2>
+      <div class="sub">${fmtE(x.ric)} di venduto${x.euro>0?` · <b>${fmtE(x.euro)}</b> di materia prima oltre il target`:''}</div></div></div>
+    ${tabella(x.lista)}
+  </section>`).join('')}
+
+  ${dav.length?`<section>
+    <div class="sechead"><div><h2>Le ricette da vedere per prime</h2>
+      <div class="sub">I prodotti che, in euro sul periodo, pesano di più sopra il target della
+      loro categoria. Non i più cari: quelli che costano di più <b>in totale</b>.</div></div></div>
+    <div class="tblwrap"><table class="entry me">
+      <tr><th>Prodotto</th><th>Categoria</th><th>Pezzi</th><th>Incidenza</th><th>Target</th><th>Costa in più</th></tr>
+      ${dav.map(r=>`<tr>
+        <td class="lbl">${escH(r.nome)}${r.presunto?'<span class="role">costo presunto</span>':''}</td>
+        <td class="tot" style="text-align:left">${escH(r.cat)}</td>
+        <td class="tot">${fmtInt(r.pz)}</td>
+        <td class="tot alta">${fmtNum(r.inc)}%</td>
+        <td class="tot">${fmtNum(r.obiettivo)}%</td>
+        <td class="tot alta">${fmtE(r.oltre)}</td></tr>`).join('')}
+    </table></div>
+  </section>`:''}
+
   <section>
     <div class="sechead"><div><h2>I prodotti del core</h2>
-      <div class="sub">Gli stessi conti sui singoli prodotti, su tutto il locale.</div></div></div>
-    ${coreProd.lista.filter(x=>x.dentro).map(x=>riga(
-      `<span class="pallo core"></span>${escH(x.nome)}`, x.cat,
-      fmtE(x.revenue), fmtNum(x.quota*100)+'%', 'dentro')).join('')}
+      <div class="sub">Le referenze che insieme fanno l'80% dell'incasso del locale.</div></div></div>
+    ${coreProd.filter(x=>x.dentro).map(x=>`<div class="qarow">
+      <div class="n"><span class="pallo core"></span>${escH(x.nome)}<small>${escH(x.cat)}</small></div>
+      <div class="v">${fmtE(x.revenue)}</div><div class="p">${fmtNum(x.quota*100)}%</div></div>`).join('')}
   </section>`;
 }
 
@@ -9282,26 +9394,46 @@ async function renderVPRIO(){
   let righe=[]; try{ righe=await meRighe(idx); }catch(e){}
   if(!righe.length){ body.innerHTML=meVuoto('Pagella prodotti e categorie', per); return; }
   const blocchi=meCategorie(righe);
-  const CLASSI=[
-    ['da spingere','Da spingere','voto 4,5 e oltre: rendono bene e vendono. Sono quelli da mettere davanti.'],
-    ['tiene il locale','Tengono il locale','voto fra 4 e 4,5: il tessuto su cui sta in piedi il conto.'],
-    ['può crescere','Possono crescere','voto fra 3 e 4: c\'è margine, manca la spinta.'],
-    ['secondario','Secondari','voto fra 2 e 3: non fanno danno, non fanno la differenza.'],
-    ['da rivedere','Da rivedere','voto sotto 2: prezzo, scheda costo o presenza a menu da rimettere in discussione.']
-  ];
   const conCosto=righe.filter(r=>r.haCosto);
   const senza=righe.filter(r=>!r.haCosto);
-  const riga=r=>`<div class="qarow"><div class="n">${escH(r.nome)}
-      <small>${r.cat} · ${fmtInt(r.pz)} pezzi · margine ${fmtE2(r.margine)} a pezzo</small></div>
-    <div class="v">${fmtE(r.contribution)}</div>
-    <div class="p">${meVotoPill(r.mpiScore)}</div></div>`;
+  const presunti=righe.filter(r=>r.presunto);
+  const pzTot=righe.reduce((a,r)=>a+r.pz,0)||1;
+  const CLASSI=[
+    ['da spingere','Da spingere'],
+    ['tiene il locale','Tengono il locale'],
+    ['può crescere','Possono crescere'],
+    ['secondario','Secondari'],
+    ['da rivedere','Da rivedere']
+  ];
+  /* l'ordine è quello del motore: dentro la categoria decide il core 80% */
+  const cats=[...new Set(righe.map(r=>r.cat))];
+  const perCat={}; cats.forEach(c=>perCat[c]=meOrdineCategoria(righe,c));
+  const ordinate=[]; blocchi.forEach(bl=>bl.lista.forEach(c=>{
+    if(perCat[c.nome]) ordinate.push({cat:c.nome, seg:bl.nome, lista:perCat[c.nome], c});
+  }));
+
+  const rigaProd=r=>`<tr class="${r.haCosto?'':'senza'}">
+    <td class="lbl">${escH(r.nome)}${r.sottoCore80?'<span class="role">sotto il core 80%</span>':''}</td>
+    <td class="tot">${fmtE2(r.prezzoMedio)}</td>
+    <td class="tot">${r.haCosto?fmtE2(r.costo)+(r.presunto?'<span class="pres" title="stimato con la media della categoria: la scheda costo manca">~</span>':''):'<span class="manca">non stimabile</span>'}</td>
+    <td class="tot">${r.haCosto?fmtE2(r.margine):'—'}</td>
+    <td class="tot">${r.haCosto&&r.prezzoMedio>0?fmtNum(r.margine/r.prezzoMedio*100)+'%':'—'}</td>
+    <td class="tot ${r.haCosto&&r.prezzoMedio>0&&r.obiettivo?(r.costo/r.prezzoMedio*100>r.obiettivo?'alta':'bassa'):''}">${
+      r.haCosto&&r.prezzoMedio>0?fmtNum(r.costo/r.prezzoMedio*100)+'%':'—'}</td>
+    <td class="tot">${r.obiettivo?fmtNum(r.obiettivo)+'%':'—'}</td>
+    <td class="tot">${fmtInt(r.pz)}</td>
+    <td class="tot">${fmtNum(r.pz/pzTot*100)}%</td>
+    <td class="tot">${r.haCosto?fmtE(r.contribution):'—'}</td>
+    <td class="tot">${meVotoPill(r.mpiScore)}</td>
+    <td class="tot"><span class="tipo t${r.haCosto?(r.mpiScore>=4.5?'5':r.mpiScore>=4?'4':r.mpiScore>=3?'3':r.mpiScore>=2?'2':'1'):'0'}">${
+      r.haCosto?r.classe:'senza costo'}</span></td></tr>`;
 
   body.innerHTML=`
   <section class="qa">
     <div class="sechead"><div><h2>Pagella prodotti e categorie</h2>
-      <div class="sub">${per} · il voto da 1 a 5 pesa <b>il margine totale al 40%</b>, <b>gli euro a pezzo al 35%</b>
-      e <b>i pezzi venduti al 25%</b>, sempre dentro la propria categoria.
-      Non decide l'ordine del menu — quello lo fa il core 80% — dice chi merita la spinta.</div></div></div>
+      <div class="sub">${per} · il punteggio da 1 a 5 pesa <b>il margine totale al 40%</b>,
+      <b>gli euro a pezzo al 35%</b> e <b>i pezzi venduti al 25%</b>, sempre dentro la propria
+      categoria. Non decide l'ordine del menu — quello lo fa il core 80% — dice chi merita la spinta.</div></div></div>
     <div class="qagrid">
       ${CLASSI.slice(0,3).map(([k,t])=>{
         const l=conCosto.filter(r=>r.classe===k);
@@ -9310,28 +9442,45 @@ async function renderVPRIO(){
           k==='da spingere'?'ok':'');
       }).join('')}
     </div>
-    ${senza.length?`<div class="qanota"><b>${senza.length} prodotti non hanno un costo certo</b> e restano fuori dalla pagella:
-      senza scheda costo non si può dare un voto. Si completano in <b>Ricette e schede costo</b>.</div>`:''}
+    ${(presunti.length||senza.length)?`<div class="qanota">
+      ${presunti.length?`<b>${presunti.length} prodotti</b> hanno un costo <b>presunto</b> (segnato con <span class="pres">~</span>):
+        stimato con l'incidenza media della categoria, perché la scheda manca. `:''}
+      ${senza.length?`<b>${senza.length}</b> non sono nemmeno stimabili e restano fuori dalla pagella:
+        nella loro categoria non ci sono abbastanza schede per fare una media.`:''}
+      Si completano in <b>Ricette e schede costo</b>.</div>`:''}
   </section>
+
+  ${ordinate.length?`<section>
+    <div class="sechead"><div><h2>Il listino, categoria per categoria</h2>
+      <div class="sub">Dentro ogni categoria l'ordine è quello del core 80%, non l'alfabeto.
+      Prezzo, margine e incidenza sono medi sul periodo e <b>IVA esclusa</b>.</div></div></div>
+    ${ordinate.map(o=>`
+      <div class="mecat">
+        <div class="mehead">
+          <div class="t">${escH(o.cat)}<small>${o.seg} · ${fmtInt(o.c.pz)} pezzi · ${fmtE(o.c.revenue)}</small></div>
+          <div class="n">${o.c.incid!=null?fmtNum(o.c.incid*100)+'%':'—'}
+            <small>${o.c.obiettivo?'obiettivo '+fmtNum(o.c.obiettivo)+'%':'nessun obiettivo'}</small></div>
+        </div>
+        ${meBarra(o.c.incid!=null?o.c.incid*100:null, o.c.obiettivo?num(o.c.obiettivo):null)}
+        <div class="tblwrap"><table class="entry me prio">
+          <tr><th>Prodotto</th><th>Prezzo<small>senza IVA</small></th><th>Costo<small>materia prima</small></th>
+            <th>Margine<small>€ per pezzo</small></th><th>Margine %</th><th>Incidenza<small>costo</small></th>
+            <th>Obiettivo</th><th>Pezzi<small>venduti</small></th><th>Quota<small>dei pezzi</small></th>
+            <th>Margine<small>totale €</small></th><th>Punteggio<small>1-5</small></th><th>Tipo</th></tr>
+          ${o.lista.map(rigaProd).join('')}
+        </table></div>
+      </div>`).join('')}
+  </section>`:''}
 
   <section>
     <div class="sechead"><div><h2>Le categorie</h2>
-      <div class="sub">Lo stesso voto, calcolato fra le categorie invece che dentro. Food e beverage restano separati.</div></div></div>
+      <div class="sub">Lo stesso punteggio calcolato fra le categorie invece che dentro. Food e beverage restano separati.</div></div></div>
     ${blocchi.map(bl=>`<div class="qasez">${bl.nome}</div>` + bl.lista.map(c=>
       `<div class="qarow"><div class="n">${escH(c.nome)}
          <small>${fmtInt(c.pz)} pezzi · ${c.nProd} prodotti · incidenza ${c.incid!=null?fmtNum(c.incid*100)+'%':'—'}</small></div>
        <div class="v">${fmtE(c.contribution)}</div>
        <div class="p">${meVotoPill(c.cpiScore)}</div></div>`).join('')).join('')}
-  </section>
-
-  ${CLASSI.map(([k,t,d])=>{
-    const l=conCosto.filter(r=>r.classe===k).sort((a,b)=>b.contribution-a.contribution);
-    if(!l.length) return '';
-    return `<section>
-      <div class="sechead"><div><h2>${t}</h2><div class="sub">${d}</div></div></div>
-      ${l.map(riga).join('')}
-    </section>`;
-  }).join('')}`;
+  </section>`;
 }
 
 /* ================= IL QUADRO DELL'AREA =================
@@ -9864,10 +10013,14 @@ async function demoGenera(){
         const quota=netto/SCONTO*pesi[k]/tot;
         p.mesi[i].pz = Math.max(0, Math.round(quota/(p.pv||1)));
       });
-      /* l'incasso: si riscala una volta sola perché il totale del mese torni esatto */
-      const lordo=lista.reduce((a,p)=>a+p.mesi[i].pz*p.pvi, 0);
+      /* l'incasso. Lo sconto non è uguale per tutti: su alcuni prodotti si fanno
+         più omaggi e più ritocchi che su altri, ed è proprio quello che la
+         colonna «rispetto al listino» deve far vedere. Il totale del mese resta
+         esatto perché si riscala dopo aver applicato gli scarti. */
+      const scontoDi = p => 0.90 + ((p.n.length*17 + p.cat.length*7) % 11)/100;  /* 0,90–1,00 */
+      const lordo=lista.reduce((a,p)=>a+p.mesi[i].pz*p.pvi*scontoDi(p), 0);
       const k = lordo>0 ? (netto*(1+PRO.iva))/lordo : 0;
-      lista.forEach(p=>{ p.mesi[i].inc = +(p.mesi[i].pz*p.pvi*k).toFixed(2); });
+      lista.forEach(p=>{ p.mesi[i].inc = +(p.mesi[i].pz*p.pvi*scontoDi(p)*k).toFixed(2); });
     });
   });
 
