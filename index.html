@@ -336,6 +336,48 @@
   table.entry tr.sumrow td.lbl{background:#F3F1EB}
   .rowdel{border:none;background:none;color:#C9C4B8;cursor:pointer;font-size:14px;padding:2px 6px;}
   .rowdel:hover{color:var(--bad)}
+  /* il quadro in testa a ogni area */
+  section.qa{background:#FBFAF7;}
+  .qagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+  @media(max-width:1100px){ .qagrid{grid-template-columns:1fr 1fr;} }
+  .qac{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:#fff;}
+  .qac .et{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2);font-weight:700;}
+  .qac .nm{font-family:var(--num);font-size:23px;font-weight:600;margin-top:3px;line-height:1.15;letter-spacing:-.5px;}
+  .qac .nm small{font-size:14px;color:var(--ink2);letter-spacing:0;}
+  .qac .nt{font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.55;}
+  .qac .nt b{color:var(--ink);} .qac .nt i{color:#9A958A;font-style:normal;}
+  .qac.ok{border-color:#BFDCCB;} .qac.ok .et{color:var(--ok);}
+  .qac.warn{border-color:#E8D49B;} .qac.warn .et{color:#9A7414;}
+  .qac.hot{border-color:#EFC49B;} .qac.hot .et{color:var(--hot);}
+  .qac.bad{border-color:#E7B3AC;} .qac.bad .et{color:var(--bad);}
+  /* la riga dei dodici mesi */
+  .qaspark{width:100%;height:38px;display:block;margin:4px 0 2px;overflow:visible;}
+  .qaspark .linea{fill:none;stroke:var(--ink);stroke-width:1.4;vector-effect:non-scaling-stroke;}
+  .qaspark .obj{stroke:var(--ink2);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke;}
+  .qaspark circle{vector-effect:non-scaling-stroke;}
+  .qaspark .dentro{fill:var(--ok);} .qaspark .fuori{fill:var(--bad);}
+  /* la barra food/beverage */
+  .qabar{display:block;height:7px;border-radius:4px;background:var(--bev);overflow:hidden;margin-top:7px;}
+  .qabar i{display:block;height:100%;background:var(--food);}
+  .qasez{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink2);font-weight:700;margin:20px 0 6px;}
+  .qarow{display:flex;align-items:baseline;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);}
+  .qarow:last-child{border-bottom:none;}
+  .qarow .n{flex:1;font-size:13.5px;min-width:0;}
+  .qarow .n small{display:block;font-size:11.5px;color:var(--ink2);margin-top:1px;}
+  .qarow .v{font-family:var(--num);font-size:13.5px;font-weight:600;white-space:nowrap;}
+  .qarow .p{font-family:var(--num);font-size:12.5px;color:var(--ink2);min-width:64px;text-align:right;white-space:nowrap;}
+  .qarow .p.ok{color:var(--ok);} .qarow .p.warn{color:#9A7414;} .qarow .p.bad{color:var(--bad);}
+  .qanota{font-size:12px;color:var(--ink2);line-height:1.6;margin-top:10px;}
+  .qanota b{color:var(--ink);}
+  /* la fascia del marketing */
+  .qafascia{margin:10px 0 2px;}
+  .qafascia .scala{position:relative;height:12px;border-radius:7px;
+    background:linear-gradient(90deg,#E7B3AC,#E8D49B 28%,#E8D49B 72%,#E7B3AC);}
+  .qafascia .scala i{position:absolute;top:0;bottom:0;background:#9BC9AC;border-radius:7px;}
+  .qafascia .scala b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);}
+  .qafascia .scala u{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;
+    border-radius:50%;background:var(--brass);border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+  .qafascia .et{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:7px;}
   /* checklist dei dati: una griglia di spunte, niente da scrivere */
   table.entry.chk{min-width:860px;}
   table.entry.chk th{text-align:center;vertical-align:bottom;padding:8px 6px;line-height:1.3;}
@@ -1704,7 +1746,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v125</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v126</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1775,6 +1817,7 @@
 
   <!-- ============ CONTO ECONOMICO ============ -->
   <div class="page" id="page-ce">
+    <div id="ceAnal"></div>
     <section>
       <div class="sechead">
         <div><h2 id="ceTitolo">Ricavi e materia prima</h2>
@@ -1824,6 +1867,7 @@
 
   <!-- ============ RISORSE UMANE ============ -->
   <div class="page" id="page-ru">
+    <div id="ruAnal"></div>
     <section>
       <div class="sechead">
         <div><h2>Risorse umane · costo mensile per persona</h2>
@@ -1860,6 +1904,7 @@
 
   <!-- ============ SPESE GENERALI ============ -->
   <div class="page" id="page-sg">
+    <div id="sgAnal"></div>
     <section>
       <div class="sechead">
         <div><h2 id="sgTitolo">Spese generali · costi indiretti</h2>
@@ -4350,6 +4395,7 @@ const CE_ROWS=[
 ];
 let ceVista='tutto';        /* 'Ricavi' · 'Costi materia prima' · 'tutto' */
 function renderCE(){
+  quadroArea(ceVista==='Ricavi'?'rica':'ce');
   const tb=document.getElementById('ceTable');
   {
     const T={Ricavi:['Ricavi','Food, beverage, altri ricavi e merchandising, mese per mese e IVA esclusa. È il denominatore di tutte le incidenze del cruscotto.'],
@@ -4415,6 +4461,7 @@ function ceLive(){
 ================================================================ */
 const REPARTI=['Management','Cucina','Sala','Bar'];
 function renderRU(){
+  quadroArea('ru');
   const tb=document.getElementById('ruTable');
   let h='<tr><th>Persona / ruolo</th>'+M3.map(x=>`<th>${x}</th>`).join('')+'<th class="tot">Totale</th><th></th></tr>';
   REPARTI.forEach(rep=>{
@@ -4469,6 +4516,7 @@ function ruChart(){
 ================================================================ */
 let sgVista='sg';           /* 'sg' spese generali vere · 'mkt' marketing */
 function renderSG(){
+  quadroArea(sgVista==='mkt'?'mkt':'sg');
   const tb=document.getElementById('sgTable');
   {
     const mkt = sgVista==='mkt';
@@ -8924,6 +8972,342 @@ function prPartial(){
 function prRefresh(){ if(current==='pr') renderPR(); }
 /* due voci di menu, una pagina sola: cambia solo che cosa si guarda */
 const ALIAS={rica:'ce', mkt:'sg'};
+
+
+/* ================= IL QUADRO DELL'AREA =================
+   In testa a ogni pagina di area, in modalità Pro: il numero e la sua distanza
+   dall'obiettivo, lo stesso numero visto su cucina e bar, e l'andamento dei
+   mesi. Poi una parte che cambia da area ad area.
+   Regola ferma: dove la divisione fra food e beverage è convenzionale —
+   spese generali e marketing si ribaltano per quota, non nascono divisi — la
+   pagina lo scrive. Altrimenti fra sei mesi quei numeri si leggono come se
+   venissero dalla cassa. */
+const QA_CFG={
+  rica:{nome:'Ricavi',         box:'ceAnal'},
+  ce  :{nome:'Materia prima',  box:'ceAnal', k:'mp', tgt:'mp'},
+  ru  :{nome:'Risorse umane',  box:'ruAnal', k:'ru', tgt:'ru'},
+  sg  :{nome:'Spese generali', box:'sgAnal', k:'sg', tgt:'sg'},
+  mkt :{nome:'Marketing',      box:'sgAnal', k:'mk', tgt:'mk', fascia:true}
+};
+/* una riga di dodici mesi, con la linea dell'obiettivo: si legge in un secondo
+   e non chiede una libreria di grafici */
+function qaSpark(serie, obiettivo){
+  const vis=serie.filter(x=>x.v!=null);
+  if(vis.length<2) return '';
+  const vals=vis.map(x=>x.v).concat(obiettivo!=null?[obiettivo]:[]);
+  let lo=Math.min(...vals), hi=Math.max(...vals);
+  const pad=Math.max(1,(hi-lo)*0.18); lo-=pad; hi+=pad;
+  const W=100, H=34, X=i=>i/11*W, Y=v=>H-(v-lo)/(hi-lo||1)*H;
+  const d=serie.map((x,i)=>x.v==null?null:`${X(i).toFixed(1)},${Y(x.v).toFixed(1)}`)
+    .filter(Boolean).join(' ');
+  const yo = obiettivo!=null ? Y(obiettivo).toFixed(1) : null;
+  const punti=serie.map((x,i)=>x.v==null?'':
+    `<circle cx="${X(i).toFixed(1)}" cy="${Y(x.v).toFixed(1)}" r="1.5"
+      class="${obiettivo!=null && x.v>obiettivo?'fuori':'dentro'}"><title>${MESI[i]}: ${fmtNum(x.v)}%</title></circle>`).join('');
+  return `<svg class="qaspark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    ${yo!=null?`<line x1="0" y1="${yo}" x2="${W}" y2="${yo}" class="obj"/>`:''}
+    <polyline points="${d}" class="linea"/>${punti}</svg>`;
+}
+function qaStato(inc, tgt, fascia){
+  if(!isFinite(inc)) return 1;
+  if(fascia) return mktZona(inc, tgt);
+  return zone(inc/100, tgt, [5,10]);
+}
+const QA_ET=['in obiettivo','zona gialla','zona arancio','fuori controllo'];
+
+function quadroArea(tipo){
+  const cfg=QA_CFG[tipo]; if(!cfg) return;
+  const box=document.getElementById(cfg.box); if(!box) return;
+  const m=compute(), t=S.targets;
+  const isM = scope!=='ytd';
+  const rows = isM ? [m.months[scope]] : m.complete;
+  const a = sumRows(rows, isM?0:m.orphanCosts);
+  if(!(a.ricavi>0)){ box.innerHTML=''; return; }
+  const per = isM ? MESI[scope]+' '+S.anno
+    : (m.complete.length ? m.complete[0].mese+' – '+m.complete[m.complete.length-1].mese+' '+S.anno : 'esercizio '+S.anno);
+  const qF=(a.ricaviFood+a.ricaviBev)>0 ? a.ricaviFood/(a.ricaviFood+a.ricaviBev) : .5;
+  box.innerHTML = tipo==='rica' ? qaRicavi(m,a,per,qF) : qaCosto(tipo,cfg,m,a,t,per,qF);
+  /* l'archivio prodotti arriva da IndexedDB: quando c'è, la fascia si ricompone
+     con quello che solo il venduto può dire */
+  if((!PRO || proOwner!==sOwner) && !qaInCorso){
+    qaInCorso=true;
+    proCarica().then(()=>{ qaInCorso=false;
+      if(current===tipo) quadroArea(tipo);
+    }).catch(()=>{ qaInCorso=false; });
+  }
+}
+let qaInCorso=false;
+const qaCard=(et,val,note,cls)=>`<div class="qac ${cls||''}">
+  <div class="et">${et}</div><div class="nm">${val}</div>${note?`<div class="nt">${note}</div>`:''}</div>`;
+const qaPunti = d => fmtNum(Math.abs(d))+(Math.abs(d)===1?' punto':' punti');
+/* il venduto, se l'archivio è già in memoria */
+function qaVenduto(mesiIdx){
+  if(!PRO || proOwner!==sOwner || !PRO.prod.length) return null;
+  const iva=1+num(PRO.iva||0.1);
+  const out={Food:{pz:0,inc:0,n:0}, Beverage:{pz:0,inc:0,n:0}, cat:{}};
+  PRO.prod.forEach(p=>{
+    const seg = /bev/i.test((PRO.seg||{})[p.cat]||'') ? 'Beverage' : 'Food';
+    let pz=0, inc=0;
+    (p.mesi||[]).forEach((x,i)=>{ if(mesiIdx.indexOf(i)<0) return; pz+=numIt(x.pz); inc+=numIt(x.inc); });
+    if(!pz && !inc) return;
+    out[seg].pz+=pz; out[seg].inc+=inc/iva; out[seg].n++;
+    const c=out.cat[p.cat]||(out.cat[p.cat]={pz:0, ric:0, costo:0, seg, conCosto:0});
+    c.pz+=pz; c.ric+=inc/iva;
+    let k=null; try{ k=ricCosto(p); }catch(e){}
+    if(k!=null){ c.costo+=pz*k.tot; c.conCosto+=inc/iva; }
+  });
+  return (out.Food.pz+out.Beverage.pz)>0 ? out : null;
+}
+
+/* ---------------- la fascia delle aree di costo ---------------- */
+function qaCosto(tipo,cfg,m,a,t,per,qF){
+  const k=cfg.k, tgt=num(t[cfg.tgt]);
+  const inc=a['inc'+k.charAt(0).toUpperCase()+k.slice(1)]*100;
+  const euro=a[k];
+  const z=qaStato(inc,tgt,cfg.fascia);
+  const dpp=inc-tgt;
+  const scost=(inc-tgt)/100*a.ricavi;
+  /* cucina e bar */
+  const FB={
+    mp:{f:a.mpFood, b:a.mpBev},
+    ru:{f:a.ruFood, b:a.ruBev},
+    sg:{f:a.sgFood, b:a.sgBev},
+    mk:{f:a.mk*qSg(a), b:a.mk*(1-qSg(a))}
+  }[k];
+  const iF = a.ricaviFood>0 ? FB.f/a.ricaviFood*100 : null;
+  const iB = a.ricaviBev >0 ? FB.b/a.ricaviBev *100 : null;
+  const gap = (iF!=null&&iB!=null) ? Math.abs(iF-iB) : null;
+  const conv = (k==='sg'||k==='mk');
+  /* l'andamento */
+  const campo={mp:'mp', ru:'ru', sg:'sg', mk:'mk'}[k];
+  const serie=m.months.map((x,i)=>({i, v: x.ricavi>0 ? num(x[campo])/x.ricavi*100 : null}));
+  const vis=serie.filter(x=>x.v!=null);
+  const peggio=vis.length?vis.reduce((p,x)=>x.v>p.v?x:p):null;
+  const meglio=vis.length?vis.reduce((p,x)=>x.v<p.v?x:p):null;
+
+  const cardNumero = cfg.fascia
+    ? qaCard('Dove sta il locale', fmtNum(inc)+'<small>%</small>',
+        `${fmtE(euro)} nel periodo · la fascia è centrata su <b>${fmtNum(tgt)}%</b>` +
+        (inc<tgt ? `<br>per arrivare al centro servirebbero <b>${fmtE((tgt-inc)/100*a.ricavi)}</b> in più`
+                 : `<br>sopra il centro di <b>${fmtE(scost)}</b>`), ['ok','warn','hot','bad'][z])
+    : qaCard(cfg.nome, fmtNum(inc)+'<small>%</small>',
+        `${fmtE(euro)} nel periodo · l'obiettivo è <b>${fmtNum(tgt)}%</b><br>` +
+        (dpp>0 ? `<b>${qaPunti(dpp)}</b> sopra: sono <b>${fmtE(scost)}</b> di extracosto`
+               : `<b>${qaPunti(dpp)}</b> sotto l'obiettivo: <b>${fmtE(-scost)}</b> risparmiati`),
+        ['ok','warn','hot','bad'][z]);
+
+  const qf=qSg(a);
+  const cardFB = (iF==null||iB==null)
+    ? qaCard('Cucina e bar','—','Servono i ricavi divisi fra food e beverage per vedere i due reparti separati.')
+    : conv
+      /* qui la divisione è una ripartizione per quota: l'incidenza sui due
+         reparti viene identica per forza, e mostrarla sarebbe una bugia.
+         Si mostrano gli euro, e si dice da dove vengono. */
+      ? qaCard('Cucina e bar',
+          `${fmtE(FB.f)}<small> e </small>${fmtE(FB.b)}`,
+          `il <b>${fmtNum(qf*100)}%</b> va sulla cucina, il <b>${fmtNum((1-qf)*100)}%</b> sul bar.<br>
+           <i>È una ripartizione per quota: queste spese non nascono divise, quindi
+           l'incidenza sui due reparti è la stessa — ${fmtNum(inc)}% — per costruzione.</i>`)
+      : qaCard('Cucina e bar',
+          `${fmtNum(iF)}<small>% e </small>${fmtNum(iB)}<small>%</small>`,
+          `${fmtE(FB.f)} sulla cucina, ${fmtE(FB.b)} sul bar · ognuno sul proprio incasso<br>` +
+          (gap<=15 ? `<b>${qaPunti(gap)}</b> di distanza: dentro la soglia di attenzione di 15.`
+                   : `<b>${qaPunti(gap)}</b> di distanza, oltre la soglia di 15 — e sul totale non si vede.`),
+          gap==null?'':gap<=15?'ok':gap>20?'bad':'warn');
+
+  const cardAnd = qaCard('Come si muove nei mesi',
+    qaSpark(serie, tgt) || '—',
+    vis.length<2 ? 'Serve più di un mese per vedere un andamento.'
+      : `peggiore <b>${MESI[peggio.i]}</b> ${fmtNum(peggio.v)}% · migliore <b>${MESI[meglio.i]}</b> ${fmtNum(meglio.v)}%` +
+        `<br>la linea tratteggiata è l'obiettivo del ${fmtNum(tgt)}%`);
+
+  return `<section class="qa">
+    <div class="sechead"><div><h2>Il quadro · ${cfg.nome}</h2>
+      <div class="sub">${per} · ${cfg.fascia?'la soglia è il centro di una fascia, non un tetto':QA_ET[z]}</div></div></div>
+    <div class="qagrid">${cardNumero}${cardFB}${cardAnd}</div>
+    ${qaExtra(tipo,m,a,t,qF)}
+  </section>`;
+}
+/* la quota di cucina con cui il motore ribalta le spese generali */
+function qSg(a){
+  const tot=num(a.sgFood)+num(a.sgBev);
+  if(tot>0) return a.sgFood/tot;
+  const r=num(a.ricaviFood)+num(a.ricaviBev);
+  return r>0 ? a.ricaviFood/r : .5;
+}
+
+/* ---------------- i ricavi ---------------- */
+function qaRicavi(m,a,per,qF){
+  const serie=m.months.map((x,i)=>({i, v:x.ricavi>0?x.ricavi/1000:null}));
+  const vis=serie.filter(x=>x.v!=null);
+  const peggio=vis.length?vis.reduce((p,x)=>x.v<p.v?x:p):null;
+  const meglio=vis.length?vis.reduce((p,x)=>x.v>p.v?x:p):null;
+  /* i mesi che fanno il grosso dell'anno */
+  const ord=[...vis].sort((x,y)=>y.v-x.v);
+  const tot=vis.reduce((s,x)=>s+x.v,0)||1;
+  let cum=0, n=0;
+  for(const x of ord){ cum+=x.v; n++; if(cum/tot>=0.4) break; }
+  const forti=ord.slice(0,n).map(x=>MESI[x.i]).join(', ');
+  /* l'anno prima */
+  const mPrec=computeAnno(num(S.anno)-1);
+  let confronto='';
+  if(mPrec && mPrec.complete.length){
+    const idx=(scope!=='ytd'?[scope]:m.complete.map(x=>x.i)).filter(i=>meseCompleto(mPrec.months[i]));
+    if(idx.length){
+      const ora=sumRows(idx.map(i=>m.months[i]),0), pri=sumRows(idx.map(i=>mPrec.months[i]),0);
+      const d=pri.ricavi>0?(ora.ricavi-pri.ricavi)/pri.ricavi:null;
+      const qFp=(pri.ricaviFood+pri.ricaviBev)>0?pri.ricaviFood/(pri.ricaviFood+pri.ricaviBev):null;
+      confronto=qaCard(`Rispetto al ${num(S.anno)-1}`,
+        (d>=0?'+':'−')+fmtP(Math.abs(d)),
+        `${idx.length} mes${idx.length===1?'e':'i'} confrontabili: ${fmtE(ora.ricavi)} contro ${fmtE(pri.ricavi)}` +
+        (qFp!=null?`<br>il peso della cucina è passato dal <b>${fmtNum(qFp*100)}%</b> al <b>${fmtNum(qF*100)}%</b>`:''),
+        d>=0?'ok':'warn');
+    }
+  }
+  const v=qaVenduto(scope!=='ytd'?[scope]:m.complete.map(x=>x.i));
+  const cardVen = v
+    ? qaCard('Quanto vale un pezzo',
+        fmtE2(v.Food.pz?v.Food.inc/v.Food.pz:0)+'<small> e </small>'+fmtE2(v.Beverage.pz?v.Beverage.inc/v.Beverage.pz:0),
+        `prezzo medio di un pezzo in cucina e al bar, IVA esclusa<br>` +
+        `<b>${fmtNum(v.Food.pz,0)}</b> pezzi food e <b>${fmtNum(v.Beverage.pz,0)}</b> beverage nel periodo`)
+    : qaCard('Quanto vale un pezzo','—','Serve il venduto di cassa: senza, il prezzo medio non si può calcolare.');
+
+  return `<section class="qa">
+    <div class="sechead"><div><h2>Il quadro · Ricavi</h2>
+      <div class="sub">${per} · da qui nascono tutte le incidenze del cruscotto</div></div></div>
+    <div class="qagrid">
+      ${qaCard('Incasso del periodo', fmtE(a.ricavi),
+        `media <b>${fmtE(a.ricavi/(a.n||1))}</b> al mese su ${a.n} mes${a.n===1?'e':'i'}` +
+        (forti?`<br>${n} mes${n===1?'e':'i'} fanno il 40% dell'anno: <b>${forti}</b>`:''))}
+      ${qaCard('Cucina e bar',
+        `${fmtNum(qF*100)}<small>% e </small>${fmtNum((1-qF)*100)}<small>%</small>`,
+        `<b>${fmtE(a.ricaviFood)}</b> food · <b>${fmtE(a.ricaviBev)}</b> beverage<br>
+         <span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>`)}
+      ${qaCard('Come si muove nei mesi', qaSpark(serie,null)||'—',
+        vis.length<2?'Serve più di un mese per vedere un andamento.'
+          :`più alto <b>${MESI[meglio.i]}</b> ${fmtE(meglio.v*1000)} · più basso <b>${MESI[peggio.i]}</b> ${fmtE(peggio.v*1000)}`)}
+      ${confronto}
+      ${cardVen}
+    </div>
+  </section>`;
+}
+
+/* ---------------- la parte specifica di ogni area ---------------- */
+function qaExtra(tipo,m,a,t,qF){
+  const idx = scope!=='ytd' ? [scope] : m.complete.map(x=>x.i);
+  const riga=(n,s,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
+    <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
+
+  if(tipo==='ce'){
+    migrateS();
+    const tf=mpsVal('food'), tb=mpsVal('bev');
+    const bf=a.ricaviFood>0?a.mpFood/a.ricaviFood:null, bb=a.ricaviBev>0?a.mpBev/a.ricaviBev:null;
+    const linea=(et,teor,bil,ric)=>{
+      if(teor==null||bil==null) return riga(et,'manca l\'incidenza da schede ricetta','—',null);
+      const d=(bil-teor)*100;
+      return riga(et, `schede ${fmtP(teor)} · bilancio ${fmtP(bil)}`,
+        fmtE(Math.abs(d)/100*ric), (d>=0?'+':'−')+qaPunti(d), d>2?'bad':d>1?'warn':'ok');
+    };
+    const v=qaVenduto(idx);
+    let cat='';
+    if(v){
+      const fuori=Object.entries(v.cat).map(([n,c])=>({n, ...c,
+        inc:c.conCosto>0?c.costo/c.conCosto*100:null, tgt:numIt((PRO.target||{})[n])||null}))
+        .filter(c=>c.inc!=null && c.tgt && c.inc>c.tgt)
+        .sort((x,y)=>(y.inc-y.tgt)-(x.inc-x.tgt)).slice(0,5);
+      cat = fuori.length ? `<div class="qasez">Le categorie di menu sopra obiettivo</div>` +
+        fuori.map(c=>riga(c.n, `obiettivo ${fmtNum(c.tgt)}% · ${fmtNum(c.pz,0)} pezzi`,
+          fmtE(c.ric), fmtNum(c.inc)+'%', (c.inc-c.tgt)>5?'bad':'warn')).join('')
+        : `<div class="qasez">Le categorie di menu</div>${riga('Nessuna categoria sopra il proprio obiettivo','dalle schede costo sul venduto del periodo','✓',null,'ok')}`;
+    }
+    return `<div class="qasez">Bilancio contro schede costo</div>
+      ${linea('Cucina', tf, bf, a.ricaviFood)}
+      ${linea('Bar', tb, bb, a.ricaviBev)}
+      <div class="qanota">La distanza fra le due colonne è la dispersione: sprechi, dosi fuori scheda,
+        omaggi, rotture, errori di carico. È quello che la pagina <b>Costi nascosti</b> misura voce per voce.</div>
+      ${cat}`;
+  }
+
+  if(tipo==='ru'){
+    const d=repDati(scope!=='ytd'?{tipo:'mese',i:scope}:{tipo:'anno',i:null});
+    const ot=d.ot;
+    const rep={};
+    (S.ru||[]).forEach(p=>{
+      const vv=idx.reduce((x,i)=>x+mPick(num(p.m[i]), p.mk?num(p.mk[i]):0, merchMode()),0);
+      if(vv) rep[p.reparto||'Altro']=(rep[p.reparto||'Altro']||0)+vv;
+    });
+    const tot=Object.values(rep).reduce((x,v)=>x+v,0)||1;
+    const righe=Object.entries(rep).sort((x,y)=>y[1]-x[1])
+      .map(([n,v])=>riga(n,null,fmtE(v),fmtNum(v/tot*100)+'%')).join('');
+    const prod = ot.fonte && d.prod>0
+      ? `<div class="qasez">Quanto rende un'ora di lavoro</div>
+         ${riga('Cucina', 'incasso food per ora di lavoro imputata', fmtE(d.prodF||0), null)}
+         ${riga('Bar', 'incasso beverage per ora', fmtE(d.prodB||0), null)}
+         ${riga('Tutto il locale', `${fmtNum(ot.ore,0)} ore a settimana, ${ot.fonte}`, fmtE(d.prod), null)}
+         ${riga('Costo di un\'ora', 'costo del personale diviso le ore', fmtE(d.oreTot>0?a.ru/d.oreTot:0), null)}`
+      : `<div class="qasez">Quanto rende un'ora di lavoro</div>
+         <div class="qanota">Non ci sono ore caricate né in <b>Analisi dei turni</b> né nell'organico.
+         Senza ore non si calcola la produttività oraria, che è metà della diagnosi sul personale.</div>`;
+    return `<div class="qasez">Dove sta il costo, per reparto</div>${righe}${prod}`;
+  }
+
+  if(tipo==='sg'){
+    const voci=[]; let unaTantum=0;
+    (S.sg||[]).filter(c=>areaSG(c)!=='mkt').forEach(c=>{
+      const v=idx.reduce((x,i)=>x+num(c.m[i]),0);
+      if(Math.abs(v)<0.005) return;
+      const pres=(c.m||[]).filter(x=>num(x)>0).length;
+      if(pres<=2) unaTantum+=v;
+      voci.push({n:c.nome, g:c.gruppo, v, raro:pres<=2});
+    });
+    voci.sort((x,y)=>y.v-x.v);
+    const ric=a.sg-unaTantum;
+    const q=qSg(a);
+    return `<div class="qasez">Spesa ricorrente e saldi</div>
+      ${riga('Spesa ricorrente','quello che torna tutti i mesi',fmtE(ric),
+        a.ricavi>0?fmtNum(ric/a.ricavi*100)+'%':null, ric/a.ricavi*100<=num(t.sg)?'ok':'warn')}
+      ${riga('Voci di una o due volte l\'anno','saldi, rate, manutenzioni straordinarie',fmtE(unaTantum),
+        a.ricavi>0?fmtNum(unaTantum/a.ricavi*100)+'%':null)}
+      <div class="qanota">Prima di tagliare si depura: una parte dello scostamento spesso è un saldo, non spesa corrente.</div>
+      <div class="qasez">Le cinque voci che pesano di più</div>
+      ${voci.slice(0,5).map(x=>riga(x.n, x.raro?'una o due volte l\'anno':x.g, fmtE(x.v),
+        a.sg>0?fmtNum(x.v/a.sg*100)+'%':null, x.raro?'warn':'')).join('')}
+      <div class="qanota">Sulla cucina se ne ribalta il <b>${fmtNum(q*100)}%</b> e sul bar il <b>${fmtNum((1-q)*100)}%</b>:
+        è una ripartizione per quota, non una misura.</div>`;
+  }
+
+  if(tipo==='mkt'){
+    const voci=[];
+    (S.sg||[]).filter(isMktSG).forEach(c=>{
+      const v=idx.reduce((x,i)=>x+num(c.m[i]),0);
+      if(Math.abs(v)>0.005) voci.push({n:c.nome, g:c.gruppo, v});
+    });
+    voci.sort((x,y)=>y.v-x.v);
+    const inc=a.incMk*100, tgt=num(t.mk);
+    /* la fascia disegnata: zero è sbagliato quanto il doppio */
+    const max=Math.max(tgt*2, inc*1.15, 6);
+    const pos=Math.min(100, inc/max*100), cen=tgt/max*100;
+    const fascia=`<div class="qafascia">
+      <div class="scala"><i class="ok" style="left:${(cen*0.83).toFixed(1)}%;width:${(cen*0.34).toFixed(1)}%"></i>
+        <b style="left:${cen.toFixed(1)}%"></b>
+        <u style="left:${pos.toFixed(1)}%"></u></div>
+      <div class="et"><span>0%</span><span>centro ${fmtNum(tgt)}%</span><span>${fmtNum(max)}%</span></div></div>`;
+    const v=qaVenduto(idx);
+    const perPezzo = v && (v.Food.pz+v.Beverage.pz)>0
+      ? riga('Quanto costa farsi scegliere','marketing diviso i pezzi venduti nel periodo',
+          fmtE(a.mk/(v.Food.pz+v.Beverage.pz)), null)
+      : '';
+    return `<div class="qasez">La fascia</div>${fascia}
+      <div class="qanota">Questa è l'unica area in cui spendere poco non è una buona notizia:
+        <b>zero è sbagliato quanto il doppio</b>. Il verde è la fascia attorno al centro del ${fmtNum(tgt)}%.</div>
+      <div class="qasez">Dove vanno</div>
+      ${voci.length ? voci.map(x=>riga(x.n, x.g, fmtE(x.v), a.mk>0?fmtNum(x.v/a.mk*100)+'%':null)).join('')
+        : `<div class="qanota">Nessuna voce di marketing riconosciuta nel periodo: o il locale non ne fa,
+           o è dentro un'altra voce delle spese generali.</div>`}
+      ${perPezzo}`;
+  }
+  return '';
+}
 
 /* ================= IL LOCALE DIMOSTRATIVO =================
    Serve a vedere tutte le pagine piene senza toccare un cliente vero: fornitori,
