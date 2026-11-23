@@ -933,7 +933,7 @@
   /* i riquadri che si aprono sopra la pagina restano chiari anche in modalita lite:
      il testo prende il colore di sempre, non il grigio del fondo scuro */
   html.litepg #suggmodal .pan,html.litepg #modal>*{color:var(--ink);}
-  html.litepg .savewrap,html.litepg footer{color:var(--ink2);}
+  html.litepg .savewrap{color:var(--ink2);}
   #suggmodal .ph{display:flex;align-items:baseline;gap:11px;border-bottom:1px solid var(--line);
     padding-bottom:10px;margin-bottom:2px;}
   #suggmodal .ph h3{font-size:18px;font-weight:700;margin:0;}
@@ -972,6 +972,26 @@
   html.litepg .litewrap .ltt{display:none;}   /* il nome è già in testa alla pagina */
   html.litepg .topbtns,html.litepg .merchsw,html.litepg .annosw,html.litepg #btnRename,
   html.litepg #viewChips,html.litepg .alerts,html.litepg #period{display:none!important;}
+
+  /* elenco clienti in modalita lite: schede scure, niente bottoni di servizio */
+  html.litepg section{background:#1A1A1A;border-color:#2E2E2E;}
+  html.litepg h2{color:#fff;}
+  html.litepg .sub{color:#9A9A9A;}
+  html.litepg .ccard{background:#1F1F1F;border-color:#363636;}
+  html.litepg .ccard:hover{border-color:var(--brass);box-shadow:none;}
+  html.litepg .ccard.cur{border-color:var(--brass);background:#261F12;}
+  html.litepg .ccard.new{border-color:#3A3A3A;background:transparent;}
+  html.litepg .cname{color:#fff;}
+  html.litepg .ccard.new .cname{color:#8C8C8C;}
+  html.litepg .cinfo{color:#B6B6B6;}
+  html.litepg .cupd{color:#7A7A7A;}
+  html.litepg .ccard .rn,html.litepg .ccard .cx{display:none;}   /* rinomina ed elimina: solo in pro */
+  html.litepg .ordsw{background:#242424;border-color:#3A3A3A;}
+  html.litepg .ordsw .ol{color:#8C8C8C;background:#1C1C1C;border-right-color:#3A3A3A;}
+  html.litepg footer{color:#6E6E6E;}
+  html.litepg .pfoot,html.litepg .note{color:#8C8C8C;}
+  html.litepg .ordsw button{background:#242424;border-left-color:#3A3A3A;color:#9A9A9A;}
+  html.litepg .ordsw button.on{background:var(--brass);color:#1A1A1A;}
 
   .litewrap{color:#fff;margin-bottom:18px;}
   .litewrap .ltt{display:flex;align-items:baseline;gap:11px;margin-bottom:10px;}
@@ -1066,7 +1086,7 @@
   /* ======== barra in basso: le cinque voci che servono, sotto il pollice ======== */
   .tabbar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:92;background:#1A1A1A;
     border-top:1px solid #2E2E2E;padding:7px 4px calc(7px + env(safe-area-inset-bottom,0px));}
-  html.mobi .tabbar{display:flex;}
+  html.mobi .tabbar{display:flex;transform:translateZ(0);backface-visibility:hidden;}
   .tabbar button{flex:1;background:none;border:none;color:#8C8C8C;font-family:inherit;font-size:10.5px;
     font-weight:600;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;cursor:pointer;}
   .tabbar button.on{color:var(--brass);}
@@ -1112,7 +1132,8 @@
      non appiccicati sopra le card; nell'anteprima restano in alto, fuori dalla cornice */
   /* il bottone Salva non finisce sotto la barra in basso; in lite non serve:
      il Cruscotto non si modifica */
-  html.mobi .savewrap{bottom:78px;right:14px;}
+  /* il salvataggio e' automatico: sul telefono il bottone copriva le schede */
+  html.mobi .savewrap{display:none;}
   html.litepg .savewrap{display:none;}
   html.mobi .modesw{display:none;}
   html.mobi .modesw.insheet{display:flex;}
@@ -1127,6 +1148,14 @@
   html.mobi section{overflow-x:auto;}
   html.mobi .sgb{grid-template-columns:1fr;padding-left:0;}
   html.mobi #suggmodal{padding:10px 8px;}
+  /* su schermo stretto "+0,9 p.p." finiva sopra la pastiglia dell'obiettivo */
+  html.mobi .ordsw{width:100%;align-self:stretch;}
+  html.mobi .ordsw .ol{display:none;}
+  html.mobi .ordsw button{flex:1;padding:9px 4px;font-size:12px;}
+  html.mobi .ordsw button:first-of-type{border-left:none;}
+  html.mobi .devbar{margin-bottom:20px;}
+  html.mobi .devbar .val{top:17px;left:auto!important;right:0;transform:none!important;}
+  html.mobi .devbar .val.dentro.dx,html.mobi .devbar .val.dentro.sx{transform:none!important;color:var(--ink2)!important;}
   html.mobi .lquadri{gap:0;margin:0 0 12px;}
   html.mobi .lq svg{width:232px;height:122px;}
   html.mobi .lq .v{font-size:33px;}
@@ -1141,7 +1170,7 @@
   html.mobi .lcoda .apri{width:100%;}
   /* nell'anteprima il telefono è una cornice larga 430: ci stanno dentro anche
      la barra in basso e i fogli, altrimenti scappano ai bordi della finestra */
-  html.mob .tabbar,html.mob .sheet{left:50%;right:auto;transform:translateX(-50%);width:430px;}
+  html.mob .tabbar,html.mob .sheet{left:50%;right:auto;transform:translateX(-50%) translateZ(0);width:430px;}
   html.mob .sheet{height:100%;}
 
   /* CE aggregato (scalare) */
@@ -1555,7 +1584,7 @@
     </div>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v115</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v116</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2574,9 +2603,10 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape') chiudiSugg(); });
 /* ================= modalità lite / pro =================
    Lite: tutta la pagina diventa scura e resta solo il quadro del cliente.
    Pro: il gestionale completo. L'interruttore ricorda la scelta. */
+const LITE_PAG=['dash','home'];     /* dove la modalita lite ha una sua veste */
 function litePg(p){
   const h=document.documentElement;
-  h.classList.toggle('litepg', h.classList.contains('lite') && (p||current)==='dash');
+  h.classList.toggle('litepg', h.classList.contains('lite') && LITE_PAG.indexOf(p||current)>=0);
 }
 function setMode(m){
   const h=document.documentElement, on = m!=='pro';
