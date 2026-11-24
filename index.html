@@ -1204,6 +1204,21 @@
   .lpduo .lpc{padding:14px 13px;}
   .lpduo .lpc .nm{font-size:24px;}
   .lpintro{font-size:12.5px;color:#9A9A9A;line-height:1.5;margin:-3px 2px 15px;}
+  /* i due obiettivi di fatturato, messi a confronto */
+  .obcoe{border-radius:14px;padding:13px 15px;margin-bottom:11px;border:1px solid;}
+  .obcoe.ok{background:#17241C;border-color:#2F5340;}
+  .obcoe.warn{background:#241E13;border-color:#6B5520;}
+  .obcoe .t{font-size:13px;font-weight:700;margin-bottom:6px;}
+  .obcoe.ok .t{color:#7FC79C;} .obcoe.warn .t{color:#E8B14A;}
+  .obcoe .x{font-size:12.5px;color:#A8A8A8;line-height:1.55;}
+  .obcoe .x b{color:#E8E8E8;}
+  html:not(.litepg) .obcoe{background:var(--card);}
+  html:not(.litepg) .obcoe.ok{border-color:#9FCBB2;}
+  html:not(.litepg) .obcoe.warn{border-color:#E0C77F;}
+  html:not(.litepg) .obcoe.ok .t{color:#2E7D4F;}
+  html:not(.litepg) .obcoe.warn .t{color:#8A6A00;}
+  html:not(.litepg) .obcoe .x{color:var(--ink2);}
+  html:not(.litepg) .obcoe .x b{color:var(--ink);}
   /* ===== assistente e notifiche: due tasti in testata e due pannelli scuri =====
      Stanno all'estrema destra, fuori dagli interruttori, perché non cambiano
      quello che si sta guardando: aprono una cosa accanto. */
@@ -2098,7 +2113,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v146</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v147</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2617,7 +2632,13 @@ function migrateS(){
     if(!Array.isArray(w.note)||w.note.length!==7) w.note=Array.from({length:7},()=>({t:'',k:''}));
     w.note=w.note.map(n=> (n&&typeof n==='object') ? {t:String(n.t||''),k:(n.k==='festa'||n.k==='chiuso')?n.k:''} : {t:'',k:''});
   });
-  if(S.targets) S.targets.ro = +(100 - num(S.targets.ru) - num(S.targets.mp) - num(S.targets.sg)).toFixed(1);
+  /* L'utile obiettivo si ricava dalle altre soglie, marketing compreso.
+     Questa riga era rimasta alla versione precedente alla separazione del
+     marketing e ricalcolava 100 − personale − materia prima − spese generali:
+     23 invece di 20. Girando a ogni migrateS() riscriveva il 20 appena messo
+     dalla pagina, e il cruscotto finiva per mostrare un obiettivo che nelle
+     impostazioni non c'era. */
+  if(S.targets) S.targets.ro = utileTarget();
   // clienti creati prima del merchandising: le nuove caselle nascono vuote
   (S.ce||[]).forEach(r=>{ ['rfm','rbm','mfm','mbm'].forEach(k=>{ if(r[k]===undefined) r[k]=0; }); });
   if(Array.isArray(S.sg) && !S.sg.some(isMerchSG)){
@@ -10736,6 +10757,23 @@ async function renderVPRIO(){
 
 
 
+/* il riquadro che mette i due obiettivi uno accanto all'altro, uguale in Pro e in lite */
+function obCoerenzaTesto(c){
+  if(!c) return null;
+  const mesi=`${fmtNum(c.mesi)} mes${c.mesi===1?'e':'i'} chius${c.mesi===1?'o':'i'}`;
+  if(c.scarto>=0) return {ok:true,
+    tit:'Il budget regge l\'utile obiettivo',
+    txt:`Su ${mesi}, i costi sono <b>${fmtE(c.costi)}</b>: per lasciare il <b>${fmtNum(c.t)}%</b> di utile
+      servirebbero <b>${fmtE(c.serve)}</b> di ricavi, e il budget ne chiede <b>${fmtE(c.budget)}</b>.
+      Raggiungere il budget porta anche all'utile.`};
+  return {ok:false,
+    tit:'Il budget non basta per l\'utile obiettivo',
+    txt:`Su ${mesi}, i costi sono <b>${fmtE(c.costi)}</b>: per lasciare il <b>${fmtNum(c.t)}%</b> di utile
+      servirebbero <b>${fmtE(c.serve)}</b> di ricavi, ma il budget ne chiede <b>${fmtE(c.budget)}</b>,
+      cioè <b>${fmtE(-c.scarto)}</b> in meno. Centrare il budget lascerebbe comunque l'utile sotto obiettivo:
+      o si alza il budget, o si abbassano i costi.`};
+}
+
 /* =============== OBIETTIVI DEL MESE E PUNTO DI PAREGGIO ===============
    Due pagine che guardano avanti invece che indietro: quanto deve incassare
    il locale per coprire tutto, e quanto gli manca per arrivare dove avevamo
@@ -10782,13 +10820,16 @@ async function renderOBMESE(){
   const mancaAnno=obAnno-fattoAnno;
   /* il mese su cui si sta lavorando: il primo non ancora chiuso */
   const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
+  const coe=obCoerenzaTesto(obCoerenza());
 
   body.innerHTML=`
   <section class="qa">
     <div class="sechead"><div><h2>Obiettivi di fatturato</h2>
-      <div class="sub">L'obiettivo nasce dall'anno prima più una crescita, e si può scrivere a mano
+      <div class="sub">Il budget nasce dall'anno prima più una crescita, e si può scrivere a mano
       mese per mese. Per ogni mese chiuso si vede se è stato raggiunto e di quanto; per quelli
       ancora aperti, quanto manca.</div></div></div>
+    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}"><div class="t">${coe.tit}</div>
+      <div class="x">${coe.txt}</div></div>`:''}
     <div class="qagrid">
       ${(()=>{
         const aperti=righe.filter(x=>!x.chiuso && x.obiettivo>0);
@@ -10798,7 +10839,7 @@ async function renderOBMESE(){
           : mancaAnno<=0 ? 'ok'
           : aperti.length ? 'warn'
           : fattoAnno/obAnno>=0.95 ? 'warn' : 'bad';
-        return qaCard('Obiettivo dell\'anno', obAnno>0?fmtE(obAnno):'—',
+        return qaCard('Budget di fatturato dell\'anno', obAnno>0?fmtE(obAnno):'—',
           obAnno>0 ? `incassati <b>${fmtE(fattoAnno)}</b> · ${
               mancaAnno>0 ? `mancano <b>${fmtE(mancaAnno)}</b>` : `<b>superato di ${fmtE(-mancaAnno)}</b>`}` +
             (aperti.length ? `<br>restano <b>${aperti.length} mes${aperti.length===1?'e':'i'}</b> da fare:
@@ -10964,6 +11005,33 @@ async function renderOBBEP(){
   </section>`;
 }
 
+
+/* I due obiettivi di fatturato parlavano lingue diverse.
+   Quello della pagina e' un budget: lo decide chi fa la consulenza, mese per
+   mese, a mano o dall'anno prima piu' la crescita. Quello del cruscotto non
+   e' un budget: e' il fatturato che, CON I COSTI DI OGGI, lascerebbe l'utile
+   obiettivo. Non devono essere uguali, ma devono essere confrontabili, ed e'
+   questo il confronto: se il budget sta sotto, raggiungerlo non porta
+   all'utile che ci siamo dati. Si confrontano solo i mesi chiusi che hanno
+   sia i costi sia un obiettivo, altrimenti si sommerebbero perimetri diversi. */
+function obCoerenza(){
+  migrateS();
+  const m=compute(), mPrec=computeAnno(num(S.anno)-1), cresc=num(obMeseStato().cresc);
+  const t=num(S.targets.ro), q=Math.min(Math.max(t,0),90)/100;
+  let costi=0, budget=0, fatto=0, mesi=0;
+  MESI.forEach((_,i)=>{
+    const r=m.months[i];
+    if(!meseCompleto(r)) return;
+    const ob=obMeseTarget(i, mPrec, cresc).v;
+    if(!(ob>0)) return;
+    costi += num(r.ricavi)-num(r.ro);
+    budget += ob; fatto += num(r.ricavi); mesi++;
+  });
+  if(!mesi || !(costi>0) || q>=1) return null;
+  const serve = costi/(1-q);
+  return {mesi, costi, budget, fatto, serve, scarto: budget-serve, t};
+}
+
 /* ---- le due pagine in lite ---- */
 async function liteOBMESE(){
   const o=obMeseStato();
@@ -10984,9 +11052,12 @@ async function liteOBMESE(){
   const chiusi=righe.filter(x=>x.chiuso && x.obiettivo>0);
   const raggiunti=chiusi.filter(x=>x.fatto>=x.obiettivo);
   const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
+  const coe=obCoerenzaTesto(obCoerenza());
   return `<div class="lp">${lpTesta('Obiettivi di fatturato','esercizio '+S.anno)}
     ${lpObTre('obmese')}
-    ${lpCard('Obiettivo dell\'anno', fmtE(obAnno),
+    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}"><div class="t">${coe.tit}</div>
+      <div class="x">${coe.txt}</div></div>`:''}
+    ${lpCard('Budget dell\'anno', fmtE(obAnno),
       `incassati <b>${fmtE(fattoAnno)}</b> · ${manca>0?`mancano <b>${fmtE(manca)}</b>`:`<b>superato di ${fmtE(-manca)}</b>`}`,
       manca<=0?'ok':fattoAnno/obAnno>=0.9?'warn':'bad')}
     ${corrente?lpCard('Il mese aperto: '+corrente.nome, fmtE(corrente.obiettivo),
