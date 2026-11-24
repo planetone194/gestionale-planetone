@@ -1520,7 +1520,7 @@
      sinistra, gli interruttori a destra, e il contenuto comincia SOTTO invece
      che sotto di loro. Prima era fissa sopra la pagina e il primo blocco ci
      finiva addosso. */
-  html.mobi .toolsrow{display:flex!important;position:sticky;top:0;z-index:60;
+  html.mobi .toolsrow{display:flex!important;position:sticky;top:0;z-index:60;position:sticky;
     margin:-16px -14px 14px;padding:16px 20px 14px;width:auto;
     background:#131313;border-bottom:1px solid #262626;
     justify-content:space-between;align-items:center;gap:10px;}
@@ -1531,6 +1531,11 @@
      centrati, con la loro aria. */
   html.mob .toolsrow{flex-direction:column;align-items:stretch;gap:12px;padding:18px 20px 15px;}
   html.mob .toolsright{align-self:center;margin:0;justify-content:center;flex-wrap:nowrap;}
+  /* assistente e notifiche stanno sulla riga del marchio, all'altro capo:
+     nell'anteprima la colonna li manderebbe in fondo, quindi li si ancora in
+     alto a destra della testata, dove stanno sul telefono vero. */
+  html.mob .toolsrow{position:relative;}
+  html.mob .topaz{position:absolute;top:16px;right:20px;margin:0;}
   html.mobi:not(.mob) .vistabtn{display:none;}
   html.mobi:not(.mob) .toolsright{display:none;}   /* sul telefono vero stanno nel foglio «Altro» */
   /* Nell'anteprima mobile la riga degli interruttori NON sparisce: dentro c'è
@@ -2023,7 +2028,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v143</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v144</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
