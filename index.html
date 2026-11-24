@@ -26,6 +26,9 @@
     --bg:#F5F4F0; --card:#FFFFFF; --ink:#1B2A3A; --ink2:#5D6B79; --line:#E4E1DA;
     --brand:#2F3337; --brand-dk:#1B1E21; --brass:#F07F1F; --brass-dk:#B95E0C;
     --scuro:#272727; --scuro-2:#333333;
+    /* l'altezza della barra in basso sul telefono, senza la safe area:
+       i pannelli che devono fermarsi sopra di lei la leggono da qui */
+    --tabh:61px;
     --ok:#2E7D4F; --warn:#D9A620; --hot:#B4501A; --bad:#C0392B;
     --porpora:#8C3A57; --porpora-bg:#F7EBEF;
     /* identità delle business unit: viola = Food, azzurro = Beverage. Non si usano per altro. */
@@ -1217,7 +1220,7 @@
   html.litepg .azbtn{background:#1B1B1B;border-color:#303030;color:#9A9A9A;}
   html.litepg .azbtn .bdg{box-shadow:0 0 0 2px #131313;}
   .azpan{position:fixed;top:60px;right:16px;width:352px;max-width:calc(100vw - 24px);
-    max-height:min(74vh,620px);overflow:auto;background:#1B1B1B;border:1px solid #333;
+    max-height:min(74vh,620px);overflow:auto;overscroll-behavior:contain;background:#1B1B1B;border:1px solid #333;
     border-radius:16px;padding:15px 15px 13px;z-index:90;color:#E8E8E8;
     box-shadow:0 22px 60px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch;}
   .azpan[hidden]{display:none;}
@@ -1255,7 +1258,14 @@
   .azfoot{font-size:11px;color:#6E6E6E;line-height:1.5;margin-top:12px;padding-top:10px;border-top:1px solid #2E2E2E;}
   html.mobi .topaz{margin-left:auto;}
   html.mobi:not(.mob) .topaz{display:flex;}
-  @media(max-width:560px){ .azpan{left:12px;right:12px;width:auto;top:56px;} }
+  /* sul telefono il pannello arriva fino alla barra in basso: lasciare un
+     dito di pagina scoperta sotto fa sembrare che l'elenco sia finito. */
+  @media(max-width:560px){
+    .azpan{left:12px;right:12px;width:auto;top:56px;
+      bottom:calc(var(--tabh,62px) + 8px + env(safe-area-inset-bottom,0px));max-height:none;}
+  }
+  html.mobi .azpan{left:12px;right:12px;width:auto;top:56px;
+    bottom:calc(var(--tabh,62px) + 8px + env(safe-area-inset-bottom,0px));max-height:none;}
   /* le pagine di consultazione: una riga di ricerca e un elenco di voci apribili */
   .lpcerca{width:100%;background:#1B1B1B;border:1px solid #303030;border-radius:12px;
     padding:11px 13px;color:#E8E8E8;font-size:14px;font-family:inherit;margin-bottom:9px;
@@ -1355,15 +1365,10 @@
   .lpvuoto .ico{display:block;font-size:26px;margin-bottom:12px;opacity:.55;}
   /* le spie si aprono: il riquadro da solo dice che c'è un problema,
      il dettaglio dice che cosa farne */
-  .lspia.apribile{cursor:pointer;position:relative;}
-  .lspia .eu{font-family:var(--num);font-size:14px;font-weight:700;color:#E8B14A;margin-top:7px;}
-  .lspia .eu small{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;
-    letter-spacing:.4px;color:#8C8C8C;margin-top:1px;}
-  .lspia:not(.on) .eu{color:#8C8C8C;}
-  .lspia .ch{position:absolute;top:12px;right:12px;color:#6E6E6E;font-size:14px;transition:transform .18s;}
+  .lspia.apribile{cursor:pointer;}
+  .lspia .ch{flex:none;color:#6E6E6E;font-size:13px;transition:transform .18s;margin-left:2px;}
   .lspia.aperta .ch{transform:rotate(180deg);}
   .lspia .det{display:none;text-align:left;margin-top:12px;padding-top:11px;border-top:1px solid #2E2E2E;}
-  .lspia.aperta{grid-column:1/-1;}
   .lspia.aperta .det{display:block;}
   .lspia .det p{font-size:12.5px;color:#B4B4B4;line-height:1.6;margin:0 0 9px;}
   .lspia .det p:last-child{margin-bottom:0;}
@@ -1423,14 +1428,21 @@
   .lriga .d b{color:#fff;}
   /* `dense`: quando una spia si apre e prende tutta la riga, i riquadri che
      vengono dopo risalgono a tappare il buco invece di lasciarlo nero */
-  .lspie{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;grid-auto-flow:row dense;}
-  .lspia{background:#1B1B1B;border:1px solid #333;border-radius:16px;padding:15px 14px 16px;text-align:center;}
+  .lspie{display:flex;flex-direction:column;gap:8px;}
+  .lspia{background:#1B1B1B;border:1px solid #333;border-radius:14px;padding:13px 15px 14px;text-align:left;}
   .lspia.on{background:#2B2317;border-color:#6B5520;}
   .lspia.on.rossa{background:#2E1A17;border-color:#73302A;}
-  .lspia svg{display:block;margin:0 auto 8px;}
-  .lspia .n{font-size:13px;font-weight:700;color:#8C8C8C;}
+  .lspia .cap{display:flex;align-items:center;gap:10px;}
+  .lspia .cap svg{flex:none;}
+  .lspia .n{flex:1;min-width:0;font-size:13.5px;font-weight:700;color:#8C8C8C;letter-spacing:.2px;}
   .lspia.on .n{color:#E8B14A;} .lspia.on.rossa .n{color:#E0705E;}
-  .lspia .d{font-size:12px;color:#7A7A7A;line-height:1.42;margin-top:5px;}
+  .lspia .eu{font-family:var(--num);font-size:15px;font-weight:700;color:#E8B14A;
+    white-space:nowrap;text-align:right;line-height:1.15;}
+  .lspia.on.rossa .eu{color:#E0705E;}
+  .lspia:not(.on) .eu,.lspia .eu.muta{color:#8C8C8C;}
+  .lspia .eu small{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;
+    letter-spacing:.4px;color:#8C8C8C;margin-top:1px;}
+  .lspia .d{font-size:12.5px;color:#7A7A7A;line-height:1.45;margin-top:7px;}
   .lspia.on .d{color:#C9BA95;} .lspia.on.rossa .d{color:#D6A79C;}
   .lcoda{display:flex;align-items:center;gap:18px;margin-top:20px;padding-top:16px;border-top:1px solid #2E2E2E;}
   .lcoda .az{flex:1;font-size:13.5px;color:#D8D8D8;line-height:1.5;}
@@ -1609,8 +1621,12 @@
      incolonnati in sei righe da due parole. L'intestazione di ogni voce si
      dispone su due piani — numero, tempi, euro e freccia sopra; titolo sotto,
      a tutta larghezza — e i corpi si impilano invece di stare in due colonne. */
-  html.mobi #suggmodal{padding:0;align-items:flex-end;}
-  html.mobi #suggmodal .pan{border-radius:16px 16px 0 0;padding:14px 15px 18px;max-height:94vh;overflow-y:auto;}
+  html.mobi #suggmodal{padding:0;align-items:flex-end;overflow:hidden;}
+  /* il pannello si ferma sopra la barra in basso e scorre dentro di sé:
+     prima il testo del dettaglio finiva sotto i bottoni e non si leggeva */
+  html.mobi #suggmodal .pan{border-radius:16px 16px 0 0;padding:14px 15px 16px;
+    max-height:calc(100vh - 44px);overflow-y:auto;overscroll-behavior:contain;
+    padding-bottom:calc(18px + var(--tabh,62px) + env(safe-area-inset-bottom,0px));}
   html.mobi #suggmodal .ph{flex-wrap:wrap;gap:4px 10px;align-items:center;padding-bottom:9px;}
   html.mobi #suggmodal .ph h3{font-size:16px;flex:1;}
   html.mobi #suggmodal .ph .sub2{flex:1 1 100%;order:3;font-size:11px;line-height:1.4;}
@@ -1643,8 +1659,8 @@
   html.mobi .lq .v{font-size:33px;}
   html.mobi .lriga{padding:10px 14px;margin-bottom:12px;}
   html.mobi .lriga .v{font-size:20px;}
-  html.mobi .lspie{grid-template-columns:1fr 1fr;gap:10px;}
-  html.mobi .lspia{padding:13px 10px 14px;}
+  html.mobi .lspie{gap:7px;}
+  html.mobi .lspia{padding:12px 13px 13px;}
   html.mobi .lspia .n{font-size:12.5px;}
   html.mobi .lspia .d{font-size:11.5px;}
   html.mobi .lcoda{flex-direction:column;align-items:stretch;gap:12px;}
@@ -2033,7 +2049,7 @@
 
     <div class="gh" data-g="ven">Venduto<span class="ca">▼</span></div>
     <div class="gb" data-gb="ven">
-      <button data-page="vdash">Report del venduto</button>
+      <button data-page="vdash">Venduto</button>
       <button data-page="vriep">Riepilogo del periodo</button>
       <button data-page="vprec">Anno su anno</button>
       <button data-page="vtrend">Andamento nel tempo</button>
@@ -2072,8 +2088,8 @@
 
     <div class="gh" data-g="obi">Obiettivi per area<span class="ca">▼</span></div>
     <div class="gb" data-gb="obi">
+      <button data-page="obmese">Obiettivi di fatturato</button>
       <button data-page="ob">Obiettivi per area</button>
-      <button data-page="obmese">Obiettivi del mese</button>
       <button data-page="obbep">Punto di pareggio</button>
     </div>
 
@@ -2082,7 +2098,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v145</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v146</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -2988,7 +3004,7 @@ function suggerimenti(a, t, complete){
       fare.push(`<b>Registrare omaggi, autoconsumi e rotture</b>: finché non sono scritti, la dispersione non ha un nome.`);
       fare.push(`Etichettatura, rotazione FIFO, controllo scadenze.`);
     }
-    out.push({tit: dpp!==null&&dpp<=2 ? 'Il food cost non è uno spreco: è un problema di prezzi'
+    out.push({tit: dpp!==null&&dpp<=2 ? 'Non stiamo trovando sprechi di materia prima: è un problema di prezzi'
                  : (dpp===null ? 'Materia prima sopra obiettivo, ma non sappiamo dove' : 'Materia prima: lo scarto con le schede dice dove guardare'),
       euro:exMp, vel, num:num_, fare, link:[{p:'ce',txt:'Apri conto economico'},{p:'cn',txt:'Apri costi nascosti'}]});
   }
@@ -3019,8 +3035,8 @@ function suggerimenti(a, t, complete){
         `Da verificare in Analisi dei turni: in quali servizi il ${nA} è presente senza che l'incasso lo giustifichi.`
       ];
       out.push({tit: assorbe
-          ? `Il ${nA} assorbe ore che servirebbero al ${nB}`
-          : `Il ${nA} ha ore in eccesso, e il ${nB} non può assorbirle`,
+          ? `Il personale del ${nA} assorbe ore che servirebbero al ${nB}`
+          : `Il personale del ${nA} ha ore in eccesso e quello del ${nB} non può assorbirle`,
         euro: assorbe ? spost : tagl, vel:'subito',
         num:[
           `Il ${nA} fa <b>${E(rA)}</b> di ricavi e, tolte materia prima e personale, ne restano <b>${E(margA)}</b> prima delle spese generali.`,
@@ -3583,15 +3599,24 @@ function lSpia(ico, nome, testo, stato, euro, det, euLab){
   return {ico, nome, testo, stato:stato||'', euro:num(euro)||0, det:det||[],
           euLab: euLab || 'da recuperare'};
 }
+/* Una riga a tutta larghezza invece di un quadrotto: a sinistra di che voce
+   si tratta, a destra quanto c'è da recuperare, sotto la frase che spiega
+   perché. Si scorre con il pollice e si legge in colonna, senza saltare da
+   un riquadro all'altro. Si aprono una alla volta, e aprendone una le altre
+   scendono, non si spostano di lato. */
 function lSpiaHTML(s, i){
   const col = s.stato==='rossa' ? '#E0705E' : s.stato==='on' ? '#E8B14A' : '#8C8C8C';
   const apribile = s.det && s.det.length;
   return `<div class="lspia ${s.stato==='rossa'?'on rossa':s.stato==='on'?'on':''} ${apribile?'apribile':''}"
       ${apribile?`data-spia="${i}"`:''}>
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.7">${LIC[s.ico]}</svg>
-    <div class="n">${s.nome}</div><div class="d">${s.testo}</div>
-    ${s.euro>0?`<div class="eu">${fmtE(s.euro)}<small>${s.euLab}</small></div>`:''}
-    ${apribile?`<div class="ch">⌄</div><div class="det">${s.det.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
+    <div class="cap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.7">${LIC[s.ico]}</svg>
+      <div class="n">${s.nome}</div>
+      ${s.euro>0?`<div class="eu">${fmtE(s.euro)}<small>${s.euLab}</small></div>`:''}
+      ${apribile?'<span class="ch">&#8964;</span>':''}
+    </div>
+    <div class="d">${s.testo}</div>
+    ${apribile?`<div class="det">${s.det.map(x=>`<p>${x}</p>`).join('')}</div>`:''}
   </div>`;
 }
 function renderDashLite(a, t, m, isM){
@@ -3749,13 +3774,32 @@ function renderDashLite(a, t, m, isM){
   /* sul telefono un quadrante solo: l'incasso diventa una riga, così le spie
      restano sopra la piega e non si scrolla per vedere se c'è qualcosa che non va */
   const mob = document.documentElement.classList.contains('mobi');
+  /* Due numeri diversi che si chiamavano tutti e due «obiettivo», e non
+     tornavano: questo qui non è un budget, è il fatturato che servirebbe per
+     portare a casa l'utile obiettivo CON I COSTI DI OGGI. Il budget di
+     fatturato vero — mese per mese, scritto a mano o dall'anno prima — sta in
+     Obiettivi di fatturato, e si mostra accanto quando c'è. */
+  const budget = (()=>{ try{
+      const mP=computeAnno(num(S.anno)-1), cr=num(obMeseStato().cresc);
+      let tot=0, sotto=0;
+      MESI.forEach((_,i)=>{
+        const t=obMeseTarget(i, mP, cr);
+        if(t.v>0){ tot+=t.v; sotto+=num(m.months[i].ricavi); }
+      });
+      return tot>0 ? {tot, fatto:sotto} : null;
+    }catch(e){ return null; } })();
   const incTesto = `${a.ricavi>=be ? 'sopra il pareggio di <b>'+E(a.ricavi-be)+'</b>' : 'sotto il pareggio di <b>'+E(be-a.ricavi)+'</b>'}
-      · ${a.ricavi>=obiettivo ? 'obiettivo raggiunto' : 'all\'obiettivo mancano <b>'+E(obiettivo-a.ricavi)+'</b>'}`;
+      · con questi costi, per fare il <b>${fmtNum(tUtile)}%</b> di utile servirebbero <b>${E(obiettivo)}</b>${
+        a.ricavi>=obiettivo ? ': ci siamo' : ', ne mancano <b>'+E(obiettivo-a.ricavi)+'</b>'}${
+        budget && !isM ? `<br>Il budget di fatturato dell'anno è <b>${E(budget.tot)}</b>: ${
+          budget.fatto>=budget.tot ? 'superato di <b>'+E(budget.fatto-budget.tot)+'</b>'
+                                   : 'ne mancano <b>'+E(budget.tot-budget.fatto)+'</b>'}` : ''}`;
   /* «Ti resta» suonava come un avanzo. È un guadagno, e si dice per intero:
      quanto si guadagna ogni cento euro incassati. */
   const qResta = `<div class="lq"><div class="l">Stai guadagnando</div>${lGauge(utile/30, tUtile/30, '#7FC79C')}
         <div class="v">${fmtNum(utile)}<small> € ogni 100 € incassati</small></div>
-        <div class="d">l'obiettivo è il <b>${fmtNum(tUtile)}%</b> <span class="par">(in euro fa ${E(a.ro)})</span></div></div>`;
+        <div class="d">l'obiettivo è il <b>${fmtNum(tUtile)}%</b>, <span class="par">in euro ${
+          E(a.ricavi*tUtile/100)}</span> · oggi <b>${E(a.ro)}</b></div></div>`;
   const qIncasso = `<div class="lq"><div class="l">Incasso</div>${lGauge((a.ricavi-be)/(topF-be||1), (obiettivo-be)/(topF-be||1), '#E8B14A')}
         <div class="v">${E(a.ricavi)}</div><div class="d">${incTesto}</div></div>`;
   const rIncasso = `<div class="lriga"><div class="l">Incasso</div><div class="v">${E(a.ricavi)}</div>
@@ -10309,13 +10353,13 @@ function meBarra(inc, obiettivo){
     ${o!=null?`<b style="left:${o.toFixed(1)}%"></b>`:''}</div>`;
 }
 
-/* ---------------------------------------------- 1 · Report del venduto */
+/* ---------------------------------------------- 1 · Venduto */
 async function renderVDASH(){
   const body=document.getElementById('vdashBody');
   body.innerHTML='<section><div class="sub">Sto leggendo l\'archivio dei prodotti…</div></section>';
   const idx=meIdx(), per=mePeriodo();
   let righe=[]; try{ righe=meFiltra(await meRighe(idx)); }catch(e){}
-  if(!righe.length){ body.innerHTML=meVuoto('Report del venduto', per); return; }
+  if(!righe.length){ body.innerHTML=meVuoto('Venduto', per); return; }
   const iva=1+num(PRO.iva||0.1);
   /* quanti mesi sono stati caricati, su tutto l'anno: è la prima cosa da sapere */
   let mesiCarichi=0;
@@ -10331,7 +10375,7 @@ async function renderVDASH(){
 
   body.innerHTML=`
   <section class="qa">
-    <div class="sechead"><div><h2>Report del venduto</h2>
+    <div class="sechead"><div><h2>Venduto</h2>
       <div class="sub">${per} · pezzi e incasso per prodotto, come escono dalla cassa.
       <b>Qui non c'è la materia prima</b>: il costo misurato sta in Core Business.
       Questa pagina serve a controllare che il venduto torni e a vedere chi è stato venduto sottoprezzo.</div></div></div>
@@ -10741,7 +10785,7 @@ async function renderOBMESE(){
 
   body.innerHTML=`
   <section class="qa">
-    <div class="sechead"><div><h2>Obiettivi del mese</h2>
+    <div class="sechead"><div><h2>Obiettivi di fatturato</h2>
       <div class="sub">L'obiettivo nasce dall'anno prima più una crescita, e si può scrivere a mano
       mese per mese. Per ogni mese chiuso si vede se è stato raggiunto e di quanto; per quelli
       ancora aperti, quanto manca.</div></div></div>
@@ -10931,7 +10975,7 @@ async function liteOBMESE(){
     return {i, nome, obiettivo:t.v, fatto, chiuso:fatto>0, manca:t.v>0?t.v-fatto:null};
   });
   const conOb=righe.filter(x=>x.obiettivo>0);
-  if(!conOb.length) return `<div class="lp">${lpTesta('Obiettivi del mese','esercizio '+S.anno)}
+  if(!conOb.length) return `<div class="lp">${lpTesta('Obiettivi di fatturato','esercizio '+S.anno)}
     <div class="lpvuoto">Non c'è ancora un obiettivo: serve il ${num(S.anno)-1} caricato,
       oppure un obiettivo scritto a mano dal computer.</div></div>`;
   const obAnno=conOb.reduce((a,x)=>a+x.obiettivo,0);
@@ -10940,7 +10984,7 @@ async function liteOBMESE(){
   const chiusi=righe.filter(x=>x.chiuso && x.obiettivo>0);
   const raggiunti=chiusi.filter(x=>x.fatto>=x.obiettivo);
   const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
-  return `<div class="lp">${lpTesta('Obiettivi del mese','esercizio '+S.anno)}
+  return `<div class="lp">${lpTesta('Obiettivi di fatturato','esercizio '+S.anno)}
     ${lpObTre('obmese')}
     ${lpCard('Obiettivo dell\'anno', fmtE(obAnno),
       `incassati <b>${fmtE(fattoAnno)}</b> · ${manca>0?`mancano <b>${fmtE(manca)}</b>`:`<b>superato di ${fmtE(-manca)}</b>`}`,
@@ -10958,7 +11002,7 @@ async function liteOBMESE(){
       x.fatto>0?fmtE(x.fatto):'—',
       x.manca==null?null:x.manca>0?'−'+fmtE(x.manca):'+'+fmtE(-x.manca),
       x.manca==null?'':x.manca<=0?'ok':x.chiuso?'bad':'warn')).join('')}
-    ${lpChiusura('Obiettivi per area · Obiettivi del mese')}</div>`;
+    ${lpChiusura('Obiettivi per area · Obiettivi di fatturato')}</div>`;
 }
 async function liteOBBEP(){
   const d=bepDati();
@@ -11004,23 +11048,23 @@ const lmSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
 /* Le tre pagine degli obiettivi sono tre risposte alla stessa domanda — dove
    vogliamo arrivare — quindi sul telefono stanno a un tocco l'una dall'altra
    invece che in tre punti diversi del menu. */
-const OB_TRE=[['ob','Per area'],['obmese','Del mese'],['obbep','Pareggio']];
+const OB_TRE=[['obmese','Fatturato'],['ob','Per area'],['obbep','Pareggio']];
 function lpObTre(attiva){
   return `<div class="lpper lpob">${OB_TRE.map(([k,et])=>
     `<button class="lpch ${k===attiva?'on':''}" data-page="${k}" onclick="vaiDa('${k}')">${et}</button>`).join('')}</div>`;
 }
 
-/* ---- Report del venduto ---- */
+/* ---- Venduto ---- */
 async function liteVDASH(){
   const {per,righe}=await lmBase();
-  if(!righe.length) return lmVuoto('Report del venduto', per);
+  if(!righe.length) return lmVuoto('Venduto', per);
   const iva=1+num(PRO.iva||0.1);
   const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
   const m=compute(), ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete,0);
   const ceRic=meRicaviCE(ce);
   const d=ceRic>0?(ric-ceRic)/ceRic:null;
   const top=[...righe].sort((a,b)=>b.revenue-a.revenue).slice(0,12);
-  return `<div class="lp">${lpTesta('Report del venduto', per)}
+  return `<div class="lp">${lpTesta('Venduto', per)}
     ${lpCard('Incasso dal venduto', fmtE(ric),
       `${fmtInt(pz)} pezzi · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b><br>${fmtE(ric*iva)} IVA inclusa`)}
     ${lpCard('Torna col conto economico?',
@@ -11031,7 +11075,7 @@ async function liteVDASH(){
     <div class="lpsez">I dodici che incassano di più</div>
     ${top.map(r=>lpRow(r.nome, `${r.cat} · ${fmtInt(r.pz)} pezzi`, fmtE(r.revenue),
       fmtNum(ric>0?r.revenue/ric*100:0)+'%')).join('')}
-    ${lpChiusura('Venduto · Report del venduto')}</div>`;
+    ${lpChiusura('Venduto · Venduto')}</div>`;
 }
 
 /* ---- Riepilogo del periodo ---- */
@@ -11297,7 +11341,7 @@ async function liteMSUGG(){
 }
 
 /* =============== VENDUTO · le altre quattro pagine ===============
-   Stessa materia prima di Report del venduto — l'archivio prodotti — guardata
+   Stessa materia prima di Venduto — l'archivio prodotti — guardata
    da quattro angoli diversi: il totale del periodo, il confronto con l'anno
    prima, il movimento nel tempo, e quanto si è incassato rispetto al listino. */
 const meSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
@@ -12037,6 +12081,76 @@ async function renderMSUGG(){
   </section>`;
 }
 
+
+/* ================== i turni del locale dimostrativo ==================
+   Perche' la pagina della pianificazione si possa guardare davvero servono
+   delle settimane compilate: un organico con i suoi reparti, il lunedi' di
+   chiusura, un riposo a testa sfalsato, e qualche settimana indietro per
+   vedere l'archivio e la media delle ore.
+
+   I turni non sono casuali: ogni reparto ha il suo orario, e l'organico
+   nasce dalle persone gia' caricate in Risorse umane, cosi' i nomi sono gli
+   stessi che si leggono nel conto economico. */
+const DEMO_ORARI={
+  Cucina:    [['11:30','15:00'],['19:00','23:30']],   /* 8 ore */
+  Sala:      [['12:00','15:00'],['18:30','23:30']],   /* 8 ore */
+  Bar:       [['','']           ,['17:30','01:00']],  /* 7,5 ore */
+  Management:[['09:30','17:30'],['',''            ]]  /* 8 ore */
+};
+const DEMO_CONTR={Cucina:40, Sala:40, Bar:30, Management:40};
+function demoOrganico(){
+  migrateS();
+  /* le persone del conto economico diventano l'organico dei turni: stessi
+     nomi, stesso reparto. Chi c'e' gia' non si tocca. */
+  const gia=new Set((S.turni.righe||[]).map(r=>norm(r.nome)));
+  (S.ru||[]).forEach(p=>{
+    if(!p.nome || gia.has(norm(p.nome))) return;
+    const rep = TU_REP.includes(p.reparto) ? p.reparto : 'Sala';
+    S.turni.righe.push({id:newId(), nome:p.nome, reparto:rep,
+      c:DEMO_CONTR[rep]||40, o:null, g:Array.from({length:7},()=>['','','',''])});
+  });
+  if(!num(S.turni.base)) S.turni.base=15;
+  return S.turni.righe;
+}
+/* la settimana di una persona: lunedi' chiuso, un riposo sfalsato, e il
+   turno del proprio reparto negli altri giorni */
+function demoSettimana(r, k, seme){
+  const orari=DEMO_ORARI[r.reparto]||DEMO_ORARI.Sala;
+  const riposo = 1 + ((seme + k) % 6);          /* mai lunedi', gia' chiuso */
+  return Array.from({length:7},(_,g)=>{
+    if(g===0 || g===riposo) return ['','','',''];
+    /* il bar apre solo da mercoledi' a domenica */
+    if(r.reparto==='Bar' && g<2) return ['','','',''];
+    /* il management sta in locale dal martedì al sabato */
+    if(r.reparto==='Management' && g>5) return ['','','',''];
+    return [orari[0][0], orari[0][1], orari[1][0], orari[1][1]];
+  });
+}
+async function demoTurni(quante){
+  migrateS();
+  const righe=demoOrganico();
+  if(!righe.length){
+    toast('Per i turni servono prima le persone in Risorse umane.', true);
+    return 0;
+  }
+  const k0=lunediDi(new Date());
+  let fatte=0;
+  /* quattro settimane indietro, quella corrente e la prossima: l'archivio ha
+     qualcosa da mostrare e la media delle ore ha su cosa calcolarsi */
+  for(let i=-(quante-2); i<=1; i++){
+    const k=piuGiorni(k0, 7*i);
+    S.pian.settimane[k]={
+      righe: righe.map((r,j)=>({id:'p'+newId(), nome:r.nome, reparto:r.reparto, c:r.c, o:r.o,
+        g: demoSettimana(r, j, Math.abs(i)) })),
+      note: Array.from({length:7},(_,g)=>({t: g===0?'riposo settimanale':'', k: g===0?'chiuso':''}))
+    };
+    fatte++;
+  }
+  S.pian.aperta=k0;
+  await saveState();
+  return fatte;
+}
+
 /* ================= IL QUADRO DELL'AREA =================
    In testa a ogni pagina di area, in modalità Pro: il numero e la sua distanza
    dall'obiettivo, lo stesso numero visto su cucina e bar, e l'andamento dei
@@ -12649,7 +12763,10 @@ async function demoGenera(){
   PRO.prod.forEach(p=>{ delete p._peso; delete p._stag; });
   mpSalva(); proSalva(); saveState();
   CNV=null;
-  toast(`✓ Locale dimostrativo pronto: ${MP.forn.length} fornitori, ${MP.ing.length} ingredienti, ${PRO.prod.length} prodotti a menu e il venduto di ${mesi.length} mesi.`);
+  /* --- 5 · sei settimane di turni, cosi' la pianificazione si puo' guardare --- */
+  let sett=0; try{ sett=await demoTurni(6); }catch(e){}
+  toast(`✓ Locale dimostrativo pronto: ${MP.forn.length} fornitori, ${MP.ing.length} ingredienti, ${PRO.prod.length} prodotti a menu, il venduto di ${mesi.length} mesi${
+    sett?` e ${sett} settimane di turni`:''}.`);
   gotoPage(current);
 }
 
@@ -12672,7 +12789,7 @@ const CHK_MESI=[
   {k:'cn',  t:'Costi nascosti',  g:'consigliato', d:'autoconsumi, omaggi, rotture, rimanenze',
    dove:'Cruscotto · Costi nascosti'},
   {k:'ven', t:'Venduto di cassa',g:'venduto', d:'pezzi e incasso per prodotto, estratti dal gestionale di cassa',
-   dove:'Venduto · Report del venduto'},
+   dove:'Venduto · Venduto'},
   {k:'gio', t:'Incassi giornalieri', g:'consigliato', d:'incasso per giorno e per servizio: serve a dire quali servizi reggono',
    dove:'Personale · Analisi dei turni'}
 ];
