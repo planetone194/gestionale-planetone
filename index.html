@@ -1286,6 +1286,58 @@
     font-weight:600;text-decoration:none;white-space:nowrap;}
   .lpsez2{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;
     font-weight:700;margin:12px 0 5px;}
+  /* ===== la pianificazione sul telefono: un giorno per volta ===== */
+  .lpisw{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .lpisw .fr{width:38px;height:38px;flex:none;border-radius:11px;border:1px solid #303030;
+    background:#1B1B1B;color:#C8C8C8;font-size:17px;line-height:1;cursor:pointer;}
+  .lpisw .fr:hover{border-color:#4A4A4A;color:#fff;}
+  .lpisw .et{flex:1;text-align:center;font-family:var(--num);font-size:13.5px;font-weight:700;color:#fff;}
+  .lpisw .et small{display:block;font-family:inherit;font-size:11px;font-weight:500;color:#8F8F8F;margin-top:2px;}
+  .lpiogg{display:block;width:100%;background:#1B1B1B;border:1px solid #303030;color:var(--brass);
+    border-radius:11px;padding:9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:12px;}
+  .lpiro{background:#241E13;border:1px solid #6B5520;border-radius:11px;padding:10px 12px;
+    font-size:11.5px;color:#D7C79C;line-height:1.5;margin-bottom:12px;}
+  .lpigio{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;margin-bottom:7px;overflow:hidden;}
+  .lpigio.oggi{border-color:#44403A;}
+  .lpigio .gh{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;}
+  .lpigio .gt{flex:1;font-size:13.5px;font-weight:700;color:#E8E8E8;}
+  .lpigio .gt span{font-weight:500;color:#8F8F8F;font-size:12px;}
+  .lpigio .gt em{font-style:normal;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--brass);font-weight:700;margin-left:6px;}
+  .lpigio .tagk{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;font-weight:700;
+    padding:2px 6px;border-radius:4px;margin-left:6px;background:rgba(224,112,94,.15);color:#E0705E;}
+  .lpigio .tagk.festa{background:rgba(232,177,74,.15);color:#E8B14A;}
+  .lpigio .gv{font-family:var(--num);font-size:12.5px;font-weight:700;color:#C8C8C8;white-space:nowrap;}
+  .lpigio .gv small{font-family:inherit;font-size:10.5px;font-weight:500;color:#8C8C8C;}
+  .lpigio .ch{color:#6E6E6E;font-size:13px;flex:none;transition:transform .18s;}
+  .lpigio.aperta .ch{transform:rotate(180deg);}
+  .lpigio .gb{display:none;padding:0 13px 12px;}
+  .lpigio.aperta .gb{display:block;}
+  .lpigio .gb .vuoto{font-size:12px;color:#8F8F8F;padding:6px 0 2px;}
+  .lpipers{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid #2A2A2A;}
+  .lpipers .n{flex:1;min-width:0;font-size:12.5px;font-weight:600;color:#E8E8E8;line-height:1.3;}
+  .lpipers .n small{display:block;font-size:10.5px;color:#8F8F8F;font-weight:400;margin-top:1px;}
+  .lpipers.muta .n{color:#8F8F8F;font-weight:500;}
+  .lpipers .ore{font-family:var(--num);font-size:12px;color:#9A9A9A;white-space:nowrap;text-align:right;}
+  .lpipers .ore b{color:#E4E4E4;font-weight:600;}
+  .lpipers .ore i{font-style:normal;color:#6E6E6E;}
+  /* pranzo sopra, cena sotto: su una riga sola i cinque caratteri dell'orario
+     non ci stanno e «12:00» si taglia a meta' */
+  .lpipers .ore.mod{display:grid;grid-template-columns:auto auto auto auto;
+    align-items:center;gap:5px 4px;}
+  .lpipers .ore .sv{font-family:inherit;font-size:9.5px;font-weight:700;color:#6E6E6E;
+    width:11px;text-align:center;flex:none;}
+  .lpipers .ore .tr{color:#5A5A5A;font-size:11px;}
+  .lpiora{width:54px;background:#242424;border:1px solid #333;border-radius:7px;padding:6px 3px;
+    color:#E8E8E8;font-family:var(--num);font-size:12px;text-align:center;
+    -webkit-appearance:none;appearance:none;}
+  .lpiora:focus{outline:none;border-color:var(--brass);background:#2A2A2A;}
+  .lpiora::placeholder{color:#555;}
+  .lpiaz{display:flex;flex-direction:column;gap:7px;margin-top:14px;}
+  .lpiaz button{background:#1B1B1B;border:1px solid #303030;color:#C8C8C8;border-radius:11px;
+    padding:11px 13px;font:inherit;font-size:12.5px;cursor:pointer;text-align:left;}
+  .lpiaz button:hover{border-color:#4A4A4A;color:#fff;}
+  @media(max-width:360px){ .lpiora{width:48px;padding:6px 1px;} .lpipers .ore .sv{width:9px;} }
   .lpnota2{font-size:11.5px;color:#8F8F8F;line-height:1.5;margin-top:8px;}
   .lpsep{height:1px;background:#2E2E2E;margin:9px 0 7px;}
   .lpsez{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;font-weight:700;margin:22px 2px 8px;}
@@ -1928,13 +1980,15 @@
     <button class="vo" onclick="vaiDa('me')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Metodo Planet One</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('home')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Cambia locale</span><span class="fr">›</span></button>
     <button class="vo" onclick="chiudiSheet();window.print()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Scarica il report</span><span class="fr">›</span></button>
+    <div class="st">Personale</div>
+    <button class="vo" onclick="vaiDa('pi')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>Pianificazione turni</span><span class="fr">&rsaquo;</span></button>
     <div class="st">Ricette e fornitori</div>
     <button class="vo" onclick="vaiDa('rforn')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Fornitori</span><span class="fr">&rsaquo;</span></button>
     <button class="vo" onclick="vaiDa('ring')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Ingredienti e prezzi</span><span class="fr">&rsaquo;</span></button>
     <button class="vo" onclick="vaiDa('rric')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Ricette</span><span class="fr">&rsaquo;</span></button>
     <div class="st">Dal computer</div>
     <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">Pro, da computer</span></button>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Turni e simulazione</span><span class="nota">Pro, da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Analisi dei turni e simulazione</span><span class="nota">Pro, da computer</span></button>
     <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Schede costo e preparazioni</span><span class="nota">Pro, da computer</span></button>
   </div></div>
 
@@ -2028,7 +2082,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v144</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v145</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3783,7 +3837,6 @@ function lpChiusura(dove){
     Sul telefono la pagina resta in sola lettura.</div>`;
 }
 const LP_PC = {
-  pi:['Pianificazione turni','si compila una griglia settimanale'],
   tu:['Analisi dei turni','si incrociano ore e incassi di ogni servizio'],
   si:['Simulazione','si aprono e si chiudono i servizi per vedere che cosa cambia'],
   pr:['Produttività del personale','si legge una griglia di sette giorni'],
@@ -3990,6 +4043,189 @@ async function panNotHtml(){
          non c'è niente da confrontare.</div>`}
     <div class="azfoot">Rosso: fuori soglia di più di dieci punti, o sotto il pareggio.
       Giallo: da tenere d'occhio. Verde: quello che sta andando bene, e che vale raccontare al cliente.</div>`;
+}
+
+
+/* ============ pianificazione, dal telefono ============
+   Di tutto il Personale, sul telefono serve una cosa sola: fare gli orari
+   della settimana stando in piedi nel locale. Niente costi, niente
+   produttivita', niente simulazioni — quelle si guardano seduti davanti a una
+   tabella. Qui c'e' la settimana, un giorno per volta, l'archivio di quelle
+   gia' fatte e le ore di ciascuno.
+
+   I dati sono gli stessi della versione Pro (S.pian.settimane, una settimana
+   per lunedi'): quello che si scrive da qui si ritrova la' e viceversa.
+
+   Le settimane passate non si toccano: si pianifica avanti, non si riscrive
+   la storia. */
+let lpiVista='sett', lpiGiorno=null;
+const LPI_VISTE=[['sett','Settimana'],['arch','Archivio'],['ore','Ore']];
+
+function lpiApribile(){
+  migrateS();
+  return (S.pian.aperta||'') >= lunediDi(new Date());
+}
+function lpiRidisegna(){
+  if(document.documentElement.classList.contains('litealt')) return liteRender('pi');
+  return renderPIAN();
+}
+function lpiChips(){
+  return `<div class="lpper lpob">${LPI_VISTE.map(([k,et])=>
+    `<button class="lpch ${k===lpiVista?'on':''}" data-lpivista="${k}">${et}</button>`).join('')}</div>`;
+}
+/* le righe di un giorno, chi lavora prima in alto */
+function lpiOrdine(righe, g){
+  return righe.slice().sort((a,b)=>{
+    const oa=oraMin(a.g[g][0]) ?? oraMin(a.g[g][2]) ?? 9999;
+    const ob=oraMin(b.g[g][0]) ?? oraMin(b.g[g][2]) ?? 9999;
+    return oa-ob || String(a.nome||'').localeCompare(String(b.nome||''),'it');
+  });
+}
+function lpiCampi(r, g, mod){
+  const v=i=>escH(oraTesto(r.g[g][i])||'');
+  if(!mod){
+    const p=oraTesto(r.g[g][0])&&oraTesto(r.g[g][1]) ? oraTesto(r.g[g][0])+'–'+oraTesto(r.g[g][1]) : '';
+    const c=oraTesto(r.g[g][2])&&oraTesto(r.g[g][3]) ? oraTesto(r.g[g][2])+'–'+oraTesto(r.g[g][3]) : '';
+    return `<div class="ore">${[p&&'<b>'+p+'</b>', c&&'<b>'+c+'</b>'].filter(Boolean).join(' · ')||'<i>riposo</i>'}</div>`;
+  }
+  const campo=(i,ph)=>`<input class="lpiora" data-lpi="${r.id}.${g}.${i}" value="${v(i)}"
+    placeholder="${ph}" inputmode="numeric" autocomplete="off" spellcheck="false">`;
+  return `<div class="ore mod">
+    <span class="sv">P</span>${campo(0,'–')}<span class="tr">–</span>${campo(1,'–')}
+    <span class="sv">C</span>${campo(2,'–')}<span class="tr">–</span>${campo(3,'–')}</div>`;
+}
+function lpiGiornoHtml(w, g, k, mod){
+  const data=piuGiorni(k, g);
+  const oggi = data===isoDi(new Date());
+  const aperto = lpiGiorno===g;
+  const conOre=w.righe.filter(r=>oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
+  const senza =w.righe.filter(r=>oreGiorno(r,g)[0]+oreGiorno(r,g)[1] <= 0);
+  const ore=conOre.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
+  const nota=(w.note[g]||{});
+  const chiuso = nota.k==='chiuso';
+  const righeHtml = (lista, muta) => lista.map(r=>
+    `<div class="lpipers${muta?' muta':''}">
+       <div class="n">${escH(r.nome||'—')}<small>${escH(r.reparto||'')}</small></div>
+       ${lpiCampi(r, g, mod)}</div>`).join('');
+  return `<div class="lpigio ${aperto?'aperta':''} ${oggi?'oggi':''}">
+    <div class="gh" data-lpigio="${g}">
+      <div class="gt">${GIORNI[g]} <span>${giornoBreve(data)}</span>${oggi?'<em>oggi</em>':''}
+        ${nota.k?`<span class="tagk ${nota.k}">${nota.k==='chiuso'?'chiuso':'festa'}</span>`:''}</div>
+      <div class="gv">${chiuso?'—':conOre.length?`${fmtNum(conOre.length)} <small>in turno</small> · ${fmtNum(Math.round(ore*10)/10)} <small>ore</small>`:'<small>nessuno</small>'}</div>
+      <span class="ch">&#8964;</span></div>
+    <div class="gb">
+      ${conOre.length?righeHtml(lpiOrdine(conOre,g), false):'<div class="vuoto">Nessuno in turno in questo giorno.</div>'}
+      ${senza.length?(mod
+        ? `<div class="lpsez2">Chi non lavora</div>${righeHtml(lpiOrdine(senza,g), true)}`
+        : `<div class="lpnota2">A riposo: ${senza.map(r=>escH(r.nome||'—')).join(', ')}.</div>`):''}
+    </div></div>`;
+}
+function lpiSettimana(){
+  const w=pianSett(), k=S.pian.aperta, mod=lpiApribile();
+  const oggiK=lunediDi(new Date());
+  if(lpiGiorno===null){
+    const d=(new Date().getDay()+6)%7;
+    lpiGiorno = k===oggiK ? d : 0;
+  }
+  const tot=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
+  const chi=w.righe.filter(r=>oreSettimana(r).tot>0).length;
+  return `<div class="lp">${lpTesta('Pianificazione', etichettaSett(k))}
+    ${lpiChips()}
+    <div class="lpisw">
+      <button class="fr" data-pisett="-1" aria-label="settimana precedente">&lsaquo;</button>
+      <div class="et">${etichettaSett(k)}<small>${fmtNum(chi)} in turno · ${fmtNum(Math.round(tot*10)/10)} ore</small></div>
+      <button class="fr" data-pisett="1" aria-label="settimana successiva">&rsaquo;</button>
+    </div>
+    ${k!==oggiK?`<button class="lpiogg" data-lpioggi>Vai a questa settimana</button>`:''}
+    ${mod?'':`<div class="lpiro">Settimana passata: si guarda, non si cambia.
+      Gli orari si scrivono su questa settimana e su quelle future.</div>`}
+    ${[0,1,2,3,4,5,6].map(g=>lpiGiornoHtml(w,g,k,mod)).join('')}
+    ${mod?`<div class="lpiaz">
+      <button data-lpiazione="copia">Copia la settimana precedente</button>
+      <button data-lpiazione="allinea">Aggiungi chi manca dall'organico</button></div>`:''}
+    <div class="lpnota">Gli orari si scrivono come viene: <b>18</b>, <b>18:30</b>, <b>1830</b>.
+      Un turno che finisce dopo mezzanotte si scrive normalmente, le ore le conta l'app.
+      È lo stesso archivio della versione Pro: quello che scrivi qui lo ritrovi dal computer.</div>
+  </div>`;
+}
+/* ---- archivio: le settimane gia' fatte, in sola lettura ---- */
+function lpiArchivio(){
+  migrateS();
+  const tutte=settimaneP().slice().reverse(), k=S.pian.aperta, oggiK=lunediDi(new Date());
+  const righe=tutte.map(x=>{
+    const w=S.pian.settimane[x];
+    const tot=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
+    const chi=w.righe.filter(r=>oreSettimana(r).tot>0).length;
+    const stato = x===oggiK ? 'questa settimana' : x>oggiK ? 'da venire' : 'passata';
+    return `<div class="lpvoce" data-lpisett="${x}">
+      <div class="t"><div class="n">${etichettaSett(x)}
+          <small>${stato}${x===k?' · aperta':''}</small></div>
+        <div class="v ${tot>0?'':'bad'}">${tot>0?fmtNum(Math.round(tot*10)/10):'—'}<small>${
+          tot>0?'ore · '+fmtNum(chi)+' in turno':'mai compilata'}</small></div></div></div>`;
+  }).join('');
+  return `<div class="lp">${lpTesta('Pianificazione','archivio delle settimane')}
+    ${lpiChips()}
+    ${righe||'<div class="lpvuoto">Non c\'è ancora nessuna settimana pianificata.</div>'}
+    <div class="lpnota">Toccane una per aprirla. Le settimane passate restano in sola lettura:
+      servono a ricostruire quante ore sono state fatte davvero.</div></div>`;
+}
+/* ---- ore per persona: quelle della settimana aperta e la media ---- */
+function lpiOre(){
+  const w=pianSett(), k=S.pian.aperta;
+  const sett=settimaneP();
+  /* la media si fa solo sulle settimane in cui quella persona ha ore: una
+     settimana in cui non c'era non vuol dire che ha lavorato zero, e
+     mescolarle farebbe scendere la media senza motivo. Il numero di settimane
+     va detto sempre: senza, una media su due settimane sembra un dato. */
+  const storico=new Map();
+  sett.forEach(x=>{
+    (S.pian.settimane[x].righe||[]).forEach(r=>{
+      const t=oreSettimana(r).tot; if(!(t>0)) return;
+      const key=norm(r.nome||''); if(!key) return;
+      if(!storico.has(key)) storico.set(key,[]);
+      storico.get(key).push(t);
+    });
+  });
+  const compilate=sett.filter(x=>(S.pian.settimane[x].righe||[]).some(r=>oreSettimana(r).tot>0)).length;
+  const righe=w.righe.slice()
+    .sort((a,b)=>oreSettimana(b).tot-oreSettimana(a).tot
+      || String(a.nome||'').localeCompare(String(b.nome||''),'it'))
+    .map(r=>{
+      const ore=oreSettimana(r).tot;
+      const st=storico.get(norm(r.nome||''))||[];
+      const media=st.length?st.reduce((a,b)=>a+b,0)/st.length:null;
+      const contr=num(r.c);
+      const scarto = contr>0 && ore>0 ? ore-contr : null;
+      const cl = scarto==null ? '' : Math.abs(scarto)<0.5 ? 'ok' : scarto>0 ? 'warn' : 'bad';
+      return `<div class="lpvoce" data-lvoce data-k="${escH(norm(r.nome||''))}">
+        <div class="t"><div class="n">${escH(r.nome||'—')}<small>${escH(r.reparto||'senza reparto')}${
+            contr>0?' · '+fmtNum(contr)+' ore a contratto':''}</small></div>
+          <div class="v ${cl}">${ore>0?fmtNum(Math.round(ore*10)/10):'—'}<small>${
+            ore>0?'ore questa settimana':'nessun turno'}</small></div></div>
+        <div class="det">
+          ${lpDet('Questa settimana', ore>0?fmtNum(Math.round(ore*10)/10)+' ore':'nessun turno')}
+          ${lpDet('Media a settimana', media!=null?fmtNum(Math.round(media*10)/10)+' ore':'')}
+          ${media!=null?lpDet('Su quante settimane', fmtNum(st.length)+' su '+fmtNum(sett.length)+' in archivio'):''}
+          ${media!=null?lpDet('Stima al mese', fmtNum(Math.round(media*SETT))+' ore'):''}
+          ${contr>0?lpDet('A contratto', fmtNum(contr)+' ore a settimana'):''}
+          ${scarto!=null&&Math.abs(scarto)>=0.5?`<div class="lpnota2">${scarto>0
+            ? `Questa settimana fa <b>${fmtNum(Math.round(scarto*10)/10)} ore in più</b> del contratto.`
+            : `Questa settimana gli mancano <b>${fmtNum(Math.round(-scarto*10)/10)} ore</b> per arrivare al contratto.`}</div>`:''}
+        </div></div>`;
+    }).join('');
+  return `<div class="lp">${lpTesta('Ore per persona', etichettaSett(k))}
+    ${lpiChips()}
+    ${righe||'<div class="lpvuoto">In questa settimana non c\'è ancora nessuno.</div>'}
+    <div class="lpnota">La media è calcolata <b>solo sulle settimane in cui la persona ha ore</b>:
+      ${compilate>0?`finora ne sono state compilate <b>${fmtNum(compilate)}</b> su ${fmtNum(sett.length)} in archivio.`
+        :'per ora non ce n\'è nessuna compilata.'}
+      Finché le settimane compilate sono poche, la stima al mese è un'indicazione, non un dato.</div></div>`;
+}
+async function litePIAN(){
+  migrateS();
+  if(lpiVista==='arch') return lpiArchivio();
+  if(lpiVista==='ore')  return lpiOre();
+  return lpiSettimana();
 }
 
 /* ---------- 1 - conto economico ---------- */
@@ -4688,7 +4924,7 @@ async function liteRIC(){
       Le soglie si cambiano dal computer, in <b>Cruscotto · Obiettivi Planet One</b>.</div>
     ${lpChiusura('Ricette e fornitori · Ricette e schede costo')}</div>`;
 }
-const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
+const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, pi:litePIAN, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
   vdash:liteVDASH, vriep:liteVRIEP, vprec:liteVPREC, vtrend:liteVTREND, vlist:liteVLIST,
   mprof:liteMPROF, mcore:liteMCORE, vprio:liteVPRIO,
   mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG,
@@ -12916,7 +13152,8 @@ document.addEventListener('click',async e=>{
   const ps=e.target.closest('[data-pisett]');
   if(ps){ pianSett();                       // assicura che una settimana sia aperta
     S.pian.aperta=piuGiorni(S.pian.aperta, 7*(+ps.dataset.pisett));
-    await saveState(); renderPIAN(); return; }
+    lpiGiorno=null;
+    await saveState(); lpiRidisegna(); return; }
   if(e.target.id==='piCopia'){ migrateS();
     const k=S.pian.aperta, tutte=settimaneP().filter(x=>x<k);
     const prima=tutte[tutte.length-1];
@@ -13065,6 +13302,43 @@ document.addEventListener('click',async e=>{
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
+  /* pianificazione in lite: viste, giorni, settimane, azioni */
+  const lv=e.target.closest('[data-lpivista]');
+  if(lv){ lpiVista=lv.dataset.lpivista; liteRender('pi'); return; }
+  const lg=e.target.closest('[data-lpigio]');
+  if(lg){ const g=+lg.dataset.lpigio; lpiGiorno = (lpiGiorno===g ? -1 : g); liteRender('pi'); return; }
+  const lw=e.target.closest('[data-lpisett]');
+  if(lw){ migrateS(); S.pian.aperta=lw.dataset.lpisett; lpiVista='sett'; lpiGiorno=null;
+    await saveState(); liteRender('pi'); return; }
+  if(e.target.closest('[data-lpioggi]')){ migrateS(); S.pian.aperta=lunediDi(new Date());
+    lpiGiorno=null; await saveState(); liteRender('pi'); return; }
+  const la=e.target.closest('[data-lpiazione]');
+  if(la){
+    migrateS();
+    const k=S.pian.aperta;
+    if(la.dataset.lpiazione==='copia'){
+      const prima=settimaneP().filter(x=>x<k).pop();
+      if(!prima){ toast('Non c\'è nessuna settimana pianificata prima di questa.', true); return; }
+      if(!await uiConfirm('Riportare qui gli orari della settimana '+etichettaSett(prima)+
+        '?\n\nQuello che c\'è adesso in questa settimana viene sostituito.')) return;
+      storiaPrima();
+      S.pian.settimane[k]={ righe: S.pian.settimane[prima].righe.map(r=>({...r, id:'p'+newId(), g:r.g.map(x=>x.slice())})),
+                            note: S.pian.settimane[k].note };
+      await saveState(); storiaSegna(); liteRender('pi');
+      toast('✓ Copiata la settimana '+etichettaSett(prima)+'.');
+    } else {
+      const w=pianSett(), gia=new Set(w.righe.map(r=>norm(r.nome)));
+      let n=0;
+      S.turni.righe.forEach(r=>{ if(!r.nome||gia.has(norm(r.nome))) return;
+        w.righe.push({id:'p'+newId(), nome:r.nome, reparto:r.reparto, c:r.c, o:r.o,
+                      g:Array.from({length:7},()=>['','','',''])}); n++; });
+      if(n){ storiaPrima(); await saveState(); storiaSegna(); }
+      liteRender('pi');
+      toast(n? '✓ '+n+' person'+(n===1?'a aggiunta':'e aggiunte')+' dall\'organico.'
+             : 'Nell\'organico non c\'è nessuno che non sia già in settimana.');
+    }
+    return;
+  }
   /* cliccando fuori, i due pannelli di testata si chiudono */
   if(!e.target.closest('.azpan') && !e.target.closest('.azbtn')) panChiudi();
   /* una spia del cruscotto lite si apre e si chiude toccandola */
@@ -15874,6 +16148,21 @@ document.addEventListener('change', async e=>{
       R.turni[rep][sv][t][+i][+c]= v || '';
       el.value = v || '';
       await saveState();
+    }
+    return;
+  }
+  /* un orario scritto dal telefono: si accetta come viene, lo si riporta in
+     forma di orologio e si risalvano le ore del giorno */
+  if(el.dataset && el.dataset.lpi!==undefined){
+    migrateS();
+    const [id,g,i]=el.dataset.lpi.split('.');
+    const w=pianSett(), r=w.righe.find(x=>x.id===id);
+    if(r){
+      const v=oraTesto(el.value);
+      r.g[+g][+i]= v || '';
+      el.value = v || '';
+      await saveState();
+      liteRender('pi');
     }
     return;
   }
