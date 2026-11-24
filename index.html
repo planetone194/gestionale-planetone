@@ -1085,37 +1085,48 @@
   .suggbtn .t1{font-size:13px;font-weight:700;line-height:1.25;}
   .suggbtn .t2{font-size:11.5px;color:var(--ink2);margin-top:1px;}
   .suggbtn .ch{font-size:16px;color:var(--brass-dk);font-weight:700;}
-  #suggmodal{position:fixed;inset:0;background:rgba(27,30,33,.42);z-index:60;display:none;
+  /* ===== i suggerimenti del mese: un elenco scuro di cose da fare =====
+     Era un foglio bianco con due colonne di testo: si leggeva tutto o niente.
+     Ora è lo stesso linguaggio delle pagine lite — un elenco di titoli con
+     accanto quanto vale, e il dettaglio solo di quello che si apre. */
+  #suggmodal{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:60;display:none;
     align-items:flex-start;justify-content:center;padding:26px 16px;overflow-y:auto;}
   #suggmodal.open{display:flex;}
-  #suggmodal .pan{background:var(--card);border-radius:18px;box-shadow:0 14px 44px rgba(27,42,58,.3);
-    padding:18px 22px 16px;max-width:1000px;width:100%;}
-  /* i riquadri che si aprono sopra la pagina restano chiari anche in modalita lite:
-     il testo prende il colore di sempre, non il grigio del fondo scuro */
-  html.litepg #suggmodal .pan,html.litepg #modal>*{color:var(--ink);}
+  #suggmodal .pan{background:#1B1B1B;border:1px solid #333;border-radius:18px;
+    box-shadow:0 22px 60px rgba(0,0,0,.55);color:#E8E8E8;
+    padding:17px 18px 15px;max-width:620px;width:100%;}
+  html.litepg #modal>*{color:var(--ink);}
   html.litepg .savewrap{color:var(--ink2);}
-  #suggmodal .ph{display:flex;align-items:baseline;gap:11px;border-bottom:1px solid var(--line);
-    padding-bottom:10px;margin-bottom:2px;}
-  #suggmodal .ph h3{font-size:18px;font-weight:700;margin:0;}
-  #suggmodal .ph .sub2{font-size:12px;color:var(--ink2);}
-  #suggmodal .ph .x{margin-left:12px;font-size:19px;color:var(--ink2);cursor:pointer;line-height:1;padding:0 4px;}
-  #suggmodal .ph .x:hover{color:var(--bad);}
-  .sg{border-bottom:1px solid var(--line);padding:14px 0 15px;}
-  .sg:last-of-type{border-bottom:none;}
-  .sgh{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-  .sgn{width:23px;height:23px;border-radius:50%;background:var(--brass);color:#fff;font-size:12.5px;font-weight:700;
+  #suggmodal .ph{display:flex;align-items:baseline;gap:10px;padding-bottom:12px;margin-bottom:12px;
+    border-bottom:1px solid #2E2E2E;}
+  #suggmodal .ph h3{font-family:var(--num);font-size:16px;font-weight:700;margin:0;color:#fff;letter-spacing:-.3px;}
+  #suggmodal .ph .sub2{font-size:11.5px;color:#8F8F8F;flex:1;}
+  #suggmodal .ph .mini{background:#262626;border:1px solid #3A3A3A;color:#C8C8C8;
+    border-radius:9px;padding:5px 10px;font:inherit;font-size:11.5px;cursor:pointer;}
+  #suggmodal .ph .mini:hover{border-color:#555;color:#fff;}
+  #suggmodal .ph .x{margin-left:4px;font-size:15px;color:#6E6E6E;cursor:pointer;line-height:1;padding:2px 4px;}
+  #suggmodal .ph .x:hover{color:#E8E8E8;}
+  .sg{background:#212121;border:1px solid #2E2E2E;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+  .sgh{display:flex;align-items:center;gap:10px;padding:11px 13px;}
+  .sgn{width:20px;height:20px;border-radius:50%;background:var(--brass);color:#1A1A1A;
+    font-family:var(--num);font-size:11px;font-weight:700;
     display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-  .sgt{flex:1;font-size:16px;font-weight:700;line-height:1.3;}
-  .sgv{font-family:var(--num);font-size:15px;font-weight:700;color:var(--ok);white-space:nowrap;}
-  .sgb{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding-left:35px;}
-  .sgb .et{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--brass-dk);font-weight:700;margin-bottom:6px;}
-  .sgb p{font-size:13px;line-height:1.5;margin:0 0 7px;}
-  .sgb ul{margin:0 0 8px;padding-left:17px;}
-  .sgb li{font-size:13px;line-height:1.45;margin-bottom:6px;}
+  .sgt{flex:1;font-size:13.5px;font-weight:600;line-height:1.35;color:#E8E8E8;}
+  .sgv{font-family:var(--num);font-size:13.5px;font-weight:700;color:#7FC79C;white-space:nowrap;}
+  .sg .verdict{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;font-weight:700;
+    padding:3px 7px;border-radius:5px;white-space:nowrap;flex:none;}
+  .sg .verdict.v-ok{background:rgba(127,199,156,.14);color:#7FC79C;}
+  .sg .verdict.v-warn{background:rgba(232,177,74,.14);color:#E8B14A;}
+  .sgb{display:grid;grid-template-columns:1fr;gap:13px;padding:0 13px 13px 43px;}
+  .sgb .et{font-size:9.5px;letter-spacing:1.6px;text-transform:uppercase;color:#8F8F8F;font-weight:700;margin-bottom:6px;}
+  .sgb p{font-size:12.5px;line-height:1.55;margin:0 0 6px;color:#A8A8A8;}
+  .sgb p b,.sgb li b{color:#E8E8E8;}
+  .sgb ul{margin:0 0 8px;padding-left:16px;}
+  .sgb li{font-size:12.5px;line-height:1.5;margin-bottom:6px;color:#A8A8A8;}
   .sgb li::marker{color:var(--brass);}
-  .sgb .sgo{font-size:11.5px;font-weight:700;color:var(--brass-dk);cursor:pointer;margin-right:14px;}
+  .sgb .sgo{display:inline-block;font-size:11.5px;font-weight:700;color:var(--brass);cursor:pointer;margin-right:14px;}
   .sgb .sgo:hover{text-decoration:underline;}
-  .pfoot{font-size:12px;color:var(--ink2);border-top:1px solid var(--line);margin-top:8px;padding-top:11px;line-height:1.5;}
+  .pfoot{font-size:11px;color:#6E6E6E;border-top:1px solid #2E2E2E;margin-top:10px;padding-top:10px;line-height:1.5;}
 
   /* anteprima mobile: il sito dentro una cornice da telefono */
   /* ======== modalità lite: il cruscotto come il quadro di un'auto ========
@@ -1190,6 +1201,61 @@
   .lpduo .lpc{padding:14px 13px;}
   .lpduo .lpc .nm{font-size:24px;}
   .lpintro{font-size:12.5px;color:#9A9A9A;line-height:1.5;margin:-3px 2px 15px;}
+  /* ===== assistente e notifiche: due tasti in testata e due pannelli scuri =====
+     Stanno all'estrema destra, fuori dagli interruttori, perché non cambiano
+     quello che si sta guardando: aprono una cosa accanto. */
+  .topaz{display:flex;align-items:center;gap:6px;flex:none;margin-left:10px;}
+  .azbtn{position:relative;width:34px;height:34px;border-radius:10px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink2);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;padding:0;}
+  .azbtn svg{width:19px;height:19px;}
+  .azbtn:hover{color:var(--ink);border-color:var(--ink2);}
+  .azbtn.on{background:var(--brass);border-color:var(--brass);color:#1A1A1A;}
+  .azbtn .bdg{position:absolute;top:-5px;right:-5px;min-width:17px;height:17px;border-radius:9px;
+    background:#E0705E;color:#fff;font-size:10.5px;font-weight:700;line-height:17px;
+    text-align:center;padding:0 4px;box-shadow:0 0 0 2px var(--bg);}
+  html.litepg .azbtn{background:#1B1B1B;border-color:#303030;color:#9A9A9A;}
+  html.litepg .azbtn .bdg{box-shadow:0 0 0 2px #131313;}
+  .azpan{position:fixed;top:60px;right:16px;width:352px;max-width:calc(100vw - 24px);
+    max-height:min(74vh,620px);overflow:auto;background:#1B1B1B;border:1px solid #333;
+    border-radius:16px;padding:15px 15px 13px;z-index:90;color:#E8E8E8;
+    box-shadow:0 22px 60px rgba(0,0,0,.5);-webkit-overflow-scrolling:touch;}
+  .azpan[hidden]{display:none;}
+  .azpan .ph{display:flex;align-items:baseline;gap:9px;margin-bottom:12px;}
+  .azpan .ph h4{font-family:var(--num);font-size:15px;font-weight:700;color:#fff;margin:0;letter-spacing:-.3px;}
+  .azpan .ph .s{font-size:11.5px;color:#8F8F8F;flex:1;}
+  .azpan .ph .x{color:#6E6E6E;cursor:pointer;font-size:14px;line-height:1;padding:2px 3px;}
+  .azpan .ph .x:hover{color:#E8E8E8;}
+  .azbig{display:flex;align-items:center;gap:10px;width:100%;background:var(--brass);color:#1A1A1A;
+    border:none;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;
+    font-weight:700;cursor:pointer;margin-bottom:4px;text-align:left;}
+  .azbig svg{width:18px;height:18px;flex:none;}
+  .azbig span{flex:1;}
+  .azbig small{display:block;font-size:11px;font-weight:500;opacity:.75;margin-top:2px;}
+  .azsez{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;
+    font-weight:700;margin:14px 0 7px;}
+  .azvo{display:block;width:100%;text-align:left;background:#212121;border:1px solid #2E2E2E;
+    border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;font-family:inherit;color:#E8E8E8;}
+  .azvo:hover{border-color:#444;background:#262626;}
+  .azvo .q{font-size:12.5px;line-height:1.4;color:#E8E8E8;}
+  .azvo .m{font-size:11px;color:#777;margin-top:4px;}
+  /* una notifica: il colore dice il tono, il titolo la cosa, il resto il perché */
+  .azno{display:flex;gap:10px;background:#212121;border:1px solid #2E2E2E;border-left-width:3px;
+    border-radius:11px;padding:10px 12px;margin-bottom:7px;cursor:pointer;}
+  .azno:hover{background:#262626;}
+  .azno.ok{border-left-color:#7FC79C;} .azno.warn{border-left-color:#E8B14A;} .azno.bad{border-left-color:#E0705E;}
+  .azno .pt{width:7px;height:7px;border-radius:50%;flex:none;margin-top:5px;}
+  .azno.ok .pt{background:#7FC79C;} .azno.warn .pt{background:#E8B14A;} .azno.bad .pt{background:#E0705E;}
+  .azno .c{flex:1;min-width:0;}
+  .azno .t{font-size:12.5px;font-weight:600;color:#E8E8E8;line-height:1.35;}
+  .azno .d{font-size:11.5px;color:#8F8F8F;line-height:1.45;margin-top:3px;}
+  .azno .d b{color:#D6D6D6;}
+  .azno .fr{color:#555;font-size:13px;align-self:center;flex:none;}
+  .aznulla{font-size:12px;color:#8F8F8F;line-height:1.55;padding:6px 2px 10px;}
+  .azfoot{font-size:11px;color:#6E6E6E;line-height:1.5;margin-top:12px;padding-top:10px;border-top:1px solid #2E2E2E;}
+  html.mobi .topaz{margin-left:auto;}
+  html.mobi:not(.mob) .topaz{display:flex;}
+  @media(max-width:560px){ .azpan{left:12px;right:12px;width:auto;top:56px;} }
   /* le pagine di consultazione: una riga di ricerca e un elenco di voci apribili */
   .lpcerca{width:100%;background:#1B1B1B;border:1px solid #303030;border-radius:12px;
     padding:11px 13px;color:#E8E8E8;font-size:14px;font-family:inherit;margin-bottom:9px;
@@ -1857,10 +1923,14 @@
     <button class="vo" onclick="vaiDa('me')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Metodo Planet One</span><span class="fr">›</span></button>
     <button class="vo" onclick="vaiDa('home')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Cambia locale</span><span class="fr">›</span></button>
     <button class="vo" onclick="chiudiSheet();window.print()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Scarica il report</span><span class="fr">›</span></button>
+    <div class="st">Ricette e fornitori</div>
+    <button class="vo" onclick="vaiDa('rforn')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Fornitori</span><span class="fr">&rsaquo;</span></button>
+    <button class="vo" onclick="vaiDa('ring')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Ingredienti e prezzi</span><span class="fr">&rsaquo;</span></button>
+    <button class="vo" onclick="vaiDa('rric')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Ricette</span><span class="fr">&rsaquo;</span></button>
     <div class="st">Dal computer</div>
     <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Caricamento dati</span><span class="nota">Pro, da computer</span></button>
     <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Turni e simulazione</span><span class="nota">Pro, da computer</span></button>
-    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Archivio e ricette</span><span class="nota">Pro, da computer</span></button>
+    <button class="vo off"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Schede costo e preparazioni</span><span class="nota">Pro, da computer</span></button>
   </div></div>
 
 <nav class="tabbar" id="tabbar">
@@ -1953,7 +2023,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v142</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v143</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -1981,7 +2051,16 @@
         <button type="button" data-mode="pro">Pro</button></div>
       <button class="vistabtn" id="vistabtn" onclick="toggleVista()">📱 Vista mobile</button>
     </div>
+    <!-- l'assistente e le notifiche: due soli tasti, sempre nello stesso posto -->
+    <div class="topaz">
+      <button class="azbtn" id="btnAI" type="button" onclick="panApri('aiPan')"
+        title="Assistente Planet One" aria-label="Assistente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.9L18.7 9.7 13.8 11.5 12 16.4 10.2 11.5 5.3 9.7 10.2 7.9z"/><path d="M18.5 15.5l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z"/></svg></button>
+      <button class="azbtn" id="btnNot" type="button" onclick="panApri('notPan')"
+        title="Notifiche" aria-label="Notifiche"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8.5a6 6 0 1 0-12 0c0 5-2 6.5-2 6.5h16s-2-1.5-2-6.5z"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></svg><span class="bdg" id="notBdg" hidden></span></button>
+    </div>
   </div>
+  <div class="azpan" id="aiPan" hidden></div>
+  <div class="azpan" id="notPan" hidden></div>
   <div class="merchpan" id="merchPanBox" hidden></div>
   <header>
     <div>
@@ -2018,6 +2097,8 @@
         <label>Costi nascosti max <input type="number" step="0.1" data-t="cn"> %</label>
         <label class="calc">Utile operativo obiettivo <input type="number" data-t="ro" readonly tabindex="-1" title="si ricava da solo: 100 − risorse umane − materia prima − spese generali"> %
           <span class="formula" id="roFormula"></span></label>
+        <label style="border-left:1px solid var(--line);padding-left:14px" title="l'obiettivo usato per i prodotti la cui categoria non ne ha uno suo">Food cost per categoria, se manca <input type="number" step="0.5" data-t="mpCat"> %</label>
+        <label title="quanti punti sopra l'obiettivo prima che il semaforo diventi giallo, e poi arancio">Semaforo ricette: giallo oltre <input type="number" step="0.5" data-t="incG"> p.p. · arancio oltre <input type="number" step="0.5" data-t="incA"> p.p.</label>
         <label style="border-left:1px solid var(--line);padding-left:14px">Lungo termine: ricavi annui <input type="text" inputmode="decimal" data-t="ltRicavi" class="euroin" style="width:110px"> € · utile <input type="number" step="0.5" data-t="ltUtile"> %</label>
       </div>
     </section>
@@ -2484,6 +2565,11 @@ function migrateS(){
   if(!S.salesSplit) S.salesSplit=Array(12).fill(null);
   if(S.targets.ltRicavi===undefined){ S.targets.ltRicavi=''; S.targets.ltUtile=20; }
   if(S.targets.prodOra===undefined) S.targets.prodOra=60;
+  /* le soglie del semaforo sulle ricette: l'obiettivo di chi non ha un
+     obiettivo di categoria, e i due gradini di colore */
+  if(S.targets.mpCat===undefined) S.targets.mpCat=30;
+  if(S.targets.incG===undefined)  S.targets.incG=5;
+  if(S.targets.incA===undefined)  S.targets.incA=10;
   if(!Array.isArray(S.weekSales)||S.weekSales.length!==7) S.weekSales=[13,13,13,14,16,18,13];
   // "da file paghe" era un riempitivo: toglie spazio e non dice niente
   S.ru.forEach(p=>{ if(norm(p.ruolo)==='da file paghe') p.ruolo=''; });
@@ -2952,7 +3038,7 @@ function apriSugg(){
       <div class="sub2">${(S.cliente||'Cliente')} · ${per} · dalle cure del metodo</div>
       <button class="mini" onclick="stampaSugg()" style="margin-left:auto">Scarica PDF</button>
       <div class="x" onclick="chiudiSugg()">✕</div></div>
-    ${SUGG.map((x,i)=>`<div class="sg ${i===0?'aperto':''}" data-sg="${i}">
+    ${SUGG.map((x,i)=>`<div class="sg" data-sg="${i}">
       <div class="sgh" onclick="suggApri(${i})"><div class="sgn">${i+1}</div>
         <div class="sgt">${x.tit}</div>
         <span class="verdict ${x.vel==='subito'?'v-ok':'v-warn'}">${VEL[x.vel].t}</span>
@@ -2963,13 +3049,13 @@ function apriSugg(){
         <div><div class="et">Che cosa fare</div><ul>${x.fare.map(t=>`<li>${t}</li>`).join('')}</ul>
           ${x.link.map(l=>`<span class="sgo" data-goto="${l.p}" onclick="chiudiSugg()">${l.txt} →</span>`).join('')}</div>
       </div></div>`).join('')}
-    <div class="pfoot">Ordinati per valore in euro moltiplicato per il coefficiente di velocità: un'azione che dà
-    effetto nel mese vale tre volte una che ne chiede sei. Le aree già in obiettivo non generano suggerimenti.<br>
-    Tocca un titolo per aprirlo o richiuderlo.</div>`;
+    <div class="pfoot">Tocca un titolo per aprirlo. Ordinati per valore in euro moltiplicato per il
+    coefficiente di velocità: un'azione che dà effetto nel mese vale tre volte una che ne chiede sei.
+    Le aree già in obiettivo non generano suggerimenti.</div>`;
   document.getElementById('suggmodal').classList.add('open');
 }
-/* I suggerimenti arrivano chiusi, tranne il primo: così si vede subito l'elenco
-   completo di quello che c'è da fare, e si apre solo quello che interessa. */
+/* I suggerimenti arrivano tutti chiusi: prima si legge l'elenco di quello che
+   c'è da fare, con accanto quanto vale, e poi si apre quello che interessa. */
 function suggApri(i){
   const el=document.querySelector(`[data-sg="${i}"]`); if(!el) return;
   el.classList.toggle('aperto');
@@ -3036,7 +3122,7 @@ function stampaSugg(){
 }
 
 function chiudiSugg(){ const m=document.getElementById('suggmodal'); if(m) m.classList.remove('open'); }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') chiudiSugg(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ chiudiSugg(); panChiudi(); } });
 
 /* ================= modalità lite / pro =================
    Lite: tutta la pagina diventa scura e resta solo il quadro del cliente.
@@ -3711,6 +3797,196 @@ function lpSoloPC(pagina){
     ${coda}</div></div>`;
 }
 
+
+/* ================== notifiche ==================
+   Non sono messaggi: sono le stesse soglie del cruscotto, dette per prime.
+   Il tono è uno dei tre — una cosa andata bene, una da tenere d'occhio, una
+   da sistemare — e ognuna porta alla pagina dove si lavora. Si calcolano dai
+   dati del locale: su un cliente senza dati l'elenco è corto, ed è giusto così. */
+function notElenco(){
+  const out=[];
+  const agg = (tono, tit, det, pagina) => out.push({tono, tit, det, pagina});
+  let a=null, t=null;
+  try{ const g=lpAgg(); a=g.a; t=g.t; }catch(e){}
+
+  /* --- il pareggio: la prima domanda di un titolare --- */
+  try{
+    const d=bepDati();
+    if(d && d.bep>0){
+      const q=d.a.ricavi-d.bep;
+      if(q>=0) agg("ok", "Hai superato il punto di pareggio",
+        `Il periodo chiude <b>${fmtE(q)}</b> sopra il pareggio: i costi sono coperti e da qui in poi
+         ogni incasso lascia margine.`, "obbep");
+      else agg("bad", "Sei sotto il punto di pareggio",
+        `Mancano <b>${fmtE(-q)}</b> di incasso per coprire i costi del periodo.`, "obbep");
+    }
+  }catch(e){}
+
+  /* --- il bilancio contro le ricette --- */
+  try{
+    const c=cnConfronto();
+    if(c && c.oltre>0){
+      const dpp=(c.incReale-c.incTeor)*100;
+      const sopra = dpp > num((S.targets||{}).cn||2);
+      agg(sopra?"bad":"warn", "Stai comprando più materia prima di quella che le ricette spiegano",
+        `Le schede dicono <b>${fmtP(c.incTeor)}</b>, il bilancio <b>${fmtP(c.incReale)}</b>:
+         <b>${fmtE(c.oltre)}</b> di scarto. Sono autoconsumi, omaggi, rimanenze, dosi — o un pezzo
+         che non abbiamo ancora intercettato.`, "cn");
+    } else if(c && c.oltre<0){
+      agg("ok", "Il bilancio spende meno di quanto le ricette prevedono",
+        `<b>${fmtE(-c.oltre)}</b> in meno del teorico: è precisione in cucina, non un errore.`, "cn");
+    }
+  }catch(e){}
+
+  /* --- le aree contro le loro soglie --- */
+  if(a && t){
+    [['Materia prima', a.incMp*100, num(t.mp), 'ce'],
+     ['Personale',     a.incRu*100, num(t.ru), 'ru'],
+     ['Spese generali',a.incSg*100, num(t.sg), 'sg']].forEach(([n, inc, ob, p])=>{
+      if(!isFinite(inc)||!(ob>0)) return;
+      const d=inc-ob, euro=Math.abs(d/100*a.ricavi);
+      if(d<=0) agg("ok", n+" dentro obiettivo",
+        `<b>${fmtNum(Math.round(inc*10)/10)} € ogni 100 € incassati</b> contro un obiettivo del
+         ${fmtNum(ob)}%: <b>${fmtE(euro)}</b> risparmiati sul periodo.`, p);
+      else agg(d>10?"bad":"warn", n+" sopra soglia",
+        `<b>${fmtNum(Math.round(inc*10)/10)} € ogni 100 € incassati</b>, l'obiettivo è il
+         ${fmtNum(ob)}%: <b>${fmtE(euro)}</b> da recuperare.`, p);
+    });
+    /* il marketing è una forchetta, non un tetto: zero è un problema */
+    const im=a.incMk*100, om=num(t.mk);
+    if(isFinite(im) && om>0 && im < om*0.4)
+      agg("warn", "Il locale non si sta facendo vedere",
+        `Il marketing vale <b>${fmtNum(Math.round(im*10)/10)} € ogni 100 € incassati</b>
+         contro una fascia centrata sul ${fmtNum(om)}%.`, "mkt");
+  }
+
+  /* --- il menu: quanti prodotti non rendono abbastanza --- */
+  try{
+    if(PRO && (PRO.prod||[]).length){
+      const conS=PRO.prod.filter(x=>ricCosto(x)!=null && numIt(x.pv)>0);
+      if(conS.length>=5){
+        const fuori=conS.filter(x=>{
+          const c=ricCosto(x);
+          return c.tot/numIt(x.pv) > incTarget((PRO.target||{})[x.cat]);
+        });
+        const quota=fuori.length/conS.length;
+        if(quota>=0.4) agg(quota>=0.6?"bad":"warn", "Troppi prodotti non generano abbastanza margine",
+          `<b>${fmtNum(fuori.length)} prodotti su ${fmtNum(conS.length)}</b> stanno sopra l'obiettivo
+           di incidenza della loro categoria. Prima dei prezzi vanno guardate le dosi.`, "vprio");
+        else if(quota<=0.15) agg("ok", "Il menu tiene gli obiettivi",
+          `Solo <b>${fmtNum(fuori.length)} prodotti su ${fmtNum(conS.length)}</b> stanno sopra
+           l'obiettivo della loro categoria.`, "vprio");
+      }
+      const senza=PRO.prod.length-conS.length;
+      if(senza>0 && senza/PRO.prod.length>0.2)
+        agg("warn", "Mancano schede costo",
+          `<b>${fmtNum(senza)} prodotti su ${fmtNum(PRO.prod.length)}</b> non hanno un costo
+           calcolabile: finché mancano, il food cost teorico è costruito su mezzo menu.`, "rric");
+    }
+  }catch(e){}
+
+  /* --- i prezzi d'acquisto invecchiano in silenzio --- */
+  try{
+    if(MP && (MP.ing||[]).length){
+      const soli=MP.ing.filter(x=>!isPrep(x));
+      const vecchi=soli.filter(ingVecchio).length;
+      if(vecchi>0 && vecchi/soli.length>0.25)
+        agg("warn", "Prezzi d'acquisto da aggiornare",
+          `<b>${fmtNum(vecchi)} referenze su ${fmtNum(soli.length)}</b> hanno un prezzo più vecchio
+           di un anno: le schede costo che li usano dicono numeri di un altro anno.`, "ring");
+    }
+  }catch(e){}
+
+  /* --- l'anno precedente, quando c'è --- */
+  try{
+    const anni=anniCliente();
+    if(anni.length>=2 && a){
+      const B=num(S.anno), A=anni.find(x=>x!==B), mesi=cfMesiPari(A,B);
+      if(mesi.length){
+        const sA=cfSomma(A,mesi,'tot'), sB=cfSomma(B,mesi,'tot');
+        if(sA && sB && sA.ric>0){
+          const d=sB.ro-sA.ro;
+          if(d>0) agg("ok", "Stai marginando più dell'anno scorso",
+            `<b>${fmtE(d)}</b> di utile operativo in più del ${A}, sugli stessi mesi.`, "cf");
+          else if(d<0) agg("bad", "Stai marginando meno dell'anno scorso",
+            `<b>${fmtE(-d)}</b> di utile operativo in meno del ${A}, sugli stessi mesi.`, "cf");
+        }
+      }
+    }
+  }catch(e){}
+
+  /* --- i mesi che mancano: senza, tutto il resto è parziale --- */
+  try{
+    const m=compute();
+    const mancanti=12-(m.complete||[]).length;
+    if(mancanti>0 && mancanti<12)
+      agg("warn", mancanti+" mes"+(mancanti===1?"e":"i")+" ancora da caricare",
+        `Le incidenze sono calcolate sui <b>${fmtNum(12-mancanti)} mesi</b> con i ricavi a consuntivo.`, "chk");
+  }catch(e){}
+
+  const ORD={bad:0, warn:1, ok:2};
+  return out.sort((x,y)=>ORD[x.tono]-ORD[y.tono]);
+}
+function notQuante(){ try{ return notElenco().filter(n=>n.tono!=='ok').length; }catch(e){ return 0; } }
+function notSegna(){
+  const b=document.getElementById('notBdg'); if(!b) return;
+  let n=0; try{ n=notQuante(); }catch(e){}
+  b.hidden = !n; b.textContent = n>9 ? '9+' : String(n);
+}
+
+/* ---------- i due pannelli ---------- */
+function panChiudi(){
+  ['aiPan','notPan'].forEach(id=>{ const p=document.getElementById(id); if(p) p.hidden=true; });
+  ['btnAI','btnNot'].forEach(id=>{ const b=document.getElementById(id); if(b) b.classList.remove('on'); });
+}
+async function panApri(id){
+  const p=document.getElementById(id); if(!p) return;
+  const giaAperto=!p.hidden;
+  panChiudi();
+  if(giaAperto) return;
+  p.innerHTML = id==='aiPan' ? panAIhtml() : await panNotHtml();
+  p.hidden=false;
+  const b=document.getElementById(id==='aiPan'?'btnAI':'btnNot');
+  if(b) b.classList.add('on');
+}
+function panAIhtml(){
+  /* L'assistente non è ancora collegato al modello: qui si vede com'è fatto il
+     pannello e che cosa ci si potrà chiedere. Le conversazioni sono esempi, e
+     lo diciamo invece di farle sembrare vere. */
+  const esempi=[
+    "Perché il food cost è salito a novembre?",
+    "Prepara il messaggio per il titolare sui risultati del mese",
+    "Quali tre piatti conviene spingere il mese prossimo?"
+  ];
+  return `<div class="ph"><h4>Assistente</h4><span class="s">${escH(S.cliente||'Cliente')}</span>
+      <span class="x" onclick="panChiudi()">&#10005;</span></div>
+    <button class="azbig" type="button" onclick="panChiudi();vaiDa('aiask')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L4 21l1.1-3.6A8.4 8.4 0 1 1 21 11.5z"/></svg>
+      <span>Inizia a chattare<small>conosce i numeri di questo locale e il metodo</small></span></button>
+    <div class="azsez">Chat recenti</div>
+    ${esempi.map(q=>`<button class="azvo" type="button" onclick="panChiudi();vaiDa('aiask')">
+      <div class="q">${escH(q)}</div><div class="m">esempio</div></button>`).join('')}
+    <div class="azfoot">L'assistente non è ancora collegato al modello: le conversazioni qui sopra sono
+      esempi di quello che gli si potrà chiedere. Sugli altri locali userà solo dati aggregati e
+      anonimi, mai niente di riservato.</div>`;
+}
+async function panNotHtml(){
+  try{ await mpCarica(); await proCarica(); }catch(e){}
+  const l=notElenco();
+  notSegna();
+  const per=(scope!=='ytd' && MESI[scope]) ? MESI[scope]+' '+S.anno : 'anno '+S.anno;
+  return `<div class="ph"><h4>Notifiche</h4><span class="s">${escH(S.cliente||'Cliente')} &middot; ${per}</span>
+      <span class="x" onclick="panChiudi()">&#10005;</span></div>
+    ${l.length ? l.map(n=>`<div class="azno ${n.tono}" onclick="panChiudi();vaiDa('${n.pagina}')">
+        <span class="pt"></span><div class="c"><div class="t">${n.tit}</div><div class="d">${n.det}</div></div>
+        <span class="fr">&rsaquo;</span></div>`).join('')
+      : `<div class="aznulla">Non c'è niente da segnalare su questo periodo.<br><br>
+         Le notifiche nascono dalle stesse soglie del cruscotto: finché non ci sono dati caricati,
+         non c'è niente da confrontare.</div>`}
+    <div class="azfoot">Rosso: fuori soglia di più di dieci punti, o sotto il pareggio.
+      Giallo: da tenere d'occhio. Verde: quello che sta andando bene, e che vale raccontare al cliente.</div>`;
+}
+
 /* ---------- 1 - conto economico ---------- */
 function liteCE(){
   const {m,t,a:a0,per}=lpAgg(), a=lpBUa(a0);
@@ -4337,6 +4613,11 @@ function lricRighe(){
   vis.slice(0,LCAP).forEach(x=>{
     if(x.cat!==cat){ cat=x.cat; out.push(`<div class="lpsez">${escH(cat||'senza categoria')}</div>`); }
     const c=ricCosto(x), pv=numIt(x.pv);
+    /* a menu il prezzo si legge IVA inclusa: e' quello che il cliente paga e
+       quello che il locale riconosce. L'incidenza invece resta sul netto,
+       perche' l'IVA non e' ricavo. */
+    const iva = (numIt(x.pvi)>0 && pv>0) ? (numIt(x.pvi)/pv-1) : (numIt(PRO.iva)||0.1);
+    const pmenu = numIt(x.pvi)>0 ? numIt(x.pvi) : (pv>0 ? pv*(1+iva) : 0);
     const inc = c && pv>0 ? c.tot/pv : null;
     const tgt=numIt((PRO.target||{})[x.cat]);
     const resa = c && pv>0 ? pv-c.tot : null;
@@ -4349,10 +4630,10 @@ function lricRighe(){
       .map(r=>r.e) : [];
     const cl = zero.length ? 'warn' : inc==null ? '' : {v:'ok',g:'warn',a:'warn',r:'bad'}[incClasse(inc,tgt)]||'';
     const testa=`<div class="t"><div class="n">${escH(x.n)}
-        <small>${pv>0?fmtEu2(pv)+' di listino':'senza prezzo'}${
+        <small>${pmenu>0?fmtEu2(pmenu)+' a menu':'senza prezzo'}${
           c?' · costa '+fmtEu2(c.tot):' · senza scheda costo'}</small></div>
       <div class="v ${cl}">${resa!=null?fmtEu2(resa):'—'}<small>${
-        zero.length?'costo parziale':resa!=null?'a pezzo':'da calcolare'}</small></div></div>`;
+        zero.length?'costo parziale':resa!=null?'guadagno al pezzo':'da calcolare'}</small></div></div>`;
     let det;
     if(!c){
       const manca=ricMancanti(x);
@@ -4377,9 +4658,10 @@ function lricRighe(){
         ${c.side>0?lpDet('Contorno o guarnizione', fmtEu2(c.side)):''}
         <div class="lpsep"></div>
         ${lpDet('Costa', fmtEu2(c.tot))}
-        ${lpDet('Si vende a', pv>0?fmtEu2(pv):'')}
-        ${lpDet('Rende', resa!=null?fmtEu2(resa)+' a pezzo':'')}
-        ${lpDet('Incidenza', inc==null?'':fmtP(inc)+(tgt>0?' · obiettivo '+fmtP(tgt):''))}`;
+        ${lpDet('Prezzo a menu', pmenu>0?fmtEu2(pmenu)+' IVA inclusa':'')}
+        ${lpDet('Al netto dell\'IVA', pv>0?fmtEu2(pv):'')}
+        ${lpDet('Guadagno al pezzo', resa!=null?fmtEu2(resa):'')}
+        ${lpDet('Incidenza', inc==null?'':fmtP(inc)+' · obiettivo '+fmtNum(incTarget(tgt)*100)+'%')}`;
     }
     out.push(lpVoce(norm((x.n||'')+' '+(x.cat||'')), testa, det));
   });
@@ -4394,6 +4676,11 @@ async function liteRIC(){
   return `<div class="lp">${lpTesta('Ricette','quanto costa e quanto rende, IVA esclusa')}
     ${lpBarra('ric','cerca un prodotto o una categoria…', lricQ)}
     <div class="lplist">${lricRighe()}</div>
+    <div class="lpnota">Il colore segue l'incidenza contro l'obiettivo della categoria
+      (dove manca, l'obiettivo generale è il <b>${fmtNum(incDefault()*100)}%</b>):
+      verde dentro, giallo fino a <b>${fmtNum(incBande()[0])} punti</b> sopra,
+      arancio fino a <b>${fmtNum(incBande()[1])}</b>, poi rosso.
+      Le soglie si cambiano dal computer, in <b>Cruscotto · Obiettivi Planet One</b>.</div>
     ${lpChiusura('Ricette e fornitori · Ricette e schede costo')}</div>`;
 }
 const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
@@ -12773,6 +13060,8 @@ document.addEventListener('click',async e=>{
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
+  /* cliccando fuori, i due pannelli di testata si chiudono */
+  if(!e.target.closest('.azpan') && !e.target.closest('.azbtn')) panChiudi();
   /* una spia del cruscotto lite si apre e si chiude toccandola */
   const sps=e.target.closest('[data-spia]');
   if(sps){ sps.classList.toggle('aperta'); return; }
@@ -14655,12 +14944,31 @@ function ricMancanti(pr){
   const r=pr.ric; if(!r) return [];
   return (r.ing||[]).concat(r.co||[]).filter(x=>ingUnitaDi(x.e)==null).map(x=>x.e);
 }
-/* il semaforo: verde in obiettivo, poi giallo, arancio, rosso — come il cruscotto */
+/* Il semaforo delle incidenze: verde in obiettivo, poi giallo, arancio, rosso.
+   Attenzione alla scala: gli obiettivi di categoria si scrivono in punti
+   percentuali (28 = 28%), mentre l'incidenza arriva come frazione (0,28).
+   Confrontarli senza riportarli alla stessa scala rendeva tutto verde — era
+   il motivo per cui nessun prodotto risultava mai fuori obiettivo. */
+function incTarget(tgt){
+  let t=numIt(tgt);
+  if(t>1) t=t/100;                      /* scritto in punti percentuali */
+  return t>0 ? t : incDefault();
+}
+function incDefault(){
+  const v=numIt(S.targets&&S.targets.mpCat);
+  return v>0 ? (v>1?v/100:v) : 0.30;
+}
+/* le due soglie, in punti percentuali sopra l'obiettivo: giallo e poi arancio */
+function incBande(){
+  const t=S.targets||{};
+  const g=numIt(t.incG)>0?numIt(t.incG):5, a=numIt(t.incA)>0?numIt(t.incA):10;
+  return [g, Math.max(a,g)];
+}
 function incClasse(inc, tgt){
   if(inc==null||!isFinite(inc)) return 'n';
-  const t = tgt>0 ? tgt : 0.30;
+  const t=incTarget(tgt), [g,a]=incBande();
   const pp=(inc-t)*100;
-  return pp<=0 ? 'v' : pp<=5 ? 'g' : pp<=10 ? 'a' : 'r';
+  return pp<=0 ? 'v' : pp<=g ? 'g' : pp<=a ? 'a' : 'r';
 }
 
 /* ---------------- pagina: ricette e schede costo ---------------- */
@@ -14725,7 +15033,7 @@ async function renderRIC(){
       <td class="calc">${c? fmtEu2(c.tot) : '—'}</td>
       <td class="calc">${c&&x.pv>0? fmtEu2(x.pv-c.tot) : '—'}</td>
       <td class="inc ${incClasse(inc,tgt)}">${inc==null? '—' : fmtP(inc)}</td>
-      <td class="calc" style="font-family:inherit;font-size:11px;color:var(--ink2)">${tgt>0? fmtP(tgt) : '—'}</td>
+      <td class="calc" style="font-family:inherit;font-size:11px;color:var(--ink2)">${fmtNum(incTarget(tgt)*100)}%${tgt>0?'':' <i title="obiettivo generale: questa categoria non ne ha uno suo">gen</i>'}</td>
       <td class="az">${apr?'▴':'▾'}</td>
     </tr>`;
   }).join('');
@@ -14828,7 +15136,7 @@ function gotoPage(p){
   /* nell'elenco clienti non si sta dentro nessun cliente: nome e interruttore Merch non hanno senso */
   document.body.classList.toggle('is-home', p==='home');
   document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.page===p));
-  navSegna(p); tabSegna(p); perSegna(); litePg(p);
+  navSegna(p); tabSegna(p); perSegna(); litePg(p); notSegna();
   if(p==='rica') ceVista='Ricavi'; else if(p==='ce') ceVista='Costi materia prima';
   if(p==='mkt') sgVista='mkt';   else if(p==='sg') sgVista='sg';
   const vista = SOON[p] ? 'soon' : (ALIAS[p]||p);
