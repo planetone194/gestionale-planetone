@@ -1349,7 +1349,7 @@
     color:#6E6E6E;margin-top:1px;}
   .lpigr thead th.oggi{color:var(--brass);} .lpigr thead th.oggi small{color:var(--brass);}
   .lpigr thead th.chiuso{color:#5E5E5E;}
-  .lpigr td{min-width:58px;}
+  .lpigr td{min-width:74px;}
   /* pranzo e cena stanno vicini: sono lo stesso giorno della stessa persona */
   .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.15;}
   .lpigr td b + b{margin-top:1px;}
@@ -2273,7 +2273,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v155</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v156</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4347,11 +4347,9 @@ let lpiCella=null;                      /* "idriga.giorno" della casella aperta 
 /* un orario stretto: 12:00 diventa 12, 18:30 diventa 18.30 */
 function lpiBreve(v){
   const m=oraMin(v); if(m==null) return '';
-  const h=Math.floor(m/60), mi=m%60;
-  /* le ore piccole sono fini turno dopo mezzanotte: «01» si legge come un
-     orario, «1» sembra un numero rimasto a metà */
-  const hh = h<6 ? String(h).padStart(2,'0') : String(h);
-  return mi ? hh+'.'+String(mi).padStart(2,'0') : hh;
+  /* sempre ore e minuti: «12» sembra un numero, «12.00» è un orario — e in
+     colonna le cifre si incolonnano invece di ballare */
+  return String(Math.floor(m/60)).padStart(2,'0')+'.'+String(m%60).padStart(2,'0');
 }
 function lpiCellaTesto(r, g){
   const p = lpiBreve(r.g[g][0]) && lpiBreve(r.g[g][1]) ? lpiBreve(r.g[g][0])+'-'+lpiBreve(r.g[g][1]) : '';
@@ -4527,6 +4525,73 @@ function tgFasce(t){
 }
 const TG_RIPOSO=/\b(day\s*off|dayoff|riposo|riposa|libero|libera|off|a\s+casa|non\s+lavora|niente|chiuso)\b/;
 
+/* ---- dove comincia un giorno, e quanti ne copre ----
+   Chi detta un orario non dice sette volte lo stesso turno: dice «dal martedì
+   alla domenica», o «tutti i giorni tranne il lunedì». Qui si riconoscono
+   queste tre forme, in quest'ordine di precedenza:
+
+     1. tutti i giorni / tutta la settimana
+     2. dal <giorno> alla <giorno>   — anche a cavallo della domenica
+     3. un giorno solo
+
+   e le eccezioni — «tranne il lunedì» — valgono per tutta la frase di quella
+   persona: chi le dice sta dicendo quando NON lavora, e quel giorno diventa
+   un riposo scritto, non un buco. */
+const TG_ALT = TG_GIORNI.map(a=>'(?:'+a+')').join('|');
+function tgGiornoDa(txt){
+  const t=String(txt||'');
+  for(let g=0; g<TG_GIORNI.length; g++)
+    if(new RegExp('^(?:'+TG_GIORNI[g]+')$').test(t)) return g;
+  return -1;
+}
+function tgMarcatori(pezzo){
+  const out=[];
+  const spingi=(i,len,giorni)=>out.push({i,len,giorni});
+  let m;
+  const rxTutti=/(?:^|[^a-zà-ÿ])(tutti i giorni|tutta la settimana|ogni giorno|tutti i giorni della settimana)(?![a-zà-ÿ])/g;
+  while((m=rxTutti.exec(pezzo))){
+    const i=m.index + (m.index===0&&/^[a-zà-ÿ]/.test(pezzo)?0:m[0].length-m[1].length);
+    spingi(i, m[1].length, [0,1,2,3,4,5,6]);
+  }
+  const rxRange=new RegExp('(?:^|[^a-zà-ÿ])((?:da|dal|dalla)\\s+('+TG_ALT+')\\s+(?:fino\\s+)?(?:a|al|alla)\\s+('+TG_ALT+'))(?![a-zà-ÿ])','g');
+  while((m=rxRange.exec(pezzo))){
+    const a=tgGiornoDa(m[2]), b=tgGiornoDa(m[3]);
+    if(a<0||b<0) continue;
+    const giorni=[]; let g=a;
+    for(let n=0;n<7;n++){ giorni.push(g); if(g===b) break; g=(g+1)%7; }
+    spingi(m.index + m[0].length - m[1].length, m[1].length, giorni);
+  }
+  const rxUno=new RegExp('(?:^|[^a-zà-ÿ])('+TG_ALT+')(?![a-zà-ÿ])','g');
+  while((m=rxUno.exec(pezzo))){
+    const g=tgGiornoDa(m[1]); if(g<0) continue;
+    spingi(m.index + m[0].length - m[1].length, m[1].length, [g]);
+  }
+  /* se due marcatori si sovrappongono vince quello che copre più testo:
+     «dal martedì alla domenica» batte «martedì» e «domenica» presi da soli */
+  out.sort((x,y)=> x.i-y.i || y.len-x.len);
+  const puliti=[];
+  out.forEach(x=>{
+    const ultimo=puliti[puliti.length-1];
+    if(ultimo && x.i < ultimo.i+ultimo.len) return;
+    puliti.push(x);
+  });
+  return puliti;
+}
+/* le eccezioni, tolte dal testo prima di cercare i giorni: «tranne il lunedì»
+   non è un giorno di lavoro, è un giorno in meno */
+function tgEccezioni(pezzo){
+  const fuori=new Set();
+  const rx=new RegExp('(?:tranne|eccetto|escluso|esclusa|a parte|meno)\\s+(?:il|lo|la|i|gli|le)?\\s*('
+    +TG_ALT+')(?:\\s*(?:,|e|ed)\\s*(?:il|lo|la)?\\s*('+TG_ALT+'))?(?:\\s*(?:,|e|ed)\\s*(?:il|lo|la)?\\s*('+TG_ALT+'))?','g');
+  let m, out=pezzo;
+  while((m=rx.exec(pezzo))){
+    [m[1],m[2],m[3]].forEach(x=>{ const g=tgGiornoDa(x||''); if(g>=0) fuori.add(g); });
+    /* si cancella il pezzo mantenendo la lunghezza, così gli indici non ballano */
+    out = out.slice(0,m.index) + ' '.repeat(m[0].length) + out.slice(m.index+m[0].length);
+  }
+  return {fuori:[...fuori], pezzo:out};
+}
+
 /* il testo diventa un elenco di «a questa persona, in questo giorno, questo orario» */
 function tgLeggi(testo){
   migrateS();
@@ -4543,7 +4608,6 @@ function tgLeggi(testo){
     const prove=[parti.join(' ')].concat(parti.length>1?[parti[parti.length-1], parti[0]]:[]);
     for(const p of prove){
       if(p.length<3) continue;
-      /* un nome di battesimo vale solo se è di una persona sola */
       if(p===parti[0] && parti.length>1 &&
          w.righe.filter(x=>String(x.nome||'').toLowerCase().split(/\s+/)[0]===p).length>1) continue;
       const i=t.indexOf(' '+p);
@@ -4555,36 +4619,49 @@ function tgLeggi(testo){
     return {blocchi:[], problemi:['Non ho riconosciuto nessun nome di questa settimana. '+
       'Scrivi il nome come compare in griglia, per esempio «Mario Rossi».']};
   }
-  /* un pezzo di testo prima del primo nome che contiene un giorno: se lo dico */
   if(punti[0].i>2 && TG_GIORNI.some(g=>new RegExp('(^|[^a-zà-ÿ])('+g+')').test(t.slice(0,punti[0].i))))
     problemi.push('Prima del primo nome c\'è del testo che parla di giorni: l\'ho saltato.');
 
-  /* 2 · dentro il pezzo di ogni persona, i giorni */
+  /* 2 · dentro il pezzo di ogni persona, i giorni e gli intervalli */
   const blocchi=punti.map((p,n)=>{
     const fine = n+1<punti.length ? punti[n+1].i : t.length;
-    const pezzo = t.slice(p.i, fine);
-    const trovati=[];
-    TG_GIORNI.forEach((alt,g)=>{
-      /* niente \b attorno ai giorni: «lunedì» finisce con una lettera accentata,
-         che per le espressioni regolari non è una lettera — e il confine di
-         parola non scattava mai. Il contorno si controlla a mano. */
-      const re=new RegExp('(^|[^a-zà-ÿ])('+alt+')(?![a-zà-ÿ])','g'); let m;
-      while((m=re.exec(pezzo))) trovati.push({g, i:m.index+m[1].length, len:m[2].length});
-    });
-    trovati.sort((a,b)=>a.i-b.i);
-    const giorni=trovati.map((d,j)=>{
-      const f = j+1<trovati.length ? trovati[j+1].i : pezzo.length;
+    const ecc = tgEccezioni(t.slice(p.i, fine));
+    const pezzo = ecc.pezzo;
+    const marc = tgMarcatori(pezzo);
+    const perGiorno=new Map();
+    marc.forEach((d,j)=>{
+      const f = j+1<marc.length ? marc[j+1].i : pezzo.length;
       const coda = pezzo.slice(d.i+d.len, f);
-      if(TG_RIPOSO.test(coda)) return {g:d.g, riposo:true, fasce:[]};
-      const fasce=tgFasce(coda);
-      if(!fasce.length) return {g:d.g, riposo:false, fasce:[], vuoto:true};
-      return {g:d.g, riposo:false, fasce};
+      const riposo = TG_RIPOSO.test(coda);
+      const fasce = riposo ? [] : tgFasce(coda);
+      if(!riposo && !fasce.length){
+        /* un marcatore senza orario non è per forza un errore: «lunedì e
+           martedì dalle 11 alle 15» mette il primo in attesa del secondo */
+        const dopo = marc[j+1];
+        if(dopo && /^[\s,]*(?:e|ed|,)?[\s,]*$/.test(coda)){
+          d.giorni.forEach(g=>{ if(!perGiorno.has(g)) perGiorno.set(g, {attesa:true}); });
+          return;
+        }
+        d.giorni.forEach(g=>{
+          if(!perGiorno.has(g))
+            problemi.push(`<b>${escH(p.r.nome)}</b>, ${GIORNI[g].toLowerCase()}: nessun orario leggibile.`);
+        });
+        return;
+      }
+      d.giorni.forEach(g=>perGiorno.set(g, {riposo, fasce}));
+      /* i giorni rimasti in attesa prendono questo orario */
+      [...perGiorno.keys()].forEach(g=>{
+        if(perGiorno.get(g).attesa) perGiorno.set(g, {riposo, fasce});
+      });
     });
+    /* le eccezioni vincono su tutto: sono l'unica cosa detta per negazione */
+    ecc.fuori.forEach(g=>perGiorno.set(g, {riposo:true, fasce:[]}));
+    [...perGiorno.keys()].forEach(g=>{ if(perGiorno.get(g).attesa) perGiorno.delete(g); });
+    const giorni=[...perGiorno.keys()].sort((a,b)=>a-b)
+      .map(g=>({g, riposo:!!perGiorno.get(g).riposo, fasce:perGiorno.get(g).fasce||[]}));
     if(!giorni.length)
       problemi.push(`Di <b>${escH(p.r.nome)}</b> non ho capito nessun giorno.`);
-    giorni.filter(x=>x.vuoto).forEach(x=>
-      problemi.push(`<b>${escH(p.r.nome)}</b>, ${GIORNI[x.g].toLowerCase()}: nessun orario leggibile.`));
-    return {r:p.r, giorni:giorni.filter(x=>!x.vuoto)};
+    return {r:p.r, giorni};
   }).filter(b=>b.giorni.length);
 
   /* 3 · i nomi detti che in questa settimana non ci sono */
