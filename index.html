@@ -446,6 +446,22 @@
   .qac.hot{border-color:#EFC49B;} .qac.hot .et{color:var(--hot);}
   .qac.bad{border-color:#E7B3AC;} .qac.bad .et{color:var(--bad);}
   /* la riga dei dodici mesi */
+  /* l'andamento dei mesi, a tutta larghezza, in testa a ogni area */
+  .qagraf{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 14px 10px;margin-top:12px;}
+  .qagraf svg{width:100%;height:190px;display:block;overflow:visible;}
+  .qagraf .ricavi rect{fill:#5D6B79;fill-opacity:.13;}
+  .qagraf .val{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;}
+  .qagraf .obj{fill:none;stroke:var(--ink2);stroke-width:1.2;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;}
+  .qagraf circle{vector-effect:non-scaling-stroke;stroke:#fff;stroke-width:1.2;}
+  .qagraf .dentro{fill:var(--ok);} .qagraf .fuori{fill:var(--bad);} .qagraf .neutro{fill:var(--ink2);}
+  .qagraf .mesi text{font-family:var(--num);font-size:11px;fill:var(--ink2);}
+  .qagraf .leg{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);}
+  .qagraf .leg span{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:7px;}
+  .qagraf .leg b{color:var(--ink);font-family:var(--num);font-size:12.5px;}
+  .qagraf .leg em{font-style:normal;color:#9A958A;font-size:11px;}
+  .qagraf .leg i{width:14px;height:3px;border-radius:2px;flex:none;}
+  .qagraf .leg i.r{height:9px;background:#5D6B79;opacity:.35;border-radius:3px;}
+  .qagraf .leg i.o{background:repeating-linear-gradient(90deg,var(--ink2) 0 4px,transparent 4px 7px);}
   .qaspark{width:100%;height:38px;display:block;margin:4px 0 2px;overflow:visible;}
   .qaspark .linea{fill:none;stroke:var(--ink);stroke-width:1.4;vector-effect:non-scaling-stroke;}
   .qaspark .obj{stroke:var(--ink2);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke;}
@@ -2273,7 +2289,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v156</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v157</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -13030,6 +13046,112 @@ function qaStato(inc, tgt, fascia){
 }
 const QA_ET=['in obiettivo','zona gialla','zona arancio','fuori controllo'];
 
+
+/* ============ l'andamento, a tutta larghezza ============
+   Una riga di mesi con tre cose sopra:
+
+     · i RICAVI, come area di sfondo — danno la forma dell'anno, dove il
+       locale lavora e dove si ferma;
+     · la SPESA dell'area (o il margine, sui ricavi), linea piena;
+     · quanto quella spesa AVREBBE DOVUTO essere per stare in obiettivo:
+       ricavi × obiettivo, linea tratteggiata.
+
+   Il confronto che conta è fra le due linee, e quelle due stanno sulla stessa
+   scala. I ricavi hanno una scala loro, perché sono dieci volte più grandi:
+   servono a dare il contesto, non a essere confrontati — e c'è scritto.
+   Dove la linea piena sta sopra la tratteggiata, quel mese è costato più di
+   quello che l'incasso reggeva: il mese si colora di rosso.                 */
+function qaGrafico(opt){
+  const mesi=opt.ric.map((v,i)=>i).filter(i=>opt.ric[i]!=null && opt.val[i]!=null);
+  if(mesi.length<2) return '';
+  /* il margine laterale lascia posto a mezza colonna: senza, gennaio e
+     dicembre uscivano dal riquadro */
+  const W=1000, H=190, PL=40, PR=40, PT=16, PB=26;
+  const ric=opt.ric, val=opt.val;
+  const tgtLinea = opt.tgt!=null ? ric.map(r=>r==null?null:r*opt.tgt/100) : null;
+  const maxR=Math.max(...mesi.map(i=>ric[i])) || 1;
+  const maxV=Math.max(...mesi.map(i=>Math.max(val[i], tgtLinea?tgtLinea[i]:0)))*1.18 || 1;
+  const X=i=>PL+(W-PL-PR)*(i/11);
+  const YV=v=>PT+(H-PT-PB)*(1-v/maxV);
+  const via=(ps)=>ps.map((p,k)=>(k?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+
+  /* I ricavi stanno sotto, come colonne basse: servono a dire dove il locale
+     lavora e dove si ferma, non a essere confrontati con la spesa — e disegnarli
+     con la stessa penna delle due linee li faceva sembrare la stessa cosa.
+     Colonne contro linee: due oggetti diversi, due domande diverse. */
+  const altaMax=(H-PT-PB)*0.52;
+  const larg=(W-PL-PR)/13;
+  const area=mesi.map(i=>{
+    const h=altaMax*ric[i]/maxR;
+    return `<rect x="${(X(i)-larg/2).toFixed(1)}" y="${(H-PB-h).toFixed(1)}"
+      width="${larg.toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${MESI[i]}: ${fmtE(ric[i])}</title></rect>`;
+  }).join('');
+
+  const pv=mesi.map(i=>[X(i), YV(val[i])]);
+  const pt=tgtLinea?mesi.map(i=>[X(i), YV(tgtLinea[i])]):null;
+
+  const punti=mesi.map(i=>{
+    const sopra = tgtLinea ? (opt.giuMeglio ? val[i]>tgtLinea[i] : val[i]<tgtLinea[i]) : null;
+    const fuori = tgtLinea ? !sopra : false;
+    return `<circle cx="${X(i).toFixed(1)}" cy="${YV(val[i]).toFixed(1)}" r="3.2"
+      class="${tgtLinea?(fuori?'fuori':'dentro'):'neutro'}"><title>${MESI[i]}: ${fmtE(val[i])}${
+      tgtLinea?' · in obiettivo '+fmtE(tgtLinea[i]):''}</title></circle>`;
+  }).join('');
+  const etich=mesi.map(i=>`<text x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${MESI[i].slice(0,3)}</text>`).join('');
+
+  const nFuori = tgtLinea ? mesi.filter(i=>opt.giuMeglio ? val[i]<=tgtLinea[i] : val[i]>tgtLinea[i]).length : 0;
+  return `<div class="qagraf">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
+      <g class="ricavi">${area}</g>
+      ${pt?`<path class="obj" d="${via(pt)}"/>`:''}
+      <path class="val" d="${via(pv)}" style="stroke:${opt.col||'var(--brass)'}"/>
+      ${punti}
+      <g class="mesi">${etich}</g>
+    </svg>
+    <div class="leg">
+      <span><i class="r"></i>${opt.etRic||'Ricavi'} <b>${fmtE(mesi.reduce((t,i)=>t+ric[i],0))}</b>
+        <em>scala a sé, dà la forma dell'anno</em></span>
+      <span><i class="v" style="background:${opt.col||'var(--brass)'}"></i>${opt.etVal}
+        <b>${fmtE(mesi.reduce((t,i)=>t+val[i],0))}</b></span>
+      ${pt?`<span><i class="o"></i>${opt.etTgt||'In obiettivo'}
+        <b>${fmtE(mesi.reduce((t,i)=>t+tgtLinea[i],0))}</b>
+        <em>${nFuori?fmtNum(nFuori)+' mes'+(nFuori===1?'e':'i')+' fuori':'nessun mese fuori'}</em></span>`:''}
+    </div></div>`;
+}
+
+
+/* I tre blocchi sotto il grafico sono sempre gli stessi tre, in ogni area:
+   quanto pesa sul locale, quanto in cucina, quanto al bar. Chi apre due aree
+   di seguito trova le stesse domande nello stesso posto. */
+function qaTre(opt){
+  /* opt: {et, inc, euro, ric, tgt, incF, euroF, ricF, incB, euroB, ricB,
+           conv (divisione per quota), fascia, nota} */
+  const z = opt.tgt==null ? null : qaStato(opt.inc, opt.tgt, opt.fascia);
+  const cls = z==null ? '' : ['ok','warn','hot','bad'][z];
+  const scost = opt.tgt!=null ? (opt.inc-opt.tgt)/100*opt.ric : null;
+  const uno = qaCard(opt.et, fmtNum(opt.inc)+'<small>%</small>',
+    `<b>${fmtE(opt.euro)}</b> nel periodo su <b>${fmtE(opt.ric)}</b> di incasso` +
+    (opt.tgt==null ? '' :
+      `<br>l'obiettivo è il <b>${fmtNum(opt.tgt)}%</b>: ` +
+      (Math.abs(opt.inc-opt.tgt)<0.05 ? 'siamo in linea'
+        : (opt.inc>opt.tgt ? `<b>${qaPunti(Math.round((opt.inc-opt.tgt)*10)/10)}</b> sopra, <b>${fmtE(scost)}</b> di extracosto`
+                           : `<b>${qaPunti(Math.round((opt.tgt-opt.inc)*10)/10)}</b> sotto, <b>${fmtE(-scost)}</b> risparmiati`))),
+    cls);
+  const lato = (nome, inc, euro, ric, bu) => {
+    if(inc==null) return qaCard(nome,'—','Servono i ricavi divisi fra food e beverage.');
+    const zz = (opt.tgt==null||opt.conv) ? null : qaStato(inc, opt.tgt, opt.fascia);
+    return qaCard(nome, fmtNum(inc)+'<small>%</small>',
+      `<b>${fmtE(euro)}</b> su <b>${fmtE(ric)}</b> di incasso ${bu}` +
+      (opt.conv ? `<br><i>ribaltato per quota: l'incidenza è la stessa del totale per costruzione</i>`
+        : opt.tgt==null ? ''
+        : `<br>${Math.abs(inc-opt.tgt)<0.05?'in linea con':(inc>opt.tgt?'<b>'+qaPunti(Math.round((inc-opt.tgt)*10)/10)+'</b> sopra':'<b>'+qaPunti(Math.round((opt.tgt-inc)*10)/10)+'</b> sotto')} l'obiettivo`),
+      zz==null?'':['ok','warn','hot','bad'][zz]);
+  };
+  return uno
+    + lato('In cucina', opt.incF, opt.euroF, opt.ricF, 'cucina')
+    + lato('Al bar',    opt.incB, opt.euroB, opt.ricB, 'bar');
+}
+
 function quadroArea(tipo){
   const cfg=QA_CFG[tipo]; if(!cfg) return;
   const box=document.getElementById(cfg.box); if(!box) return;
@@ -13139,17 +13261,25 @@ function qaCosto(tipo,cfg,m,a0,t,per,qF){
                    : `<b>${qaPunti(gap)}</b> di distanza, oltre la soglia di 15 — e sul totale non si vede.`),
           gap==null?'':gap<=15?'ok':gap>20?'bad':'warn');
 
-  const cardAnd = qaCard('Come si muove nei mesi',
-    qaSpark(serie, tgt) || '—',
-    vis.length<2 ? 'Serve più di un mese per vedere un andamento.'
-      : `peggiore <b>${MESI[peggio.i]}</b> ${fmtNum(peggio.v)}% · migliore <b>${MESI[meglio.i]}</b> ${fmtNum(meglio.v)}%` +
-        `<br>la linea tratteggiata è l'obiettivo del ${fmtNum(tgt)}%`);
+  /* l'andamento, in testa e a tutta larghezza: la spesa contro quello che
+     l'incasso di quel mese avrebbe retto */
+  const mesiIdx = scope!=='ytd' ? [scope] : m.complete.map(x=>x.i);
+  const serieRic = m.months.map((x,i)=> mesiIdx.includes(i) && ricBU(x)>0 ? ricBU(x) : null);
+  const serieVal = m.months.map((x,i)=> mesiIdx.includes(i) && ricBU(x)>0 ? cosBU(x) : null);
+  const grafico = qaGrafico({ric:serieRic, val:serieVal, tgt:tgt,
+    etRic:'Ricavi', etVal:cfg.nome, etTgt:`In obiettivo (${fmtNum(tgt)}%)`,
+    col: z===0?'var(--ok)':z===1?'#C9A227':z===2?'var(--hot)':'var(--bad)'});
 
   return `<section class="qa">
     <div class="sechead"><div><h2>Il quadro · ${cfg.nome}${a.bu&&a.bu!=='tot'?' · '+a.et:''}</h2>
       <div class="sub">${per} · ${cfg.fascia?'la soglia è il centro di una fascia, non un tetto':QA_ET[z]}${
         a.bu&&a.bu!=='tot'?` · <b>stai guardando solo ${a.et.toLowerCase()}</b>`:''}</div></div>
-    <div class="qagrid">${cardNumero}${cardFB}${cardAnd}</div>
+    ${grafico}
+    <div class="qagrid">${qaTre({
+      et: cfg.nome, inc, euro: num(a[cfg.k]), ric: a.ricavi, tgt,
+      incF: iF, euroF: FB.f, ricF: a.ricaviFood,
+      incB: iB, euroB: FB.b, ricB: a.ricaviBev,
+      conv, fascia: !!cfg.fascia })}</div>
     ${qaExtra(tipo,m,a,t,qF)}
   </section>`;
 }
@@ -13197,25 +13327,42 @@ function qaRicavi(m,a,per,qF){
         `<b>${fmtNum(v.Food.pz,0)}</b> pezzi food e <b>${fmtNum(v.Beverage.pz,0)}</b> beverage nel periodo`)
     : qaCard('Quanto vale un pezzo','—','Serve il venduto di cassa: senza, il prezzo medio non si può calcolare.');
 
+  /* sui ricavi la linea che conta accanto all'incasso è il margine: quanto
+     di quell'incasso è rimasto. La tratteggiata è il margine obiettivo. */
+  const mesiIdx = scope!=='ytd' ? [scope] : m.complete.map(x=>x.i);
+  const sRic = m.months.map((x,i)=> mesiIdx.includes(i) && x.ricavi>0 ? x.ricavi : null);
+  const sRo  = m.months.map((x,i)=> mesiIdx.includes(i) && x.ricavi>0 ? num(x.ro) : null);
+  const tRo  = num(S.targets.ro);
+  const grafico = qaGrafico({ric:sRic, val:sRo, tgt:tRo, giuMeglio:true,
+    etRic:'Incasso', etVal:'Margine operativo', etTgt:`Obiettivo (${fmtNum(tRo)}%)`,
+    col:'var(--ok)'});
+  const roTot = m.months.reduce((t,x,i)=> mesiIdx.includes(i)&&x.ricavi>0 ? t+num(x.ro) : t, 0);
+  const roF = a.ricaviFood>0 ? null : null;
+
   return `<section class="qa">
     <div class="sechead"><div><h2>Il quadro · Ricavi</h2>
       <div class="sub">${per} · da qui nascono tutte le incidenze del cruscotto${
         liteBU!=='tot'?` · <b>stai guardando solo ${liteBU==='food'?'il food':'il beverage'}</b>`:''}</div></div>
+    ${grafico}
     <div class="qagrid">
       ${qaCard('Incasso del periodo'+(liteBU!=='tot'?' · '+(liteBU==='food'?'Food':'Beverage'):''),
         fmtE(liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi),
         `media <b>${fmtE((liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi)/(a.n||1))}</b> al mese su ${a.n} mes${a.n===1?'e':'i'}` +
+        `<br>ne resta a margine <b>${fmtE(roTot)}</b>, cioè <b>${a.ricavi>0?fmtNum(roTot/a.ricavi*100):'—'}%</b>` +
         (forti?`<br>${n} mes${n===1?'e':'i'} fanno il 40% dell'anno: <b>${forti}</b>`:''))}
-      ${qaCard('Cucina e bar',
-        `${fmtNum(qF*100)}<small>% e </small>${fmtNum((1-qF)*100)}<small>%</small>`,
-        `<b>${fmtE(a.ricaviFood)}</b> food · <b>${fmtE(a.ricaviBev)}</b> beverage<br>
-         <span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>`)}
-      ${qaCard('Come si muove nei mesi', qaSpark(serie.map(x=>({i:x.i, v:x.v==null?null:x.v*1000})),null,'€')||'—',
-        vis.length<2?'Serve più di un mese per vedere un andamento.'
-          :`più alto <b>${MESI[meglio.i]}</b> ${fmtE(meglio.v*1000)} · più basso <b>${MESI[peggio.i]}</b> ${fmtE(peggio.v*1000)}`)}
+      ${qaCard('In cucina',
+        fmtNum(qF*100)+'<small>% dell\'incasso</small>',
+        `<b>${fmtE(a.ricaviFood)}</b> nel periodo` +
+        (v&&v.Food.pz?`<br><b>${fmtNum(v.Food.pz,0)}</b> pezzi · prezzo medio <b>${fmtE2(v.Food.inc/v.Food.pz)}</b>`:'') +
+        `<br><span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>`)}
+      ${qaCard('Al bar',
+        fmtNum((1-qF)*100)+'<small>% dell\'incasso</small>',
+        `<b>${fmtE(a.ricaviBev)}</b> nel periodo` +
+        (v&&v.Beverage.pz?`<br><b>${fmtNum(v.Beverage.pz,0)}</b> pezzi · prezzo medio <b>${fmtE2(v.Beverage.inc/v.Beverage.pz)}</b>`:''))}
       ${confronto}
-      ${cardVen}
     </div>
+    ${vis.length>1?`<div class="qanota">Il mese più alto è <b>${MESI[meglio.i]}</b> con ${fmtE(meglio.v*1000)},
+      il più basso <b>${MESI[peggio.i]}</b> con ${fmtE(peggio.v*1000)}.</div>`:''}
   </section>`;
 }
 
