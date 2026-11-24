@@ -1341,7 +1341,7 @@
   .lpigr{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
     background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;}
   .lpigr table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;}
-  .lpigr th,.lpigr td{padding:7px 4px;text-align:center;font-family:var(--num);font-size:11.5px;
+  .lpigr th,.lpigr td{padding:5px 4px;text-align:center;font-family:var(--num);font-size:11.5px;
     color:#D6D6D6;border-bottom:1px solid #262626;white-space:nowrap;}
   .lpigr thead th{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;color:#8F8F8F;
     letter-spacing:.6px;padding:9px 4px 7px;}
@@ -1350,7 +1350,7 @@
   .lpigr thead th.oggi{color:var(--brass);} .lpigr thead th.oggi small{color:var(--brass);}
   .lpigr thead th.chiuso{color:#5E5E5E;}
   .lpigr td{min-width:58px;}
-  .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.3;}
+  .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.25;}
   .lpigr td i{font-style:normal;color:#4A4A4A;}
   .lpigr td.vuota{background:#191919;}
   .lpigr td.oggi{background:#1F1D18;}
@@ -1362,10 +1362,37 @@
     min-width:104px;max-width:104px;padding:7px 9px;box-shadow:1px 0 0 #2E2E2E;}
   .lpigr thead th.chi{background:#1B1B1B;}
   .lpigr th.chi .n{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#E8E8E8;
-    white-space:normal;line-height:1.25;}
+    white-space:normal;line-height:1.25;display:flex;align-items:baseline;gap:5px;}
+  .lpigr th.chi .n .via{color:#5A5A5A;font-size:10px;cursor:pointer;flex:none;}
+  .lpigr th.chi .n .via:hover{color:#E0705E;}
   .lpigr th.chi .s{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:400;color:#8F8F8F;margin-top:1px;}
-  .lpigr th.chi .tot{font-size:11px;font-weight:700;color:#9A9A9A;margin-top:3px;}
-  .lpigr th.chi .tot.ok{color:#7FC79C;} .lpigr th.chi .tot.warn{color:#E8B14A;} .lpigr th.chi .tot.bad{color:#E0705E;}
+  /* la colonna delle ore della settimana, in fondo a destra: nella colonna
+     dei nomi faceva tre righe e alzava tutta la griglia */
+  .lpigr th.tt,.lpigr td.tt{position:sticky;right:0;z-index:1;background:#1B1B1B;
+    min-width:52px;font-weight:700;color:#9A9A9A;box-shadow:-1px 0 0 #2E2E2E;}
+  .lpigr thead th.tt{font-family:'Inter',sans-serif;font-size:10px;color:#8F8F8F;}
+  .lpigr td.tt.ok{color:#7FC79C;} .lpigr td.tt.warn{color:#E8B14A;} .lpigr td.tt.bad{color:#E0705E;}
+  /* i reparti: una riga di separazione con il nome e il tasto per aggiungere */
+  .lpigr tr.grp th,.lpigr tr.grp td{background:#191919;border-bottom:1px solid #2E2E2E;
+    border-top:1px solid #2E2E2E;padding:6px 4px;}
+  .lpigr tr.grp th.chi,.lpigr tr.grp td.tt{background:#191919;}
+  .lpigr tr.grp .rn{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;
+    letter-spacing:1.4px;text-transform:uppercase;color:#C8C8C8;}
+  .lpigr tr.grp .rs{font-family:'Inter',sans-serif;font-size:10px;color:#7A7A7A;margin-top:1px;}
+  .lpigr tr.grp td.gz{text-align:left;padding-left:9px;}
+  .lpigr tr.grp .agg{background:#242424;border:1px solid #3A3A3A;color:#C8C8C8;border-radius:8px;
+    padding:4px 10px;font:inherit;font-size:11px;cursor:pointer;}
+  .lpigr tr.grp .agg:hover{border-color:var(--brass);color:var(--brass);}
+  .lpigr tr.grp .fz{font-family:'Inter',sans-serif;font-size:10.5px;color:#7A7A7A;margin-left:9px;}
+  /* da computer si scrive dentro la casella */
+  .lpigr.diretto td.ed{padding:3px 4px;}
+  .lpigr.diretto td.ed .rr{display:flex;align-items:center;gap:3px;justify-content:center;margin:2px 0;}
+  .lpigr.diretto td.ed .rr span{color:#4A4A4A;font-size:10px;}
+  .lpic{width:44px;background:#242424;border:1px solid #303030;border-radius:6px;padding:4px 2px;
+    color:#E8E8E8;font-family:var(--num);font-size:11px;text-align:center;
+    -webkit-appearance:none;appearance:none;}
+  .lpic:focus{outline:none;border-color:var(--brass);background:#2A2A2A;}
+  .lpic::placeholder{color:#4A4A4A;}
   .lpigr tfoot td,.lpigr tfoot th{border-bottom:none;border-top:1px solid #2E2E2E;
     font-weight:700;color:#9A9A9A;background:#191919;}
   .lpigr tfoot th.chi{background:#191919;}
@@ -2184,7 +2211,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v150</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v151</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4276,40 +4303,113 @@ function lpiCellaTesto(r, g){
 }
 function lpiGriglia(w, k, mod){
   const oggiISO=isoDi(new Date());
-  const righe=w.righe.slice().sort((a,b)=>
-    String(a.reparto||'').localeCompare(String(b.reparto||''),'it')
-    || String(a.nome||'').localeCompare(String(b.nome||''),'it'));
+  /* sul telefono una casella da sessanta pixel non si scrive: si tocca e si
+     apre il riquadro grande. Da computer invece le caselle si riempiono
+     direttamente, che è il modo in cui si fanno gli orari davvero. */
+  const diretto = mod && !document.documentElement.classList.contains('mobi');
   const oreG=g=>w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
   const testa=[0,1,2,3,4,5,6].map(g=>{
     const d=piuGiorni(k,g), nota=(w.note[g]||{});
     return `<th class="${d===oggiISO?'oggi':''} ${nota.k?'chiuso':''}">
       ${GIORNI[g]}<small>${new Date(d+'T12:00:00').getDate()}</small></th>`;
   }).join('');
-  const corpo=righe.map(r=>{
-    const set=oreSettimana(r).tot;
-    const contr=num(r.c);
-    const cl = contr>0 && set>0 ? (Math.abs(set-contr)<0.5 ? 'ok' : set>contr ? 'warn' : 'bad') : '';
-    return `<tr>
-      <th class="chi"><div class="n">${escH(r.nome||'—')}</div>
-        <div class="s">${escH(r.reparto||'')}${contr>0?' · '+fmtNum(contr)+'h':''}</div>
-        <div class="tot ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</div></th>
-      ${[0,1,2,3,4,5,6].map(g=>{
-        const vuota = !(oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
-        const apr = lpiCella===r.id+'.'+g;
-        return `<td class="${vuota?'vuota':''} ${apr?'apr':''} ${piuGiorni(k,g)===oggiISO?'oggi':''}"
-          ${mod?`data-lpicel="${r.id}.${g}"`:''}>${lpiCellaTesto(r,g)}</td>`;
-      }).join('')}
-    </tr>`;
+
+  /* I reparti si guardano separati: la sala non si legge insieme alla cucina,
+     e chi fa gli orari ragiona per reparto. Ognuno ha il suo blocco, con il
+     bottone per aggiungere chi manca e la crocetta per togliere chi non c'è
+     questa settimana. */
+  const ordine = r => { const i=TU_REP.indexOf(r); return i<0 ? TU_REP.length : i; };
+  const reparti=[...new Set(w.righe.map(r=>r.reparto||'Senza reparto'))]
+    .sort((a,b)=> ordine(a)-ordine(b) || a.localeCompare(b,'it'));
+
+  const cella=(r,g)=>{
+    const vuota = !(oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
+    const apr = lpiCella===r.id+'.'+g;
+    const oggi = piuGiorni(k,g)===oggiISO ? 'oggi' : '';
+    if(diretto){
+      const v=i=>escH(oraTesto(r.g[g][i])||'');
+      const campo=i=>`<input class="lpic" data-lpi="${r.id}.${g}.${i}" value="${v(i)}"
+        placeholder="–" inputmode="numeric" autocomplete="off" spellcheck="false">`;
+      return `<td class="ed ${vuota?'vuota':''} ${oggi}">
+        <div class="rr">${campo(0)}<span>–</span>${campo(1)}</div>
+        <div class="rr">${campo(2)}<span>–</span>${campo(3)}</div></td>`;
+    }
+    return `<td class="${vuota?'vuota':''} ${apr?'apr':''} ${oggi}"
+      ${mod?`data-lpicel="${r.id}.${g}"`:''}>${lpiCellaTesto(r,g)}</td>`;
+  };
+
+  const corpo=reparti.map(rep=>{
+    const dentro=w.righe.filter(r=>(r.reparto||'Senza reparto')===rep)
+      .sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'it'));
+    const oreRep=dentro.reduce((t,r)=>t+oreSettimana(r).tot,0);
+    const fuori = mod ? (S.turni.righe||[]).filter(t=>
+      (t.reparto||'Senza reparto')===rep && !w.righe.some(r=>norm(r.nome)===norm(t.nome))) : [];
+    const testaRep=`<tr class="grp">
+      <th class="chi"><div class="rn">${escH(rep)}</div>
+        <div class="rs">${fmtNum(dentro.length)} ${dentro.length===1?'persona':'persone'}</div></th>
+      <td colspan="7" class="gz">
+        ${mod?`<button class="agg" data-lpiadd="${escH(rep)}">+ aggiungi</button>`:''}
+        ${fuori.length?`<span class="fz">${fmtNum(fuori.length)} in organico non ${fuori.length===1?'è':'sono'} in settimana</span>`:''}</td>
+      <td class="tt">${oreRep>0?fmtNum(Math.round(oreRep*10)/10)+'h':'—'}</td></tr>`;
+    const righe=dentro.map(r=>{
+      const set=oreSettimana(r).tot, contr=num(r.c);
+      const cl = contr>0 && set>0 ? (Math.abs(set-contr)<0.5 ? 'ok' : set>contr ? 'warn' : 'bad') : '';
+      return `<tr>
+        <th class="chi"><div class="n">${escH(r.nome||'—')}${
+            mod?`<span class="via" data-lpivia="${r.id}" title="toglilo da questa settimana">&#10005;</span>`:''}</div>
+          <div class="s">${contr>0?fmtNum(contr)+'h a contratto':'senza contratto'}</div></th>
+        ${[0,1,2,3,4,5,6].map(g=>cella(r,g)).join('')}
+        <td class="tt ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</td></tr>`;
+    }).join('');
+    return testaRep+righe;
   }).join('');
+
+  const totSett=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
   const piede=`<tr class="tot">
     <th class="chi"><div class="n">Ore del giorno</div></th>
     ${[0,1,2,3,4,5,6].map(g=>{
       const v=oreG(g), nota=(w.note[g]||{});
       return `<td class="${nota.k?'chiuso':''}">${nota.k==='chiuso'?'<i>chiuso</i>':(v>0?fmtNum(Math.round(v*10)/10):'<i>·</i>')}</td>`;
-    }).join('')}</tr>`;
-  return `<div class="lpigr"><table>
-    <thead><tr><th class="chi"></th>${testa}</tr></thead>
+    }).join('')}
+    <td class="tt">${totSett>0?fmtNum(Math.round(totSett*10)/10)+'h':'—'}</td></tr>`;
+
+  return `<div class="lpigr ${diretto?'diretto':''}"><table>
+    <thead><tr><th class="chi"></th>${testa}<th class="tt">Ore</th></tr></thead>
     <tbody>${corpo}</tbody><tfoot>${piede}</tfoot></table></div>`;
+}
+/* i totali si riscrivono da soli mentre si compila, senza toccare la griglia */
+function lpiTotali(){
+  const w=pianSett();
+  document.querySelectorAll('#litePage .lpigr tbody tr').forEach(tr=>{
+    const via=tr.querySelector('[data-lpivia]'); if(!via) return;
+    const r=w.righe.find(x=>x.id===via.dataset.lpivia); if(!r) return;
+    const set=oreSettimana(r).tot, contr=num(r.c);
+    const td=tr.querySelector('td.tt'); if(!td) return;
+    td.className='tt '+(contr>0 && set>0 ? (Math.abs(set-contr)<0.5?'ok':set>contr?'warn':'bad') : '');
+    td.textContent = set>0 ? fmtNum(Math.round(set*10)/10)+'h' : '—';
+  });
+  const pie=document.querySelectorAll('#litePage .lpigr tfoot td');
+  for(let g=0; g<7 && pie[g]; g++){
+    const v=w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
+    if(!pie[g].classList.contains('chiuso'))
+      pie[g].innerHTML = v>0 ? fmtNum(Math.round(v*10)/10) : '<i>·</i>';
+  }
+  if(pie[7]){ const t=w.righe.reduce((a,r)=>a+oreSettimana(r).tot,0);
+    pie[7].textContent = t>0 ? fmtNum(Math.round(t*10)/10)+'h' : '—'; }
+  document.querySelectorAll('#litePage .lpigr tr.grp').forEach(tr=>{
+    const nome=(tr.querySelector('.rn')||{}).textContent;
+    const td=tr.querySelector('td.tt'); if(!td||!nome) return;
+    const v=w.righe.filter(r=>(r.reparto||'Senza reparto')===nome)
+      .reduce((a,r)=>a+oreSettimana(r).tot,0);
+    td.textContent = v>0 ? fmtNum(Math.round(v*10)/10)+'h' : '—';
+  });
+}
+/* chi dell'organico non è in questa settimana: si aggiunge da qui */
+function lpiDaAggiungere(rep){
+  migrateS();
+  const w=pianSett();
+  return (S.turni.righe||[]).filter(t=>
+    (t.reparto||'Senza reparto')===rep && !w.righe.some(r=>norm(r.nome)===norm(t.nome)));
 }
 /* il riquadro che si apre toccando una casella: qui le caselle sono grandi */
 function lpiEditor(w, k){
@@ -10987,17 +11087,18 @@ async function renderVPRIO(){
 function obCoerenzaTesto(c){
   if(!c) return null;
   const mesi=`${fmtNum(c.mesi)} mes${c.mesi===1?'e':'i'} chius${c.mesi===1?'o':'i'}`;
+  const comune = `Il <b>budget</b> è l'obiettivo di crescita che ci siamo dati sull'anno precedente:
+      <b>${fmtE(c.budget)}</b> su ${mesi}.<br>
+      L'<b>obiettivo di utile</b> è un'altra cosa: è il fatturato che serve perché, con i costi di
+      quest'anno — <b>${fmtE(c.costi)}</b> — resti un margine del <b>${fmtNum(c.t)}%</b>, cioè
+      <b>${fmtE(c.serve)}</b>.`;
   if(c.scarto>=0) return {ok:true,
-    tit:'Il budget regge l\'utile obiettivo',
-    txt:`Su ${mesi}, i costi sono <b>${fmtE(c.costi)}</b>: per lasciare il <b>${fmtNum(c.t)}%</b> di utile
-      servirebbero <b>${fmtE(c.serve)}</b> di ricavi, e il budget ne chiede <b>${fmtE(c.budget)}</b>.
-      Raggiungere il budget porta anche all'utile.`};
+    tit:'Budget e obiettivo di utile si parlano',
+    txt:`${comune}<br>Il budget sta <b>sopra</b> di ${fmtE(c.scarto)}: centrarlo porta anche al margine.`};
   return {ok:false,
-    tit:'Il budget non basta per l\'utile obiettivo',
-    txt:`Su ${mesi}, i costi sono <b>${fmtE(c.costi)}</b>: per lasciare il <b>${fmtNum(c.t)}%</b> di utile
-      servirebbero <b>${fmtE(c.serve)}</b> di ricavi, ma il budget ne chiede <b>${fmtE(c.budget)}</b>,
-      cioè <b>${fmtE(-c.scarto)}</b> in meno. Centrare il budget lascerebbe comunque l'utile sotto obiettivo:
-      o si alza il budget, o si abbassano i costi.`};
+    tit:'Budget e obiettivo di utile non coincidono',
+    txt:`${comune}<br>Fra i due ci sono <b>${fmtE(-c.scarto)}</b>: centrare il budget non basta per
+      arrivare al ${fmtNum(c.t)}%. O si alza il budget, o si abbassano i costi.`};
 }
 
 /* =============== OBIETTIVI DEL MESE E PUNTO DI PAREGGIO ===============
@@ -11054,8 +11155,6 @@ async function renderOBMESE(){
       <div class="sub">Il budget nasce dall'anno prima più una crescita, e si può scrivere a mano
       mese per mese. Per ogni mese chiuso si vede se è stato raggiunto e di quanto; per quelli
       ancora aperti, quanto manca.</div></div></div>
-    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}"><div class="t">${coe.tit}</div>
-      <div class="x">${coe.txt}</div></div>`:''}
     <div class="qagrid">
       ${(()=>{
         const aperti=righe.filter(x=>!x.chiuso && x.obiettivo>0);
@@ -11124,6 +11223,8 @@ async function renderOBMESE(){
     </table></div>
     ${!mPrec?`<div class="qanota">Il ${num(S.anno)-1} non è caricato, quindi la crescita non ha una base:
       gli obiettivi vanno scritti a mano.</div>`:''}
+    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}" style="margin-top:16px"><div class="t">${coe.tit}</div>
+      <div class="x">${coe.txt}</div></div>`:''}
   </section>`;
 
   document.getElementById('obCre').oninput=e=>{
@@ -11281,8 +11382,6 @@ async function liteOBMESE(){
   const coe=obCoerenzaTesto(obCoerenza());
   return `<div class="lp">${lpTesta('Obiettivi di fatturato','esercizio '+S.anno)}
     ${lpObTre('obmese')}
-    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}"><div class="t">${coe.tit}</div>
-      <div class="x">${coe.txt}</div></div>`:''}
     ${lpCard('Budget dell\'anno', fmtE(obAnno),
       `incassati <b>${fmtE(fattoAnno)}</b> · ${manca>0?`mancano <b>${fmtE(manca)}</b>`:`<b>superato di ${fmtE(-manca)}</b>`}`,
       manca<=0?'ok':fattoAnno/obAnno>=0.9?'warn':'bad')}
@@ -11299,6 +11398,8 @@ async function liteOBMESE(){
       x.fatto>0?fmtE(x.fatto):'—',
       x.manca==null?null:x.manca>0?'−'+fmtE(x.manca):'+'+fmtE(-x.manca),
       x.manca==null?'':x.manca<=0?'ok':x.chiuso?'bad':'warn')).join('')}
+    ${coe?`<div class="obcoe ${coe.ok?'ok':'warn'}" style="margin-top:16px"><div class="t">${coe.tit}</div>
+      <div class="x">${coe.txt}</div></div>`:''}
     ${lpChiusura('Obiettivi per area · Obiettivi di fatturato')}</div>`;
 }
 async function liteOBBEP(){
@@ -12955,6 +13056,17 @@ async function demoGenera(){
   MP.forn = DEMO_FORN.map(([n,piva,tel,mail,ref])=>({n,piva,tel,mail,ref}));
   const oggi=new Date().toISOString().slice(0,10);
   MP.ing = DEMO_ING.map(([e,f,u,li,pz,co,c])=>({id:newId(), e,f,u,li,pz,co,c, s1:0,s2:0,se:0,ac:0, d:oggi}));
+  /* qualche rincaro vero: senza storico la pagina Ingredienti non ha niente
+     da mostrare, e il rincaro di una materia prima e' esattamente la cosa che
+     alza il food cost senza che nessuno tocchi una ricetta. */
+  const DEMO_RINCARI=[['Olio extravergine',0.82,-120],['Burro',0.88,-75],
+                      ['Farina 00',0.94,-200],['Parmigiano 24 mesi',0.91,-45]];
+  const giorniFa=n=>{ const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+  DEMO_RINCARI.forEach(([et,fatt,gg])=>{
+    const x=MP.ing.find(y=>norm(y.e)===norm(et)); if(!x) return;
+    x.st=[{d:giorniFa(gg), li:+(numIt(x.li)*fatt).toFixed(2)}];
+    x.d=giorniFa(Math.round(gg/4));
+  });
   DEMO_PREP.forEach(([e,u,co,cn,righe])=>{
     MP.ing.push({id:newId(), e, f:'', u, c:'Preparazioni', li:0,pz:1,co, s1:0,s2:0,se:0,ac:0, d:oggi,
       cn, prep:righe.map(([et,q,sc])=>({e:et, q, sc}))});
@@ -13751,6 +13863,33 @@ document.addEventListener('click',async e=>{
   /* pianificazione in lite: viste, giorni, settimane, azioni */
   const lv=e.target.closest('[data-lpivista]');
   if(lv){ lpiVista=lv.dataset.lpivista; liteRender('pi'); return; }
+  /* aggiungere o togliere una persona dalla settimana */
+  const la2=e.target.closest('[data-lpiadd]');
+  if(la2){
+    migrateS();
+    const rep=la2.dataset.lpiadd, liberi=lpiDaAggiungere(rep);
+    if(!liberi.length){ toast('In organico non c\'è nessun altro per '+rep+'.'); return; }
+    const w=pianSett();
+    storiaPrima();
+    liberi.forEach(t=>w.righe.push({id:'p'+newId(), nome:t.nome, reparto:t.reparto, c:t.c, o:t.o,
+      g:Array.from({length:7},()=>['','','',''])}));
+    await saveState(); storiaSegna(); liteRender('pi');
+    toast('✓ '+liberi.length+' '+(liberi.length===1?'persona aggiunta':'persone aggiunte')+' in '+rep+'.');
+    return;
+  }
+  const lv2=e.target.closest('[data-lpivia]');
+  if(lv2){
+    migrateS();
+    const w=pianSett(), r=w.righe.find(x=>x.id===lv2.dataset.lpivia);
+    if(r && await uiConfirm('Togliere '+(r.nome||'questa persona')+' da questa settimana?\n\n'+
+        'Resta in organico: si può rimettere con «+ aggiungi».')){
+      storiaPrima();
+      w.righe=w.righe.filter(x=>x.id!==r.id);
+      if(lpiCella && lpiCella.split('.')[0]===r.id) lpiCella=null;
+      await saveState(); storiaSegna(); liteRender('pi');
+    }
+    return;
+  }
   /* una casella della griglia apre (o chiude) il riquadro dell'orario */
   const lc=e.target.closest('[data-lpicel]');
   if(lc){ const v=lc.dataset.lpicel;
@@ -16632,7 +16771,11 @@ document.addEventListener('change', async e=>{
       r.g[+g][+i]= v || '';
       el.value = v || '';
       await saveState();
-      liteRender('pi');
+      /* da computer si scrive dentro la griglia: ridisegnarla a ogni casella
+         farebbe perdere il punto in cui si sta scrivendo. Si aggiornano solo
+         i totali, che sono l'unica cosa che cambia fuori dalla casella. */
+      if(el.classList.contains('lpic')) lpiTotali();
+      else liteRender('pi');
     }
     return;
   }
