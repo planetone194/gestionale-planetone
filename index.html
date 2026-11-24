@@ -2273,7 +2273,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v154</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v155</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3826,8 +3826,7 @@ function renderDashLite(a, t, m, isM){
   const incRu=a.incRu*100, incMp=a.incMp*100, incSg=a.incSg*100;
   const exRu=Math.max(0, a.ru-a.ricavi*t.ru/100);
   sp.push(lSpia('pers','Stipendi',
-    incRu<=t.ru ? `${R(incRu)} € ogni 100, il limite è ${fmtNum(t.ru)}`
-                : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}`,
+    `${R(incRu)} € di stipendi spesi ogni 100 € incassati (target ${R(t.ru)} €)`,
     incRu<=t.ru ? 'ok' : incRu>t.ru+10 ? 'rossa' : 'on',
     incRu<=t.ru ? Math.max(0, a.ricavi*t.ru/100-a.ru) : exRu,
     [`Il costo del personale è <b>${E(a.ru)}</b> sul periodo, cioè <b>${fmtNum(incRu)} €</b> ogni 100 di incasso.`,
@@ -3842,9 +3841,8 @@ function renderDashLite(a, t, m, isM){
   const exMp=Math.max(0, a.mp-a.ricavi*t.mp/100);
   const incMpB = a.ricaviBev>0 ? a.mpBev/a.ricaviBev*100 : null;
   sp.push(lSpia('mp','Materia prima',
-    incMp<=t.mp ? `${R(incMp)} € ogni 100, il limite è ${fmtNum(t.mp)}`
-      : `${R(incMp)} € ogni 100 invece di ${fmtNum(t.mp)}${
-          incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}`,
+    `${R(incMp)} € di merce spesi ogni 100 € incassati${
+      incMpF!=null && incMpF>incMp+3 ? `, in cucina ${R(incMpF)} €` : ''} (target ${R(t.mp)} €)`,
     incMp<=t.mp ? 'ok' : incMp>t.mp+10 ? 'rossa' : 'on',
     incMp<=t.mp ? Math.max(0, a.ricavi*t.mp/100-a.mp) : exMp,
     [`Gli acquisti di merce fanno <b>${E(a.mp)}</b>, cioè <b>${fmtNum(incMp)} €</b> ogni 100 di incasso.`,
@@ -3857,10 +3855,11 @@ function renderDashLite(a, t, m, isM){
   const incMk=a.incMk*100, zMk=mktZona(incMk, t.mk);
   const scMk=a.mk-a.ricavi*num(t.mk)/100;
   sp.push(lSpia('mkt','Marketing',
-    zMk===0 ? `${R(incMk)} € ogni 100, in fascia`
+    zMk===0 ? `${R(incMk)} € investiti ogni 100 € incassati (fascia ${R(t.mk)} €)`
     : incMk < num(t.mk)
-      ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}: si può investire di più`)
-      : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}`,
+      ? (incMk<0.5 ? `il locale non si sta facendo vedere (fascia ${R(t.mk)} €)`
+                   : `solo ${R(incMk)} € investiti ogni 100 € incassati (fascia ${R(t.mk)} €): si può investire di più`)
+      : `${R(incMk)} € investiti ogni 100 € incassati (fascia ${R(t.mk)} €)`,
     zMk===0 ? 'ok' : zMk>=3 ? 'rossa' : 'on',
     Math.abs(scMk),
     [`Il marketing vale <b>${E(a.mk)}</b> sul periodo, <b>${fmtNum(incMk)} €</b> ogni 100 di incasso.`,
@@ -3877,8 +3876,7 @@ function renderDashLite(a, t, m, isM){
     if(Math.abs(v)>0.005 && (c.m||[]).filter(x=>num(x)>0).length<=2) unaTantum+=v;
   });
   sp.push(lSpia('sg','Spese fisse',
-    incSg<=t.sg ? `${R(incSg)} € ogni 100, il limite è ${fmtNum(t.sg)}`
-                : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}`,
+    `${R(incSg)} € spesi ogni 100 € incassati (target ${R(t.sg)} €)`,
     incSg<=t.sg ? 'ok' : incSg>t.sg+10 ? 'rossa' : 'on',
     incSg<=t.sg ? Math.max(0, a.ricavi*t.sg/100-a.sg) : exSg,
     [`Le spese generali fanno <b>${E(a.sg)}</b>, <b>${fmtNum(incSg)} €</b> ogni 100 di incasso, contro un limite del ${fmtNum(t.sg)}%.`,
@@ -3917,8 +3915,7 @@ function renderDashLite(a, t, m, isM){
     const ricAlto = altoF?a.ricaviFood:a.ricaviBev;
     const exBU = Math.max(0, (alto-num(t.ru))/100*ricAlto);
     sp.push(lSpia('bu', nome,
-      gap<=15 ? `cucina e bar sono allineati: ${R(iF)} e ${R(iB)} € ogni 100`
-              : `${R(alto)} € di stipendi ogni 100, al ${altro} ${R(basso)}`,
+      `${R(alto)} € di stipendi spesi ogni 100 € incassati (al ${altro} ${R(basso)} €)`,
       gap<=15 ? 'ok' : gap>20 ? 'rossa' : 'on',
       gap<=15 ? 0 : exBU,
       [`Il personale imputato ${altoF?'alla cucina':'al bar'} pesa <b>${fmtNum(alto)}%</b> sul suo incasso, ${altoF?'al bar':'in cucina'} <b>${fmtNum(basso)}%</b>: <b>${fmtNum(gap)} punti</b> di distanza fra due reparti dello stesso locale.`,
