@@ -1447,6 +1447,10 @@
   .lspia{background:#1B1B1B;border:1px solid #333;border-radius:14px;padding:13px 15px 14px;text-align:left;}
   .lspia.on{background:#2B2317;border-color:#6B5520;}
   .lspia.on.rossa{background:#2E1A17;border-color:#73302A;}
+  .lspia.verde{background:#17241C;border-color:#2F5340;}
+  .lspia.verde .n{color:#7FC79C;}
+  .lspia.verde .d{color:#9FBFAC;}
+  .lspia.verde .eu{color:#7FC79C;}
   .lspia .cap{display:flex;align-items:center;gap:10px;}
   .lspia .cap svg{flex:none;}
   .lspia .n{flex:1;min-width:0;font-size:13.5px;font-weight:700;color:#8C8C8C;letter-spacing:.2px;}
@@ -1454,7 +1458,7 @@
   .lspia .eu{font-family:var(--num);font-size:15px;font-weight:700;color:#E8B14A;
     white-space:nowrap;text-align:right;line-height:1.15;}
   .lspia.on.rossa .eu{color:#E0705E;}
-  .lspia:not(.on) .eu,.lspia .eu.muta{color:#8C8C8C;}
+  .lspia:not(.on):not(.verde) .eu,.lspia .eu.muta{color:#8C8C8C;}
   .lspia .eu small{display:block;font-family:'Inter',sans-serif;font-size:10px;font-weight:500;
     letter-spacing:.4px;color:#8C8C8C;margin-top:1px;}
   .lspia .d{font-size:12.5px;color:#7A7A7A;line-height:1.45;margin-top:7px;}
@@ -1573,7 +1577,7 @@
   html.mob .prkpis,html.mob .kpis{grid-template-columns:1fr !important;}
   html.mob .gaugeside{flex-direction:column;}
   html.mob section{overflow-x:auto;}
-  html.mob .sgb{grid-template-columns:1fr;padding-left:0;}
+  html.mob .sgb{grid-template-columns:1fr;padding-left:13px;}
   html.mob #suggmodal{padding:10px 8px;}
 
   /* ======== telefono ========
@@ -1631,7 +1635,7 @@
   html.mobi .prkpis,html.mobi .kpis,html.mobi .tgrid{grid-template-columns:1fr !important;}
   html.mobi .gaugeside{flex-direction:column;}
   html.mobi section{overflow-x:auto;}
-  html.mobi .sgb{grid-template-columns:1fr;padding-left:0;}
+  html.mobi .sgb{grid-template-columns:1fr;padding-left:13px;}
   /* Il pop-up dei suggerimenti sul telefono: i titoli lunghi non vanno
      incolonnati in sei righe da due parole. L'intestazione di ogni voce si
      dispone su due piani — numero, tempi, euro e freccia sopra; titolo sotto,
@@ -1647,13 +1651,16 @@
   html.mobi #suggmodal .ph .sub2{flex:1 1 100%;order:3;font-size:11px;line-height:1.4;}
   html.mobi #suggmodal .ph .mini{order:2;}
   html.mobi #suggmodal .ph .x{order:2;margin-left:4px;}
-  html.mobi .sg{padding:11px 0 12px;}
+  html.mobi .sg{padding:0;}
   html.mobi .sgh{flex-wrap:wrap;gap:7px;margin-bottom:8px;}
   html.mobi .sgt{flex:1 1 100%;order:3;font-size:14.5px;line-height:1.32;}
   html.mobi .sgn{width:20px;height:20px;font-size:11.5px;}
   html.mobi .sgh .verdict{margin-left:0;font-size:10px;}
   html.mobi .sgv{font-size:14px;margin-left:auto;}
-  html.mobi .sgb{grid-template-columns:1fr;gap:12px;padding-left:0;}
+  /* il corpo parte dalla stessa verticale del titolo: sul telefono il titolo
+     va a capo da solo e si appoggia al bordo interno della scheda, quindi il
+     corpo deve avere lo stesso rientro, non zero */
+  html.mobi .sgb{grid-template-columns:1fr;gap:12px;padding-left:13px;}
   html.mobi .sgb .et{font-size:9.5px;margin-bottom:4px;}
   html.mobi .sgb p,html.mobi .sgb li{font-size:12.5px;line-height:1.5;}
   html.mobi .sgb ul{padding-left:15px;}
@@ -2113,7 +2120,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v148</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v149</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3616,9 +3623,14 @@ const LIC={
 /* Una spia porta con sé quanto vale — serve a metterle in fila — e il
    dettaglio che si apre toccandola: su un telefono il riquadro da solo dice
    che c'è un problema, non che cosa farne. */
-function lSpia(ico, nome, testo, stato, euro, det, euLab){
+/* Il grigio dice «spenta», e una cosa che va bene non è spenta: è a posto.
+   Quindi tre stati accesi — verde quando si è dentro, giallo e rosso quando
+   no — e il grigio resta solo a quello che non si può ancora dire.
+   `euTxt` serve quando il numero da mostrare non sono euro: sugli sprechi
+   quello che conta è la distanza dalle schede, in punti. */
+function lSpia(ico, nome, testo, stato, euro, det, euLab, euTxt){
   return {ico, nome, testo, stato:stato||'', euro:num(euro)||0, det:det||[],
-          euLab: euLab || 'da recuperare'};
+          euLab: euLab || 'da recuperare', euTxt: euTxt||null};
 }
 /* Una riga a tutta larghezza invece di un quadrotto: a sinistra di che voce
    si tratta, a destra quanto c'è da recuperare, sotto la frase che spiega
@@ -3626,14 +3638,15 @@ function lSpia(ico, nome, testo, stato, euro, det, euLab){
    un riquadro all'altro. Si aprono una alla volta, e aprendone una le altre
    scendono, non si spostano di lato. */
 function lSpiaHTML(s, i){
-  const col = s.stato==='rossa' ? '#E0705E' : s.stato==='on' ? '#E8B14A' : '#8C8C8C';
+  const col = s.stato==='rossa' ? '#E0705E' : s.stato==='on' ? '#E8B14A'
+            : s.stato==='ok' ? '#7FC79C' : '#8C8C8C';
   const apribile = s.det && s.det.length;
-  return `<div class="lspia ${s.stato==='rossa'?'on rossa':s.stato==='on'?'on':''} ${apribile?'apribile':''}"
+  return `<div class="lspia ${s.stato==='rossa'?'on rossa':s.stato==='on'?'on':s.stato==='ok'?'verde':''} ${apribile?'apribile':''}"
       ${apribile?`data-spia="${i}"`:''}>
     <div class="cap">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="1.7">${LIC[s.ico]}</svg>
       <div class="n">${s.nome}</div>
-      ${s.euro>0?`<div class="eu">${fmtE(s.euro)}<small>${s.euLab}</small></div>`:''}
+      ${s.euTxt || s.euro>0?`<div class="eu">${s.euTxt||fmtE(s.euro)}<small>${s.euLab}</small></div>`:''}
       ${apribile?'<span class="ch">&#8964;</span>':''}
     </div>
     <div class="d">${s.testo}</div>
@@ -3662,15 +3675,16 @@ function renderDashLite(a, t, m, isM){
   sp.push(lSpia('pers','Stipendi',
     incRu<=t.ru ? `${R(incRu)} € ogni 100, il limite è ${fmtNum(t.ru)}`
                 : `${R(incRu)} € ogni 100 invece di ${fmtNum(t.ru)}`,
-    incRu<=t.ru ? '' : incRu>t.ru+10 ? 'rossa' : 'on',
-    exRu,
+    incRu<=t.ru ? 'ok' : incRu>t.ru+10 ? 'rossa' : 'on',
+    incRu<=t.ru ? Math.max(0, a.ricavi*t.ru/100-a.ru) : exRu,
     [`Il costo del personale è <b>${E(a.ru)}</b> sul periodo, cioè <b>${fmtNum(incRu)} €</b> ogni 100 di incasso.`,
      incRu<=t.ru ? `È sotto il limite del ${fmtNum(t.ru)}%: da qui non c'è niente da recuperare.`
        : `Per stare al ${fmtNum(t.ru)}% servirebbero <b>${E(a.ricavi*t.ru/100)}</b>: ${E(exRu)} in meno di oggi.`,
      (a.ricaviFood>0&&a.ricaviBev>0)
        ? `In cucina pesa <b>${fmtNum(a.ruFood/a.ricaviFood*100)}%</b>, al bar <b>${fmtNum(a.ruBev/a.ricaviBev*100)}%</b>: la media nasconde la differenza.`
        : `Per vedere cucina e bar separati servono i ricavi divisi fra food e beverage.`,
-     `Le due leve sono le ore messe in campo e l'incasso che quelle ore producono. Si guardano in <b>Analisi dei turni</b>.`]));
+     `Le due leve sono le ore messe in campo e l'incasso che quelle ore producono. Si guardano in <b>Analisi dei turni</b>.`],
+    incRu<=t.ru ? 'sotto budget' : 'da recuperare'));
   const incMpF = a.ricaviFood>0 ? a.mpFood/a.ricaviFood*100 : null;
   const exMp=Math.max(0, a.mp-a.ricavi*t.mp/100);
   const incMpB = a.ricaviBev>0 ? a.mpBev/a.ricaviBev*100 : null;
@@ -3678,8 +3692,8 @@ function renderDashLite(a, t, m, isM){
     incMp<=t.mp ? `${R(incMp)} € ogni 100, il limite è ${fmtNum(t.mp)}`
       : `${R(incMp)} € ogni 100 invece di ${fmtNum(t.mp)}${
           incMpF!=null && incMpF>incMp+3 ? ` · in cucina ${R(incMpF)}` : ''}`,
-    incMp<=t.mp ? '' : incMp>t.mp+10 ? 'rossa' : 'on',
-    exMp,
+    incMp<=t.mp ? 'ok' : incMp>t.mp+10 ? 'rossa' : 'on',
+    incMp<=t.mp ? Math.max(0, a.ricavi*t.mp/100-a.mp) : exMp,
     [`Gli acquisti di merce fanno <b>${E(a.mp)}</b>, cioè <b>${fmtNum(incMp)} €</b> ogni 100 di incasso.`,
      incMp<=t.mp ? `È dentro il limite del ${fmtNum(t.mp)}%.`
        : `Per stare al ${fmtNum(t.mp)}% servirebbero <b>${E(a.ricavi*t.mp/100)}</b>: ${E(exMp)} in meno.`,
@@ -3694,14 +3708,14 @@ function renderDashLite(a, t, m, isM){
     : incMk < num(t.mk)
       ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}: si può investire di più`)
       : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}`,
-    zMk===0 ? '' : zMk>=3 ? 'rossa' : 'on',
+    zMk===0 ? 'ok' : zMk>=3 ? 'rossa' : 'on',
     Math.abs(scMk),
     [`Il marketing vale <b>${E(a.mk)}</b> sul periodo, <b>${fmtNum(incMk)} €</b> ogni 100 di incasso.`,
      `Questa è l'unica area in cui la soglia è <b>il centro di una fascia, non un tetto</b>: zero è sbagliato quanto il doppio.`,
      scMk<0 ? `Per arrivare al centro del ${fmtNum(t.mk)}% servirebbero <b>${E(-scMk)}</b> in più. Un locale che non si fa vedere vive di quello che passa davanti.`
             : `Sopra il centro di <b>${E(scMk)}</b>: va verificato che la spesa stia producendo coperti, non solo visibilità.`,
      `Agenzia, campagne, sponsorizzazioni, fotografo, stampe e commissioni dei portali entrano qui. Le commissioni del delivery no: sono il costo di un canale di vendita.`],
-    scMk<0 ? 'da investire' : 'oltre la fascia'));
+    zMk===0 ? 'dentro la fascia' : scMk<0 ? 'da investire' : 'oltre la fascia'));
   const exSg=Math.max(0, a.sg-a.ricavi*t.sg/100);
   /* le voci che compaiono una o due volte l'anno sono saldi, non spesa corrente */
   let unaTantum=0;
@@ -3712,21 +3726,29 @@ function renderDashLite(a, t, m, isM){
   sp.push(lSpia('sg','Spese fisse',
     incSg<=t.sg ? `${R(incSg)} € ogni 100, il limite è ${fmtNum(t.sg)}`
                 : `${R(incSg)} € ogni 100 invece di ${fmtNum(t.sg)}`,
-    incSg<=t.sg ? '' : incSg>t.sg+10 ? 'rossa' : 'on',
-    exSg,
+    incSg<=t.sg ? 'ok' : incSg>t.sg+10 ? 'rossa' : 'on',
+    incSg<=t.sg ? Math.max(0, a.ricavi*t.sg/100-a.sg) : exSg,
     [`Le spese generali fanno <b>${E(a.sg)}</b>, <b>${fmtNum(incSg)} €</b> ogni 100 di incasso, contro un limite del ${fmtNum(t.sg)}%.`,
      unaTantum>0 ? `Attenzione prima di tagliare: <b>${E(unaTantum)}</b> vengono da voci che compaiono una o due volte l'anno — sono saldi, non spesa corrente. Depurate quelle, la ricorrente fa <b>${E(a.sg-unaTantum)}</b>.`
                  : `Sono tutte voci che tornano ogni mese: non c'è una parte una tantum che gonfia il conto.`,
      `Dentro ci sono voci rigide — affitti, contratti pluriennali — che non si muovono a comando. Il taglio può uscire solo dalla parte flessibile.`,
-     `Il saving vero sta in energia, gas, telefonia, noleggi, assicurazioni e software: si passano una per una.`]));
+     `Il saving vero sta in energia, gas, telefonia, noleggi, assicurazioni e software: si passano una per una.`],
+    incSg<=t.sg ? 'sotto budget' : 'da recuperare'));
   /* sprechi: dal confronto fra bilancio e schede, se c'è */
   let c=null; try{ c=cnConfronto(); }catch(e){}
   if(c){
     const dpp=(c.incReale-c.incTeor)*100;
+    const dppT=(dpp>=0?'':'−')+fmtNum(Math.abs(Math.round(dpp*10)/10))+'%';
     sp.push(lSpia('spr','Sprechi',
       dpp<=2 ? 'quello che compri e quello che vendi si parlano'
-             : `${dpp.toFixed(1).replace('.',',')} punti fra bilancio e ricette: ${E(c.oltre)}`,
-      dpp<=2 ? '' : dpp>4 ? 'rossa' : 'on'));
+             : `il bilancio spende più di quello che le ricette spiegano: ${E(c.oltre)}`,
+      dpp<=2 ? 'ok' : dpp>4 ? 'rossa' : 'on',
+      Math.abs(num(c.oltre)),
+      [`Le schede ricetta dicono <b>${fmtP(c.incTeor)}</b> di materia prima, il bilancio <b>${fmtP(c.incReale)}</b>.`,
+       dpp<=2 ? `Lo scarto è di <b>${dppT}</b>: sotto i due punti è fisiologico. Quello che si compra e quello che si vende si parlano.`
+              : `Lo scarto è di <b>${dppT}</b>, cioè <b>${E(c.oltre)}</b>: sopra i due punti c'è merce che entra e non diventa vendita.`,
+       `Si guarda voce per voce in <b>Cruscotto · Costi nascosti</b>: autoconsumi, omaggi, rimanenze, dosi fuori scheda.`],
+      'distacco dalle schede', dppT));
   } else {
     sp.push(lSpia('spr','Sprechi','non si sanno: servono le schede costo col venduto','',0,
       ['Il confronto fra quello che le ricette dicono di dover costare e quello che il bilancio dice di aver speso è la misura della dispersione: autoconsumi, omaggi, rotture, dosi fuori scheda, errori di carico.',
@@ -3744,7 +3766,7 @@ function renderDashLite(a, t, m, isM){
     sp.push(lSpia('bu', nome,
       gap<=15 ? `cucina e bar sono allineati: ${R(iF)} e ${R(iB)} € ogni 100`
               : `${R(alto)} € di stipendi ogni 100, al ${altro} ${R(basso)}`,
-      gap<=15 ? '' : gap>20 ? 'rossa' : 'on',
+      gap<=15 ? 'ok' : gap>20 ? 'rossa' : 'on',
       gap<=15 ? 0 : exBU,
       [`Il personale imputato ${altoF?'alla cucina':'al bar'} pesa <b>${fmtNum(alto)}%</b> sul suo incasso, ${altoF?'al bar':'in cucina'} <b>${fmtNum(basso)}%</b>: <b>${fmtNum(gap)} punti</b> di distanza fra due reparti dello stesso locale.`,
        gap<=15 ? `Sotto i 15 punti è fisiologico.` : `La soglia di attenzione è 15 punti. Sul totale questo non si vede: si vede solo scorporando i reparti.`,
@@ -3763,7 +3785,7 @@ function renderDashLite(a, t, m, isM){
   sp.push(lSpia('dati','I dati',
     mancanti.length ? `manca ${mancanti.length===1?'':'ancora '}${mancanti.slice(0,2).join(' e ')}${mancanti.length>2?' e altri':''}`
                     : 'tutti i mesi del periodo sono caricati',
-    mancanti.length ? 'on' : '', 0,
+    mancanti.length ? 'on' : 'ok', 0,
     [mancanti.length ? `Non risultano caricati: <b>${mancanti.join(', ')}</b>.`
                      : `Tutti i mesi del periodo hanno i dati.`,
      `Un mese entra nei conti solo quando ha tutte e quattro le gambe: ricavi, materia prima, personale e spese generali. Finché ne manca una, resta fuori e le incidenze sono calcolate senza di lui.`,
@@ -3774,11 +3796,16 @@ function renderDashLite(a, t, m, isM){
      quella riga. Una spia gialla da 20.000 € viene prima di una rossa da 2.000:
      il colore dice quanto si è fuori, gli euro dicono quanto si porta a casa.
      A parità di valore vengono prima le accese, e in fondo le informative. */
-  const ORD={rossa:0, on:1, '':2};
-  sp.sort((x,y)=> (y.euro-x.euro) || (ORD[x.stato]-ORD[y.stato]));
+  /* Prima quello che non va, poi quello che va, in fondo quello che non si
+     può ancora dire. Dentro ogni gruppo comanda il valore in euro.
+     Ordinare per soli euro, da quando anche le spie a posto portano con sé
+     quanto si sta risparmiando, metteva una buona notizia da 32.000 € sopra
+     un problema da 24.000: la pagina serve a dire che cosa fare. */
+  const ORD={rossa:0, on:1, ok:2, '':3};
+  sp.sort((x,y)=> (ORD[x.stato]-ORD[y.stato]) || (y.euro-x.euro));
   const rp = recuperoPot(a,t);
   const primo = (SUGG && SUGG.length) ? SUGG[0] : null;
-  const accese = sp.filter(x=>x.stato).length;
+  const accese = sp.filter(x=>x.stato==='on'||x.stato==='rossa').length;
   const rosse  = sp.filter(x=>x.stato==='rossa').length;
   const quante = accese===0
     ? '<b>Nessuna spia accesa.</b> Il locale è in obiettivo su tutte le aree.'
@@ -12983,7 +13010,9 @@ async function renderCHK(){
       fornitori, ingredienti con listino, preparazioni, ricette, menu e venduto di cassa.
       I ricavi non si toccano — il venduto viene costruito su quelli, mese per mese.</div></div></div>
     <div class="tbltools"><button class="btn small" id="demoGen">Genera prodotti, ricette e venduto</button>
-    <span class="savestate">Rigenerabile: rifà tutto da capo, sovrascrivendo l'archivio prodotti di questo cliente.</span></div>
+    <button class="btn small ghost" id="demoTur">Genera sei settimane di turni</button>
+    <span class="savestate">Rigenerabili: rifanno tutto da capo, sovrascrivendo l'archivio di questo cliente.
+      I turni partono dalle persone già caricate in Risorse umane.</span></div>
   </section>` : ''}
 
   <section>
@@ -12995,6 +13024,16 @@ async function renderCHK(){
          <span class="savestate">Da incollare in una mail o in un messaggio al titolare.</span></div>`
       : `<div class="sub">Non manca niente di essenziale: il cruscotto è completo e l'analisi sul venduto ha quello che le serve.</div>`}
   </section>`;
+  const tg=document.getElementById('demoTur');
+  if(tg) tg.onclick=async ()=>{
+    tg.disabled=true; const prima=tg.textContent; tg.textContent='Genero…';
+    try{
+      const n=await demoTurni(6);
+      toast(n? `✓ ${n} settimane di turni pronte: le trovi in Personale · Pianificazione.`
+             : 'Per i turni servono prima le persone in Risorse umane.', !n);
+    }catch(e){ toast('Non sono riuscito a generare i turni: '+(e&&e.message||e), true); }
+    tg.disabled=false; tg.textContent=prima;
+  };
   const g=document.getElementById('demoGen');
   if(g) g.onclick=()=>{ g.disabled=true; g.textContent='Genero…';
     demoGenera().catch(e=>toast('Non sono riuscito a generare: '+(e&&e.message||e)))
