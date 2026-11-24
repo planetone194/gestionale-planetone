@@ -1183,6 +1183,45 @@
   .lpc.warn{border-color:#6B5520;background:#241E13;}
   .lpc.bad{border-color:#73302A;background:#241513;}
   .lpc.ok .et{color:#7FC79C;} .lpc.warn .et{color:#E8B14A;} .lpc.bad .et{color:#E0705E;}
+  /* una card il cui numero è una frase: stesso peso, corpo più contenuto */
+  .lpc.frase .nm{font-size:22px;letter-spacing:-.4px;line-height:1.25;}
+  /* due card sulla stessa riga: si risparmia metà altezza e si leggono appaiate */
+  .lpduo{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  .lpduo .lpc{padding:14px 13px;}
+  .lpduo .lpc .nm{font-size:24px;}
+  .lpintro{font-size:12.5px;color:#9A9A9A;line-height:1.5;margin:-3px 2px 15px;}
+  /* le pagine di consultazione: una riga di ricerca e un elenco di voci apribili */
+  .lpcerca{width:100%;background:#1B1B1B;border:1px solid #303030;border-radius:12px;
+    padding:11px 13px;color:#E8E8E8;font-size:14px;font-family:inherit;margin-bottom:9px;
+    -webkit-appearance:none;appearance:none;}
+  .lpcerca:focus{outline:none;border-color:var(--brass);}
+  .lpcerca::placeholder{color:#6E6E6E;}
+  .lpconta{font-size:11px;letter-spacing:.3px;color:#6E6E6E;margin:0 2px 9px;}
+  .lpvoce{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;
+    padding:11px 13px;margin-bottom:7px;cursor:pointer;}
+  .lpvoce .t{display:flex;align-items:flex-start;gap:10px;}
+  .lpvoce .n{flex:1;font-size:13.5px;font-weight:600;color:#E8E8E8;line-height:1.3;}
+  .lpvoce .n small{display:block;font-size:11.5px;color:#8F8F8F;font-weight:400;margin-top:3px;line-height:1.4;}
+  .lpvoce .v{font-family:var(--num);font-size:14px;font-weight:700;color:#fff;
+    white-space:nowrap;text-align:right;line-height:1.2;}
+  .lpvoce .v small{display:block;font-family:inherit;font-size:9.5px;color:#8C8C8C;
+    font-weight:500;letter-spacing:.3px;margin-top:2px;}
+  .lpvoce .v.ok{color:#7FC79C;} .lpvoce .v.warn{color:#E8B14A;} .lpvoce .v.bad{color:#E0705E;}
+  .lpvoce .det{display:none;margin-top:11px;padding-top:10px;border-top:1px solid #2E2E2E;}
+  .lpvoce.aperta{border-color:#3C3C3C;background:#1E1E1E;}
+  .lpvoce.aperta .det{display:block;}
+  .lpvoce .det .r{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    font-size:12px;color:#9A9A9A;padding:3.5px 0;}
+  .lpvoce .det .r span{flex:1;}
+  .lpvoce .det .r i{display:block;font-style:normal;font-size:11px;color:#6E6E6E;margin-top:1px;}
+  .lpvoce .det .r b{color:#E4E4E4;font-family:var(--num);font-size:12px;font-weight:600;white-space:nowrap;}
+  .lpvoce .det .r b.manca{color:#E8B14A;}
+  .lpvoce .det .lplink{color:var(--brass);font-family:var(--num);font-size:12px;
+    font-weight:600;text-decoration:none;white-space:nowrap;}
+  .lpsez2{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;
+    font-weight:700;margin:12px 0 5px;}
+  .lpnota2{font-size:11.5px;color:#8F8F8F;line-height:1.5;margin-top:8px;}
+  .lpsep{height:1px;background:#2E2E2E;margin:9px 0 7px;}
   .lpsez{font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:#8F8F8F;font-weight:700;margin:22px 2px 8px;}
   .lprow{display:flex;align-items:baseline;gap:10px;padding:10px 2px;border-bottom:1px solid #262626;}
   .lprow:last-child{border-bottom:none;}
@@ -1914,7 +1953,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v141</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v142</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3659,10 +3698,7 @@ const LP_PC = {
   pr:['Produttività del personale','si legge una griglia di sette giorni'],
   ceagg:['Conto economico aggregato','è una tabella a scalare'],
   ver:['Versioni precedenti','si ripristinano le copie dell\'archivio'],
-  ring:['Ingredienti e prezzi d\'acquisto','è un archivio di centinaia di righe'],
-  rforn:['Fornitori','è un archivio da compilare'],
-  rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese'],
-  rric:['Ricette e schede costo','si costruiscono le schede riga per riga']
+  rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese']
 };
 function lpSoloPC(pagina){
   const v=LP_PC[pagina]||['Questa pagina',''];
@@ -3894,8 +3930,11 @@ function liteCN(){
     c.oltre>0?fmtNum(x[1]/c.oltre*100)+'%':null,
     x[0]==='Costi non intercettati'?'bad':'')).join('');
   return `<div class="lp">${lpTesta('Costi nascosti', 'esercizio '+S.anno+' · '+(c.fonte==='venduto'?'dal venduto di cassa':'dalle incidenze scritte a mano'))}
-    ${lpCard('Food cost ideale', fmtP(c.incTeor), `da schede ricetta · ${fmtE(c.teor)}`)}
-    ${lpCard('Food cost reale', fmtP(c.incReale), `dal bilancio · ${fmtE(c.reale)}`)}
+    <div class="lpintro">La differenza tra il food cost delle schede ricetta e la materia prima acquistata.</div>
+    <div class="lpduo">
+      ${lpCard('Food cost ideale', fmtP(c.incTeor), `<b>${fmtE(c.teor)}</b><br>da schede ricetta`)}
+      ${lpCard('Food cost reale', fmtP(c.incReale), `<b>${fmtE(c.reale)}</b><br>dal bilancio`)}
+    </div>
     ${lpCard('Delta', (dpp>=0?'+':'−')+fmtNum(Math.abs(dpp))+'<small> punti</small>',
       `<b>${fmtE(Math.abs(c.oltre))}</b> ${c.oltre>=0?'di materia prima in più di quella che le ricette spiegano':'in meno di quello che le ricette prevedono: è precisione, non errore'}`,
       dpp<=2?'ok':dpp>4?'bad':'warn')}
@@ -3931,17 +3970,21 @@ function liteCF(){
     ${(()=>{
       /* un confronto si racconta come un confronto: quanto in più o in meno,
          non due numeri affiancati da leggere e sottrarre a mente */
+      /* il numero grande è la differenza: «73.100 € in più» si legge in un
+         colpo d'occhio, «stai fatturando» è una parola che non aggiunge niente.
+         I due anni stanno sotto, tutti e due in evidenza, perché il confronto
+         è fra quelli. */
       const dRic=sB.ric-sA.ric, dRo=sB.ro-sA.ro;
       return lpCard('Ricavi',
-        `${dRic>=0?'Stai fatturando':'Stai fatturando'} <b>${fmtE(Math.abs(dRic))}</b> ${dRic>=0?'in più':'in meno'}`,
-        `${fmtE(sB.ric)} contro <b>${fmtE(sA.ric)}</b> del ${A} · ${
+        `<b>${fmtE(Math.abs(dRic))}</b> ${dRic>=0?'in più':'in meno'}`,
+        `<b>${fmtE(sB.ric)}</b> contro <b>${fmtE(sA.ric)}</b> del ${A} · ${
           isFinite(crescita)?(crescita>=0?'+':'−')+fmtNum(Math.abs(Math.round(crescita*10)/10))+'%':'—'}`,
-        dRic>=0?'ok':'warn')
+        (dRic>=0?'ok':'warn')+' frase')
       + lpCard('Utile operativo',
-        `${dRo>=0?'Stai marginando':'Stai marginando'} <b>${fmtE(Math.abs(dRo))}</b> ${dRo>=0?'in più':'in meno'}`,
-        `${fmtE(sB.ro)} contro <b>${fmtE(sA.ro)}</b> del ${A}<br>` +
-        `oggi sono <b>${fmtNum(Math.round(pc(sB,'ro')*10)/10)} € ogni 100 € incassati</b>, nel ${A} erano ${fmtNum(Math.round(pc(sA,'ro')*10)/10)}`,
-        dRo>=0?'ok':'warn');
+        `<b>${fmtE(Math.abs(dRo))}</b> ${dRo>=0?'in più':'in meno'}`,
+        `<b>${fmtE(sB.ro)}</b> contro <b>${fmtE(sA.ro)}</b> del ${A}<br>` +
+        `oggi sono <b>${fmtNum(Math.round(pc(sB,'ro')*10)/10)} € ogni 100 € incassati</b>, nel ${A} erano <b>${fmtNum(Math.round(pc(sA,'ro')*10)/10)}</b>`,
+        (dRo>=0?'ok':'warn')+' frase');
     })()}
     <div class="lpsez">Incidenze, in punti percentuali</div>
     ${riga('Materia prima', pc(sA,'mp'), pc(sB,'mp'), true)}
@@ -4170,7 +4213,190 @@ function liteAN(){
   </div>`;
 }
 
-const LITE_REND = {ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
+
+/* ============ sola lettura: fornitori, ingredienti, ricette ============
+   Sul telefono queste tre pagine non si compilano: si consultano. Serve il
+   numero del fornitore mentre si è in magazzino, il prezzo d'acquisto di una
+   referenza mentre si tratta, quanto costa e quanto rende una ricetta mentre
+   si guarda il menu. Niente schede costo da costruire: quelle restano al
+   computer. Ogni voce si apre con un tocco e mostra il dettaglio.           */
+let lfoQ='', lingQ='', lricQ='';
+const LCAP=120;
+function lpCerca(inp, chi){
+  const v=inp.value||'';
+  if(chi==='fo') lfoQ=v; else if(chi==='ing') lingQ=v; else lricQ=v;
+  const box=inp.closest('.lp').querySelector('.lplist');
+  if(box) box.innerHTML = chi==='fo' ? lfoRighe() : chi==='ing' ? lingRighe() : lricRighe();
+}
+function lpBarra(chi, segno, val){
+  return `<input class="lpcerca" type="search" inputmode="search" placeholder="${segno}"
+    value="${escH(val)}" oninput="lpCerca(this,'${chi}')">`;
+}
+function lpConta(n, tot, cosa){
+  return `<div class="lpconta">${n===tot ? fmtNum(tot)+' '+cosa
+    : fmtNum(n)+' di '+fmtNum(tot)+' '+cosa}${n>LCAP?` · ne vedi ${LCAP}, affina la ricerca`:''}</div>`;
+}
+const lpVoce = (chiave, testa, det) =>
+  `<div class="lpvoce" data-lvoce data-k="${escH(chiave)}">${testa}${det?`<div class="det">${det}</div>`:''}</div>`;
+const lpDet = (etichetta, valore) =>
+  valore==null||valore===''||valore==='—' ? '' : `<div class="r"><span>${etichetta}</span><b>${valore}</b></div>`;
+
+/* ---------------- fornitori ---------------- */
+function lfoDati(){
+  return fornElenco().map(n=>{
+    const mie=MP.ing.filter(x=>norm(x.f)===norm(n));
+    return {n, a:fornDi(n)||{}, mie};
+  }).sort((x,y)=>y.mie.length-x.mie.length);
+}
+function lfoRighe(){
+  const tutti=lfoDati(), q=norm(lfoQ);
+  const vis=tutti.filter(d=>!q || norm(d.n).includes(q) || norm(d.a.ref||'').includes(q)
+    || d.mie.some(x=>norm(x.e).includes(q)));
+  const righe=vis.slice(0,LCAP).map(d=>{
+    const conP=d.mie.filter(x=>ingNetto(x)>0);
+    const vecchi=d.mie.filter(ingVecchio).length;
+    const listino=conP.slice().sort((x,y)=>x.e.localeCompare(y.e,'it')).slice(0,40).map(x=>
+      `<div class="r"><span>${escH(x.e)}</span><b>${fmtEu2(ingCostoPezzo(x))}</b></div>`).join('');
+    const testa=`<div class="t"><div class="n">${escH(d.n)}
+        <small>${d.a.ref?escH(d.a.ref)+' · ':''}${d.a.tel?escH(d.a.tel):'senza numero'}${
+          vecchi?' · '+fmtNum(vecchi)+' con prezzo vecchio':''}</small></div>
+      <div class="v">${fmtNum(d.mie.length)}<small>referenz${d.mie.length===1?'a':'e'}</small></div></div>`;
+    const det=
+      (d.a.tel?`<div class="r"><span>Telefono</span><a class="lplink" href="tel:${escH(String(d.a.tel).replace(/[^0-9+]/g,''))}">${escH(d.a.tel)}</a></div>`:'')+
+      (d.a.mail?`<div class="r"><span>Email</span><a class="lplink" href="mailto:${escH(d.a.mail)}">${escH(d.a.mail)}</a></div>`:'')+
+      lpDet('Referente', escH(d.a.ref||''))+
+      lpDet('Partita IVA', escH(d.a.piva||''))+
+      (listino?`<div class="lpsez2">Prezzi d'acquisto, al pezzo</div>${listino}${
+        conP.length>40?`<div class="lpnota2">… e altre ${fmtNum(conP.length-40)}: si vedono tutte in Ingredienti.</div>`:''}`
+       :`<div class="lpnota2">Nessuna referenza con un prezzo in archivio.</div>`);
+    return lpVoce(norm(d.n+' '+(d.a.ref||'')+' '+d.mie.map(x=>x.e).join(' ')), testa, det);
+  }).join('');
+  return lpConta(vis.length, tutti.length, 'fornitor'+(tutti.length===1?'e':'i'))
+    + (righe||`<div class="lpvuoto">Nessun fornitore con questo nome.</div>`);
+}
+async function liteFORN(){
+  await mpCarica();
+  if(!fornElenco().length) return `<div class="lp">${lpTesta('Fornitori','sola lettura')}
+    <div class="lpvuoto">L'archivio dei fornitori è ancora vuoto.<br><br>
+    Nasce da solo man mano che si caricano gli ingredienti, dal computer.</div></div>`;
+  return `<div class="lp">${lpTesta('Fornitori','anagrafica e prezzi d\'acquisto')}
+    ${lpBarra('fo','cerca un fornitore, un referente, una referenza…', lfoQ)}
+    <div class="lplist">${lfoRighe()}</div>
+    ${lpChiusura('Ricette e fornitori · Fornitori')}</div>`;
+}
+
+/* ---------------- ingredienti e prezzi d'acquisto ---------------- */
+function lingRighe(){
+  const tutti=MP.ing.filter(x=>!isPrep(x))
+    .sort((x,y)=>String(x.e||'').localeCompare(String(y.e||''),'it'));
+  const q=norm(lingQ);
+  const vis=tutti.filter(x=>!q || norm(x.e).includes(q) || norm(x.f).includes(q) || norm(x.c).includes(q));
+  const righe=vis.slice(0,LCAP).map(x=>{
+    const cp=ingCostoPezzo(x), cu=ingCostoUnita(x), u=String(x.u||'').toLowerCase();
+    const vecchio=ingVecchio(x);
+    const testa=`<div class="t"><div class="n">${escH(x.e)}
+        <small>${escH(x.f||'senza fornitore')}${x.c?' · '+escH(x.c):''}</small></div>
+      <div class="v ${cp>0?'':'bad'}">${cp>0?fmtEu2(cp):'—'}<small>${cp>0?'al pezzo':'senza prezzo'}</small></div></div>`;
+    const det=
+      lpDet('Listino della confezione', numIt(x.li)>0?fmtEu2(numIt(x.li)):'')+
+      lpDet('Sconti', (numIt(x.s1)||numIt(x.s2)||numIt(x.se))
+        ? [numIt(x.s1)?fmtNum(numIt(x.s1))+'%':null, numIt(x.s2)?fmtNum(numIt(x.s2))+'%':null,
+           numIt(x.se)?fmtEu2(numIt(x.se)):null].filter(Boolean).join(' + ') : '')+
+      lpDet('Accise', numIt(x.ac)>0?fmtEu2(numIt(x.ac)):'')+
+      lpDet('Pezzi per confezione', numIt(x.pz)>1?fmtNum(numIt(x.pz)):'')+
+      lpDet('Contiene', numIt(x.co)>0?fmtNum(numIt(x.co))+' '+u:'')+
+      lpDet('Costo al pezzo', cp>0?fmtEu2(cp):'')+
+      lpDet('Costo di 1 '+(u||'unità'), cu>0?fmtE4(cu):'')+
+      lpDet('Aggiornato il', x.d?new Date(x.d).toLocaleDateString('it-IT'):'mai')+
+      (vecchio?`<div class="lpnota2">Questo prezzo ha più di un anno: prima di usarlo per una
+        trattativa vale la pena farselo confermare.</div>`:'');
+    return lpVoce(norm((x.e||'')+' '+(x.f||'')+' '+(x.c||'')), testa, det);
+  }).join('');
+  return lpConta(vis.length, tutti.length, 'ingredient'+(tutti.length===1?'e':'i'))
+    + (righe||`<div class="lpvuoto">Nessun ingrediente con questo nome.</div>`);
+}
+async function liteING(){
+  await mpCarica();
+  if(!MP.ing.length) return `<div class="lp">${lpTesta('Ingredienti','sola lettura')}
+    <div class="lpvuoto">Non c'è ancora nessun ingrediente in archivio.<br><br>
+    Si caricano dal computer, in modalità Pro.</div></div>`;
+  return `<div class="lp">${lpTesta('Ingredienti','prezzi d\'acquisto, IVA esclusa')}
+    ${lpBarra('ing','cerca un ingrediente, un fornitore, una categoria…', lingQ)}
+    <div class="lplist">${lingRighe()}</div>
+    ${lpChiusura('Ricette e fornitori · Ingredienti')}</div>`;
+}
+
+/* ---------------- ricette: quanto costa, quanto rende ---------------- */
+function lricRighe(){
+  const tutti=(PRO.prod||[]).slice()
+    .sort((x,y)=> String(x.cat||'').localeCompare(String(y.cat||''),'it')
+                || String(x.n||'').localeCompare(String(y.n||''),'it'));
+  const q=norm(lricQ);
+  const vis=tutti.filter(x=>!q || norm(x.n).includes(q) || norm(x.cat).includes(q));
+  let cat=null, out=[];
+  vis.slice(0,LCAP).forEach(x=>{
+    if(x.cat!==cat){ cat=x.cat; out.push(`<div class="lpsez">${escH(cat||'senza categoria')}</div>`); }
+    const c=ricCosto(x), pv=numIt(x.pv);
+    const inc = c && pv>0 ? c.tot/pv : null;
+    const tgt=numIt((PRO.target||{})[x.cat]);
+    const resa = c && pv>0 ? pv-c.tot : null;
+    /* un ingrediente che sta in archivio ma non ha listino vale zero nel conto:
+       la ricetta sembra costare meno di quanto costa. Il numero si mostra lo
+       stesso, ma dicendo che è parziale — un margine gonfiato è peggio di
+       un margine mancante, perché ci si decide sopra. */
+    const zero = c ? (x.ric.ing||[]).concat(x.ric.co||[])
+      .filter(r=>{ const g=ingDi(r.e); return g && !isPrep(g) && !(ingNetto(g)>0); })
+      .map(r=>r.e) : [];
+    const cl = zero.length ? 'warn' : inc==null ? '' : {v:'ok',g:'warn',a:'warn',r:'bad'}[incClasse(inc,tgt)]||'';
+    const testa=`<div class="t"><div class="n">${escH(x.n)}
+        <small>${pv>0?fmtEu2(pv)+' di listino':'senza prezzo'}${
+          c?' · costa '+fmtEu2(c.tot):' · senza scheda costo'}</small></div>
+      <div class="v ${cl}">${resa!=null?fmtEu2(resa):'—'}<small>${
+        zero.length?'costo parziale':resa!=null?'a pezzo':'da calcolare'}</small></div></div>`;
+    let det;
+    if(!c){
+      const manca=ricMancanti(x);
+      det=`<div class="lpnota2">${manca.length
+        ? 'Manca il prezzo d\'acquisto di: <b>'+manca.slice(0,6).map(escH).join(', ')+'</b>'+(manca.length>6?' e altri':'')+'. Finché manca, il costo non si calcola.'
+        : 'Questo prodotto non ha ancora una scheda costo: si costruisce dal computer.'}</div>`;
+    } else {
+      const voci=(x.ric.ing||[]).concat(x.ric.co||[]).map(r=>{
+        const u=ingUnitaDi(r.e), ing=MP.ing.find(y=>norm(y.e)===norm(r.e));
+        const um=ing?String(ing.u||'').toLowerCase():'';
+        const costo = u==null ? null : u*numIt(r.q)*(1+Math.max(0,numIt(r.sc)));
+        const nulla = costo!=null && !(costo>0);
+        return `<div class="r"><span>${escH(r.e)}<i>${fmtNum(numIt(r.q))} ${escH(um)}${
+          numIt(r.sc)>0?' · scarto '+fmtNum(numIt(r.sc)*100)+'%':''}${
+          nulla?' · senza prezzo d\'acquisto':''}</i></span><b${nulla?' class="manca"':''}>${
+          costo==null?'—':fmtEu2(costo)}</b></div>`;
+      }).join('');
+      det=`${zero.length?`<div class="lpnota2">Nel conto <b>${zero.slice(0,4).map(escH).join(', ')}</b>${
+          zero.length>4?' e altri':''} ${zero.length===1?'vale':'valgono'} zero: non ${zero.length===1?'ha':'hanno'}
+          un prezzo d'acquisto in archivio. Il costo qui sotto è quindi più basso del vero.</div>`:''}
+        <div class="lpsez2">La scheda</div>${voci}
+        ${c.side>0?lpDet('Contorno o guarnizione', fmtEu2(c.side)):''}
+        <div class="lpsep"></div>
+        ${lpDet('Costa', fmtEu2(c.tot))}
+        ${lpDet('Si vende a', pv>0?fmtEu2(pv):'')}
+        ${lpDet('Rende', resa!=null?fmtEu2(resa)+' a pezzo':'')}
+        ${lpDet('Incidenza', inc==null?'':fmtP(inc)+(tgt>0?' · obiettivo '+fmtP(tgt):''))}`;
+    }
+    out.push(lpVoce(norm((x.n||'')+' '+(x.cat||'')), testa, det));
+  });
+  return lpConta(vis.length, tutti.length, 'prodott'+(tutti.length===1?'o':'i'))
+    + (out.length?out.join(''):`<div class="lpvuoto">Nessun prodotto con questo nome.</div>`);
+}
+async function liteRIC(){
+  await mpCarica(); await proCarica();
+  if(!(PRO.prod||[]).length) return `<div class="lp">${lpTesta('Ricette','sola lettura')}
+    <div class="lpvuoto">Non c'è ancora nessun prodotto a listino.<br><br>
+    Si caricano dal computer, in modalità Pro.</div></div>`;
+  return `<div class="lp">${lpTesta('Ricette','quanto costa e quanto rende, IVA esclusa')}
+    ${lpBarra('ric','cerca un prodotto o una categoria…', lricQ)}
+    <div class="lplist">${lricRighe()}</div>
+    ${lpChiusura('Ricette e fornitori · Ricette e schede costo')}</div>`;
+}
+const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
   vdash:liteVDASH, vriep:liteVRIEP, vprec:liteVPREC, vtrend:liteVTREND, vlist:liteVLIST,
   mprof:liteMPROF, mcore:liteMCORE, vprio:liteVPRIO,
   mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG,
@@ -12550,6 +12776,10 @@ document.addEventListener('click',async e=>{
   /* una spia del cruscotto lite si apre e si chiude toccandola */
   const sps=e.target.closest('[data-spia]');
   if(sps){ sps.classList.toggle('aperta'); return; }
+  /* e così una voce di fornitori, ingredienti o ricette — ma un numero di
+     telefono o una mail si toccano per chiamare, non per aprire */
+  const lvo=e.target.closest('[data-lvoce]');
+  if(lvo && !e.target.closest('a')){ lvo.classList.toggle('aperta'); return; }
   const lb=e.target.closest('[data-lbu]');
   if(lb){ liteBU=lb.dataset.lbu;
     /* lo stesso interruttore vale per lite e per pro: se cambiasse solo da una
