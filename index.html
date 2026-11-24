@@ -1338,8 +1338,7 @@
   .lpiro{background:#241E13;border:1px solid #6B5520;border-radius:11px;padding:10px 12px;
     font-size:11.5px;color:#D7C79C;line-height:1.5;margin-bottom:12px;}
   /* la griglia della settimana: scorre di lato, la colonna dei nomi resta ferma */
-  .lpigr{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
-    background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;}
+  .lpigr{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;}
   .lpigr table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;}
   .lpigr th,.lpigr td{padding:5px 4px;text-align:center;font-family:var(--num);font-size:11.5px;
     color:#D6D6D6;border-bottom:1px solid #262626;white-space:nowrap;}
@@ -1352,14 +1351,12 @@
   .lpigr td{min-width:58px;}
   .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.25;}
   .lpigr td i{font-style:normal;color:#4A4A4A;}
-  .lpigr td.vuota{background:#191919;}
-  .lpigr td.oggi{background:#1F1D18;}
-  .lpigr td.apr{background:var(--brass);}
-  .lpigr td.apr b,.lpigr td.apr i{color:#1A1A1A;}
+  .lpigr td.vuota{background:transparent;}
+  .lpigr td.oggi{background:rgba(240,127,31,.05);}
   .lpigr td[data-lpicel]{cursor:pointer;}
   .lpigr td[data-lpicel]:hover{background:#242424;}
   .lpigr th.chi{position:sticky;left:0;z-index:2;background:#1B1B1B;text-align:left;
-    min-width:104px;max-width:104px;padding:7px 9px;box-shadow:1px 0 0 #2E2E2E;}
+    min-width:104px;max-width:104px;padding:5px 9px 5px 4px;box-shadow:1px 0 0 #2E2E2E;}
   .lpigr thead th.chi{background:#1B1B1B;}
   .lpigr th.chi .n{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#E8E8E8;
     white-space:normal;line-height:1.25;display:flex;align-items:baseline;gap:5px;}
@@ -1369,30 +1366,51 @@
   /* la colonna delle ore della settimana, in fondo a destra: nella colonna
      dei nomi faceva tre righe e alzava tutta la griglia */
   .lpigr th.tt,.lpigr td.tt{position:sticky;right:0;z-index:1;background:#1B1B1B;
-    min-width:52px;font-weight:700;color:#9A9A9A;box-shadow:-1px 0 0 #2E2E2E;}
+    min-width:48px;font-weight:700;color:#9A9A9A;box-shadow:-1px 0 0 #2E2E2E;}
   .lpigr thead th.tt{font-family:'Inter',sans-serif;font-size:10px;color:#8F8F8F;}
   .lpigr td.tt.ok{color:#7FC79C;} .lpigr td.tt.warn{color:#E8B14A;} .lpigr td.tt.bad{color:#E0705E;}
-  /* i reparti: una riga di separazione con il nome e il tasto per aggiungere */
-  .lpigr tr.grp th,.lpigr tr.grp td{background:#191919;border-bottom:1px solid #2E2E2E;
-    border-top:1px solid #2E2E2E;padding:6px 4px;}
-  .lpigr tr.grp th.chi,.lpigr tr.grp td.tt{background:#191919;}
-  .lpigr tr.grp .rn{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;
-    letter-spacing:1.4px;text-transform:uppercase;color:#C8C8C8;}
-  .lpigr tr.grp .rs{font-family:'Inter',sans-serif;font-size:10px;color:#7A7A7A;margin-top:1px;}
-  .lpigr tr.grp td.gz{text-align:left;padding-left:9px;}
-  .lpigr tr.grp .agg{background:#242424;border:1px solid #3A3A3A;color:#C8C8C8;border-radius:8px;
-    padding:4px 10px;font:inherit;font-size:11px;cursor:pointer;}
-  .lpigr tr.grp .agg:hover{border-color:var(--brass);color:var(--brass);}
-  .lpigr tr.grp .fz{font-family:'Inter',sans-serif;font-size:10.5px;color:#7A7A7A;margin-left:9px;}
-  /* da computer si scrive dentro la casella */
-  .lpigr.diretto td.ed{padding:3px 4px;}
-  .lpigr.diretto td.ed .rr{display:flex;align-items:center;gap:3px;justify-content:center;margin:2px 0;}
-  .lpigr.diretto td.ed .rr span{color:#4A4A4A;font-size:10px;}
-  .lpic{width:44px;background:#242424;border:1px solid #303030;border-radius:6px;padding:4px 2px;
-    color:#E8E8E8;font-family:var(--num);font-size:11px;text-align:center;
+  /* ogni reparto è un blocco a sé, che si apre e si chiude */
+  .lpirep{background:#161616;border:1px solid #2A2A2A;border-radius:14px;margin-bottom:12px;overflow:hidden;}
+  .lpirep.aperta{border-color:#3A3A3A;background:#1B1B1B;}
+  .lpirep .rh{display:flex;align-items:center;gap:10px;padding:13px 15px;cursor:pointer;}
+  .lpirep .rn{flex:1;min-width:0;font-size:13px;font-weight:700;letter-spacing:1.3px;
+    text-transform:uppercase;color:#C8C8C8;}
+  .lpirep.aperta .rn{color:#fff;}
+  .lpirep .rn small{display:block;font-size:10.5px;font-weight:400;letter-spacing:0;
+    text-transform:none;color:#8F8F8F;margin-top:3px;}
+  .lpirep .rv{font-family:var(--num);font-size:15px;font-weight:700;color:#C8C8C8;white-space:nowrap;}
+  .lpirep .rv small{font-size:11px;color:#8F8F8F;margin-left:1px;}
+  .lpirep .ch{color:#6E6E6E;font-size:13px;flex:none;transition:transform .18s;}
+  .lpirep.aperta .ch{transform:rotate(180deg);}
+  .lpirep .rb{padding:0 11px 12px;}
+  .lpirep .rvuoto{font-size:12px;color:#8F8F8F;padding:4px 4px 10px;}
+  .lpirep .rz{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .lpirep .agg{background:#242424;border:1px solid #3A3A3A;color:#C8C8C8;border-radius:9px;
+    padding:7px 12px;font:inherit;font-size:12px;cursor:pointer;}
+  .lpirep .agg:hover{border-color:var(--brass);color:var(--brass);}
+  .lpirep .fz{font-size:11px;color:#7A7A7A;flex:1;min-width:0;}
+  /* le ore del giorno, fuori dalle tabelle: valgono per tutto il locale */
+  .lpigiorni{display:flex;gap:6px;background:#161616;border:1px solid #2A2A2A;border-radius:12px;
+    padding:10px 8px;margin-bottom:12px;overflow-x:auto;}
+  .lpigiorni .d{flex:1;min-width:40px;text-align:center;}
+  .lpigiorni .d .g{display:block;font-size:10px;letter-spacing:.6px;color:#7A7A7A;font-weight:600;}
+  .lpigiorni .d .v{display:block;font-family:var(--num);font-size:13px;font-weight:700;color:#D6D6D6;margin-top:3px;}
+  .lpigiorni .d.chiuso .v{color:#5A5A5A;}
+  .lpigiorni .d.tot{border-left:1px solid #2E2E2E;padding-left:8px;}
+  @media(max-width:560px){ .lpigiorni{gap:3px;padding:10px 6px;} .lpigiorni .d{min-width:33px;}
+    .lpigiorni .d .g{font-size:9.5px;} .lpigiorni .d .v{font-size:12px;} }
+  .lpigiorni .d.tot .v{color:var(--brass);}
+  /* la casella si veste da modulo solo quando ci si scrive dentro */
+  .lpigr td.ed{padding:4px 5px;background:#2A2317;}
+  .lpigr td.ed .rr{display:flex;align-items:center;gap:3px;justify-content:center;margin:2px 0;}
+  .lpigr td.ed .rr span{color:#6E6E6E;font-size:10px;}
+  .lpigr td.ed .chiudi{font-family:'Inter',sans-serif;font-size:10px;color:var(--brass);
+    cursor:pointer;margin-top:3px;}
+  .lpic{width:46px;background:#1B1B1B;border:1px solid #4A4036;border-radius:6px;padding:5px 2px;
+    color:#E8E8E8;font-family:var(--num);font-size:11.5px;text-align:center;
     -webkit-appearance:none;appearance:none;}
-  .lpic:focus{outline:none;border-color:var(--brass);background:#2A2A2A;}
-  .lpic::placeholder{color:#4A4A4A;}
+  .lpic:focus{outline:none;border-color:var(--brass);background:#242424;}
+  .lpic::placeholder{color:#5A5A5A;}
   .lpigr tfoot td,.lpigr tfoot th{border-bottom:none;border-top:1px solid #2E2E2E;
     font-weight:700;color:#9A9A9A;background:#191919;}
   .lpigr tfoot th.chi{background:#191919;}
@@ -1449,6 +1467,39 @@
     -webkit-appearance:none;appearance:none;}
   .lpiora:focus{outline:none;border-color:var(--brass);background:#2A2A2A;}
   .lpiora::placeholder{color:#555;}
+  /* il riquadro del dettato */
+  .tgpan{background:#1B1B1B;border:1px solid #333;border-radius:12px;padding:13px;margin-top:12px;}
+  .tgpan .tgh{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .tgpan .tgh .tgt{flex:1;font-size:13.5px;font-weight:700;color:#E8E8E8;}
+  .tgpan .tgh .x{color:#6E6E6E;font-size:13px;cursor:pointer;padding:0 2px;}
+  .tgpan textarea{width:100%;background:#242424;border:1px solid #333;border-radius:10px;
+    padding:10px 11px;color:#E8E8E8;font-family:inherit;font-size:13.5px;line-height:1.5;resize:vertical;}
+  .tgpan textarea:focus{outline:none;border-color:var(--brass);}
+  .tgpan textarea::placeholder{color:#5A5A5A;}
+  .tgnota{font-size:11.5px;color:#8F8F8F;line-height:1.5;margin-top:8px;}
+  .tgnota b{color:#D6D6D6;}
+  .tgaz{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;}
+  .tgaz button{flex:1;min-width:130px;background:#242424;border:1px solid #3A3A3A;color:#C8C8C8;
+    border-radius:10px;padding:10px;font:inherit;font-size:12.5px;cursor:pointer;}
+  .tgaz button.si{background:var(--brass);border-color:var(--brass);color:#1A1A1A;font-weight:700;}
+  .tgaz button:hover{border-color:#5A5A5A;}
+  .tgaz button.si:hover{filter:brightness(1.07);}
+  .tgant:empty{display:none;}
+  .tgok{font-size:12.5px;color:#7FC79C;margin:13px 0 9px;}
+  .tgok b{color:#A8DCBD;}
+  .tgko{font-size:12.5px;color:#E0705E;margin:13px 0 4px;}
+  .tgb{background:#212121;border:1px solid #2E2E2E;border-radius:10px;padding:9px 11px;margin-bottom:6px;}
+  .tgn{font-size:12.5px;font-weight:700;color:#E8E8E8;margin-bottom:5px;}
+  .tgg{display:flex;align-items:baseline;gap:10px;font-size:12px;padding:2px 0;}
+  .tgg .d{width:66px;flex:none;color:#8F8F8F;}
+  .tgg .o{flex:1;font-family:var(--num);color:#C8C8C8;}
+  .tgg .o b{color:#E8E8E8;font-weight:600;}
+  .tgg .o i{font-style:normal;color:#7A7A7A;}
+  .tgpr{background:#241E13;border:1px solid #6B5520;border-radius:10px;padding:10px 12px;margin-top:9px;}
+  .tgpr .tgt{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#E8B14A;
+    font-weight:700;margin-bottom:6px;}
+  .tgp{font-size:11.5px;color:#D7C79C;line-height:1.5;margin-bottom:4px;}
+  .tgp b{color:#fff;}
   .lpiaz{display:flex;flex-direction:column;gap:7px;margin-top:14px;}
   .lpiaz button{background:#1B1B1B;border:1px solid #303030;color:#C8C8C8;border-radius:11px;
     padding:11px 13px;font:inherit;font-size:12.5px;cursor:pointer;text-align:left;}
@@ -2211,7 +2262,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v151</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v153</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4301,81 +4352,86 @@ function lpiCellaTesto(r, g){
   if(!p && !c) return '<i>·</i>';
   return [p,c].filter(Boolean).map(x=>`<b>${x}</b>`).join('<br>');
 }
-function lpiGriglia(w, k, mod){
+/* Un blocco per reparto, chiuso finché non serve.
+   Una griglia sola con quattro reparti dentro è un muro: si apre la cucina,
+   si sistema, si chiude, si apre il bar. E le caselle non hanno un riquadro
+   finché non si tocca quella in cui si scrive — venti righe di riquadri
+   vuoti sono rumore, non un modulo. */
+let lpiRep=null;
+
+function lpiCellaHtml(r, g, k, mod, scrivo){
+  const vuota = !(oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
+  const apr = lpiCella===r.id+'.'+g;
+  const oggi = piuGiorni(k,g)===isoDi(new Date()) ? 'oggi' : '';
+  if(scrivo && apr){
+    const v=i=>escH(oraTesto(r.g[g][i])||'');
+    const campo=i=>`<input class="lpic" data-lpi="${r.id}.${g}.${i}" value="${v(i)}"
+      placeholder="–" inputmode="numeric" autocomplete="off" spellcheck="false">`;
+    return `<td class="ed apr ${oggi}">
+      <div class="rr">${campo(0)}<span>–</span>${campo(1)}</div>
+      <div class="rr">${campo(2)}<span>–</span>${campo(3)}</div>
+      <div class="chiudi" data-lpicel="">fatto</div></td>`;
+  }
+  return `<td class="${vuota?'vuota':''} ${oggi}" ${mod?`data-lpicel="${r.id}.${g}"`:''}>${lpiCellaTesto(r,g)}</td>`;
+}
+function lpiBlocco(w, k, mod, rep, aperto){
+  const scrivo = mod && !document.documentElement.classList.contains('mobi');
   const oggiISO=isoDi(new Date());
-  /* sul telefono una casella da sessanta pixel non si scrive: si tocca e si
-     apre il riquadro grande. Da computer invece le caselle si riempiono
-     direttamente, che è il modo in cui si fanno gli orari davvero. */
-  const diretto = mod && !document.documentElement.classList.contains('mobi');
-  const oreG=g=>w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
-  const testa=[0,1,2,3,4,5,6].map(g=>{
+  const dentro=w.righe.filter(r=>(r.reparto||'Senza reparto')===rep)
+    .sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'it'));
+  const ore=dentro.reduce((t,r)=>t+oreSettimana(r).tot,0);
+  const fuori = mod ? (S.turni.righe||[]).filter(t=>
+    (t.reparto||'Senza reparto')===rep && !w.righe.some(r=>norm(r.nome)===norm(t.nome))) : [];
+  const testa=`<div class="rh" data-lpirep="${escH(rep)}">
+    <div class="rn">${escH(rep)}<small>${fmtNum(dentro.length)} ${dentro.length===1?'persona':'persone'}${
+      fuori.length?' · '+fmtNum(fuori.length)+' in organico fuori settimana':''}</small></div>
+    <div class="rv">${ore>0?fmtNum(Math.round(ore*10)/10)+'<small>h</small>':'—'}</div>
+    <span class="ch">&#8964;</span></div>`;
+  if(!aperto) return `<div class="lpirep">${testa}</div>`;
+  const giorni=[0,1,2,3,4,5,6].map(g=>{
     const d=piuGiorni(k,g), nota=(w.note[g]||{});
     return `<th class="${d===oggiISO?'oggi':''} ${nota.k?'chiuso':''}">
       ${GIORNI[g]}<small>${new Date(d+'T12:00:00').getDate()}</small></th>`;
   }).join('');
-
-  /* I reparti si guardano separati: la sala non si legge insieme alla cucina,
-     e chi fa gli orari ragiona per reparto. Ognuno ha il suo blocco, con il
-     bottone per aggiungere chi manca e la crocetta per togliere chi non c'è
-     questa settimana. */
+  const righe=dentro.map(r=>{
+    const set=oreSettimana(r).tot, contr=num(r.c);
+    const cl = contr>0 && set>0 ? (Math.abs(set-contr)<0.5 ? 'ok' : set>contr ? 'warn' : 'bad') : '';
+    return `<tr>
+      <th class="chi"><div class="n">${escH(r.nome||'—')}${
+          mod?`<span class="via" data-lpivia="${r.id}" title="toglilo da questa settimana">&#10005;</span>`:''}</div>
+        <div class="s">${contr>0?fmtNum(contr)+'h a contratto':'senza contratto'}</div></th>
+      ${[0,1,2,3,4,5,6].map(g=>lpiCellaHtml(r,g,k,mod,scrivo)).join('')}
+      <td class="tt ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</td></tr>`;
+  }).join('');
+  return `<div class="lpirep aperta">${testa}
+    <div class="rb">
+      ${dentro.length?`<div class="lpigr"><table>
+        <thead><tr><th class="chi"></th>${giorni}<th class="tt">Ore</th></tr></thead>
+        <tbody>${righe}</tbody></table></div>`
+       :`<div class="rvuoto">In questa settimana non c'è nessuno di ${escH(rep)}.</div>`}
+      ${mod?`<div class="rz">
+        <button class="agg" data-lpiadd="${escH(rep)}">+ aggiungi dall'organico</button>
+        ${fuori.length?`<span class="fz">${fuori.map(x=>escH(x.nome)).slice(0,4).join(', ')}${
+          fuori.length>4?' e altri':''}</span>`:'<span class="fz">sono già dentro tutti</span>'}</div>`:''}
+    </div></div>`;
+}
+function lpiGriglia(w, k, mod){
   const ordine = r => { const i=TU_REP.indexOf(r); return i<0 ? TU_REP.length : i; };
   const reparti=[...new Set(w.righe.map(r=>r.reparto||'Senza reparto'))]
     .sort((a,b)=> ordine(a)-ordine(b) || a.localeCompare(b,'it'));
-
-  const cella=(r,g)=>{
-    const vuota = !(oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
-    const apr = lpiCella===r.id+'.'+g;
-    const oggi = piuGiorni(k,g)===oggiISO ? 'oggi' : '';
-    if(diretto){
-      const v=i=>escH(oraTesto(r.g[g][i])||'');
-      const campo=i=>`<input class="lpic" data-lpi="${r.id}.${g}.${i}" value="${v(i)}"
-        placeholder="–" inputmode="numeric" autocomplete="off" spellcheck="false">`;
-      return `<td class="ed ${vuota?'vuota':''} ${oggi}">
-        <div class="rr">${campo(0)}<span>–</span>${campo(1)}</div>
-        <div class="rr">${campo(2)}<span>–</span>${campo(3)}</div></td>`;
-    }
-    return `<td class="${vuota?'vuota':''} ${apr?'apr':''} ${oggi}"
-      ${mod?`data-lpicel="${r.id}.${g}"`:''}>${lpiCellaTesto(r,g)}</td>`;
-  };
-
-  const corpo=reparti.map(rep=>{
-    const dentro=w.righe.filter(r=>(r.reparto||'Senza reparto')===rep)
-      .sort((a,b)=>String(a.nome||'').localeCompare(String(b.nome||''),'it'));
-    const oreRep=dentro.reduce((t,r)=>t+oreSettimana(r).tot,0);
-    const fuori = mod ? (S.turni.righe||[]).filter(t=>
-      (t.reparto||'Senza reparto')===rep && !w.righe.some(r=>norm(r.nome)===norm(t.nome))) : [];
-    const testaRep=`<tr class="grp">
-      <th class="chi"><div class="rn">${escH(rep)}</div>
-        <div class="rs">${fmtNum(dentro.length)} ${dentro.length===1?'persona':'persone'}</div></th>
-      <td colspan="7" class="gz">
-        ${mod?`<button class="agg" data-lpiadd="${escH(rep)}">+ aggiungi</button>`:''}
-        ${fuori.length?`<span class="fz">${fmtNum(fuori.length)} in organico non ${fuori.length===1?'è':'sono'} in settimana</span>`:''}</td>
-      <td class="tt">${oreRep>0?fmtNum(Math.round(oreRep*10)/10)+'h':'—'}</td></tr>`;
-    const righe=dentro.map(r=>{
-      const set=oreSettimana(r).tot, contr=num(r.c);
-      const cl = contr>0 && set>0 ? (Math.abs(set-contr)<0.5 ? 'ok' : set>contr ? 'warn' : 'bad') : '';
-      return `<tr>
-        <th class="chi"><div class="n">${escH(r.nome||'—')}${
-            mod?`<span class="via" data-lpivia="${r.id}" title="toglilo da questa settimana">&#10005;</span>`:''}</div>
-          <div class="s">${contr>0?fmtNum(contr)+'h a contratto':'senza contratto'}</div></th>
-        ${[0,1,2,3,4,5,6].map(g=>cella(r,g)).join('')}
-        <td class="tt ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</td></tr>`;
-    }).join('');
-    return testaRep+righe;
-  }).join('');
-
-  const totSett=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
-  const piede=`<tr class="tot">
-    <th class="chi"><div class="n">Ore del giorno</div></th>
+  if(!reparti.length) return '';
+  if(lpiRep===null || !reparti.includes(lpiRep)) lpiRep=reparti[0];
+  const oreG=g=>w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
+  const tot=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
+  const piede=`<div class="lpigiorni">
     ${[0,1,2,3,4,5,6].map(g=>{
       const v=oreG(g), nota=(w.note[g]||{});
-      return `<td class="${nota.k?'chiuso':''}">${nota.k==='chiuso'?'<i>chiuso</i>':(v>0?fmtNum(Math.round(v*10)/10):'<i>·</i>')}</td>`;
+      return `<div class="d ${nota.k?'chiuso':''}"><span class="g">${GIORNI[g]}</span>
+        <span class="v">${nota.k==='chiuso'?'—':(v>0?fmtNum(Math.round(v*10)/10):'·')}</span></div>`;
     }).join('')}
-    <td class="tt">${totSett>0?fmtNum(Math.round(totSett*10)/10)+'h':'—'}</td></tr>`;
-
-  return `<div class="lpigr ${diretto?'diretto':''}"><table>
-    <thead><tr><th class="chi"></th>${testa}<th class="tt">Ore</th></tr></thead>
-    <tbody>${corpo}</tbody><tfoot>${piede}</tfoot></table></div>`;
+    <div class="d tot"><span class="g">Totale</span><span class="v">${tot>0?fmtNum(Math.round(tot*10)/10):'·'}</span></div>
+  </div>`;
+  return reparti.map(r=>lpiBlocco(w,k,mod,r, r===lpiRep)).join('') + piede;
 }
 /* i totali si riscrivono da soli mentre si compila, senza toccare la griglia */
 function lpiTotali(){
@@ -4388,22 +4444,175 @@ function lpiTotali(){
     td.className='tt '+(contr>0 && set>0 ? (Math.abs(set-contr)<0.5?'ok':set>contr?'warn':'bad') : '');
     td.textContent = set>0 ? fmtNum(Math.round(set*10)/10)+'h' : '—';
   });
-  const pie=document.querySelectorAll('#litePage .lpigr tfoot td');
+  const pie=document.querySelectorAll('#litePage .lpigiorni .d .v');
   for(let g=0; g<7 && pie[g]; g++){
     const v=w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
-    if(!pie[g].classList.contains('chiuso'))
-      pie[g].innerHTML = v>0 ? fmtNum(Math.round(v*10)/10) : '<i>·</i>';
+    if(!pie[g].parentNode.classList.contains('chiuso'))
+      pie[g].textContent = v>0 ? fmtNum(Math.round(v*10)/10) : '·';
   }
   if(pie[7]){ const t=w.righe.reduce((a,r)=>a+oreSettimana(r).tot,0);
-    pie[7].textContent = t>0 ? fmtNum(Math.round(t*10)/10)+'h' : '—'; }
-  document.querySelectorAll('#litePage .lpigr tr.grp').forEach(tr=>{
-    const nome=(tr.querySelector('.rn')||{}).textContent;
-    const td=tr.querySelector('td.tt'); if(!td||!nome) return;
-    const v=w.righe.filter(r=>(r.reparto||'Senza reparto')===nome)
+    pie[7].textContent = t>0 ? fmtNum(Math.round(t*10)/10) : '·'; }
+  document.querySelectorAll('#litePage .lpirep').forEach(bl=>{
+    const nome=(bl.querySelector('.rn')||{}).childNodes[0];
+    const v2=bl.querySelector('.rv'); if(!v2||!nome) return;
+    const n=String(nome.textContent||'').trim();
+    const v=w.righe.filter(r=>(r.reparto||'Senza reparto')===n)
       .reduce((a,r)=>a+oreSettimana(r).tot,0);
-    td.textContent = v>0 ? fmtNum(Math.round(v*10)/10)+'h' : '—';
+    v2.innerHTML = v>0 ? fmtNum(Math.round(v*10)/10)+'<small>h</small>' : '—';
   });
 }
+
+/* ================== i turni dettati a voce ==================
+   Non serve registrare niente: la tastiera del telefono ha gia' il microfono
+   per la dettatura, e quello che esce e' testo. Quindi il lavoro non e'
+   ascoltare, e' capire. Qui dentro c'e' solo un interprete di frasi:
+
+     «Mario Rossi, lunedi' dalle 11 alle 15 e dalle 18 alle 23,
+      martedi' day off, mercoledi' 18-23»
+
+   Regole che si e' dato: non scrive mai in silenzio. Prima mostra che cosa
+   ha capito, riga per riga, e dice a voce alta quello che NON ha capito —
+   un turno interpretato male e non visto e' peggio di un turno non inserito.  */
+let tgTesto='', tgEsito=null, tgAperto=false;
+
+const TG_GIORNI=['lunedì|lunedi|lun','martedì|martedi|mar','mercoledì|mercoledi|mer',
+                 'giovedì|giovedi|gio','venerdì|venerdi|ven','sabato|sab','domenica|domenic|dom'];
+const TG_NUMERI={zero:0,una:1,uno:1,due:2,tre:3,quattro:4,cinque:5,sei:6,sette:7,otto:8,
+  nove:9,dieci:10,undici:11,dodici:12,tredici:13,quattordici:14,quindici:15,sedici:16,
+  diciassette:17,diciotto:18,diciannove:19,venti:20,ventuno:21,ventidue:22,ventitre:23,
+  ventitré:23,ventiquattro:24,mezzogiorno:12,mezzanotte:24};
+
+function tgNormalizza(t){
+  let x=' '+String(t||'').toLowerCase()+' ';
+  x=x.replace(/[’']/g,"'").replace(/[–—]/g,'-');
+  /* «e mezza», «e un quarto»: si dicono, e vanno capite */
+  x=x.replace(/\se\s+mezz[ao]\b/g,':30').replace(/\se\s+un\s+quarto\b/g,':15')
+     .replace(/\smeno\s+un\s+quarto\b/g,':45');
+  /* i numeri detti a parole diventano cifre */
+  Object.keys(TG_NUMERI).sort((a,b)=>b.length-a.length).forEach(k=>{
+    /* stesso motivo dei giorni: «ventitré» finisce con una lettera accentata */
+    x=x.replace(new RegExp('(^|[^a-zà-ÿ0-9])'+k+'(?![a-zà-ÿ])','g'), '$1'+String(TG_NUMERI[k]));
+  });
+  return x;
+}
+/* le fasce orarie dentro un pezzo di frase */
+function tgFasce(t){
+  const out=[];
+  const re=/(\d{1,2})(?:[:.,](\d{1,2}))?\s*(?:-|alle|all'|a\s|\/)\s*(\d{1,2})(?:[:.,](\d{1,2}))?/g;
+  let m;
+  while((m=re.exec(t))){
+    const a=+m[1], am=m[2]?+m[2]:0, b=+m[3], bm=m[4]?+m[4]:0;
+    if(a>24||b>24||am>59||bm>59) continue;
+    out.push([oraTesto(a+':'+String(am).padStart(2,'0')), oraTesto(b+':'+String(bm).padStart(2,'0'))]);
+    if(out.length>=2) break;          /* due servizi per giorno, non di piu' */
+  }
+  return out.filter(x=>x[0]&&x[1]);
+}
+const TG_RIPOSO=/\b(day\s*off|dayoff|riposo|riposa|libero|libera|off|a\s+casa|non\s+lavora|niente|chiuso)\b/;
+
+/* il testo diventa un elenco di «a questa persona, in questo giorno, questo orario» */
+function tgLeggi(testo){
+  migrateS();
+  const w=pianSett();
+  const t=tgNormalizza(testo);
+  const problemi=[];
+
+  /* 1 · dove comincia ogni persona. Si cerca il nome intero, poi il cognome,
+         poi il nome di battesimo se non è ambiguo. */
+  const punti=[];
+  w.righe.forEach(r=>{
+    const parti=String(r.nome||'').toLowerCase().split(/\s+/).filter(Boolean);
+    if(!parti.length) return;
+    const prove=[parti.join(' ')].concat(parti.length>1?[parti[parti.length-1], parti[0]]:[]);
+    for(const p of prove){
+      if(p.length<3) continue;
+      /* un nome di battesimo vale solo se è di una persona sola */
+      if(p===parti[0] && parti.length>1 &&
+         w.righe.filter(x=>String(x.nome||'').toLowerCase().split(/\s+/)[0]===p).length>1) continue;
+      const i=t.indexOf(' '+p);
+      if(i>=0){ punti.push({i, r}); return; }
+    }
+  });
+  punti.sort((a,b)=>a.i-b.i);
+  if(!punti.length){
+    return {blocchi:[], problemi:['Non ho riconosciuto nessun nome di questa settimana. '+
+      'Scrivi il nome come compare in griglia, per esempio «Mario Rossi».']};
+  }
+  /* un pezzo di testo prima del primo nome che contiene un giorno: se lo dico */
+  if(punti[0].i>2 && TG_GIORNI.some(g=>new RegExp('(^|[^a-zà-ÿ])('+g+')').test(t.slice(0,punti[0].i))))
+    problemi.push('Prima del primo nome c\'è del testo che parla di giorni: l\'ho saltato.');
+
+  /* 2 · dentro il pezzo di ogni persona, i giorni */
+  const blocchi=punti.map((p,n)=>{
+    const fine = n+1<punti.length ? punti[n+1].i : t.length;
+    const pezzo = t.slice(p.i, fine);
+    const trovati=[];
+    TG_GIORNI.forEach((alt,g)=>{
+      /* niente \b attorno ai giorni: «lunedì» finisce con una lettera accentata,
+         che per le espressioni regolari non è una lettera — e il confine di
+         parola non scattava mai. Il contorno si controlla a mano. */
+      const re=new RegExp('(^|[^a-zà-ÿ])('+alt+')(?![a-zà-ÿ])','g'); let m;
+      while((m=re.exec(pezzo))) trovati.push({g, i:m.index+m[1].length, len:m[2].length});
+    });
+    trovati.sort((a,b)=>a.i-b.i);
+    const giorni=trovati.map((d,j)=>{
+      const f = j+1<trovati.length ? trovati[j+1].i : pezzo.length;
+      const coda = pezzo.slice(d.i+d.len, f);
+      if(TG_RIPOSO.test(coda)) return {g:d.g, riposo:true, fasce:[]};
+      const fasce=tgFasce(coda);
+      if(!fasce.length) return {g:d.g, riposo:false, fasce:[], vuoto:true};
+      return {g:d.g, riposo:false, fasce};
+    });
+    if(!giorni.length)
+      problemi.push(`Di <b>${escH(p.r.nome)}</b> non ho capito nessun giorno.`);
+    giorni.filter(x=>x.vuoto).forEach(x=>
+      problemi.push(`<b>${escH(p.r.nome)}</b>, ${GIORNI[x.g].toLowerCase()}: nessun orario leggibile.`));
+    return {r:p.r, giorni:giorni.filter(x=>!x.vuoto)};
+  }).filter(b=>b.giorni.length);
+
+  /* 3 · i nomi detti che in questa settimana non ci sono */
+  const noti=new Set(w.righe.map(r=>norm(r.nome)));
+  (S.turni.righe||[]).forEach(x=>{
+    if(noti.has(norm(x.nome))) return;
+    const p=String(x.nome||'').toLowerCase().split(/\s+/).filter(Boolean);
+    if(p.length && t.indexOf(' '+p.join(' '))>=0)
+      problemi.push(`<b>${escH(x.nome)}</b> è in organico ma non in questa settimana: `+
+        `aggiungilo con «+ aggiungi» e ridetta.`);
+  });
+  if(/\be\s+cos[iì]\s+via\b|\becc\b|\beccetera\b/.test(t))
+    problemi.push('«E così via» non lo so completare: gli ultimi giorni vanno detti.');
+  return {blocchi, problemi};
+}
+/* quello che ho capito, scritto per esteso prima di toccare la settimana */
+function tgAnteprima(){
+  if(!tgEsito) return '';
+  const {blocchi, problemi}=tgEsito;
+  const n=blocchi.reduce((a,b)=>a+b.giorni.length,0);
+  const righe=blocchi.map(b=>`<div class="tgb"><div class="tgn">${escH(b.r.nome)}</div>
+    ${b.giorni.map(g=>`<div class="tgg"><span class="d">${GIORNI[g.g]}</span>
+      <span class="o">${g.riposo?'<i>riposo</i>'
+        :g.fasce.map(f=>'<b>'+f[0]+'–'+f[1]+'</b>').join(' · ')}</span></div>`).join('')}</div>`).join('');
+  return `${n?`<div class="tgok">Ho capito <b>${fmtNum(n)}</b> giorn${n===1?'o':'i'} su
+      <b>${fmtNum(blocchi.length)}</b> person${blocchi.length===1?'a':'e'}.</div>${righe}`
+    :'<div class="tgko">Non ho capito nessun turno.</div>'}
+    ${problemi.length?`<div class="tgpr"><div class="tgt">Quello che non ho capito</div>
+      ${problemi.map(p=>`<div class="tgp">${p}</div>`).join('')}</div>`:''}
+    ${n?`<div class="tgaz">
+      <button class="si" data-tgapp="1">Scrivi questi turni</button>
+      <button data-tgchiudi="1">Annulla</button></div>`:''}`;
+}
+function tgPannello(){
+  return `<div class="tgpan">
+    <div class="tgh"><div class="tgt">Scrivi o detta i turni</div>
+      <span class="x" data-tgchiudi="1">&#10005;</span></div>
+    <textarea id="tgIn" rows="4" placeholder="Mario Rossi, lunedì dalle 11 alle 15 e dalle 18 alle 23, martedì day off, mercoledì 18-23…">${escH(tgTesto)}</textarea>
+    <div class="tgnota">Sul telefono usa il <b>microfono della tastiera</b> e parla: quello che detti
+      finisce qui come testo. Niente registrazioni, niente audio che esce dall'app.</div>
+    <div class="tgaz"><button class="si" data-tgleggi="1">Leggi quello che ho scritto</button></div>
+    <div class="tgant">${tgAnteprima()}</div>
+  </div>`;
+}
+
 /* chi dell'organico non è in questa settimana: si aggiunge da qui */
 function lpiDaAggiungere(rep){
   migrateS();
@@ -4454,7 +4663,8 @@ function lpiSettimana(){
     ${w.righe.length ? lpiGriglia(w,k,mod)
       : `<div class="lpvuoto">In questa settimana non c'è ancora nessuno.<br><br>
          Con <b>Aggiungi chi manca dall'organico</b> entrano le persone di Risorse umane.</div>`}
-    ${mod?lpiEditor(w,k):''}
+    ${mod && document.documentElement.classList.contains('mobi') ? lpiEditor(w,k) : ''}
+    ${mod?(tgAperto?tgPannello():`<div class="lpiaz"><button data-tgapri="1">🎙 Scrivi o detta i turni</button></div>`):''}
     ${mod?`<div class="lpiaz">
       <button data-lpiazione="copia">Copia la settimana precedente</button>
       <button data-lpiazione="allinea">Aggiungi chi manca dall'organico</button></div>`:''}
@@ -13863,6 +14073,49 @@ document.addEventListener('click',async e=>{
   /* pianificazione in lite: viste, giorni, settimane, azioni */
   const lv=e.target.closest('[data-lpivista]');
   if(lv){ lpiVista=lv.dataset.lpivista; liteRender('pi'); return; }
+  /* un reparto alla volta: aprendone uno si chiude quello di prima */
+  const lr=e.target.closest('[data-lpirep]');
+  if(lr){ const v=lr.dataset.lpirep; lpiRep = (lpiRep===v ? '' : v); lpiCella=null;
+    liteRender('pi'); return; }
+  /* i turni dettati: apri, leggi, scrivi */
+  if(e.target.closest('[data-tgapri]')){ tgAperto=true; tgEsito=null; await liteRender('pi');
+    const ta=document.getElementById('tgIn'); if(ta) ta.focus(); return; }
+  if(e.target.closest('[data-tgchiudi]')){ tgAperto=false; tgEsito=null; liteRender('pi'); return; }
+  if(e.target.closest('[data-tgleggi]')){
+    const ta=document.getElementById('tgIn');
+    tgTesto = ta ? ta.value : '';
+    if(!tgTesto.trim()){ toast('Scrivi o detta qualcosa, poi rileggo.'); return; }
+    try{ tgEsito=tgLeggi(tgTesto); }catch(err){ tgEsito=null; toast('Non sono riuscito a leggerlo: '+err.message, true); }
+    await liteRender('pi');
+    const a=document.querySelector('.tgant'); if(a) a.scrollIntoView({block:'nearest', behavior:'smooth'});
+    return;
+  }
+  if(e.target.closest('[data-tgapp]')){
+    if(!tgEsito||!tgEsito.blocchi.length) return;
+    migrateS();
+    const w=pianSett();
+    storiaPrima();
+    let n=0;
+    tgEsito.blocchi.forEach(b=>{
+      const r=w.righe.find(x=>x.id===b.r.id); if(!r) return;
+      b.giorni.forEach(g=>{
+        if(g.riposo){ r.g[g.g]=['','','','']; n++; return; }
+        const f=g.fasce;
+        if(f.length>=2){ r.g[g.g]=[f[0][0],f[0][1],f[1][0],f[1][1]]; }
+        else {
+          /* una fascia sola: pranzo se comincia prima delle 16, altrimenti cena */
+          const pranzo = (oraMin(f[0][0])||0) < 16*60;
+          r.g[g.g] = pranzo ? [f[0][0],f[0][1],'',''] : ['','',f[0][0],f[0][1]];
+        }
+        n++;
+      });
+    });
+    await saveState(); storiaSegna();
+    tgAperto=false; tgEsito=null; tgTesto='';
+    liteRender('pi');
+    toast('✓ Scritti '+n+' giorni. Se qualcosa non torna, si corregge a mano nella griglia.');
+    return;
+  }
   /* aggiungere o togliere una persona dalla settimana */
   const la2=e.target.closest('[data-lpiadd]');
   if(la2){
