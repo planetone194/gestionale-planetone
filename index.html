@@ -1320,6 +1320,7 @@
     font-size:12px;color:#9A9A9A;padding:3.5px 0;}
   .lpvoce .det .r span{flex:1;}
   .lpvoce .det .r i{display:block;font-style:normal;font-size:11px;color:#6E6E6E;margin-top:1px;}
+  .lp .lpiaz button{text-align:center;}
   .lpvoce .det .r b{color:#E4E4E4;font-family:var(--num);font-size:12px;font-weight:600;white-space:nowrap;}
   .lpvoce .det .r b.manca{color:#E8B14A;}
   .lpvoce .det .lplink{color:var(--brass);font-family:var(--num);font-size:12px;
@@ -1349,7 +1350,16 @@
   .lpigr thead th.oggi{color:var(--brass);} .lpigr thead th.oggi small{color:var(--brass);}
   .lpigr thead th.chiuso{color:#5E5E5E;}
   .lpigr td{min-width:58px;}
-  .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.25;}
+  /* pranzo e cena stanno vicini: sono lo stesso giorno della stessa persona */
+  .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.15;}
+  .lpigr td b + b{margin-top:1px;}
+  /* il totale del giorno in fondo al reparto */
+  .lpigr tfoot td,.lpigr tfoot th{border-bottom:none;border-top:1px solid #2E2E2E;
+    font-weight:700;color:#9A9A9A;background:#191919;}
+  .lpigr tfoot th.chi{background:#191919;}
+  .lpigr tfoot th.chi .n{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:600;color:#8F8F8F;}
+  .lpigr tfoot td.tt{background:#191919;color:#C8C8C8;}
+  .lpigr tfoot td i{color:#5A5A5A;font-style:normal;}
   .lpigr td i{font-style:normal;color:#4A4A4A;}
   .lpigr td.vuota{background:transparent;}
   .lpigr td.oggi{background:rgba(240,127,31,.05);}
@@ -2161,6 +2171,7 @@
     <button class="vo" onclick="vaiDa('home')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Cambia locale</span><span class="fr">›</span></button>
     <button class="vo" onclick="chiudiSheet();window.print()"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Scarica il report</span><span class="fr">›</span></button>
     <div class="st">Personale</div>
+    <button class="vo" onclick="vaiDa('pr')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Produttività</span><span class="fr">&rsaquo;</span></button>
     <button class="vo" onclick="vaiDa('pi')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3.5v3M16 3.5v3"/></svg><span>Pianificazione turni</span><span class="fr">&rsaquo;</span></button>
     <div class="st">Ricette e fornitori</div>
     <button class="vo" onclick="vaiDa('rforn')"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 3.5h11v17l-5.5-4-5.5 4z"/></svg><span>Fornitori</span><span class="fr">&rsaquo;</span></button>
@@ -2262,7 +2273,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v153</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v154</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4073,7 +4084,6 @@ function lpChiusura(dove){
 const LP_PC = {
   tu:['Analisi dei turni','si incrociano ore e incassi di ogni servizio'],
   si:['Simulazione','si aprono e si chiudono i servizi per vedere che cosa cambia'],
-  pr:['Produttività del personale','si legge una griglia di sette giorni'],
   ceagg:['Conto economico aggregato','è una tabella a scalare'],
   ver:['Versioni precedenti','si ripristinano le copie dell\'archivio'],
   rprep:['Preparazioni e guarnizioni','si scrivono dosi e rese']
@@ -4350,7 +4360,7 @@ function lpiCellaTesto(r, g){
   const p = lpiBreve(r.g[g][0]) && lpiBreve(r.g[g][1]) ? lpiBreve(r.g[g][0])+'-'+lpiBreve(r.g[g][1]) : '';
   const c = lpiBreve(r.g[g][2]) && lpiBreve(r.g[g][3]) ? lpiBreve(r.g[g][2])+'-'+lpiBreve(r.g[g][3]) : '';
   if(!p && !c) return '<i>·</i>';
-  return [p,c].filter(Boolean).map(x=>`<b>${x}</b>`).join('<br>');
+  return [p,c].filter(Boolean).map(x=>`<b>${x}</b>`).join('');
 }
 /* Un blocco per reparto, chiuso finché non serve.
    Una griglia sola con quattro reparti dentro è un muro: si apre la cucina,
@@ -4403,11 +4413,21 @@ function lpiBlocco(w, k, mod, rep, aperto){
       ${[0,1,2,3,4,5,6].map(g=>lpiCellaHtml(r,g,k,mod,scrivo)).join('')}
       <td class="tt ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</td></tr>`;
   }).join('');
+  /* il totale del giorno, per questo reparto: serve a vedere se un giorno è
+     scoperto in cucina anche quando il locale nel complesso è coperto */
+  const piedeRep=`<tr><th class="chi"><div class="n">Ore del giorno</div></th>
+    ${[0,1,2,3,4,5,6].map(g=>{
+      const v=dentro.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
+      const nota=(w.note[g]||{});
+      return `<td class="${nota.k?'chiuso':''}">${nota.k==='chiuso'?'<i>—</i>'
+        :(v>0?fmtNum(Math.round(v*10)/10):'<i>·</i>')}</td>`;
+    }).join('')}
+    <td class="tt">${ore>0?fmtNum(Math.round(ore*10)/10)+'h':'—'}</td></tr>`;
   return `<div class="lpirep aperta">${testa}
     <div class="rb">
       ${dentro.length?`<div class="lpigr"><table>
         <thead><tr><th class="chi"></th>${giorni}<th class="tt">Ore</th></tr></thead>
-        <tbody>${righe}</tbody></table></div>`
+        <tbody>${righe}</tbody><tfoot>${piedeRep}</tfoot></table></div>`
        :`<div class="rvuoto">In questa settimana non c'è nessuno di ${escH(rep)}.</div>`}
       ${mod?`<div class="rz">
         <button class="agg" data-lpiadd="${escH(rep)}">+ aggiungi dall'organico</button>
@@ -4674,6 +4694,81 @@ function lpiSettimana(){
       È lo stesso archivio della versione Pro: quello che scrivi qui lo ritrovi dal computer.</div>
   </div>`;
 }
+
+/* ---------------- produttività, dal telefono ----------------
+   La domanda è una sola: in quali giorni ci sono troppe ore per l'incasso
+   che fanno. Quindi un giorno per riga, gli euro che ogni ora produce, e —
+   quando non torna — quante ore quel giorno si può permettere. Il resto
+   (chi, quanto costa, le simulazioni) resta al computer. */
+let lprGiorno=null;
+function liteePR(){ return litePR(); }
+async function litePR(){
+  migrateS(); ensureOre();
+  const d=prData();
+  const t=num(S.targets.prodOra)||60;
+  if(!(d.ric>0)) return `<div class="lp">${lpTesta('Produttività','ore contro incasso')}
+    <div class="lpvuoto">Non ci sono ancora ricavi caricati per questo periodo.</div></div>`;
+  if(!(d.oreSett>0)) return `<div class="lp">${lpTesta('Produttività','ore contro incasso')}
+    <div class="lpvuoto">Non ci sono ore caricate.<br><br>
+      ${prUltimaSettimana()?'Si prendono dalla pianificazione con il tasto qui sotto.'
+        :'Si compila prima una settimana in <b>Pianificazione</b>.'}</div>
+    ${prUltimaSettimana()?`<div class="lpiaz"><button data-prmp="1">⤓ Importa l'ultimo orario</button></div>`:''}
+    </div>`;
+  const ricSett=d.ric/4.33;
+  const wkTot=S.weekSales.reduce((a,v)=>a+num(v),0)||100;
+  const giorni=GIORNI.map((nome,g)=>{
+    const ore=S.ru.reduce((a,p)=>a+num(p.ore[g]),0);
+    const chi=S.ru.filter(p=>num(p.ore[g])>0);
+    const ric=ricSett*num(S.weekSales[g])/wkTot;
+    const prod=ore>0?ric/ore:NaN;
+    const maxOre=t>0&&ric>0?ric/t:0;
+    return {g, nome, ore, chi, ric, prod, maxOre, extra: ore>maxOre ? ore-maxOre : 0};
+  });
+  const peggio=giorni.filter(x=>x.extra>0.4).sort((a,b)=>b.extra-a.extra);
+  const oreExtra=giorni.reduce((a,x)=>a+x.extra,0);
+  const cl = v => !isFinite(v) ? '' : v>=t ? 'ok' : v>=t*0.85 ? 'warn' : 'bad';
+  const righe=giorni.map(x=>{
+    const ap=lprGiorno===x.g;
+    return `<div class="lpvoce ${ap?'aperta':''}" data-lprg="${x.g}">
+      <div class="t"><div class="n">${x.nome}
+          <small>${x.ore>0?fmtNum(Math.round(x.ore*10)/10)+' ore · '+fmtNum(x.chi.length)+' in turno'
+            :'nessuno in turno'} · incasso stimato ${fmtE(x.ric)}</small></div>
+        <div class="v ${cl(x.prod)}">${isFinite(x.prod)?fmtE(x.prod):'—'}<small>${
+          isFinite(x.prod)?'ogni ora lavorata':'senza ore'}</small></div></div>
+      <div class="det">
+        ${lpDet('Ore in turno', x.ore>0?fmtNum(Math.round(x.ore*10)/10):'')}
+        ${lpDet('Ore che il giorno regge', x.maxOre>0?fmtNum(Math.round(x.maxOre*10)/10)+' all\'obiettivo di '+fmtE(t)+'/h':'')}
+        ${x.extra>0.4?`<div class="lpnota2"><b>${fmtNum(Math.round(x.extra*10)/10)} ore di troppo</b>
+          per quello che incassa: a ${fmtE(t)} l'ora quel giorno ne regge
+          <b>${fmtNum(Math.round(x.maxOre*10)/10)}</b>.</div>`
+         :x.ore>0?`<div class="lpnota2">Il giorno regge le ore che ha.</div>`:''}
+        ${x.chi.length?`<div class="lpsez2">Chi c'è</div>${x.chi.map(p=>
+          `<div class="r"><span>${escH(p.nome)}<i>${escH(p.reparto||'')}</i></span>
+            <b>${fmtNum(num(p.ore[x.g]))} h</b></div>`).join('')}`:''}
+      </div></div>`;
+  }).join('');
+  return `<div class="lp">${lpTesta('Produttività','ore contro incasso, settimana tipo')}
+    ${lpKpi([
+      {n:isFinite(d.prod)?fmtE(d.prod):'—', et:'ogni ora', nota:'obiettivo '+fmtE(t), cl:cl(d.prod)},
+      {n:fmtNum(Math.round(d.oreSett)), et:'ore a settimana', nota:fmtNum(Math.round(d.oreMese))+' al mese'},
+      {n:oreExtra>0.4?fmtNum(Math.round(oreExtra)):'—', et:'ore di troppo',
+       nota: oreExtra>0.4 ? 'valgono '+fmtE(oreExtra*4.33*(isFinite(d.cOra)?d.cOra:0))+' al mese' : 'nessun giorno sfora',
+       cl: oreExtra>0.4?'warn':'ok'}
+    ])}
+    <div class="lpsez">Giorno per giorno</div>
+    ${righe}
+    ${peggio.length?`<div class="lpnota">Il giorno più carico è <b>${peggio[0].nome}</b>:
+      ${fmtNum(Math.round(peggio[0].extra*10)/10)} ore oltre quello che l'incasso regge.
+      Prima di togliere ore va guardato se è il turno a essere lungo o se sono troppe persone
+      insieme: lo dice <b>Analisi dei turni</b>, dal computer.</div>`:''}
+    <div class="lpiaz"><button data-prmp="1">⤓ Importa l'ultimo orario dalla pianificazione</button></div>
+    <div class="lpnota">Le ore sono quelle di una <b>settimana tipo</b>, non di una settimana precisa.
+      L'incasso del giorno è stimato spalmando l'incasso medio del mese sui pesi
+      di giornata impostati in Pro.<br>
+      Il costo per persona, i pesi di giornata e la simulazione dei servizi si modificano dal
+      computer, in <b>Personale · Produttività del personale</b>.</div></div>`;
+}
+
 /* ---- archivio: le settimane gia' fatte, in sola lettura ---- */
 function lpiArchivio(){
   migrateS();
@@ -5525,7 +5620,7 @@ async function liteRIC(){
       Le soglie si cambiano dal computer, in <b>Cruscotto · Obiettivi Planet One</b>.</div>
     ${lpChiusura('Ricette e fornitori · Ricette e schede costo')}</div>`;
 }
-const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, pi:litePIAN, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
+const LITE_REND = {rforn:liteFORN, ring:liteING, rric:liteRIC, pi:litePIAN, pr:litePR, ce:liteCE, rica:liteRicavi, ru:liteRU, sg:liteSG, mkt:liteMKT, cn:liteCN, cf:liteCF, ob:liteOB, me:liteME, an:liteAN, chk:liteCHK,
   vdash:liteVDASH, vriep:liteVRIEP, vprec:liteVPREC, vtrend:liteVTREND, vlist:liteVLIST,
   mprof:liteMPROF, mcore:liteMCORE, vprio:liteVPRIO,
   mwhat:liteMWHAT, mfocus:liteMFOCUS, mbuild:liteMBUILD, msugg:liteMSUGG,
@@ -10775,6 +10870,62 @@ function prKpisHTML(d){
     <div class="kpi"><div class="lbl">Costo orario medio</div><div class="val">${isFinite(d.cOra)?fmtE(d.cOra)+'/h':'—'}</div><div class="note">costo RU / ore lavorate</div></div>
     <div class="kpi"><div class="lbl">Ricavi per € di lavoro</div><div class="val">${d.ru>0?(d.ric/d.ru).toFixed(2)+'×':'—'}</div><div class="note">ogni euro di personale genera</div></div>`;
 }
+
+/* ============ produttività: da dove arrivano le ore ============
+   La pagina chiede le ore di una settimana tipo, persona per persona e giorno
+   per giorno. Riscriverle a mano quando la pianificazione ce le ha già è
+   lavoro doppio e un'occasione per sbagliare: qui si prendono dall'ultima
+   settimana compilata. Si copiano, non si collegano — la settimana tipo resta
+   una cosa che si può ritoccare senza toccare i turni veri. */
+function prUltimaSettimana(){
+  migrateS();
+  const chiavi=settimaneP().filter(k=>{
+    const w=S.pian.settimane[k];
+    return w && (w.righe||[]).some(r=>oreSettimana(r).tot>0);
+  });
+  return chiavi.length ? chiavi[chiavi.length-1] : null;
+}
+function prImporta(){
+  migrateS(); ensureOre();
+  const k=prUltimaSettimana();
+  if(!k) return {ok:false, perche:'Non c\'è ancora nessuna settimana di turni compilata.'};
+  const w=S.pian.settimane[k];
+  let messe=0, saltate=[];
+  S.ru.forEach(p=>{
+    const r=(w.righe||[]).find(x=>norm(x.nome)===norm(p.nome));
+    if(!r){ saltate.push(p.nome); return; }
+    for(let g=0; g<7; g++){
+      const o=oreGiorno(r,g);
+      p.ore[g]= +( (o[0]+o[1]).toFixed(2) ) || 0;
+    }
+    messe++;
+  });
+  /* chi è nei turni ma non in organico non si inventa: lo si dice */
+  const fuori=(w.righe||[]).filter(r=>oreSettimana(r).tot>0 &&
+    !S.ru.some(p=>norm(p.nome)===norm(r.nome))).map(r=>r.nome);
+  return {ok:messe>0, k, messe, saltate, fuori,
+    perche: messe ? '' : 'Nessun nome dell\'organico compare in quella settimana.'};
+}
+
+function prAggancia(){
+  const b=document.getElementById('prImp');
+  if(!b) return;
+  b.onclick=async ()=>{
+    const k=prUltimaSettimana();
+    if(!k){ toast('Non c\'è ancora nessuna settimana di turni compilata.', true); return; }
+    if(!await uiConfirm('Prendere le ore dalla settimana '+etichettaSett(k)+'?\n\n'+
+      'Le ore scritte qui adesso vengono sostituite. I turni non si toccano.')) return;
+    const r=prImporta();
+    if(!r.ok){ toast(r.perche, true); return; }
+    await saveState();
+    if(document.documentElement.classList.contains('litealt')) liteRender('pr'); else renderPR();
+    let m='✓ Prese le ore di '+r.messe+' person'+(r.messe===1?'a':'e')+' da '+etichettaSett(r.k)+'.';
+    if(r.saltate.length) m+=' Senza turni in quella settimana: '+r.saltate.slice(0,3).join(', ')+
+      (r.saltate.length>3?' e altri':'')+'.';
+    if(r.fuori.length) m+=' In turno ma non in organico: '+r.fuori.slice(0,3).join(', ')+'.';
+    toast(m);
+  };
+}
 function renderPR(){
   const d=prData();
   renderChips(d.m,'prChips');
@@ -10815,7 +10966,10 @@ function renderPR(){
   <section>
     <h2>Produttività HR · ${S.cliente}</h2>
     <div class="sub">Produttività = ricavi della giornata ÷ ore lavorate. Sotto obiettivo significa troppe ore per quel volume di vendite: la riga "ore massime in target" ti dice quante ore la giornata si può permettere.</div>
-    <div class="prtarget">Obiettivo produttività <input type="number" step="1" data-t="prodOra" value="${t}"> €/ora lavorata</div>
+    <div class="prtarget">Obiettivo produttività <input type="number" step="1" data-t="prodOra" value="${t}"> €/ora lavorata
+      <button class="btn small ghost" id="prImp" style="margin-left:14px">⤓ Importa l'ultimo orario</button>
+      <span class="savestate">${(()=>{ const k=prUltimaSettimana();
+        return k ? 'dalla settimana '+etichettaSett(k)+' della pianificazione' : 'non c\'è ancora una settimana di turni compilata'; })()}</span></div>
     <div class="prkpis kpis" id="prKpis" style="grid-template-columns:repeat(5,1fr)">${prKpisHTML(d)}</div>
   </section>
   <section>
@@ -10840,6 +10994,7 @@ function renderPR(){
       <tr><td class="lbl">Ore massime in target</td>${dayCells('max')}<td></td><td></td></tr>
     </table></div>
   </section>`;
+  prAggancia();
 }
 function prPartial(){
   if(current!=='pr') return;
@@ -13384,6 +13539,14 @@ async function demoGenera(){
   CNV=null;
   /* --- 5 · sei settimane di turni, cosi' la pianificazione si puo' guardare --- */
   let sett=0; try{ sett=await demoTurni(6); }catch(e){}
+  /* la settimana tipo della produttività nasce dall'orario appena generato:
+     così la pagina ha dei numeri veri da far vedere invece di una griglia vuota */
+  try{
+    prImporta();
+    /* i pesi di giornata di un bistrot: il fine settimana pesa il doppio del lunedì */
+    S.weekSales=[0,11,13,14,17,24,21];
+    await saveState();
+  }catch(e){}
   toast(`✓ Locale dimostrativo pronto: ${MP.forn.length} fornitori, ${MP.ing.length} ingredienti, ${PRO.prod.length} prodotti a menu, il venduto di ${mesi.length} mesi${
     sett?` e ${sett} settimane di turni`:''}.`);
   gotoPage(current);
@@ -14073,6 +14236,20 @@ document.addEventListener('click',async e=>{
   /* pianificazione in lite: viste, giorni, settimane, azioni */
   const lv=e.target.closest('[data-lpivista]');
   if(lv){ lpiVista=lv.dataset.lpivista; liteRender('pi'); return; }
+  /* produttività in lite: un giorno si apre, e l'orario si importa */
+  const lpg=e.target.closest('[data-lprg]');
+  if(lpg){ const g=+lpg.dataset.lprg; lprGiorno = (lprGiorno===g ? null : g); liteRender('pr'); return; }
+  if(e.target.closest('[data-prmp]')){
+    const k=prUltimaSettimana();
+    if(!k){ toast('Non c\'è ancora nessuna settimana di turni compilata.', true); return; }
+    if(!await uiConfirm('Prendere le ore dalla settimana '+etichettaSett(k)+'?\n\n'+
+      'Le ore scritte qui adesso vengono sostituite. I turni non si toccano.')) return;
+    const r=prImporta();
+    if(!r.ok){ toast(r.perche, true); return; }
+    await saveState(); liteRender('pr');
+    toast('✓ Prese le ore di '+r.messe+' person'+(r.messe===1?'a':'e')+' da '+etichettaSett(r.k)+'.');
+    return;
+  }
   /* un reparto alla volta: aprendone uno si chiude quello di prima */
   const lr=e.target.closest('[data-lpirep]');
   if(lr){ const v=lr.dataset.lpirep; lpiRep = (lpiRep===v ? '' : v); lpiCella=null;
