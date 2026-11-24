@@ -2113,7 +2113,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v147</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v148</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3692,7 +3692,7 @@ function renderDashLite(a, t, m, isM){
   sp.push(lSpia('mkt','Marketing',
     zMk===0 ? `${R(incMk)} € ogni 100, in fascia`
     : incMk < num(t.mk)
-      ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}<br>si fa vedere poco`)
+      ? (incMk<0.5 ? 'il locale non si sta facendo vedere' : `solo ${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}: si può investire di più`)
       : `${R(incMk)} € ogni 100 invece di ${fmtNum(t.mk)}`,
     zMk===0 ? '' : zMk>=3 ? 'rossa' : 'on',
     Math.abs(scMk),
