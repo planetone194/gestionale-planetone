@@ -1225,6 +1225,8 @@
     padding:6px 13px;font:inherit;font-size:12.5px;cursor:pointer;}
   .lpch:hover{border-color:#4A4A4A;color:#E4E4E4;}
   .lpch.on{background:var(--brass);border-color:var(--brass);color:#1A1A1A;font-weight:600;}
+  .lpper.lpob{margin-top:-6px;}
+  .lpper.lpob .lpch{flex:1;text-align:center;}
   /* i blocchi di testo: la diagnosi raccontata, non messa in tabella */
   .lptx p{font-size:13.5px;color:#C4C4C4;line-height:1.62;margin:0 0 11px;}
   .lptx p:last-child{margin-bottom:0;}
@@ -1406,17 +1408,23 @@
      che sotto di loro. Prima era fissa sopra la pagina e il primo blocco ci
      finiva addosso. */
   html.mobi .toolsrow{display:flex!important;position:sticky;top:0;z-index:60;
-    margin:-16px -14px 14px;padding:9px 14px;width:auto;
+    margin:-16px -14px 14px;padding:12px 18px 11px;width:auto;
     background:#131313;border-bottom:1px solid #262626;
     justify-content:space-between;align-items:center;gap:10px;}
   html.mobi .moblogo{display:block;flex:none;}
-  html.mobi .moblogo img{height:21px;display:block;}
+  html.mobi .moblogo img{height:22px;display:block;}
+  /* Nell'anteprima da computer gli interruttori vanno al centro della cornice,
+     non appoggiati al bordo: il marchio resta a sinistra, i bottoni sotto,
+     centrati, con la loro aria. */
+  html.mob .toolsrow{flex-direction:column;align-items:stretch;gap:10px;padding:14px 18px 13px;}
+  html.mob .toolsright{align-self:center;margin:0;justify-content:center;flex-wrap:nowrap;}
   html.mobi:not(.mob) .vistabtn{display:none;}
   html.mobi:not(.mob) .toolsright{display:none;}   /* sul telefono vero stanno nel foglio «Altro» */
   /* Nell'anteprima mobile la riga degli interruttori NON sparisce: dentro c'è
      il bottone per tornare al desktop, e se si nasconde non si esce più.
      Quello che sparisce sono i bottoni del cliente e il merchandising. */
-  html.mob .toolsright{margin-left:0;}
+  /* la vecchia regola che incollava gli interruttori a sinistra: ora li
+     vogliamo al centro della cornice, e ci pensa la regola qui sopra */
   html.mob #vistabtn{display:inline-flex!important;align-items:center;}
   html.mobi .merchexp,html.mobi .merchpan{display:none!important;}
   html.mob .modesw{display:inline-flex;}
@@ -1898,7 +1906,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v139</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v140</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3677,7 +3685,7 @@ function liteCE(){
   return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Materia prima':'Materia prima · '+a.et,
       fmtNum(incMp)+'<small> € ogni 100</small>',
-      `${fmtE(a.mp)} · l'obiettivo è ${fmtNum(t.mp)}` +
+      `${fmtE(a.mp)} · l'obiettivo è il <b>${fmtNum(t.mp)}%</b>` +
       (a.bu==='tot' && fc!=null && bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
       lpStato(incMp, t.mp))}
     ${a.bu==='tot' ? lpCard('Food e beverage',
@@ -3782,7 +3790,7 @@ function liteRU(){
   return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Costo del personale':'Costo del personale · '+a.et,
       fmtNum(incRu)+'<small> € ogni 100</small>',
-      `${fmtE(a.ru)} · l'obiettivo è ${fmtNum(t.ru)}` +
+      `${fmtE(a.ru)} · l'obiettivo è il <b>${fmtNum(t.ru)}%</b>` +
       (a.bu==='tot' ? ` · <b>${persone}</b> person${persone===1?'a':'e'}` : ''),
       lpStato(incRu, t.ru))}
     ${bu}
@@ -3816,7 +3824,7 @@ function liteSG(){
   return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Spese generali':'Spese generali · '+a.et,
       fmtNum(incSg)+'<small> € ogni 100</small>',
-      `${fmtE(a.sg)} · l'obiettivo è ${fmtNum(t.sg)}`, lpStato(incSg, t.sg))}
+      `${fmtE(a.sg)} · l'obiettivo è il <b>${fmtNum(t.sg)}%</b>`, lpStato(incSg, t.sg))}
     ${unaTantum>0 ? lpCard('Tolte le voci che compaiono una o due volte',
       (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100</small>',
       `<b>${fmtE(unaTantum)}</b> sono saldi e rate, non spesa corrente. Depurate quelle, la spesa ricorrente fa <b>${fmtE(ricorrenti)}</b>.`,
@@ -3937,6 +3945,7 @@ function liteOB(){
   const pc=(a.incMp+a.incRu)*100, tPc=num(t.mp)+num(t.ru);
 
   return `<div class="lp">${lpTesta('Obiettivi per area', per)}
+    ${lpObTre('ob')}
     ${lpCard('Quanto vale rientrare', rec && rec.tot>0 ? fmtE(rec.tot) : '—',
       rec && rec.tot>0
         ? `è quello che tornerebbe a margine nel periodo se le aree sopra soglia rientrassero.<br>
@@ -3944,7 +3953,7 @@ function liteOB(){
         : 'tutte le aree sono dentro le loro soglie: da qui non c\'è altro da prendere',
       rec && rec.tot>0 ? 'warn' : 'ok')}
     ${lpCard('Utile operativo', fmtNum(incRo)+'<small> € ogni 100</small>',
-      `${fmtE(a.ro)} · l'obiettivo è ${fmtNum(tRo)}<br>` +
+      `${fmtE(a.ro)} · l'obiettivo è il <b>${fmtNum(tRo)}%</b><br>` +
       (incRo>=tRo ? `<b>${fmtNum(incRo-tRo)} punti</b> sopra l'obiettivo`
                   : `mancano <b>${fmtNum(tRo-incRo)} punti</b>, cioè <b>${fmtE((tRo-incRo)/100*a.ricavi)}</b>`),
       incRo>=tRo ? 'ok' : incRo>=tRo-5 ? 'warn' : 'bad')}
@@ -4025,7 +4034,7 @@ function liteAN(){
   const testa = lpCard('Incasso del periodo', fmtE(a.ricavi),
       `${d.completi.length} ${d.completi.length===1?'mese nei conti':'mesi nei conti'}: ${d.completi.map(x=>x.mese).join(', ')}`)
     + lpCard('Utile operativo', fmtE(a.ro),
-      isFinite(roInc) ? `${Math.round(roInc)} € ogni 100 di incasso · l'obiettivo è ${fmtNum(t.ro)}` : '',
+      isFinite(roInc) ? `${fmtNum(roInc)} € ogni 100 di incasso · l'obiettivo è il <b>${fmtNum(t.ro)}%</b>` : '',
       isFinite(roInc) ? (roInc>=num(t.ro) ? 'ok' : roInc>=num(t.ro)-5 ? 'warn' : 'bad') : '');
 
   /* --- le aree, una riga per ciascuna, col suo semaforo --- */
@@ -9508,8 +9517,9 @@ async function renderVDASH(){
   /* la quadratura col conto economico */
   const m=compute();
   const ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete, 0);
+  const ceRic=meRicaviCE(ce);
   const ric=righe.reduce((a,r)=>a+r.revenue,0);
-  const delta = ce.ricavi>0 ? (ric-ce.ricavi)/ce.ricavi : null;
+  const delta = ceRic>0 ? (ric-ceRic)/ceRic : null;
   const cats=[...new Set(righe.map(r=>r.cat))].sort((a,b)=>a.localeCompare(b,'it'));
 
   body.innerHTML=`
@@ -9527,7 +9537,7 @@ async function renderVDASH(){
       ${qaCard('Quadratura col conto economico',
         delta==null?'—':Math.abs(delta)<0.005?'in pari':(delta>=0?'+':'−')+fmtP(Math.abs(delta)),
         delta==null ? 'Non ci sono ricavi caricati nel conto economico per questo periodo.'
-          : `venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}<br>` +
+          : `venduto ${fmtE(ric)} · conto economico ${fmtE(ceRic)}${liteBU!=='tot'?' ('+meEt().toLowerCase()+')':''}<br>` +
             (Math.abs(delta)<=0.02 ? 'scarto sotto il 2%: i due archivi si parlano.'
               : 'oltre il 2%: prima di usare queste pagine va capito da dove viene.'),
         delta==null?'':Math.abs(delta)<=0.02?'ok':Math.abs(delta)<=0.05?'warn':'bad')}
@@ -10124,6 +10134,7 @@ async function liteOBMESE(){
   const raggiunti=chiusi.filter(x=>x.fatto>=x.obiettivo);
   const corrente=righe.find(x=>!x.chiuso && x.obiettivo>0);
   return `<div class="lp">${lpTesta('Obiettivi del mese','esercizio '+S.anno)}
+    ${lpObTre('obmese')}
     ${lpCard('Obiettivo dell\'anno', fmtE(obAnno),
       `incassati <b>${fmtE(fattoAnno)}</b> · ${manca>0?`mancano <b>${fmtE(manca)}</b>`:`<b>superato di ${fmtE(-manca)}</b>`}`,
       manca<=0?'ok':fattoAnno/obAnno>=0.9?'warn':'bad')}
@@ -10149,6 +10160,7 @@ async function liteOBBEP(){
   const {a,t,incMp,fissi,bep,bepT,nMesi}=d;
   const gg=6, mese=bep/nMesi, sett=mese*12/52, giorno=sett/gg;
   return `<div class="lp">${lpTesta('Punto di pareggio', d.isM?MESI[scope]+' '+S.anno:`${nMesi} mes${nMesi===1?'e':'i'} del ${S.anno}`)}
+    ${lpObTre('obbep')}
     ${lpCard('Il pavimento', fmtE(bep),
       `sotto questo incasso il locale perde<br>ha incassato <b>${fmtE(a.ricavi)}</b>: ${
         a.ricavi>=bep?`<b>${fmtE(a.ricavi-bep)}</b> sopra`:`<b>${fmtE(bep-a.ricavi)}</b> sotto`}`,
@@ -10182,6 +10194,14 @@ const lmVuoto = (titolo, per) => `<div class="lp">${lpTesta(titolo, per)}
     Serve il venduto di cassa con i pezzi e l'incasso per prodotto.
     Si carica dal computer, in <b>modalità Pro</b>.</div></div>`;
 const lmSeg = r => /bev/i.test(r.seg||'') ? 'Beverage' : 'Food';
+/* Le tre pagine degli obiettivi sono tre risposte alla stessa domanda — dove
+   vogliamo arrivare — quindi sul telefono stanno a un tocco l'una dall'altra
+   invece che in tre punti diversi del menu. */
+const OB_TRE=[['ob','Per area'],['obmese','Del mese'],['obbep','Pareggio']];
+function lpObTre(attiva){
+  return `<div class="lpper lpob">${OB_TRE.map(([k,et])=>
+    `<button class="lpch ${k===attiva?'on':''}" data-page="${k}" onclick="vaiDa('${k}')">${et}</button>`).join('')}</div>`;
+}
 
 /* ---- Report del venduto ---- */
 async function liteVDASH(){
@@ -10190,7 +10210,8 @@ async function liteVDASH(){
   const iva=1+num(PRO.iva||0.1);
   const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
   const m=compute(), ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete,0);
-  const d=ce.ricavi>0?(ric-ce.ricavi)/ce.ricavi:null;
+  const ceRic=meRicaviCE(ce);
+  const d=ceRic>0?(ric-ceRic)/ceRic:null;
   const top=[...righe].sort((a,b)=>b.revenue-a.revenue).slice(0,12);
   return `<div class="lp">${lpTesta('Report del venduto', per)}
     ${lpCard('Incasso dal venduto', fmtE(ric),
@@ -10198,7 +10219,7 @@ async function liteVDASH(){
     ${lpCard('Torna col conto economico?',
       d==null?'—':Math.abs(d)<0.005?'sì':(d>=0?'+':'−')+fmtP(Math.abs(d)),
       d==null?'non ci sono ricavi caricati per questo periodo'
-        :`venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}`,
+        :`venduto ${fmtE(ric)} · conto economico ${fmtE(ceRic)}${liteBU!=='tot'?' ('+meEt().toLowerCase()+')':''}`,
       d==null?'':Math.abs(d)<=0.02?'ok':Math.abs(d)<=0.05?'warn':'bad')}
     <div class="lpsez">I dodici che incassano di più</div>
     ${top.map(r=>lpRow(r.nome, `${r.cat} · ${fmtInt(r.pz)} pezzi`, fmtE(r.revenue),
@@ -10496,13 +10517,17 @@ function buInnesta(p){
   if(!root || root.querySelector('.lpbu')) return;
   const testa = root.querySelector('.lphead') || root.querySelector('.sechead');
   if(!testa) return;
+  /* niente pastiglia «solo food» accanto al titolo: l'interruttore qui a fianco
+     dice già quale reparto si sta guardando, e due volte è una volta di troppo */
   testa.insertAdjacentHTML('beforeend', lpBUsw());
-  if(liteBU!=='tot'){
-    const h=testa.querySelector('h2');
-    if(h && !h.querySelector('.bufiltro'))
-      h.insertAdjacentHTML('beforeend',
-        `<span class="bufiltro ${liteBU}">solo ${meEt().toLowerCase()}</span>`);
-  }
+}
+/* I ricavi del conto economico sullo STESSO perimetro del filtro: se si guarda
+   solo il food, il venduto va confrontato con i ricavi food, non con il totale.
+   Senza questo, filtrando su food la quadratura dava −56% e sembrava un buco. */
+function meRicaviCE(ce){
+  if(liteBU==='food') return num(ce.ricaviFood);
+  if(liteBU==='bev')  return num(ce.ricaviBev);
+  return num(ce.ricavi);
 }
 /* il prezzo di listino di una riga: serve a dire quanto avrebbe dovuto incassare */
 function meListino(r){
@@ -10524,7 +10549,8 @@ async function renderVRIEP(){
   const ric=righe.reduce((a,r)=>a+r.revenue,0), pz=righe.reduce((a,r)=>a+r.pz,0);
   const m=compute();
   const ce=sumRows(scope!=='ytd'?[m.months[scope]]:m.complete, 0);
-  const delta = ce.ricavi>0 ? ric-ce.ricavi : null;
+  const ceRic=meRicaviCE(ce);
+  const delta = ceRic>0 ? ric-ceRic : null;
   /* famiglia → categoria, come nel suo riepilogo */
   const fam={};
   righe.forEach(r=>{
@@ -10550,10 +10576,10 @@ async function renderVRIEP(){
       ${qaCard('Incasso del periodo', fmtE(ric),
         `${fmtE(ric*iva)} IVA inclusa · <b>${fmtInt(pz)}</b> pezzi · prezzo medio <b>${fmtE2(pz?ric/pz:0)}</b>`)}
       ${qaCard('Quadratura col conto economico',
-        delta==null?'—':Math.abs(delta)<Math.max(1,ce.ricavi*0.005)?'in pari':(delta>0?'+':'−')+fmtE(Math.abs(delta)),
+        delta==null?'—':Math.abs(delta)<Math.max(1,ceRic*0.005)?'in pari':(delta>0?'+':'−')+fmtE(Math.abs(delta)),
         delta==null?'Non ci sono ricavi caricati nel conto economico per questo periodo.'
-          :`venduto ${fmtE(ric)} · conto economico ${fmtE(ce.ricavi)}`,
-        delta==null?'':Math.abs(delta)<=ce.ricavi*0.02?'ok':'warn')}
+          :`venduto ${fmtE(ric)} · conto economico ${fmtE(ceRic)}${liteBU!=='tot'?' ('+meEt().toLowerCase()+')':''}`,
+        delta==null?'':Math.abs(delta)<=ceRic*0.02?'ok':'warn')}
       ${qaCard('Prodotti e categorie', fmtInt(righe.length)+'<small> prodotti</small>',
         `${Object.values(fam).reduce((a,f)=>a+Object.keys(f.cat).length,0)} categorie con venduto nel periodo`)}
     </div>
