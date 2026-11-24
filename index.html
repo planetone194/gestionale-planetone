@@ -447,15 +447,32 @@
   .qac.bad{border-color:#E7B3AC;} .qac.bad .et{color:var(--bad);}
   /* la riga dei dodici mesi */
   /* l'andamento dei mesi, a tutta larghezza, in testa a ogni area */
-  .qagraf{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 14px 10px;margin-top:12px;}
-  .qagraf svg{width:100%;height:190px;display:block;overflow:visible;}
-  .qagraf .ricavi rect{fill:#5D6B79;fill-opacity:.13;}
+  /* esce dal riquadro della sezione: il disegno prende tutta la pagina */
+  .qagraf{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:#fff;margin:14px -22px 0;}
+  .qagraf svg{width:100%;height:228px;display:block;overflow:visible;}
+  .qagraf .hit{fill:#1B1E21;fill-opacity:0;cursor:pointer;}
+  .qagraf .hit:hover{fill-opacity:.035;}
+  .qagraf .guida{stroke:var(--ink2);stroke-width:1;stroke-dasharray:2 3;vector-effect:non-scaling-stroke;pointer-events:none;}
+  .qagraf circle.on{r:5;stroke-width:2;}
+  .qagraf .mesi text.on{fill:var(--ink);font-weight:700;}
+  /* la riga di lettura: il mese sotto il cursore, o il periodo intero */
+  .qadet{display:flex;flex-wrap:wrap;align-items:center;gap:6px 30px;
+    padding:11px 22px;border-bottom:1px solid var(--line);background:#FDFCFA;min-height:46px;}
+  .qadet .m{font-family:var(--num);font-size:14.5px;font-weight:700;min-width:116px;}
+  .qadet>span:not(.m):not(.sc){display:flex;flex-direction:column;gap:1px;}
+  .qadet i{font-style:normal;font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase;color:#9A958A;font-weight:700;}
+  .qadet b{font-family:var(--num);font-size:14px;font-weight:600;letter-spacing:-.3px;}
+  .qadet b.ok{color:var(--ok);} .qadet b.bad{color:var(--bad);}
+  .qadet .sc{font-size:11.5px;color:var(--ink2);margin-left:auto;text-align:right;}
+  .qadet .sc.ok{color:var(--ok);} .qadet .sc.bad{color:var(--bad);}
+  .qagraf .ricavi rect{fill:#5D6B79;fill-opacity:.17;}
   .qagraf .val{fill:none;stroke-width:2;vector-effect:non-scaling-stroke;}
   .qagraf .obj{fill:none;stroke:var(--ink2);stroke-width:1.2;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;}
   .qagraf circle{vector-effect:non-scaling-stroke;stroke:#fff;stroke-width:1.2;}
   .qagraf .dentro{fill:var(--ok);} .qagraf .fuori{fill:var(--bad);} .qagraf .neutro{fill:var(--ink2);}
   .qagraf .mesi text{font-family:var(--num);font-size:11px;fill:var(--ink2);}
-  .qagraf .leg{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);}
+  .qagraf .leg{display:flex;flex-wrap:wrap;gap:6px 22px;padding:9px 22px 10px;border-top:1px solid var(--line);}
   .qagraf .leg span{font-size:12px;color:var(--ink2);display:flex;align-items:center;gap:7px;}
   .qagraf .leg b{color:var(--ink);font-family:var(--num);font-size:12.5px;}
   .qagraf .leg em{font-style:normal;color:#9A958A;font-size:11px;}
@@ -471,6 +488,24 @@
   .qabar{display:block;height:7px;border-radius:4px;background:var(--bev);overflow:hidden;margin-top:7px;}
   .qabar i{display:block;height:100%;background:var(--food);}
   .qasez{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--ink2);font-weight:700;margin:20px 0 6px;}
+  /* l'approfondimento: riquadri affiancati, come le card del cruscotto, invece
+     di un elenco unico che attraversa tutta la pagina */
+  .qablocchi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;align-items:start;}
+  @media(max-width:1040px){ .qablocchi{grid-template-columns:1fr;} }
+  .qablk{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 16px 11px;}
+  .qablk.larga{grid-column:1 / -1;}
+  .qabt{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--ink2);font-weight:700;
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    padding-bottom:8px;margin-bottom:2px;border-bottom:1px solid var(--line);}
+  .qabt small{letter-spacing:.1px;text-transform:none;font-size:11.5px;font-weight:400;color:#9A958A;text-align:right;}
+  .qablk .qarow:last-child{border-bottom:none;}
+  .qablk .qanota{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);}
+  .qablk .qanota:first-child{margin-top:2px;padding-top:0;border-top:none;}
+  /* l'interruttore del reparto, come quelli della tabella del cruscotto */
+  section.qa .lpbu{border-radius:9px;padding:0;overflow:hidden;border:1.5px solid var(--line);align-self:flex-start;}
+  section.qa .lpbu::before{content:'BUSINESS UNIT';display:flex;align-items:center;padding:0 10px;
+    font-size:10px;letter-spacing:1.4px;font-weight:700;color:var(--ink2);background:#F2F0EB;border-right:1px solid var(--line);}
+  section.qa .lpbu button{border-radius:0;border-left:1px solid var(--line);padding:7px 13px;font-size:12.5px;}
   .qarow{display:flex;align-items:baseline;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);}
   .qarow:last-child{border-bottom:none;}
   .qarow .n{flex:1;font-size:13.5px;min-width:0;}
@@ -2289,7 +2324,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v157</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v158</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -13050,23 +13085,24 @@ const QA_ET=['in obiettivo','zona gialla','zona arancio','fuori controllo'];
 /* ============ l'andamento, a tutta larghezza ============
    Una riga di mesi con tre cose sopra:
 
-     · i RICAVI, come area di sfondo — danno la forma dell'anno, dove il
-       locale lavora e dove si ferma;
-     · la SPESA dell'area (o il margine, sui ricavi), linea piena;
-     · quanto quella spesa AVREBBE DOVUTO essere per stare in obiettivo:
-       ricavi × obiettivo, linea tratteggiata.
+     - i RICAVI, come colonne basse di sfondo: dicono dove il locale lavora e
+       dove si ferma. Hanno una scala loro, perche' sono dieci volte piu'
+       grandi: danno il contesto, non si confrontano con niente.
+     - la SPESA dell'area (o il margine, sui ricavi), linea piena;
+     - quanto quella spesa AVREBBE DOVUTO essere per stare in obiettivo:
+       ricavi per obiettivo, linea tratteggiata.
 
-   Il confronto che conta è fra le due linee, e quelle due stanno sulla stessa
-   scala. I ricavi hanno una scala loro, perché sono dieci volte più grandi:
-   servono a dare il contesto, non a essere confrontati — e c'è scritto.
-   Dove la linea piena sta sopra la tratteggiata, quel mese è costato più di
-   quello che l'incasso reggeva: il mese si colora di rosso.                 */
+   Sopra al disegno c'e' una riga di lettura. Ferma: dice il periodo intero.
+   Passando il cursore su un mese: dice quel mese, incasso, spesa, incidenza e
+   scostamento. Cliccando, il mese resta fermo li' finche' non si riclicca.
+   E' lo stesso gesto della tabella del cruscotto, ma su una riga sola.      */
+let QAG=null;
 function qaGrafico(opt){
   const mesi=opt.ric.map((v,i)=>i).filter(i=>opt.ric[i]!=null && opt.val[i]!=null);
   if(mesi.length<2) return '';
-  /* il margine laterale lascia posto a mezza colonna: senza, gennaio e
-     dicembre uscivano dal riquadro */
-  const W=1000, H=190, PL=40, PR=40, PT=16, PB=26;
+  /* il disegno occupa tutta la larghezza della pagina: il margine laterale
+     lascia posto a mezza colonna, senza gennaio e dicembre uscivano */
+  const W=1200, H=228, PL=46, PR=46, PT=18, PB=30;
   const ric=opt.ric, val=opt.val;
   const tgtLinea = opt.tgt!=null ? ric.map(r=>r==null?null:r*opt.tgt/100) : null;
   const maxR=Math.max(...mesi.map(i=>ric[i])) || 1;
@@ -13075,50 +13111,100 @@ function qaGrafico(opt){
   const YV=v=>PT+(H-PT-PB)*(1-v/maxV);
   const via=(ps)=>ps.map((p,k)=>(k?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
 
-  /* I ricavi stanno sotto, come colonne basse: servono a dire dove il locale
-     lavora e dove si ferma, non a essere confrontati con la spesa — e disegnarli
-     con la stessa penna delle due linee li faceva sembrare la stessa cosa.
-     Colonne contro linee: due oggetti diversi, due domande diverse. */
-  const altaMax=(H-PT-PB)*0.52;
-  const larg=(W-PL-PR)/13;
-  const area=mesi.map(i=>{
+  /* colonne contro linee: due oggetti diversi, due domande diverse */
+  const altaMax=(H-PT-PB)*0.44;
+  const larg=(W-PL-PR)/13;          /* il passo fra un mese e l'altro */
+  const lCol=larg*0.54;             /* la colonna ne occupa poco piu' di meta' */
+  const colonne=mesi.map(i=>{
     const h=altaMax*ric[i]/maxR;
-    return `<rect x="${(X(i)-larg/2).toFixed(1)}" y="${(H-PB-h).toFixed(1)}"
-      width="${larg.toFixed(1)}" height="${h.toFixed(1)}" rx="2"><title>${MESI[i]}: ${fmtE(ric[i])}</title></rect>`;
+    return `<rect x="${(X(i)-lCol/2).toFixed(1)}" y="${(H-PB-h).toFixed(1)}"
+      width="${lCol.toFixed(1)}" height="${h.toFixed(1)}" rx="2"/>`;
   }).join('');
 
   const pv=mesi.map(i=>[X(i), YV(val[i])]);
   const pt=tgtLinea?mesi.map(i=>[X(i), YV(tgtLinea[i])]):null;
+  const fuoriM = i => tgtLinea ? (opt.giuMeglio ? val[i]<tgtLinea[i] : val[i]>tgtLinea[i]) : false;
 
-  const punti=mesi.map(i=>{
-    const sopra = tgtLinea ? (opt.giuMeglio ? val[i]>tgtLinea[i] : val[i]<tgtLinea[i]) : null;
-    const fuori = tgtLinea ? !sopra : false;
-    return `<circle cx="${X(i).toFixed(1)}" cy="${YV(val[i]).toFixed(1)}" r="3.2"
-      class="${tgtLinea?(fuori?'fuori':'dentro'):'neutro'}"><title>${MESI[i]}: ${fmtE(val[i])}${
-      tgtLinea?' · in obiettivo '+fmtE(tgtLinea[i]):''}</title></circle>`;
-  }).join('');
-  const etich=mesi.map(i=>`<text x="${X(i).toFixed(1)}" y="${H-8}" text-anchor="middle">${MESI[i].slice(0,3)}</text>`).join('');
+  const punti=mesi.map(i=>`<circle data-qap="${i}" cx="${X(i).toFixed(1)}" cy="${YV(val[i]).toFixed(1)}" r="3.4"
+      class="${tgtLinea?(fuoriM(i)?'fuori':'dentro'):'neutro'}"/>`).join('');
+  const etich=mesi.map(i=>`<text data-qal="${i}" x="${X(i).toFixed(1)}" y="${H-9}" text-anchor="middle">${MESI[i].slice(0,3)}</text>`).join('');
+  /* le zone sensibili: una colonna invisibile per mese, larga quanto il passo */
+  const zone=mesi.map(i=>`<rect class="hit" x="${(X(i)-larg/2).toFixed(1)}" y="0"
+      width="${larg.toFixed(1)}" height="${(H-PB).toFixed(1)}" data-qam="${i}"/>`).join('');
 
-  const nFuori = tgtLinea ? mesi.filter(i=>opt.giuMeglio ? val[i]<=tgtLinea[i] : val[i]>tgtLinea[i]).length : 0;
+  /* ---- la riga di lettura ---- */
+  const incid = i => ric[i]>0 ? val[i]/ric[i]*100 : null;
+  const voce = (et, v, cls) => `<span><i>${et}</i><b${cls?' class="'+cls+'"':''}>${v}</b></span>`;
+  const dettMese = i => {
+    const sc = tgtLinea ? val[i]-tgtLinea[i] : null;
+    const male = tgtLinea ? fuoriM(i) : false;
+    const inc = incid(i);
+    return `<span class="m">${MESI[i]}</span>`
+      + voce(opt.etRic||'Ricavi', fmtE(ric[i]))
+      + voce(opt.etVal, fmtE(val[i]))
+      + (inc!=null ? voce(opt.giuMeglio?'Margine':'Incidenza', fmtNum(inc)+'%', tgtLinea?(male?'bad':'ok'):'') : '')
+      + (tgtLinea ? voce(opt.etTgt||'In obiettivo', fmtE(tgtLinea[i])) : '')
+      + (tgtLinea ? `<span class="sc ${male?'bad':'ok'}">${fmtE(Math.abs(sc))} ${
+          opt.giuMeglio ? (male?'di margine mancato':'di margine in pi&ugrave;')
+                        : (male?'oltre quello che l&rsquo;incasso reggeva':'sotto quello che l&rsquo;incasso reggeva')}</span>` : '');
+  };
+  const sRic=mesi.reduce((t,i)=>t+ric[i],0), sVal=mesi.reduce((t,i)=>t+val[i],0);
+  const sTgt=tgtLinea?mesi.reduce((t,i)=>t+tgtLinea[i],0):null;
+  const nFuori = tgtLinea ? mesi.filter(i=>fuoriM(i)).length : 0;
+  const incTot = sRic>0 ? sVal/sRic*100 : null;
+  const dettTot = `<span class="m">${mesi.length===1?MESI[mesi[0]]:'Tutto il periodo'}</span>`
+    + voce(opt.etRic||'Ricavi', fmtE(sRic))
+    + voce(opt.etVal, fmtE(sVal))
+    + (incTot!=null ? voce(opt.giuMeglio?'Margine':'Incidenza', fmtNum(incTot)+'%') : '')
+    + (sTgt!=null ? voce(opt.etTgt||'In obiettivo', fmtE(sTgt)) : '')
+    + (tgtLinea ? `<span class="sc">${nFuori? fmtNum(nFuori)+' mes'+(nFuori===1?'e':'i')+' fuori su '+fmtNum(mesi.length)
+        : 'nessun mese fuori'} &middot; passa il cursore su un mese</span>` : '');
+
+  QAG={tot:dettTot, m:{}, x:{}, pin:null};
+  mesi.forEach(i=>{ QAG.m[i]=dettMese(i); QAG.x[i]=X(i); });
+
   return `<div class="qagraf">
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img">
-      <g class="ricavi">${area}</g>
+    <div class="qadet" id="qadet">${dettTot}</div>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img"
+         onmouseleave="qaMeseVia()" onmouseover="qaMeseSu(event)" onclick="qaMeseFerma(event)">
+      <g class="ricavi">${colonne}</g>
+      <line class="guida" id="qaguida" x1="0" y1="${PT}" x2="0" y2="${H-PB}" style="display:none"/>
       ${pt?`<path class="obj" d="${via(pt)}"/>`:''}
       <path class="val" d="${via(pv)}" style="stroke:${opt.col||'var(--brass)'}"/>
       ${punti}
       <g class="mesi">${etich}</g>
+      <g class="hits">${zone}</g>
     </svg>
     <div class="leg">
-      <span><i class="r"></i>${opt.etRic||'Ricavi'} <b>${fmtE(mesi.reduce((t,i)=>t+ric[i],0))}</b>
-        <em>scala a sé, dà la forma dell'anno</em></span>
+      <span><i class="r"></i>${opt.etRic||'Ricavi'} <b>${fmtE(sRic)}</b>
+        <em>colonne, scala a s&eacute;</em></span>
       <span><i class="v" style="background:${opt.col||'var(--brass)'}"></i>${opt.etVal}
-        <b>${fmtE(mesi.reduce((t,i)=>t+val[i],0))}</b></span>
-      ${pt?`<span><i class="o"></i>${opt.etTgt||'In obiettivo'}
-        <b>${fmtE(mesi.reduce((t,i)=>t+tgtLinea[i],0))}</b>
-        <em>${nFuori?fmtNum(nFuori)+' mes'+(nFuori===1?'e':'i')+' fuori':'nessun mese fuori'}</em></span>`:''}
+        <b>${fmtE(sVal)}</b></span>
+      ${pt?`<span><i class="o"></i>${opt.etTgt||'In obiettivo'} <b>${fmtE(sTgt)}</b></span>`:''}
     </div></div>`;
 }
-
+/* il mese sotto il cursore diventa la riga di lettura */
+function qaMeseDisegna(i){
+  const d=document.getElementById('qadet'); if(!d||!QAG) return;
+  d.innerHTML = (i!=null && QAG.m[i]) ? QAG.m[i] : QAG.tot;
+  const g=document.getElementById('qaguida');
+  if(g){ if(i!=null && QAG.x[i]!=null){ g.setAttribute('x1',QAG.x[i]); g.setAttribute('x2',QAG.x[i]); g.style.display=''; }
+         else g.style.display='none'; }
+  const sv=d.parentNode.querySelector('svg'); if(!sv) return;
+  sv.querySelectorAll('[data-qal]').forEach(t=>t.classList.toggle('on', +t.dataset.qal===i));
+  sv.querySelectorAll('[data-qap]').forEach(c=>c.classList.toggle('on', +c.dataset.qap===i));
+}
+function qaMeseSu(e){
+  const h=e.target.closest('[data-qam]'); if(!h||!QAG) return;
+  qaMeseDisegna(+h.dataset.qam);
+}
+function qaMeseVia(){ if(QAG) qaMeseDisegna(QAG.pin); }
+function qaMeseFerma(e){
+  const h=e.target.closest('[data-qam]'); if(!h||!QAG) return;
+  const i=+h.dataset.qam;
+  QAG.pin = (QAG.pin===i) ? null : i;
+  qaMeseDisegna(QAG.pin!=null?QAG.pin:i);
+}
 
 /* I tre blocchi sotto il grafico sono sempre gli stessi tre, in ogni area:
    quanto pesa sul locale, quanto in cucina, quanto al bar. Chi apre due aree
@@ -13292,6 +13378,8 @@ function qSg(a){
 }
 
 /* ---------------- i ricavi ---------------- */
+const riga2=(n,s,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
+  <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
 function qaRicavi(m,a,per,qF){
   const serie=m.months.map((x,i)=>({i, v:x.ricavi>0?x.ricavi/1000:null}));
   const vis=serie.filter(x=>x.v!=null);
@@ -13348,29 +13436,51 @@ function qaRicavi(m,a,per,qF){
       ${qaCard('Incasso del periodo'+(liteBU!=='tot'?' · '+(liteBU==='food'?'Food':'Beverage'):''),
         fmtE(liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi),
         `media <b>${fmtE((liteBU==='food'?a.ricaviFood:liteBU==='bev'?a.ricaviBev:a.ricavi)/(a.n||1))}</b> al mese su ${a.n} mes${a.n===1?'e':'i'}` +
-        `<br>ne resta a margine <b>${fmtE(roTot)}</b>, cioè <b>${a.ricavi>0?fmtNum(roTot/a.ricavi*100):'—'}%</b>` +
-        (forti?`<br>${n} mes${n===1?'e':'i'} fanno il 40% dell'anno: <b>${forti}</b>`:''))}
+        `<br>ne resta a margine <b>${fmtE(roTot)}</b>, cioè <b>${a.ricavi>0?fmtNum(roTot/a.ricavi*100):'—'}%</b>`)}
       ${qaCard('In cucina',
         fmtNum(qF*100)+'<small>% dell\'incasso</small>',
         `<b>${fmtE(a.ricaviFood)}</b> nel periodo` +
-        (v&&v.Food.pz?`<br><b>${fmtNum(v.Food.pz,0)}</b> pezzi · prezzo medio <b>${fmtE2(v.Food.inc/v.Food.pz)}</b>`:'') +
-        `<br><span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>`)}
+        (v&&v.Food.pz?`<br><b>${fmtNum(v.Food.pz,0)}</b> pezzi · prezzo medio <b>${fmtE2(v.Food.inc/v.Food.pz)}</b>`:''))}
       ${qaCard('Al bar',
         fmtNum((1-qF)*100)+'<small>% dell\'incasso</small>',
         `<b>${fmtE(a.ricaviBev)}</b> nel periodo` +
         (v&&v.Beverage.pz?`<br><b>${fmtNum(v.Beverage.pz,0)}</b> pezzi · prezzo medio <b>${fmtE2(v.Beverage.inc/v.Beverage.pz)}</b>`:''))}
       ${confronto}
     </div>
-    ${vis.length>1?`<div class="qanota">Il mese più alto è <b>${MESI[meglio.i]}</b> con ${fmtE(meglio.v*1000)},
-      il più basso <b>${MESI[peggio.i]}</b> con ${fmtE(peggio.v*1000)}.</div>`:''}
+    ${vis.length>1?`<div class="qablocchi">
+      ${qaBlk('Come si distribuisce l\'anno', fmtNum(vis.length)+' mesi consuntivati',
+        riga2(MESI[meglio.i], 'il mese pi&ugrave; alto dell\'anno', fmtE(meglio.v*1000),
+              a.ricavi>0?fmtNum(meglio.v*1000/a.ricavi*100)+'%':null) +
+        riga2(MESI[peggio.i], 'il mese pi&ugrave; basso dell\'anno', fmtE(peggio.v*1000),
+              a.ricavi>0?fmtNum(peggio.v*1000/a.ricavi*100)+'%':null) +
+        riga2('Media mensile', 'sui mesi consuntivati', fmtE(a.ricavi/(a.n||1)), null) +
+        (forti?`<div class="qanota"><b>${n} mes${n===1?'e':'i'}</b> fanno il 40% dell'anno:
+           ${forti}. Sono i mesi su cui si decide la stagione.</div>`:''))}
+      ${qaBlk('Cucina e bar', 'peso sull\'incasso del periodo',
+        riga2('Cucina', v&&v.Food.pz?fmtNum(v.Food.pz,0)+' pezzi venduti':'ricavi food',
+              fmtE(a.ricaviFood), fmtNum(qF*100)+'%') +
+        riga2('Bar', v&&v.Beverage.pz?fmtNum(v.Beverage.pz,0)+' pezzi venduti':'ricavi beverage',
+              fmtE(a.ricaviBev), fmtNum((1-qF)*100)+'%') +
+        `<div class="qanota"><span class="qabar"><i style="width:${(qF*100).toFixed(1)}%"></i></span>
+          La proporzione fra i due reparti decide quasi tutto il resto: il food cost medio,
+          il peso del personale di cucina, il prezzo medio di un pezzo.</div>`)}
+    </div>`:''}
   </section>`;
 }
 
-/* ---------------- la parte specifica di ogni area ---------------- */
+/* ---------------- la parte specifica di ogni area ----------------
+   Tutto quello che sta sotto i tre blocchi va in riquadri affiancati, uno per
+   domanda, con il titolo in testa e le righe incolonnate dentro. Prima era un
+   elenco unico lungo quanto la pagina: le righe attraversavano il monitor e
+   non si capiva dove finiva un argomento e cominciava il successivo.        */
+const qaBlk=(tit,sotto,corpo,larga)=>`<div class="qablk${larga?' larga':''}">
+  <div class="qabt"><span>${tit}</span>${sotto?`<small>${sotto}</small>`:''}</div>${corpo}</div>`;
+
 function qaExtra(tipo,m,a,t,qF){
   const idx = scope!=='ytd' ? [scope] : m.complete.map(x=>x.i);
   const riga=(n,s,v,q,cls)=>`<div class="qarow"><div class="n">${n}${s?`<small>${s}</small>`:''}</div>
     <div class="v">${v}</div>${q!=null?`<div class="p ${cls||''}">${q}</div>`:''}</div>`;
+  const avvolgi = b => `<div class="qablocchi">${b.filter(Boolean).join('')}</div>`;
 
   if(tipo==='ce'){
     migrateS();
@@ -13379,27 +13489,33 @@ function qaExtra(tipo,m,a,t,qF){
     const linea=(et,teor,bil,ric)=>{
       if(teor==null||bil==null) return riga(et,'manca l\'incidenza da schede ricetta','—',null);
       const d=(bil-teor)*100;
-      return riga(et, `schede ${fmtP(teor)} · bilancio ${fmtP(bil)}`,
+      return riga(et, `schede ${fmtP(teor)} &middot; bilancio ${fmtP(bil)}`,
         fmtE(Math.abs(d)/100*ric), (d>=0?'+':'−')+qaPunti(d), d>2?'bad':d>1?'warn':'ok');
     };
+    const bloccoScarto = qaBlk('Bilancio contro schede costo','quanto si compra in pi&ugrave; di quanto dicono le ricette',
+      linea('Cucina', tf, bf, a.ricaviFood) + linea('Bar', tb, bb, a.ricaviBev) +
+      `<div class="qanota">La distanza fra le due colonne &egrave; la dispersione: sprechi, dosi fuori scheda,
+        omaggi, rotture, errori di carico. &Egrave; quello che la pagina <b>Costi nascosti</b> misura voce per voce.</div>`);
+
     const v=qaVenduto(idx);
-    let cat='';
+    let bloccoCat='';
     if(v){
       const fuori=Object.entries(v.cat).map(([n,c])=>({n, ...c,
         inc:c.conCosto>0?c.costo/c.conCosto*100:null, tgt:numIt((PRO.target||{})[n])||null}))
         .filter(c=>c.inc!=null && c.tgt && c.inc>c.tgt)
         .sort((x,y)=>(y.inc-y.tgt)-(x.inc-x.tgt)).slice(0,5);
-      cat = fuori.length ? `<div class="qasez">Le categorie di menu sopra obiettivo</div>` +
-        fuori.map(c=>riga(c.n, `obiettivo ${fmtNum(c.tgt)}% · ${fmtNum(c.pz,0)} pezzi`,
-          fmtE(c.ric), fmtNum(c.inc)+'%', (c.inc-c.tgt)>5?'bad':'warn')).join('')
-        : `<div class="qasez">Le categorie di menu</div>${riga('Nessuna categoria sopra il proprio obiettivo','dalle schede costo sul venduto del periodo','✓',null,'ok')}`;
+      bloccoCat = fuori.length
+        ? qaBlk('Le categorie di menu sopra obiettivo', fmtNum(fuori.length)+' su '+fmtNum(Object.keys(v.cat).length),
+            fuori.map(c=>riga(c.n, `obiettivo ${fmtNum(c.tgt)}% &middot; ${fmtNum(c.pz,0)} pezzi`,
+              fmtE(c.ric), fmtNum(c.inc)+'%', (c.inc-c.tgt)>5?'bad':'warn')).join(''))
+        : qaBlk('Le categorie di menu','dalle schede costo sul venduto del periodo',
+            `<div class="qanota">Nessuna categoria sta sopra il proprio obiettivo di food cost.</div>`);
+    } else {
+      bloccoCat = qaBlk('Le categorie di menu','serve il venduto di cassa',
+        `<div class="qanota">Senza il venduto non si sa quali categorie pesano davvero:
+          il food cost teorico c\'&egrave;, ma non si sa su quanti pezzi.</div>`);
     }
-    return `<div class="qasez">Bilancio contro schede costo</div>
-      ${linea('Cucina', tf, bf, a.ricaviFood)}
-      ${linea('Bar', tb, bb, a.ricaviBev)}
-      <div class="qanota">La distanza fra le due colonne è la dispersione: sprechi, dosi fuori scheda,
-        omaggi, rotture, errori di carico. È quello che la pagina <b>Costi nascosti</b> misura voce per voce.</div>
-      ${cat}`;
+    return avvolgi([bloccoScarto, bloccoCat]);
   }
 
   if(tipo==='ru'){
@@ -13413,16 +13529,18 @@ function qaExtra(tipo,m,a,t,qF){
     const tot=Object.values(rep).reduce((x,v)=>x+v,0)||1;
     const righe=Object.entries(rep).sort((x,y)=>y[1]-x[1])
       .map(([n,v])=>riga(n,null,fmtE(v),fmtNum(v/tot*100)+'%')).join('');
-    const prod = ot.fonte && d.prod>0
-      ? `<div class="qasez">Quanto rende un'ora di lavoro</div>
-         ${riga('Cucina', 'incasso food per ora di lavoro imputata', fmtE(d.prodF||0), null)}
-         ${riga('Bar', 'incasso beverage per ora', fmtE(d.prodB||0), null)}
-         ${riga('Tutto il locale', `${fmtNum(ot.ore,0)} ore a settimana, ${ot.fonte}`, fmtE(d.prod), null)}
-         ${riga('Costo di un\'ora', 'costo del personale diviso le ore', fmtE(d.oreTot>0?a.ru/d.oreTot:0), null)}`
-      : `<div class="qasez">Quanto rende un'ora di lavoro</div>
-         <div class="qanota">Non ci sono ore caricate né in <b>Analisi dei turni</b> né nell'organico.
-         Senza ore non si calcola la produttività oraria, che è metà della diagnosi sul personale.</div>`;
-    return `<div class="qasez">Dove sta il costo, per reparto</div>${righe}${prod}`;
+    const bloccoRep = qaBlk('Dove sta il costo, per reparto', fmtE(tot)+' nel periodo',
+      righe || `<div class="qanota">Nessun costo imputato a un reparto.</div>`);
+    const bloccoOra = (ot.fonte && d.prod>0)
+      ? qaBlk('Quanto rende un\'ora di lavoro', `${fmtNum(ot.ore,0)} ore a settimana, ${ot.fonte}`,
+          riga('Cucina', 'incasso food per ora imputata', fmtE(d.prodF||0), null) +
+          riga('Bar', 'incasso beverage per ora', fmtE(d.prodB||0), null) +
+          riga('Tutto il locale', 'incasso per ora lavorata', fmtE(d.prod), null) +
+          riga('Costo di un\'ora', 'costo del personale diviso le ore', fmtE(d.oreTot>0?a.ru/d.oreTot:0), null))
+      : qaBlk('Quanto rende un\'ora di lavoro','nessuna ora caricata',
+          `<div class="qanota">Non ci sono ore n&eacute; in <b>Analisi dei turni</b> n&eacute; nell\'organico.
+           Senza ore non si calcola la produttivit&agrave; oraria, che &egrave; met&agrave; della diagnosi sul personale.</div>`);
+    return avvolgi([bloccoRep, bloccoOra]);
   }
 
   if(tipo==='sg'){
@@ -13437,17 +13555,20 @@ function qaExtra(tipo,m,a,t,qF){
     voci.sort((x,y)=>y.v-x.v);
     const ric=a.sg-unaTantum;
     const q=qSg(a);
-    return `<div class="qasez">Spesa ricorrente e saldi</div>
-      ${riga('Spesa ricorrente','quello che torna tutti i mesi',fmtE(ric),
-        a.ricavi>0?fmtNum(ric/a.ricavi*100)+'%':null, ric/a.ricavi*100<=num(t.sg)?'ok':'warn')}
-      ${riga('Voci di una o due volte l\'anno','saldi, rate, manutenzioni straordinarie',fmtE(unaTantum),
-        a.ricavi>0?fmtNum(unaTantum/a.ricavi*100)+'%':null)}
-      <div class="qanota">Prima di tagliare si depura: una parte dello scostamento spesso è un saldo, non spesa corrente.</div>
-      <div class="qasez">Le cinque voci che pesano di più</div>
-      ${voci.slice(0,5).map(x=>riga(x.n, x.raro?'una o due volte l\'anno':x.g, fmtE(x.v),
-        a.sg>0?fmtNum(x.v/a.sg*100)+'%':null, x.raro?'warn':'')).join('')}
-      <div class="qanota">Sulla cucina se ne ribalta il <b>${fmtNum(q*100)}%</b> e sul bar il <b>${fmtNum((1-q)*100)}%</b>:
-        è una ripartizione per quota, non una misura.</div>`;
+    const bloccoRic = qaBlk('Spesa ricorrente e saldi','prima di tagliare si depura',
+      riga('Spesa ricorrente','quello che torna tutti i mesi',fmtE(ric),
+        a.ricavi>0?fmtNum(ric/a.ricavi*100)+'%':null, ric/a.ricavi*100<=num(t.sg)?'ok':'warn') +
+      riga('Voci di una o due volte l\'anno','saldi, rate, manutenzioni straordinarie',fmtE(unaTantum),
+        a.ricavi>0?fmtNum(unaTantum/a.ricavi*100)+'%':null) +
+      `<div class="qanota">Una parte dello scostamento spesso &egrave; un saldo, non spesa corrente:
+        tagliare li non toglie niente al mese prossimo.</div>`);
+    const bloccoTop = qaBlk('Le voci che pesano di pi&ugrave;','sul totale delle spese generali',
+      (voci.slice(0,6).map(x=>riga(x.n, x.raro?'una o due volte l\'anno':x.g, fmtE(x.v),
+        a.sg>0?fmtNum(x.v/a.sg*100)+'%':null, x.raro?'warn':'')).join('') ||
+       `<div class="qanota">Nessuna voce caricata nel periodo.</div>`) +
+      `<div class="qanota">Sulla cucina se ne ribalta il <b>${fmtNum(q*100)}%</b> e sul bar il
+        <b>${fmtNum((1-q)*100)}%</b>: &egrave; una ripartizione per quota, non una misura.</div>`);
+    return avvolgi([bloccoRic, bloccoTop]);
   }
 
   if(tipo==='mkt'){
@@ -13458,7 +13579,7 @@ function qaExtra(tipo,m,a,t,qF){
     });
     voci.sort((x,y)=>y.v-x.v);
     const inc=a.incMk*100, tgt=num(t.mk);
-    /* la fascia disegnata: zero è sbagliato quanto il doppio */
+    /* la fascia disegnata: zero e sbagliato quanto il doppio */
     const max=Math.max(tgt*2, inc*1.15, 6);
     const pos=Math.min(100, inc/max*100), cen=tgt/max*100;
     const fascia=`<div class="qafascia">
@@ -13467,18 +13588,17 @@ function qaExtra(tipo,m,a,t,qF){
         <u style="left:${pos.toFixed(1)}%"></u></div>
       <div class="et"><span>0%</span><span>centro ${fmtNum(tgt)}%</span><span>${fmtNum(max)}%</span></div></div>`;
     const v=qaVenduto(idx);
-    const perPezzo = v && (v.Food.pz+v.Beverage.pz)>0
-      ? riga('Quanto costa farsi scegliere','marketing diviso i pezzi venduti nel periodo',
-          fmtE(a.mk/(v.Food.pz+v.Beverage.pz)), null)
-      : '';
-    return `<div class="qasez">La fascia</div>${fascia}
-      <div class="qanota">Questa è l'unica area in cui spendere poco non è una buona notizia:
-        <b>zero è sbagliato quanto il doppio</b>. Il verde è la fascia attorno al centro del ${fmtNum(tgt)}%.</div>
-      <div class="qasez">Dove vanno</div>
-      ${voci.length ? voci.map(x=>riga(x.n, x.g, fmtE(x.v), a.mk>0?fmtNum(x.v/a.mk*100)+'%':null)).join('')
+    const bloccoFascia = qaBlk('Dove sta il locale nella fascia', `oggi ${fmtNum(inc)}%, centro ${fmtNum(tgt)}%`,
+      fascia + `<div class="qanota">Questa &egrave; l\'unica area in cui spendere poco non &egrave; una buona notizia:
+        <b>zero &egrave; sbagliato quanto il doppio</b>. Il verde &egrave; la fascia attorno al centro.</div>`);
+    const bloccoVoci = qaBlk('Dove vanno', fmtE(a.mk)+' nel periodo',
+      (voci.length ? voci.map(x=>riga(x.n, x.g, fmtE(x.v), a.mk>0?fmtNum(x.v/a.mk*100)+'%':null)).join('')
         : `<div class="qanota">Nessuna voce di marketing riconosciuta nel periodo: o il locale non ne fa,
-           o è dentro un'altra voce delle spese generali.</div>`}
-      ${perPezzo}`;
+           o &egrave; dentro un\'altra voce delle spese generali.</div>`) +
+      (v && (v.Food.pz+v.Beverage.pz)>0
+        ? riga('Quanto costa farsi scegliere','marketing diviso i pezzi venduti',
+            fmtE(a.mk/(v.Food.pz+v.Beverage.pz)), null) : ''));
+    return avvolgi([bloccoFascia, bloccoVoci]);
   }
   return '';
 }
