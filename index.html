@@ -1287,6 +1287,21 @@
     -webkit-appearance:none;appearance:none;}
   .lpcerca:focus{outline:none;border-color:var(--brass);}
   .lpcerca::placeholder{color:#6E6E6E;}
+  /* i tre riquadri in testa all'elenco */
+  .lpkpi{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;}
+  .lpkpi .k{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;
+    padding:11px 9px 10px;text-align:center;}
+  .lpkpi .k[data-lpfiltro]{cursor:pointer;}
+  .lpkpi .k[data-lpfiltro]:hover{border-color:#444;}
+  .lpkpi .k.on{border-color:var(--brass);background:#231B11;}
+  .lpkpi .v{font-family:var(--num);font-size:21px;font-weight:700;color:#E8E8E8;line-height:1.1;}
+  .lpkpi .k.ok .v{color:#7FC79C;} .lpkpi .k.warn .v{color:#E8B14A;} .lpkpi .k.bad .v{color:#E0705E;}
+  .lpkpi .e{font-size:10.5px;font-weight:600;color:#C8C8C8;margin-top:4px;line-height:1.25;}
+  .lpkpi .s{font-size:9.5px;color:#7A7A7A;margin-top:3px;line-height:1.3;}
+  .lpfvia{display:block;width:100%;background:#1B1B1B;border:1px solid var(--brass);color:var(--brass);
+    border-radius:10px;padding:8px;font:inherit;font-size:12px;cursor:pointer;margin-bottom:9px;}
+  .lpvoce .n small em.rinc{font-style:normal;font-weight:700;}
+  .lpvoce .n small em.rinc.su{color:#E8B14A;} .lpvoce .n small em.rinc.giu{color:#7FC79C;}
   .lpconta{font-size:11px;letter-spacing:.3px;color:#6E6E6E;margin:0 2px 9px;}
   .lpvoce{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;
     padding:11px 13px;margin-bottom:7px;cursor:pointer;}
@@ -1322,6 +1337,55 @@
     border-radius:11px;padding:9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:12px;}
   .lpiro{background:#241E13;border:1px solid #6B5520;border-radius:11px;padding:10px 12px;
     font-size:11.5px;color:#D7C79C;line-height:1.5;margin-bottom:12px;}
+  /* la griglia della settimana: scorre di lato, la colonna dei nomi resta ferma */
+  .lpigr{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+    background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;}
+  .lpigr table{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;}
+  .lpigr th,.lpigr td{padding:7px 4px;text-align:center;font-family:var(--num);font-size:11.5px;
+    color:#D6D6D6;border-bottom:1px solid #262626;white-space:nowrap;}
+  .lpigr thead th{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:700;color:#8F8F8F;
+    letter-spacing:.6px;padding:9px 4px 7px;}
+  .lpigr thead th small{display:block;font-family:var(--num);font-size:11px;font-weight:500;
+    color:#6E6E6E;margin-top:1px;}
+  .lpigr thead th.oggi{color:var(--brass);} .lpigr thead th.oggi small{color:var(--brass);}
+  .lpigr thead th.chiuso{color:#5E5E5E;}
+  .lpigr td{min-width:58px;}
+  .lpigr td b{display:block;font-weight:600;color:#E8E8E8;line-height:1.3;}
+  .lpigr td i{font-style:normal;color:#4A4A4A;}
+  .lpigr td.vuota{background:#191919;}
+  .lpigr td.oggi{background:#1F1D18;}
+  .lpigr td.apr{background:var(--brass);}
+  .lpigr td.apr b,.lpigr td.apr i{color:#1A1A1A;}
+  .lpigr td[data-lpicel]{cursor:pointer;}
+  .lpigr td[data-lpicel]:hover{background:#242424;}
+  .lpigr th.chi{position:sticky;left:0;z-index:2;background:#1B1B1B;text-align:left;
+    min-width:104px;max-width:104px;padding:7px 9px;box-shadow:1px 0 0 #2E2E2E;}
+  .lpigr thead th.chi{background:#1B1B1B;}
+  .lpigr th.chi .n{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#E8E8E8;
+    white-space:normal;line-height:1.25;}
+  .lpigr th.chi .s{font-family:'Inter',sans-serif;font-size:10.5px;font-weight:400;color:#8F8F8F;margin-top:1px;}
+  .lpigr th.chi .tot{font-size:11px;font-weight:700;color:#9A9A9A;margin-top:3px;}
+  .lpigr th.chi .tot.ok{color:#7FC79C;} .lpigr th.chi .tot.warn{color:#E8B14A;} .lpigr th.chi .tot.bad{color:#E0705E;}
+  .lpigr tfoot td,.lpigr tfoot th{border-bottom:none;border-top:1px solid #2E2E2E;
+    font-weight:700;color:#9A9A9A;background:#191919;}
+  .lpigr tfoot th.chi{background:#191919;}
+  .lpigr tfoot th.chi .n{font-size:11px;font-weight:600;color:#8F8F8F;}
+  .lpigr tfoot td.chiuso i{color:#6E6E6E;font-size:10.5px;}
+  /* il riquadro dell'orario, sotto la griglia */
+  .lpied{background:#212121;border:1px solid var(--brass);border-radius:12px;padding:12px 13px;margin-top:9px;}
+  .lpied .eh{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px;}
+  .lpied .et{flex:1;font-size:13.5px;font-weight:700;color:#E8E8E8;line-height:1.3;}
+  .lpied .et small{display:block;font-size:11px;font-weight:400;color:#8F8F8F;margin-top:2px;}
+  .lpied .ev{font-family:var(--num);font-size:13px;font-weight:700;color:var(--brass);white-space:nowrap;}
+  .lpied .x{color:#6E6E6E;font-size:13px;cursor:pointer;padding:0 2px;}
+  .lpied .er{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+  .lpied .er .sv{font-size:11.5px;color:#8F8F8F;width:52px;flex:none;}
+  .lpied .er .tr{color:#5A5A5A;}
+  .lpied .lpiora{width:76px;font-size:13.5px;padding:9px 4px;}
+  .lpied .eb{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;}
+  .lpied .eb button{flex:1;min-width:120px;background:#1B1B1B;border:1px solid #3A3A3A;color:#C8C8C8;
+    border-radius:9px;padding:9px 10px;font:inherit;font-size:12px;cursor:pointer;}
+  .lpied .eb button:hover{border-color:#5A5A5A;color:#fff;}
   .lpigio{background:#1B1B1B;border:1px solid #2A2A2A;border-radius:12px;margin-bottom:7px;overflow:hidden;}
   .lpigio.oggi{border-color:#44403A;}
   .lpigio .gh{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer;}
@@ -2120,7 +2184,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v149</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v150</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -4150,7 +4214,7 @@ async function panNotHtml(){
 
    Le settimane passate non si toccano: si pianifica avanti, non si riscrive
    la storia. */
-let lpiVista='sett', lpiGiorno=null;
+let lpiVista='sett';
 const LPI_VISTE=[['sett','Settimana'],['arch','Archivio'],['ore','Ore']];
 
 function lpiApribile(){
@@ -4186,39 +4250,95 @@ function lpiCampi(r, g, mod){
     <span class="sv">P</span>${campo(0,'–')}<span class="tr">–</span>${campo(1,'–')}
     <span class="sv">C</span>${campo(2,'–')}<span class="tr">–</span>${campo(3,'–')}</div>`;
 }
-function lpiGiornoHtml(w, g, k, mod){
-  const data=piuGiorni(k, g);
-  const oggi = data===isoDi(new Date());
-  const aperto = lpiGiorno===g;
-  const conOre=w.righe.filter(r=>oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
-  const senza =w.righe.filter(r=>oreGiorno(r,g)[0]+oreGiorno(r,g)[1] <= 0);
-  const ore=conOre.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
-  const nota=(w.note[g]||{});
-  const chiuso = nota.k==='chiuso';
-  const righeHtml = (lista, muta) => lista.map(r=>
-    `<div class="lpipers${muta?' muta':''}">
-       <div class="n">${escH(r.nome||'—')}<small>${escH(r.reparto||'')}</small></div>
-       ${lpiCampi(r, g, mod)}</div>`).join('');
-  return `<div class="lpigio ${aperto?'aperta':''} ${oggi?'oggi':''}">
-    <div class="gh" data-lpigio="${g}">
-      <div class="gt">${GIORNI[g]} <span>${giornoBreve(data)}</span>${oggi?'<em>oggi</em>':''}
-        ${nota.k?`<span class="tagk ${nota.k}">${nota.k==='chiuso'?'chiuso':'festa'}</span>`:''}</div>
-      <div class="gv">${chiuso?'—':conOre.length?`${fmtNum(conOre.length)} <small>in turno</small> · ${fmtNum(Math.round(ore*10)/10)} <small>ore</small>`:'<small>nessuno</small>'}</div>
-      <span class="ch">&#8964;</span></div>
-    <div class="gb">
-      ${conOre.length?righeHtml(lpiOrdine(conOre,g), false):'<div class="vuoto">Nessuno in turno in questo giorno.</div>'}
-      ${senza.length?(mod
-        ? `<div class="lpsez2">Chi non lavora</div>${righeHtml(lpiOrdine(senza,g), true)}`
-        : `<div class="lpnota2">A riposo: ${senza.map(r=>escH(r.nome||'—')).join(', ')}.</div>`):''}
-    </div></div>`;
+/* ---- la settimana a griglia ----
+   Chi fa gli orari non li fa un giorno alla volta: apre la settimana e la
+   riempie. Quindi la griglia e' quella vera — una riga per persona, sette
+   colonne — e sul telefono scorre di lato tenendo ferma la colonna dei nomi.
+   In una casella da sessanta pixel non si scrive: toccandola si apre in
+   basso un riquadro con le quattro caselle dell'orario, grandi abbastanza
+   per un pollice. */
+let lpiCella=null;                      /* "idriga.giorno" della casella aperta */
+
+/* un orario stretto: 12:00 diventa 12, 18:30 diventa 18.30 */
+function lpiBreve(v){
+  const m=oraMin(v); if(m==null) return '';
+  const h=Math.floor(m/60), mi=m%60;
+  /* le ore piccole sono fini turno dopo mezzanotte: «01» si legge come un
+     orario, «1» sembra un numero rimasto a metà */
+  const hh = h<6 ? String(h).padStart(2,'0') : String(h);
+  return mi ? hh+'.'+String(mi).padStart(2,'0') : hh;
+}
+function lpiCellaTesto(r, g){
+  const p = lpiBreve(r.g[g][0]) && lpiBreve(r.g[g][1]) ? lpiBreve(r.g[g][0])+'-'+lpiBreve(r.g[g][1]) : '';
+  const c = lpiBreve(r.g[g][2]) && lpiBreve(r.g[g][3]) ? lpiBreve(r.g[g][2])+'-'+lpiBreve(r.g[g][3]) : '';
+  if(!p && !c) return '<i>·</i>';
+  return [p,c].filter(Boolean).map(x=>`<b>${x}</b>`).join('<br>');
+}
+function lpiGriglia(w, k, mod){
+  const oggiISO=isoDi(new Date());
+  const righe=w.righe.slice().sort((a,b)=>
+    String(a.reparto||'').localeCompare(String(b.reparto||''),'it')
+    || String(a.nome||'').localeCompare(String(b.nome||''),'it'));
+  const oreG=g=>w.righe.reduce((t,r)=>{ const o=oreGiorno(r,g); return t+o[0]+o[1]; },0);
+  const testa=[0,1,2,3,4,5,6].map(g=>{
+    const d=piuGiorni(k,g), nota=(w.note[g]||{});
+    return `<th class="${d===oggiISO?'oggi':''} ${nota.k?'chiuso':''}">
+      ${GIORNI[g]}<small>${new Date(d+'T12:00:00').getDate()}</small></th>`;
+  }).join('');
+  const corpo=righe.map(r=>{
+    const set=oreSettimana(r).tot;
+    const contr=num(r.c);
+    const cl = contr>0 && set>0 ? (Math.abs(set-contr)<0.5 ? 'ok' : set>contr ? 'warn' : 'bad') : '';
+    return `<tr>
+      <th class="chi"><div class="n">${escH(r.nome||'—')}</div>
+        <div class="s">${escH(r.reparto||'')}${contr>0?' · '+fmtNum(contr)+'h':''}</div>
+        <div class="tot ${cl}">${set>0?fmtNum(Math.round(set*10)/10)+'h':'—'}</div></th>
+      ${[0,1,2,3,4,5,6].map(g=>{
+        const vuota = !(oreGiorno(r,g)[0]+oreGiorno(r,g)[1] > 0);
+        const apr = lpiCella===r.id+'.'+g;
+        return `<td class="${vuota?'vuota':''} ${apr?'apr':''} ${piuGiorni(k,g)===oggiISO?'oggi':''}"
+          ${mod?`data-lpicel="${r.id}.${g}"`:''}>${lpiCellaTesto(r,g)}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+  const piede=`<tr class="tot">
+    <th class="chi"><div class="n">Ore del giorno</div></th>
+    ${[0,1,2,3,4,5,6].map(g=>{
+      const v=oreG(g), nota=(w.note[g]||{});
+      return `<td class="${nota.k?'chiuso':''}">${nota.k==='chiuso'?'<i>chiuso</i>':(v>0?fmtNum(Math.round(v*10)/10):'<i>·</i>')}</td>`;
+    }).join('')}</tr>`;
+  return `<div class="lpigr"><table>
+    <thead><tr><th class="chi"></th>${testa}</tr></thead>
+    <tbody>${corpo}</tbody><tfoot>${piede}</tfoot></table></div>`;
+}
+/* il riquadro che si apre toccando una casella: qui le caselle sono grandi */
+function lpiEditor(w, k){
+  if(!lpiCella) return '';
+  const [id,gs]=lpiCella.split('.'), g=+gs;
+  const r=w.righe.find(x=>x.id===id);
+  if(!r) return '';
+  const v=i=>escH(oraTesto(r.g[g][i])||'');
+  const campo=(i)=>`<input class="lpiora" data-lpi="${r.id}.${g}.${i}" value="${v(i)}"
+    placeholder="–" inputmode="numeric" autocomplete="off" spellcheck="false">`;
+  const d=piuGiorni(k,g);
+  const ore=oreGiorno(r,g), tot=ore[0]+ore[1];
+  return `<div class="lpied">
+    <div class="eh"><div class="et">${escH(r.nome||'—')}
+        <small>${GIORNI[g].toLowerCase()} ${giornoBreve(d)}${escH(r.reparto?' · '+r.reparto:'')}</small></div>
+      <div class="ev">${tot>0?fmtNum(Math.round(tot*10)/10)+'h':'riposo'}</div>
+      <span class="x" data-lpicel="">&#10005;</span></div>
+    <div class="er"><span class="sv">Pranzo</span>${campo(0)}<span class="tr">–</span>${campo(1)}</div>
+    <div class="er"><span class="sv">Cena</span>${campo(2)}<span class="tr">–</span>${campo(3)}</div>
+    <div class="eb">
+      <button data-lpigiorno="vuota">Riposo</button>
+      <button data-lpigiorno="settimana">Copia su tutta la settimana</button>
+    </div>
+  </div>`;
 }
 function lpiSettimana(){
   const w=pianSett(), k=S.pian.aperta, mod=lpiApribile();
   const oggiK=lunediDi(new Date());
-  if(lpiGiorno===null){
-    const d=(new Date().getDay()+6)%7;
-    lpiGiorno = k===oggiK ? d : 0;
-  }
+  if(lpiCella && !w.righe.some(r=>r.id===lpiCella.split('.')[0])) lpiCella=null;
   const tot=w.righe.reduce((t,r)=>t+oreSettimana(r).tot,0);
   const chi=w.righe.filter(r=>oreSettimana(r).tot>0).length;
   return `<div class="lp">${lpTesta('Pianificazione', etichettaSett(k))}
@@ -4231,12 +4351,16 @@ function lpiSettimana(){
     ${k!==oggiK?`<button class="lpiogg" data-lpioggi>Vai a questa settimana</button>`:''}
     ${mod?'':`<div class="lpiro">Settimana passata: si guarda, non si cambia.
       Gli orari si scrivono su questa settimana e su quelle future.</div>`}
-    ${[0,1,2,3,4,5,6].map(g=>lpiGiornoHtml(w,g,k,mod)).join('')}
+    ${w.righe.length ? lpiGriglia(w,k,mod)
+      : `<div class="lpvuoto">In questa settimana non c'è ancora nessuno.<br><br>
+         Con <b>Aggiungi chi manca dall'organico</b> entrano le persone di Risorse umane.</div>`}
+    ${mod?lpiEditor(w,k):''}
     ${mod?`<div class="lpiaz">
       <button data-lpiazione="copia">Copia la settimana precedente</button>
       <button data-lpiazione="allinea">Aggiungi chi manca dall'organico</button></div>`:''}
-    <div class="lpnota">Gli orari si scrivono come viene: <b>18</b>, <b>18:30</b>, <b>1830</b>.
-      Un turno che finisce dopo mezzanotte si scrive normalmente, le ore le conta l'app.
+    <div class="lpnota">Tocca una casella per scrivere l'orario. Si scrive come viene:
+      <b>18</b>, <b>18:30</b>, <b>1830</b>. Un turno che finisce dopo mezzanotte si scrive
+      normalmente, le ore le conta l'app. La griglia scorre di lato: la colonna dei nomi resta ferma.
       È lo stesso archivio della versione Pro: quello che scrivi qui lo ritrovi dal computer.</div>
   </div>`;
 }
@@ -4829,7 +4953,7 @@ function liteAN(){
    referenza mentre si tratta, quanto costa e quanto rende una ricetta mentre
    si guarda il menu. Niente schede costo da costruire: quelle restano al
    computer. Ogni voce si apre con un tocco e mostra il dettaglio.           */
-let lfoQ='', lingQ='', lricQ='';
+let lfoQ='', lingQ='', lricQ='', lricF='', lingF='';
 const LCAP=120;
 function lpCerca(inp, chi){
   const v=inp.value||'';
@@ -4895,16 +5019,41 @@ async function liteFORN(){
 }
 
 /* ---------------- ingredienti e prezzi d'acquisto ---------------- */
+/* Quanto è rincarata una referenza: si può dire solo se il listino precedente
+   è stato messo da parte quando è cambiato. Da qui in avanti succede da solo;
+   per quello che c'è già in archivio non c'è storia, e non la si inventa. */
+function lingRincaro(x){
+  if(!Array.isArray(x.st) || !x.st.length) return null;
+  const prima=numIt(x.st[x.st.length-1].li), ora=numIt(x.li);
+  if(!(prima>0) || !(ora>0)) return null;
+  return {prima, ora, pct:(ora-prima)/prima*100, d:x.st[x.st.length-1].d||''};
+}
+function lingClassi(){
+  const soli=MP.ing.filter(x=>!isPrep(x));
+  const rinc=soli.map(x=>({x, r:lingRincaro(x)})).filter(v=>v.r && v.r.pct>0.5);
+  return {
+    soli,
+    senza: soli.filter(x=>!(ingNetto(x)>0)),
+    vecchi: soli.filter(ingVecchio),
+    rincarati: rinc.map(v=>v.x),
+    rincaroMax: rinc.length ? rinc.reduce((a,b)=>a.r.pct>b.r.pct?a:b) : null
+  };
+}
 function lingRighe(){
-  const tutti=MP.ing.filter(x=>!isPrep(x))
+  const cl=lingClassi();
+  const amm = lingF ? new Set((lingF==='senza'?cl.senza:lingF==='vecchi'?cl.vecchi:cl.rincarati).map(x=>x.id)) : null;
+  const tutti=MP.ing.filter(x=>!isPrep(x) && (!amm||amm.has(x.id)))
     .sort((x,y)=>String(x.e||'').localeCompare(String(y.e||''),'it'));
   const q=norm(lingQ);
   const vis=tutti.filter(x=>!q || norm(x.e).includes(q) || norm(x.f).includes(q) || norm(x.c).includes(q));
   const righe=vis.slice(0,LCAP).map(x=>{
     const cp=ingCostoPezzo(x), cu=ingCostoUnita(x), u=String(x.u||'').toLowerCase();
     const vecchio=ingVecchio(x);
+    const rin=lingRincaro(x);
     const testa=`<div class="t"><div class="n">${escH(x.e)}
-        <small>${escH(x.f||'senza fornitore')}${x.c?' · '+escH(x.c):''}</small></div>
+        <small>${escH(x.f||'senza fornitore')}${x.c?' · '+escH(x.c):''}${
+          rin&&Math.abs(rin.pct)>0.5?` · <em class="rinc ${rin.pct>0?'su':'giu'}">${
+            rin.pct>0?'+':'−'}${fmtNum(Math.abs(Math.round(rin.pct*10)/10))}%</em>`:''}</small></div>
       <div class="v ${cp>0?'':'bad'}">${cp>0?fmtEu2(cp):'—'}<small>${cp>0?'al pezzo':'senza prezzo'}</small></div></div>`;
     const det=
       lpDet('Listino della confezione', numIt(x.li)>0?fmtEu2(numIt(x.li)):'')+
@@ -4917,6 +5066,8 @@ function lingRighe(){
       lpDet('Costo al pezzo', cp>0?fmtEu2(cp):'')+
       lpDet('Costo di 1 '+(u||'unità'), cu>0?fmtE4(cu):'')+
       lpDet('Aggiornato il', x.d?new Date(x.d).toLocaleDateString('it-IT'):'mai')+
+      (rin?lpDet('Listino precedente', fmtEu2(rin.prima)+(rin.d?' del '+new Date(rin.d).toLocaleDateString('it-IT'):''))
+          +lpDet(rin.pct>0?'Rincaro':'Ribasso', (rin.pct>0?'+':'−')+fmtNum(Math.abs(Math.round(rin.pct*10)/10))+'%'):'')+
       (vecchio?`<div class="lpnota2">Questo prezzo ha più di un anno: prima di usarlo per una
         trattativa vale la pena farselo confermare.</div>`:'');
     return lpVoce(norm((x.e||'')+' '+(x.f||'')+' '+(x.c||'')), testa, det);
@@ -4929,15 +5080,56 @@ async function liteING(){
   if(!MP.ing.length) return `<div class="lp">${lpTesta('Ingredienti','sola lettura')}
     <div class="lpvuoto">Non c'è ancora nessun ingrediente in archivio.<br><br>
     Si caricano dal computer, in modalità Pro.</div></div>`;
+  const cl=lingClassi();
+  const rm=cl.rincaroMax;
   return `<div class="lp">${lpTesta('Ingredienti','prezzi d\'acquisto, IVA esclusa')}
+    ${lpKpi([
+      {n:fmtNum(cl.senza.length), et:'senza prezzo', nota:'fuori da ogni scheda',
+       cl:cl.senza.length?'bad':'ok', f:'senza', on:lingF==='senza'},
+      {n:fmtNum(cl.vecchi.length), et:'da aggiornare', nota:'prezzo oltre l\'anno',
+       cl:cl.vecchi.length?'warn':'ok', f:'vecchi', on:lingF==='vecchi'},
+      {n:cl.rincarati.length?fmtNum(cl.rincarati.length):'—', et:'rincarati',
+       nota: cl.rincarati.length ? (rm?'il più: +'+fmtNum(Math.round(rm.r.pct))+'%':'') : 'nessuno ancora',
+       cl:cl.rincarati.length?'warn':'', f:cl.rincarati.length?'rincarati':null, on:lingF==='rincarati'}
+    ])}
+    ${lingF?`<button class="lpfvia" data-lpfiltro="">✕ Togli il filtro</button>`:''}
     ${lpBarra('ing','cerca un ingrediente, un fornitore, una categoria…', lingQ)}
     <div class="lplist">${lingRighe()}</div>
+    ${!cl.rincarati.length?`<div class="lpnota">I rincari si vedono dal <b>confronto con il listino precedente</b>,
+      che l'app mette da parte quando un prezzo cambia. La storia parte da ora: appena aggiornate
+      un listino, qui comincia a comparire di quanto è salito e su quali ricette pesa.</div>`:''}
     ${lpChiusura('Ricette e fornitori · Ingredienti')}</div>`;
+}
+
+
+/* ---- i tre riquadri in testa: la pagina dice subito come sta messa ----
+   Toccandone uno l'elenco si filtra: e' il modo piu' corto per passare da
+   «quanti sono» a «quali sono». */
+function lpKpi(voci){
+  return `<div class="lpkpi">${voci.map(v=>
+    `<div class="k ${v.cl||''} ${v.on?'on':''}" ${v.f!=null?`data-lpfiltro="${v.f}"`:''}>
+      <div class="v">${v.n}</div><div class="e">${v.et}</div>
+      ${v.nota?`<div class="s">${v.nota}</div>`:''}</div>`).join('')}</div>`;
+}
+/* le tre famiglie dei prodotti: dentro obiettivo, sopra, e quelli che non si
+   possono calcolare. Sono una partizione: ogni prodotto sta in una sola. */
+function lricClassi(){
+  const out={dentro:[], sopra:[], senza:[]};
+  (PRO.prod||[]).forEach(x=>{
+    const c=ricCosto(x), pv=numIt(x.pv);
+    const zero = c ? (x.ric.ing||[]).concat(x.ric.co||[])
+      .some(r=>{ const g=ingDi(r.e); return g && !isPrep(g) && !(ingNetto(g)>0); }) : false;
+    if(!c || !(pv>0) || zero){ out.senza.push(x); return; }
+    (c.tot/pv <= incTarget((PRO.target||{})[x.cat]) ? out.dentro : out.sopra).push(x);
+  });
+  return out;
 }
 
 /* ---------------- ricette: quanto costa, quanto rende ---------------- */
 function lricRighe(){
-  const tutti=(PRO.prod||[]).slice()
+  const cl=lricF?lricClassi():null;
+  const amm = cl ? new Set(cl[lricF].map(x=>x.id)) : null;
+  const tutti=(PRO.prod||[]).filter(x=>!amm||amm.has(x.id))
     .sort((x,y)=> String(x.cat||'').localeCompare(String(y.cat||''),'it')
                 || String(x.n||'').localeCompare(String(y.n||''),'it'));
   const q=norm(lricQ);
@@ -5006,7 +5198,14 @@ async function liteRIC(){
   if(!(PRO.prod||[]).length) return `<div class="lp">${lpTesta('Ricette','sola lettura')}
     <div class="lpvuoto">Non c'è ancora nessun prodotto a listino.<br><br>
     Si caricano dal computer, in modalità Pro.</div></div>`;
+  const cl=lricClassi();
   return `<div class="lp">${lpTesta('Ricette','quanto costa e quanto rende, IVA esclusa')}
+    ${lpKpi([
+      {n:fmtNum(cl.dentro.length), et:'rendono', nota:'dentro obiettivo', cl:'ok',   f:'dentro', on:lricF==='dentro'},
+      {n:fmtNum(cl.sopra.length),  et:'da rivedere', nota:'sopra obiettivo', cl:'warn', f:'sopra', on:lricF==='sopra'},
+      {n:fmtNum(cl.senza.length),  et:'senza costo', nota:'non calcolabili', cl:'',   f:'senza', on:lricF==='senza'}
+    ])}
+    ${lricF?`<button class="lpfvia" data-lpfiltro="">✕ Togli il filtro</button>`:''}
     ${lpBarra('ric','cerca un prodotto o una categoria…', lricQ)}
     <div class="lplist">${lricRighe()}</div>
     <div class="lpnota">Il colore segue l'incidenza contro l'obiettivo della categoria
@@ -13094,6 +13293,20 @@ document.addEventListener('input',e=>{
   if(el.dataset && el.dataset.ing!==undefined){
     const [id,campo]=el.dataset.ing.split('|');
     const x=MP && MP.ing.find(y=>y.id===id); if(!x) return;
+    /* Prima di cambiare un listino si mette da parte quello vecchio con la sua
+       data: senza storia non si può dire se una referenza è rincarata, e il
+       rincaro di una materia prima è la cosa che muove il food cost senza che
+       nessuno tocchi una ricetta. La storia parte da oggi: finché non si
+       aggiorna un prezzo non c'è niente da confrontare, ed è giusto dirlo. */
+    if(campo==='li'){
+      const prima=numIt(x.li), dopo=numIt(el.value);
+      if(prima>0 && dopo>0 && Math.abs(dopo-prima)/prima > 0.001){
+        if(!Array.isArray(x.st)) x.st=[];
+        x.st.push({d: x.d || new Date().toISOString().slice(0,10), li: prima});
+        if(x.st.length>12) x.st=x.st.slice(-12);
+        x.d = new Date().toISOString().slice(0,10);
+      }
+    }
     if(campo==='cnp') x.cn = Math.max(0, numIt(el.value))/100;        // i costi nascosti si scrivono in %
     else x[campo] = ['f','c','e','u','d'].includes(campo) ? el.value : numIt(el.value);
     mpSalva();
@@ -13379,7 +13592,7 @@ document.addEventListener('click',async e=>{
   const ps=e.target.closest('[data-pisett]');
   if(ps){ pianSett();                       // assicura che una settimana sia aperta
     S.pian.aperta=piuGiorni(S.pian.aperta, 7*(+ps.dataset.pisett));
-    lpiGiorno=null;
+    lpiCella=null;
     await saveState(); lpiRidisegna(); return; }
   if(e.target.id==='piCopia'){ migrateS();
     const k=S.pian.aperta, tutte=settimaneP().filter(x=>x<k);
@@ -13529,16 +13742,46 @@ document.addEventListener('click',async e=>{
   const qb=e.target.closest('[data-qmbu]');  if(qb){ qmBU =qb.dataset.qmbu;  renderDash(); return; }
   const od=e.target.closest('[data-ord]');
   if(od){ setOrdineHome(od.dataset.ord); return; }
+  /* i riquadri in testa a ricette e ingredienti filtrano l'elenco */
+  const lf=e.target.closest('[data-lpfiltro]');
+  if(lf){ const v=lf.dataset.lpfiltro||'';
+    if(current==='rric') lricF = (lricF===v ? '' : v);
+    else lingF = (lingF===v ? '' : v);
+    liteRender(current); return; }
   /* pianificazione in lite: viste, giorni, settimane, azioni */
   const lv=e.target.closest('[data-lpivista]');
   if(lv){ lpiVista=lv.dataset.lpivista; liteRender('pi'); return; }
-  const lg=e.target.closest('[data-lpigio]');
-  if(lg){ const g=+lg.dataset.lpigio; lpiGiorno = (lpiGiorno===g ? -1 : g); liteRender('pi'); return; }
+  /* una casella della griglia apre (o chiude) il riquadro dell'orario */
+  const lc=e.target.closest('[data-lpicel]');
+  if(lc){ const v=lc.dataset.lpicel;
+    lpiCella = (!v || lpiCella===v) ? null : v;
+    await liteRender('pi');
+    if(lpiCella){
+      const ed=document.querySelector('.lpied');
+      if(ed){ ed.scrollIntoView({block:'nearest', behavior:'smooth'});
+        const p=ed.querySelector('input'); if(p) p.focus(); }
+    }
+    return; }
+  const lgi=e.target.closest('[data-lpigiorno]');
+  if(lgi && lpiCella){
+    migrateS();
+    const [id,gs]=lpiCella.split('.'), g=+gs;
+    const w=pianSett(), r=w.righe.find(x=>x.id===id);
+    if(r){
+      storiaPrima();
+      if(lgi.dataset.lpigiorno==='vuota') r.g[g]=['','','',''];
+      else { const o=r.g[g].slice(); for(let x=0;x<7;x++) r.g[x]=o.slice(); }
+      await saveState(); storiaSegna(); liteRender('pi');
+      toast(lgi.dataset.lpigiorno==='vuota' ? '✓ Giorno svuotato.'
+        : '✓ Orario copiato su tutti i giorni della settimana.');
+    }
+    return;
+  }
   const lw=e.target.closest('[data-lpisett]');
-  if(lw){ migrateS(); S.pian.aperta=lw.dataset.lpisett; lpiVista='sett'; lpiGiorno=null;
+  if(lw){ migrateS(); S.pian.aperta=lw.dataset.lpisett; lpiVista='sett'; lpiCella=null;
     await saveState(); liteRender('pi'); return; }
   if(e.target.closest('[data-lpioggi]')){ migrateS(); S.pian.aperta=lunediDi(new Date());
-    lpiGiorno=null; await saveState(); liteRender('pi'); return; }
+    lpiCella=null; await saveState(); liteRender('pi'); return; }
   const la=e.target.closest('[data-lpiazione]');
   if(la){
     migrateS();
