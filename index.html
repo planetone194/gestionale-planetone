@@ -1225,6 +1225,14 @@
     padding:6px 13px;font:inherit;font-size:12.5px;cursor:pointer;}
   .lpch:hover{border-color:#4A4A4A;color:#E4E4E4;}
   .lpch.on{background:var(--brass);border-color:var(--brass);color:#1A1A1A;font-weight:600;}
+  /* la linea dall'ideale al reale */
+  .cnlinea{margin:4px 0 2px;}
+  .cnlinea .barra{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#242424;}
+  .cnlinea .barra i{display:block;height:100%;}
+  .cnlinea .leg{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:11px;}
+  .cnlinea .leg span{font-size:11.5px;color:#9A9A9A;display:flex;align-items:center;gap:6px;}
+  .cnlinea .leg i{width:9px;height:9px;border-radius:3px;flex:none;}
+  .cnlinea .leg b{color:#E4E4E4;font-family:var(--num);font-size:12px;}
   .lpper.lpob{margin-top:-6px;}
   .lpper.lpob .lpch{flex:1;text-align:center;}
   /* i blocchi di testo: la diagnosi raccontata, non messa in tabella */
@@ -1408,7 +1416,7 @@
      che sotto di loro. Prima era fissa sopra la pagina e il primo blocco ci
      finiva addosso. */
   html.mobi .toolsrow{display:flex!important;position:sticky;top:0;z-index:60;
-    margin:-16px -14px 14px;padding:12px 18px 11px;width:auto;
+    margin:-16px -14px 14px;padding:16px 20px 14px;width:auto;
     background:#131313;border-bottom:1px solid #262626;
     justify-content:space-between;align-items:center;gap:10px;}
   html.mobi .moblogo{display:block;flex:none;}
@@ -1416,7 +1424,7 @@
   /* Nell'anteprima da computer gli interruttori vanno al centro della cornice,
      non appoggiati al bordo: il marchio resta a sinistra, i bottoni sotto,
      centrati, con la loro aria. */
-  html.mob .toolsrow{flex-direction:column;align-items:stretch;gap:10px;padding:14px 18px 13px;}
+  html.mob .toolsrow{flex-direction:column;align-items:stretch;gap:12px;padding:18px 20px 15px;}
   html.mob .toolsright{align-self:center;margin:0;justify-content:center;flex-wrap:nowrap;}
   html.mobi:not(.mob) .vistabtn{display:none;}
   html.mobi:not(.mob) .toolsright{display:none;}   /* sul telefono vero stanno nel foglio «Altro» */
@@ -1906,7 +1914,7 @@
     <button data-page="ver">Versioni precedenti</button>
   </nav>
   <!-- il numero di versione serve a capire a colpo d'occhio se il sito online è aggiornato -->
-  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v140</b></span><span class="savestate" id="savestate"></span>
+  <div class="side-foot"><span class="ver">Planet One Gestionale F&amp;B <b id="appver">v141</b></span><span class="savestate" id="savestate"></span>
     <span class="cloud">☁ <span id="cloudstato">—</span><br><a id="cloudsync">Sincronizza</a> · <a id="clouduscita">Esci</a></span></div>
 </aside>
 <div class="main"><div class="wrap">
@@ -3684,13 +3692,14 @@ function liteCE(){
   }).join('');
   return `<div class="lp">${lpTesta('Materia prima', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Materia prima':'Materia prima · '+a.et,
-      fmtNum(incMp)+'<small> € ogni 100</small>',
-      `${fmtE(a.mp)} · l'obiettivo è il <b>${fmtNum(t.mp)}%</b>` +
-      (a.bu==='tot' && fc!=null && bc!=null ? `<br>in cucina <b>${Math.round(fc)}</b>, al bar <b>${Math.round(bc)}</b>` : ''),
+      fmtNum(incMp)+'<small> € ogni 100 € incassati</small>',
+      (a.bu==='tot' && fc!=null && bc!=null
+        ? `in cucina il <b>${fmtNum(fc)}%</b>, al bar il <b>${fmtNum(bc)}%</b> · l'obiettivo è il <b>${fmtNum(t.mp)}%</b><br>${fmtE(a.mp)} sul periodo`
+        : `${fmtE(a.mp)} · l'obiettivo è il <b>${fmtNum(t.mp)}%</b>`),
       lpStato(incMp, t.mp))}
     ${a.bu==='tot' ? lpCard('Food e beverage',
-      (fc!=null?Math.round(fc):'—')+'<small> e </small>'+(bc!=null?Math.round(bc):'—'),
-      `€ ogni 100 del proprio incasso · food <b>${fmtE(a0.mpFood)}</b>, beverage <b>${fmtE(a0.mpBev)}</b>`) : ''}
+      (fc!=null?fmtNum(fc)+'%':'—')+'<small> e </small>'+(bc!=null?fmtNum(bc)+'%':'—'),
+      `food <b>${fmtE(a0.mpFood)}</b>, beverage <b>${fmtE(a0.mpBev)}</b>`) : ''}
     <div class="lpsez">Mese per mese · incasso e materia prima</div>
     ${mesi}
     ${lpChiusura('Materia prima')}</div>`;
@@ -3742,7 +3751,7 @@ function liteMKT(){
       : `${fmtE(a.mk)} · sopra il centro di <b>${fmtE(a.mk-a.ricavi*t.mk/100)}</b>`;
   return `<div class="lp">${lpTesta('Marketing', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Quanto si fa vedere':'Quanto si fa vedere · '+a.et,
-      fmtNum(inc)+'<small> € ogni 100</small>', nota, cls)}
+      fmtNum(inc)+'<small> € ogni 100 € incassati</small>', nota, cls)}
     ${righe?`<div class="lpsez">Dove vanno</div>${righe}`
            :'<div class="lpvuoto">Nessuna spesa di marketing riconosciuta nel periodo.<br>O il locale non ne fa, o è dentro un\'altra voce.</div>'}
     ${a.bu==='tot' ? '' : `<div class="lpnota">Le spese di marketing non nascono divise fra cucina e bar:
@@ -3789,7 +3798,7 @@ function liteRU(){
   }
   return `<div class="lp">${lpTesta('Risorse umane', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Costo del personale':'Costo del personale · '+a.et,
-      fmtNum(incRu)+'<small> € ogni 100</small>',
+      fmtNum(incRu)+'<small> € ogni 100 € incassati</small>',
       `${fmtE(a.ru)} · l'obiettivo è il <b>${fmtNum(t.ru)}%</b>` +
       (a.bu==='tot' ? ` · <b>${persone}</b> person${persone===1?'a':'e'}` : ''),
       lpStato(incRu, t.ru))}
@@ -3823,10 +3832,10 @@ function liteSG(){
     fmtE(x.v), Math.round(x.v/tot*100)+'%')).join('');
   return `<div class="lp">${lpTesta('Spese generali', lpBUsot(a,per))}
     ${lpCard(a.bu==='tot'?'Spese generali':'Spese generali · '+a.et,
-      fmtNum(incSg)+'<small> € ogni 100</small>',
+      fmtNum(incSg)+'<small> € ogni 100 € incassati</small>',
       `${fmtE(a.sg)} · l'obiettivo è il <b>${fmtNum(t.sg)}%</b>`, lpStato(incSg, t.sg))}
     ${unaTantum>0 ? lpCard('Tolte le voci che compaiono una o due volte',
-      (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100</small>',
+      (a.ricavi>0?Math.round(ricorrenti/a.ricavi*100):0)+'<small> € ogni 100 € incassati</small>',
       `<b>${fmtE(unaTantum)}</b> sono saldi e rate, non spesa corrente. Depurate quelle, la spesa ricorrente fa <b>${fmtE(ricorrenti)}</b>.`,
       lpStato(ricorrenti/a.ricavi*100, t.sg)) : ''}
     <div class="lpsez">Le voci che pesano di più</div>
@@ -3837,6 +3846,32 @@ function liteSG(){
 }
 
 /* ---------- 4 - costi nascosti ---------- */
+/* La differenza fra quello che le ricette dicono di dover costare e quello
+   che il bilancio dice di aver speso, disegnata: prima la parte che le
+   ricette spiegano, poi i pezzi dello scarto uno accanto all'altro. Quello
+   che resta non ha un nome ed è la voce più importante di tutte, perché è
+   la parte che non siamo ancora riusciti a intercettare. */
+function lpCnLinea(c, sp){
+  const spiegato=Math.max(0,num(c.teor));
+  const noti=[
+    ['Autoconsumi', num(sp.auto), '#E8B14A'],
+    ['Omaggi e customer care', num(sp.omag), '#DD9A3F'],
+    ['Rimanenze invendute', num(sp.rim), '#CC7F38'],
+    ['Dosi, rotture, dispersioni', num(sp.ghost), '#BB6A33']
+  ].filter(x=>x[1]>0);
+  const scarto=Math.max(0, num(c.reale)-spiegato);
+  const nonInt=Math.max(0, scarto - noti.reduce((a,x)=>a+x[1],0));
+  const tot=spiegato + noti.reduce((a,x)=>a+x[1],0) + nonInt;
+  if(!(tot>0)) return '';
+  const seg=[['Spiegato dalle ricette', spiegato, '#5B7F6A']].concat(noti);
+  if(nonInt>0) seg.push(['Costi non intercettati', nonInt, '#E0705E']);
+  return `<div class="cnlinea">
+    <div class="barra">${seg.map(([n,v,col])=>
+      `<i style="width:${(v/tot*100).toFixed(2)}%;background:${col}" title="${escH(n)}: ${fmtE(v)}"></i>`).join('')}</div>
+    <div class="leg">${seg.map(([n,v,col])=>
+      `<span><i style="background:${col}"></i>${n} <b>${fmtE(v)}</b></span>`).join('')}</div>
+  </div>`;
+}
 function liteCN(){
   const {a,per}=lpAgg();
   let c=null; try{ migrateS(); c=cnConfronto(); }catch(e){}
@@ -3845,20 +3880,29 @@ function liteCN(){
     oppure le incidenze teoriche scritte a mano.<br><br>Si caricano dal computer.</div></div>`;
   const dpp=(c.incReale-c.incTeor)*100;
   const sp=cnSpiegato();
+  const noti=num(sp.auto)+num(sp.omag)+num(sp.rim)+num(sp.ghost);
+  /* quello che lo scarto non spiega con le voci note: è la parte da andare
+     a cercare, e va detta invece di lasciarla fuori dal conto */
+  const nonInt=Math.max(0, num(c.oltre)-noti);
   const righe=[
-    ['Autoconsumi del personale', sp.auto],
-    ['Omaggi e customer care',    sp.omag],
-    ['Rimanenze invendute',       sp.rim],
-    ['Dosi, rotture, dispersioni',sp.ghost]
-  ].filter(x=>x[1]>0).map(x=>lpRow(x[0], null, fmtE(x[1]))).join('');
+    ['Autoconsumi del personale', sp.auto, null],
+    ['Omaggi e customer care',    sp.omag, null],
+    ['Rimanenze invendute',       sp.rim, null],
+    ['Dosi, rotture, dispersioni',sp.ghost, null],
+    ['Costi non intercettati',    nonInt, 'lo scarto che le voci qui sopra non spiegano']
+  ].filter(x=>x[1]>0).map(x=>lpRow(x[0], x[2], fmtE(x[1]),
+    c.oltre>0?fmtNum(x[1]/c.oltre*100)+'%':null,
+    x[0]==='Costi non intercettati'?'bad':'')).join('');
   return `<div class="lp">${lpTesta('Costi nascosti', 'esercizio '+S.anno+' · '+(c.fonte==='venduto'?'dal venduto di cassa':'dalle incidenze scritte a mano'))}
     ${lpCard('Food cost ideale', fmtP(c.incTeor), `da schede ricetta · ${fmtE(c.teor)}`)}
     ${lpCard('Food cost reale', fmtP(c.incReale), `dal bilancio · ${fmtE(c.reale)}`)}
     ${lpCard('Delta', (dpp>=0?'+':'−')+fmtNum(Math.abs(dpp))+'<small> punti</small>',
       `<b>${fmtE(Math.abs(c.oltre))}</b> ${c.oltre>=0?'di materia prima in più di quella che le ricette spiegano':'in meno di quello che le ricette prevedono: è precisione, non errore'}`,
       dpp<=2?'ok':dpp>4?'bad':'warn')}
+    <div class="lpsez">Dall'ideale al reale</div>
+    ${lpCnLinea(c, sp)}
     ${righe?`<div class="lpsez">Dove va lo scarto</div>${righe}`:''}
-    ${lpChiusura('4 · Costi nascosti')}</div>`;
+    ${lpChiusura('Cruscotto · Costi nascosti')}</div>`;
 }
 
 /* ---------- confronto fra due anni ---------- */
@@ -3884,12 +3928,21 @@ function liteCF(){
   };
   return `<div class="lp">${lpTesta('Confronto tra periodi',
       `${A} contro ${B} · ${cfEtichettaPari(mesi).toLowerCase()}`)}
-    ${lpCard('Ricavi', fmtE(sB.ric),
-      `nel ${A} erano <b>${fmtE(sA.ric)}</b> · ${isFinite(crescita)?(crescita>=0?'+':'−')+fmtNum(Math.abs(Math.round(crescita*10)/10))+'%':'—'}`,
-      crescita>=0?'ok':'warn')}
-    ${lpCard('Utile operativo', fmtE(sB.ro),
-      `nel ${A} era <b>${fmtE(sA.ro)}</b> · ${fmtNum(Math.round(pc(sB,'ro')*10)/10)} € ogni 100`,
-      sB.ro>=sA.ro?'ok':'warn')}
+    ${(()=>{
+      /* un confronto si racconta come un confronto: quanto in più o in meno,
+         non due numeri affiancati da leggere e sottrarre a mente */
+      const dRic=sB.ric-sA.ric, dRo=sB.ro-sA.ro;
+      return lpCard('Ricavi',
+        `${dRic>=0?'Stai fatturando':'Stai fatturando'} <b>${fmtE(Math.abs(dRic))}</b> ${dRic>=0?'in più':'in meno'}`,
+        `${fmtE(sB.ric)} contro <b>${fmtE(sA.ric)}</b> del ${A} · ${
+          isFinite(crescita)?(crescita>=0?'+':'−')+fmtNum(Math.abs(Math.round(crescita*10)/10))+'%':'—'}`,
+        dRic>=0?'ok':'warn')
+      + lpCard('Utile operativo',
+        `${dRo>=0?'Stai marginando':'Stai marginando'} <b>${fmtE(Math.abs(dRo))}</b> ${dRo>=0?'in più':'in meno'}`,
+        `${fmtE(sB.ro)} contro <b>${fmtE(sA.ro)}</b> del ${A}<br>` +
+        `oggi sono <b>${fmtNum(Math.round(pc(sB,'ro')*10)/10)} € ogni 100 € incassati</b>, nel ${A} erano ${fmtNum(Math.round(pc(sA,'ro')*10)/10)}`,
+        dRo>=0?'ok':'warn');
+    })()}
     <div class="lpsez">Incidenze, in punti percentuali</div>
     ${riga('Materia prima', pc(sA,'mp'), pc(sB,'mp'), true)}
     ${riga('Personale',     pc(sA,'ru'), pc(sB,'ru'), true)}
@@ -3948,11 +4001,11 @@ function liteOB(){
     ${lpObTre('ob')}
     ${lpCard('Quanto vale rientrare', rec && rec.tot>0 ? fmtE(rec.tot) : '—',
       rec && rec.tot>0
-        ? `è quello che tornerebbe a margine nel periodo se le aree sopra soglia rientrassero.<br>
+        ? `è il <b>margine aggiuntivo</b> portando le aree sopra soglia a target.<br>
            L'utile operativo passerebbe da <b>${fmtE(a.ro)}</b> a <b>${fmtE(a.ro+rec.tot)}</b>`
         : 'tutte le aree sono dentro le loro soglie: da qui non c\'è altro da prendere',
       rec && rec.tot>0 ? 'warn' : 'ok')}
-    ${lpCard('Utile operativo', fmtNum(incRo)+'<small> € ogni 100</small>',
+    ${lpCard('Utile operativo', fmtNum(incRo)+'<small> € ogni 100 € incassati</small>',
       `${fmtE(a.ro)} · l'obiettivo è il <b>${fmtNum(tRo)}%</b><br>` +
       (incRo>=tRo ? `<b>${fmtNum(incRo-tRo)} punti</b> sopra l'obiettivo`
                   : `mancano <b>${fmtNum(tRo-incRo)} punti</b>, cioè <b>${fmtE((tRo-incRo)/100*a.ricavi)}</b>`),
@@ -10344,7 +10397,7 @@ async function liteMPROF(){
   const sopra=l.filter(c=>c.euro>0);
   const costo=l.reduce((a,c)=>a+c.costo,0), ricC=l.reduce((a,c)=>a+c.ricC,0);
   return `<div class="lp">${lpTesta('Listino e costi', per)}
-    ${lpCard('Materia prima sul venduto', ricC>0?fmtNum(costo/ricC*100)+'<small> € ogni 100</small>':'—',
+    ${lpCard('Materia prima sul venduto', ricC>0?fmtNum(costo/ricC*100)+'<small> € ogni 100 € venduti</small>':'—',
       `${fmtE(costo)} di materia prima su ${fmtE(ricC)} di venduto con costo noto`)}
     ${sopra.length?lpCard('Spesa oltre il target', fmtE(sopra.reduce((a,c)=>a+c.euro,0)),
       `${sopra.length} categorie sopra il proprio obiettivo · la più pesante è <b>${sopra[0].n}</b>`,'warn')
